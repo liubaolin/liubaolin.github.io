@@ -793,6 +793,198 @@ echo $PATH  //记录命令的搜索路径</code></pre></li>
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/" itemprop="url">Linux使用私钥公钥(Public key)登录 - 免密码登录</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-12T00:00:00+08:00">
+                2019-03-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/" class="leancloud_visitors" data-flag-title="Linux使用私钥公钥(Public key)登录 - 免密码登录">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>为了更安全、方便的登录Linux服务器，可以取消密码登录，使用私钥公钥的方式来登录，更方便也更安全。</p>
+<h1 id="生成密钥（客户端机器）"><a href="#生成密钥（客户端机器）" class="headerlink" title="生成密钥（客户端机器）"></a>生成密钥（客户端机器）</h1><pre><code>ssh-keygen -t [rsa|dsa] -P &apos;&apos;</code></pre><p>直接ssh-keygen然后三次回车就可以了。<br>-P表示密码，-P ‘’ 就表示空密码，也可以不用-P参数，这样就要三车回车，用-P就一次回车。<br>它在/home/chenlb下生成.ssh目录，.ssh下有id_rsa和id_rsa.pub这样一对公私钥。</p>
+<h1 id="上传公钥到服务器端"><a href="#上传公钥到服务器端" class="headerlink" title="上传公钥到服务器端"></a>上传公钥到服务器端</h1><p>先在服务器对应用户目录下创建~/.ssh/authorized_keys目录（如果目录已存在，这一步会被略过）</p>
+<p>ssh richey@host mkdir -p .ssh/authorized_keys</p>
+<p>把客户端的公钥_rsa.pub复制到服务器端机器的.ssh/authorized_keys文件里</p>
+<pre><code>* 可以用scp复制到服务器，然后再从服务器中把从客户端复制的id_rsa.pub添加到.ssh/authorzied_keys文件里。
+
+    scp .ssh/id_rsa.pub  richey@45.xx.xx.16:/home/richey/id_rsa.pub
+
+* 或者
+
+    cat .ssh/id_rsa.pub | ssh richey@hostB &apos;cat &gt;&gt; .ssh/authorized_keys&apos;</code></pre><ul>
+<li><p>上述的创建目录并复制的操作也可以通过一个 ssh-copy-id 命令一步完成：    </p>
+<pre><code>ssh-copy-id -i ~/.ssh/id_rsa.pub aliceB@hostB</code></pre></li>
+<li><p>authorized_keys的权限要是600。</p>
+<pre><code>chmod 600 .ssh/authorized_keys</code></pre></li>
+</ul>
+<h1 id="修改SSH的配置文件"><a href="#修改SSH的配置文件" class="headerlink" title="修改SSH的配置文件"></a>修改SSH的配置文件</h1><p>配置文件位置</p>
+<pre><code>/etc/ssh/sshd_config :
+
+#RSAAuthentication yes
+#PubkeyAuthentication yes
+#AuthorizedKeysFile .ssh/authorized_keys</code></pre><p>去调上面3行前面的#，保存后重启SSH服务。</p>
+<pre><code>使用SYSVINIT初始化系统的Linux系统：service sshd restart
+使用SYSTEMD初始化系统的Linux系统：systemctl restart sshd</code></pre><p>至此服务器端已经支持使用SSH私钥证书登录。</p>
+<h1 id="关闭root用户使用密码登陆"><a href="#关闭root用户使用密码登陆" class="headerlink" title="关闭root用户使用密码登陆"></a>关闭root用户使用密码登陆</h1><p>在使用SSH Key登录验证成功后，还是为了安全，建议关闭root用户使用密码登陆，关闭的方法如下：</p>
+<p>修改SSH的配置文件/etc/ssh/sshd_config，找到下面1行：</p>
+<pre><code>PasswordAuthentication yes</code></pre><p>修改为：</p>
+<pre><code>PasswordAuthentication no</code></pre><p>保存后重启SSH服务。</p>
+<pre><code>service sshd restart</code></pre><p>好了，至此只要你保存好你的私钥（为安全，建议删除服务器端的私钥），你的服务器相比原来使用root用户加密码登陆来说已经安全多了。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/12/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -947,198 +1139,6 @@ jps:http://www.hollischuang.com/archives/105
 jstat:http://www.hollischuang.com/archives/481
 jmap:http://www.hollischuang.com/archives/303
 jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看所有的可用服务"><a href="#29、查看所有的可用服务" class="headerlink" title="29、查看所有的可用服务"></a>29、查看所有的可用服务</h4><pre><code>systemctl list-unit-files |grep service |grep enable</code></pre><h4 id="30、关闭服务"><a href="#30、关闭服务" class="headerlink" title="30、关闭服务"></a>30、关闭服务</h4><pre><code>systemctl stop ipatables</code></pre><h4 id="30、开机不启动"><a href="#30、开机不启动" class="headerlink" title="30、开机不启动"></a>30、开机不启动</h4><pre><code>systemctl disable iptables</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/" itemprop="url">Linux使用私钥公钥(Public key)登录 - 免密码登录</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-12T00:00:00+08:00">
-                2019-03-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/" class="leancloud_visitors" data-flag-title="Linux使用私钥公钥(Public key)登录 - 免密码登录">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>为了更安全、方便的登录Linux服务器，可以取消密码登录，使用私钥公钥的方式来登录，更方便也更安全。</p>
-<h1 id="生成密钥（客户端机器）"><a href="#生成密钥（客户端机器）" class="headerlink" title="生成密钥（客户端机器）"></a>生成密钥（客户端机器）</h1><pre><code>ssh-keygen -t [rsa|dsa] -P &apos;&apos;</code></pre><p>直接ssh-keygen然后三次回车就可以了。<br>-P表示密码，-P ‘’ 就表示空密码，也可以不用-P参数，这样就要三车回车，用-P就一次回车。<br>它在/home/chenlb下生成.ssh目录，.ssh下有id_rsa和id_rsa.pub这样一对公私钥。</p>
-<h1 id="上传公钥到服务器端"><a href="#上传公钥到服务器端" class="headerlink" title="上传公钥到服务器端"></a>上传公钥到服务器端</h1><p>先在服务器对应用户目录下创建~/.ssh/authorized_keys目录（如果目录已存在，这一步会被略过）</p>
-<p>ssh richey@host mkdir -p .ssh/authorized_keys</p>
-<p>把客户端的公钥_rsa.pub复制到服务器端机器的.ssh/authorized_keys文件里</p>
-<pre><code>* 可以用scp复制到服务器，然后再从服务器中把从客户端复制的id_rsa.pub添加到.ssh/authorzied_keys文件里。
-
-    scp .ssh/id_rsa.pub  richey@45.xx.xx.16:/home/richey/id_rsa.pub
-
-* 或者
-
-    cat .ssh/id_rsa.pub | ssh richey@hostB &apos;cat &gt;&gt; .ssh/authorized_keys&apos;</code></pre><ul>
-<li><p>上述的创建目录并复制的操作也可以通过一个 ssh-copy-id 命令一步完成：    </p>
-<pre><code>ssh-copy-id -i ~/.ssh/id_rsa.pub aliceB@hostB</code></pre></li>
-<li><p>authorized_keys的权限要是600。</p>
-<pre><code>chmod 600 .ssh/authorized_keys</code></pre></li>
-</ul>
-<h1 id="修改SSH的配置文件"><a href="#修改SSH的配置文件" class="headerlink" title="修改SSH的配置文件"></a>修改SSH的配置文件</h1><p>配置文件位置</p>
-<pre><code>/etc/ssh/sshd_config :
-
-#RSAAuthentication yes
-#PubkeyAuthentication yes
-#AuthorizedKeysFile .ssh/authorized_keys</code></pre><p>去调上面3行前面的#，保存后重启SSH服务。</p>
-<pre><code>使用SYSVINIT初始化系统的Linux系统：service sshd restart
-使用SYSTEMD初始化系统的Linux系统：systemctl restart sshd</code></pre><p>至此服务器端已经支持使用SSH私钥证书登录。</p>
-<h1 id="关闭root用户使用密码登陆"><a href="#关闭root用户使用密码登陆" class="headerlink" title="关闭root用户使用密码登陆"></a>关闭root用户使用密码登陆</h1><p>在使用SSH Key登录验证成功后，还是为了安全，建议关闭root用户使用密码登陆，关闭的方法如下：</p>
-<p>修改SSH的配置文件/etc/ssh/sshd_config，找到下面1行：</p>
-<pre><code>PasswordAuthentication yes</code></pre><p>修改为：</p>
-<pre><code>PasswordAuthentication no</code></pre><p>保存后重启SSH服务。</p>
-<pre><code>service sshd restart</code></pre><p>好了，至此只要你保存好你的私钥（为安全，建议删除服务器端的私钥），你的服务器相比原来使用root用户加密码登陆来说已经安全多了。</p>
-
           
         
       
@@ -1350,178 +1350,6 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
 <li>iptables对ftp的设置</li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">ftp连接端口有2个 21 和 20 端口，我现在添加对应的规则。</span><br><span class="line"></span><br><span class="line">[root@localhost root]#iptables -A INPUT -p tcp --dport 21 -j ACCEPT</span><br><span class="line">[root@localhost root]#iptables -A INPUT -p tcp --dport 20 -j ACCEPT</span><br><span class="line">[root@localhost root]#iptables -A OUTPUT -p tcp --sport 21 -j ACCEPT</span><br><span class="line">[root@localhost root]#iptables -A OUTPUT -p tcp --sport 20 -j ACCEPT</span><br><span class="line"></span><br><span class="line">ftp 是比较特殊的端口，它还有一些端口是数据传输端口,如目录列表、上传、下载文件都要用到这些端口，而这些端口是任意端口。</span><br><span class="line">所以我们要给ftp指定这个数据传输端口的一个范围。</span><br><span class="line">修改一下ftp配置文件,不同ftp配置文件不同，这里以vsftpd来演示修改：</span><br><span class="line"></span><br><span class="line">[root@localhost root]#vi &#x2F;etc&#x2F;vsftpd.conf</span><br><span class="line">pasv_min_port&#x3D;30001</span><br><span class="line">pasv_max_port&#x3D;31000</span><br><span class="line"></span><br><span class="line">这两句话的意思告诉vsftpd, 要传输数据的端口范围就在30001到31000 这个范围内传送。</span><br><span class="line"></span><br><span class="line">打开iptables 30001到31000这些端口：</span><br><span class="line">[root@localhost root]#iptables -A INPUT -p tcp --dport 30001:31000 -j ACCEPT</span><br><span class="line">[root@localhost root]#iptables -A OUTPUT -p tcp --sport 30001:31000 -j ACCEPT</span><br><span class="line">[root@localhost root]#service iptables save</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/08/hexo%E5%91%BD%E4%BB%A4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/08/hexo%E5%91%BD%E4%BB%A4/" itemprop="url">hexo命令</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-08T00:00:00+08:00">
-                2019-03-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%B6%E5%AE%83/" itemprop="url" rel="index">
-                    <span itemprop="name">其它</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/03/08/hexo%E5%91%BD%E4%BB%A4/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/08/hexo%E5%91%BD%E4%BB%A4/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/03/08/hexo%E5%91%BD%E4%BB%A4/" class="leancloud_visitors" data-flag-title="hexo命令">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <ul>
-<li><p>hexo g 生成静态文件</p>
-</li>
-<li><p>hexo s 启动本地服务</p>
-</li>
-<li><p>hexo clean 清除缓存文件(db.json)和已生成的静态文件(public)</p>
-</li>
-<li><p>hexo g -d 生成文件并部署到github</p>
-</li>
-</ul>
 
           
         
@@ -1888,6 +1716,178 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
 <p><a href="http://www.importnew.com/25315.html" target="_blank" rel="noopener">http://www.importnew.com/25315.html</a></p>
 <h1 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h1><p><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#package.description" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#package.description</a><br><a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html</a><br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html</a><br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html</a><br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collectors.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collectors.html</a></p>
 <p><a href="http://www.importnew.com/24237.html" target="_blank" rel="noopener">http://www.importnew.com/24237.html</a><br><a href="http://www.importnew.com/24245.html" target="_blank" rel="noopener">http://www.importnew.com/24245.html</a><br><a href="http://www.importnew.com/24235.html" target="_blank" rel="noopener">http://www.importnew.com/24235.html</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/08/hexo%E5%91%BD%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/08/hexo%E5%91%BD%E4%BB%A4/" itemprop="url">hexo命令</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-08T00:00:00+08:00">
+                2019-03-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%85%B6%E5%AE%83/" itemprop="url" rel="index">
+                    <span itemprop="name">其它</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/03/08/hexo%E5%91%BD%E4%BB%A4/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/08/hexo%E5%91%BD%E4%BB%A4/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/03/08/hexo%E5%91%BD%E4%BB%A4/" class="leancloud_visitors" data-flag-title="hexo命令">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <ul>
+<li><p>hexo g 生成静态文件</p>
+</li>
+<li><p>hexo s 启动本地服务</p>
+</li>
+<li><p>hexo clean 清除缓存文件(db.json)和已生成的静态文件(public)</p>
+</li>
+<li><p>hexo g -d 生成文件并部署到github</p>
+</li>
+</ul>
 
           
         

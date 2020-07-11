@@ -1005,6 +1005,175 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/" itemprop="url">安装zookeeper</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-07T00:00:00+08:00">
+                2019-07-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9E%B6%E6%9E%84/" itemprop="url" rel="index">
+                    <span itemprop="name">架构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/" class="leancloud_visitors" data-flag-title="安装zookeeper">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="安装zookeeper"><a href="#安装zookeeper" class="headerlink" title="安装zookeeper"></a>安装zookeeper</h1><h2 id="单机服务"><a href="#单机服务" class="headerlink" title="单机服务"></a>单机服务</h2><p>从apache.org下载zookeeper,这里下载的是zookeeper-3.4.14.tar</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#tar -zxf zookeeper-3.4.14.tar.gz</span><br><span class="line">#mv zookeeper-3.4.14 &#x2F;usr&#x2F;local&#x2F;zookeeper</span><br><span class="line">#cat &gt; &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;conf&#x2F;zoo.cfg &lt;&lt; EOF</span><br><span class="line">&gt; tickTime&#x3D;2000</span><br><span class="line">&gt; dataDir&#x3D;&#x2F;var&#x2F;lib&#x2F;zookeeper</span><br><span class="line">&gt; clientPort&#x3D;2181</span><br><span class="line">&gt; EOF</span><br><span class="line">#&#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh start</span><br><span class="line">ZooKeeper JMX enabled by default</span><br><span class="line">Using config: &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;..&#x2F;conf&#x2F;zoo.cfg</span><br><span class="line">Starting zookeeper ... STARTED</span><br><span class="line">#</span><br></pre></td></tr></table></figure>
+
+<p>现在可以连接到zookeeper端口上，通过发送四字命令srvr来验证zookeeper是否安装正确。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#telnet localhost 2181</span><br><span class="line">Trying ::1...</span><br><span class="line">Connected to localhost.</span><br><span class="line">Escape character is &#39;^]&#39;.</span><br><span class="line">srvr</span><br><span class="line">Zookeeper version: 3.4.14-4c25d480e66aadd371de8bd2fd8da255ac140bcf, built on 03&#x2F;06&#x2F;2019 16:18 GMT</span><br><span class="line">Latency min&#x2F;avg&#x2F;max: 0&#x2F;0&#x2F;0</span><br><span class="line">Received: 1</span><br><span class="line">Sent: 0</span><br><span class="line">Connections: 1</span><br><span class="line">Outstanding: 0</span><br><span class="line">Zxid: 0x0</span><br><span class="line">Mode: standalone</span><br><span class="line">Node count: 4</span><br><span class="line">Connection closed by foreign host.</span><br></pre></td></tr></table></figure>
+
+<h2 id="Zookeeper群组"><a href="#Zookeeper群组" class="headerlink" title="Zookeeper群组"></a>Zookeeper群组</h2><p>Zookeeper集群被称为Zookeeper群组，Zookeeper使用的是一致性协议，所以每个群组里应该包含奇数个节点。因为只有群组里的大多数节点处于可用状态，zookeeper才能处理外部请求。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1150,175 +1319,6 @@
 
 
 <h1 id="Broker配置"><a href="#Broker配置" class="headerlink" title="Broker配置"></a>Broker配置</h1><h1 id="主题的默认配置"><a href="#主题的默认配置" class="headerlink" title="主题的默认配置"></a>主题的默认配置</h1>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/" itemprop="url">安装zookeeper</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-07T00:00:00+08:00">
-                2019-07-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9E%B6%E6%9E%84/" itemprop="url" rel="index">
-                    <span itemprop="name">架构</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/" class="leancloud_visitors" data-flag-title="安装zookeeper">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="安装zookeeper"><a href="#安装zookeeper" class="headerlink" title="安装zookeeper"></a>安装zookeeper</h1><h2 id="单机服务"><a href="#单机服务" class="headerlink" title="单机服务"></a>单机服务</h2><p>从apache.org下载zookeeper,这里下载的是zookeeper-3.4.14.tar</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#tar -zxf zookeeper-3.4.14.tar.gz</span><br><span class="line">#mv zookeeper-3.4.14 &#x2F;usr&#x2F;local&#x2F;zookeeper</span><br><span class="line">#cat &gt; &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;conf&#x2F;zoo.cfg &lt;&lt; EOF</span><br><span class="line">&gt; tickTime&#x3D;2000</span><br><span class="line">&gt; dataDir&#x3D;&#x2F;var&#x2F;lib&#x2F;zookeeper</span><br><span class="line">&gt; clientPort&#x3D;2181</span><br><span class="line">&gt; EOF</span><br><span class="line">#&#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh start</span><br><span class="line">ZooKeeper JMX enabled by default</span><br><span class="line">Using config: &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;..&#x2F;conf&#x2F;zoo.cfg</span><br><span class="line">Starting zookeeper ... STARTED</span><br><span class="line">#</span><br></pre></td></tr></table></figure>
-
-<p>现在可以连接到zookeeper端口上，通过发送四字命令srvr来验证zookeeper是否安装正确。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#telnet localhost 2181</span><br><span class="line">Trying ::1...</span><br><span class="line">Connected to localhost.</span><br><span class="line">Escape character is &#39;^]&#39;.</span><br><span class="line">srvr</span><br><span class="line">Zookeeper version: 3.4.14-4c25d480e66aadd371de8bd2fd8da255ac140bcf, built on 03&#x2F;06&#x2F;2019 16:18 GMT</span><br><span class="line">Latency min&#x2F;avg&#x2F;max: 0&#x2F;0&#x2F;0</span><br><span class="line">Received: 1</span><br><span class="line">Sent: 0</span><br><span class="line">Connections: 1</span><br><span class="line">Outstanding: 0</span><br><span class="line">Zxid: 0x0</span><br><span class="line">Mode: standalone</span><br><span class="line">Node count: 4</span><br><span class="line">Connection closed by foreign host.</span><br></pre></td></tr></table></figure>
-
-<h2 id="Zookeeper群组"><a href="#Zookeeper群组" class="headerlink" title="Zookeeper群组"></a>Zookeeper群组</h2><p>Zookeeper集群被称为Zookeeper群组，Zookeeper使用的是一致性协议，所以每个群组里应该包含奇数个节点。因为只有群组里的大多数节点处于可用状态，zookeeper才能处理外部请求。</p>
-
           
         
       

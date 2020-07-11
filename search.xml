@@ -117,6 +117,24 @@
       </tags>
   </entry>
   <entry>
+    <title>安装zookeeper</title>
+    <url>/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/</url>
+    <content><![CDATA[<h1 id="安装zookeeper"><a href="#安装zookeeper" class="headerlink" title="安装zookeeper"></a>安装zookeeper</h1><h2 id="单机服务"><a href="#单机服务" class="headerlink" title="单机服务"></a>单机服务</h2><p>从apache.org下载zookeeper,这里下载的是zookeeper-3.4.14.tar</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#tar -zxf zookeeper-3.4.14.tar.gz</span><br><span class="line">#mv zookeeper-3.4.14 &#x2F;usr&#x2F;local&#x2F;zookeeper</span><br><span class="line">#cat &gt; &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;conf&#x2F;zoo.cfg &lt;&lt; EOF</span><br><span class="line">&gt; tickTime&#x3D;2000</span><br><span class="line">&gt; dataDir&#x3D;&#x2F;var&#x2F;lib&#x2F;zookeeper</span><br><span class="line">&gt; clientPort&#x3D;2181</span><br><span class="line">&gt; EOF</span><br><span class="line">#&#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh start</span><br><span class="line">ZooKeeper JMX enabled by default</span><br><span class="line">Using config: &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;..&#x2F;conf&#x2F;zoo.cfg</span><br><span class="line">Starting zookeeper ... STARTED</span><br><span class="line">#</span><br></pre></td></tr></table></figure>
+
+<p>现在可以连接到zookeeper端口上，通过发送四字命令srvr来验证zookeeper是否安装正确。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#telnet localhost 2181</span><br><span class="line">Trying ::1...</span><br><span class="line">Connected to localhost.</span><br><span class="line">Escape character is &#39;^]&#39;.</span><br><span class="line">srvr</span><br><span class="line">Zookeeper version: 3.4.14-4c25d480e66aadd371de8bd2fd8da255ac140bcf, built on 03&#x2F;06&#x2F;2019 16:18 GMT</span><br><span class="line">Latency min&#x2F;avg&#x2F;max: 0&#x2F;0&#x2F;0</span><br><span class="line">Received: 1</span><br><span class="line">Sent: 0</span><br><span class="line">Connections: 1</span><br><span class="line">Outstanding: 0</span><br><span class="line">Zxid: 0x0</span><br><span class="line">Mode: standalone</span><br><span class="line">Node count: 4</span><br><span class="line">Connection closed by foreign host.</span><br></pre></td></tr></table></figure>
+
+<h2 id="Zookeeper群组"><a href="#Zookeeper群组" class="headerlink" title="Zookeeper群组"></a>Zookeeper群组</h2><p>Zookeeper集群被称为Zookeeper群组，Zookeeper使用的是一致性协议，所以每个群组里应该包含奇数个节点。因为只有群组里的大多数节点处于可用状态，zookeeper才能处理外部请求。</p>
+]]></content>
+      <categories>
+        <category>架构</category>
+      </categories>
+      <tags>
+        <tag>zookeeper</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>安装配置Kafka Broker</title>
     <url>/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/</url>
     <content><![CDATA[<h1 id="安装Kafka-Broker"><a href="#安装Kafka-Broker" class="headerlink" title="安装Kafka Broker"></a>安装Kafka Broker</h1><p>需要先安装号java和Zookeeper</p>
@@ -155,24 +173,6 @@
       </categories>
       <tags>
         <tag>kafka</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>安装zookeeper</title>
-    <url>/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/</url>
-    <content><![CDATA[<h1 id="安装zookeeper"><a href="#安装zookeeper" class="headerlink" title="安装zookeeper"></a>安装zookeeper</h1><h2 id="单机服务"><a href="#单机服务" class="headerlink" title="单机服务"></a>单机服务</h2><p>从apache.org下载zookeeper,这里下载的是zookeeper-3.4.14.tar</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#tar -zxf zookeeper-3.4.14.tar.gz</span><br><span class="line">#mv zookeeper-3.4.14 &#x2F;usr&#x2F;local&#x2F;zookeeper</span><br><span class="line">#cat &gt; &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;conf&#x2F;zoo.cfg &lt;&lt; EOF</span><br><span class="line">&gt; tickTime&#x3D;2000</span><br><span class="line">&gt; dataDir&#x3D;&#x2F;var&#x2F;lib&#x2F;zookeeper</span><br><span class="line">&gt; clientPort&#x3D;2181</span><br><span class="line">&gt; EOF</span><br><span class="line">#&#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh start</span><br><span class="line">ZooKeeper JMX enabled by default</span><br><span class="line">Using config: &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;..&#x2F;conf&#x2F;zoo.cfg</span><br><span class="line">Starting zookeeper ... STARTED</span><br><span class="line">#</span><br></pre></td></tr></table></figure>
-
-<p>现在可以连接到zookeeper端口上，通过发送四字命令srvr来验证zookeeper是否安装正确。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#telnet localhost 2181</span><br><span class="line">Trying ::1...</span><br><span class="line">Connected to localhost.</span><br><span class="line">Escape character is &#39;^]&#39;.</span><br><span class="line">srvr</span><br><span class="line">Zookeeper version: 3.4.14-4c25d480e66aadd371de8bd2fd8da255ac140bcf, built on 03&#x2F;06&#x2F;2019 16:18 GMT</span><br><span class="line">Latency min&#x2F;avg&#x2F;max: 0&#x2F;0&#x2F;0</span><br><span class="line">Received: 1</span><br><span class="line">Sent: 0</span><br><span class="line">Connections: 1</span><br><span class="line">Outstanding: 0</span><br><span class="line">Zxid: 0x0</span><br><span class="line">Mode: standalone</span><br><span class="line">Node count: 4</span><br><span class="line">Connection closed by foreign host.</span><br></pre></td></tr></table></figure>
-
-<h2 id="Zookeeper群组"><a href="#Zookeeper群组" class="headerlink" title="Zookeeper群组"></a>Zookeeper群组</h2><p>Zookeeper集群被称为Zookeeper群组，Zookeeper使用的是一致性协议，所以每个群组里应该包含奇数个节点。因为只有群组里的大多数节点处于可用状态，zookeeper才能处理外部请求。</p>
-]]></content>
-      <categories>
-        <category>架构</category>
-      </categories>
-      <tags>
-        <tag>zookeeper</tag>
       </tags>
   </entry>
   <entry>
@@ -735,6 +735,58 @@ public SimpleResult sessionInvalid() {
       </tags>
   </entry>
   <entry>
+    <title>观察者模式</title>
+    <url>/2019/06/12/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F.jpg" alt="观察者模式"></p>
+<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F%E7%B1%BB%E5%9B%BE.jpg" alt="观察者模式"></p>
+<h1 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h1><p>定义了一对多的关系，这样，当一方对象状态改变时，它的所有依赖都会收到通知，并自动更新。</p>
+<h1 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h1><p>Spring中的事件机制，是观察者模式思想的一种实现</p>
+<h2 id="Spring中观察者模式的四个角色"><a href="#Spring中观察者模式的四个角色" class="headerlink" title="Spring中观察者模式的四个角色"></a>Spring中观察者模式的四个角色</h2><ul>
+<li>事件（ApplicationEvent）</li>
+</ul>
+<p>ApplicationEvent 是所有事件对象的父类。ApplicationEvent 继承自 jdk 的 EventObject, 所有的事件都需要继承 ApplicationEvent, 并且通过source得到事件源。</p>
+<p>下列描述了Spring提供的内置事件：</p>
+<p>ContextRefreshedEvent：事件发布在 ApplicationContext 初始化或刷新时（例如：通过在 ConfigurableApplicationContext 接口使用refresh()方法）。这里,“初始化”意味着所有 bean 加载，post-processor bean 被检测到并且激活,单例预先实例化，ApplicationContext 对象可以使用了。只要上下文没有关闭,可以触发多次刷新, ApplicationContext 提供了一种可选择的支持这种“热”刷新。例如：XmlWebApplicationContext 支持热刷新,但 GenericApplicationContext 并非如此。具体是在 AbstractApplicationContext 的 finishRefresh() 方法中。</p>
+<p>ContextStartedEvent：事件发布在 ApplicationContext 开始使用 ConfigurableApplicationContext 接口 start() 方法。这里,“开始”意味着所有生命周期 bean 接收到一个明确的起始信号。通常,这个信号用于明确停止后重新启动,但它也可以用于启动组件没有被配置为自动运行（例如：组件还没有开始初始化）。</p>
+<p>ContextStoppedEvent：事件发布在 ApplicationContext 停止时通过使用 ConfigurableApplicationContext 接口上的 stop() 方法。在这里,“停止”意味着所有生命周期bean接收一个显式的停止信号。停止上下文可以通过重新调用start()方法。</p>
+<p>ContextClosedEvent：事件发布在 ApplicationContext 关闭时通过关闭 ConfigurableApplicationContext 接口()方法。这里,“封闭”意味着所有单例 bean 被摧毁。一个封闭的环境达到生命的终结。它不能刷新或重启。</p>
+<p>RequestHandledEvent：一个特定的web事件告诉所有能处理HTTP请求的bean 。这个事件是在请求完成后发布的。这个事件只适用于使用 Spring 的 DispatcherServlet 的web应用程序。</p>
+<ul>
+<li>事件监听（ApplicationListener）</li>
+</ul>
+<p>ApplicationListener 事件监听器，也就是观察者。继承自 jdk 的 EventListener，该类中只有一个方法 onApplicationEvent。当监听的事件发生后该方法会被执行。</p>
+<ul>
+<li>事件发布（ApplicationContext）</li>
+</ul>
+<p>ApplicationContext 是 Spring 中的核心容器，在事件监听中 ApplicationContext 可以作为事件的发布者，也就是事件源。因为 ApplicationContext 继承自 ApplicationEventPublisher。在 ApplicationEventPublisher 中定义了事件发布的方法 — publishEvent(Object event)</p>
+<ul>
+<li>事件管理（ApplicationEventMulticaster）</li>
+</ul>
+<p>ApplicationEventMulticaster 用于事件监听器的注册和事件的广播。监听器的注册就是通过它来实现的，它的作用是把 Applicationcontext 发布的 Event 广播给它的监听器列表。</p>
+<h2 id="Spring中实现观察者模式"><a href="#Spring中实现观察者模式" class="headerlink" title="Spring中实现观察者模式"></a>Spring中实现观察者模式</h2><ol>
+<li><p>自定义需要发布的事件类，需要继承 ApplicationEvent 类或 PayloadApplicationEvent (该类也仅仅是对 ApplicationEvent 的一层封装)</p>
+</li>
+<li><p>使用 @EventListener 来监听事件或者实现 ApplicationListener 接口。</p>
+</li>
+<li><p>使用 ApplicationEventPublisher 来发布自定义事件（@Autowired注入即可）</p>
+<p> @TransactionalEventListener 监听器：如果事件的发布不是在事务（@Transactional）范围内，则监听不到该事件，除非将 fallbackExecution 标志设置为 true（@TransactionalEventListener(fallbackExecution = true)）;如果在事务中，可以选择在事务的哪个阶段来监听事件，默认在事务提交后监听（@TransactionalEventListener(phase = TransactionPhase.AFTER_COMPLETION)）。</p>
+</li>
+</ol>
+<p>以上介绍的事件监听都是同步，如果需要开启异步支持的话：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableAsync</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AsyncEventConfiguration</span> <span class="keyword">implements</span> <span class="title">AsyncConfigurer</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Executor <span class="title">getAsyncExecutor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Executors.newCachedThreadPool();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h1><h2 id="事件（MyEvent-java"><a href="#事件（MyEvent-java" class="headerlink" title="事件（MyEvent.java)"></a>事件（MyEvent.java)</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyEvent</span> <span class="keyword">extends</span> <span class="title">ApplicationEvent</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyEvent</span><span class="params">(ApplicationContext source)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(source);</span><br><span class="line">        System.out.println(<span class="string">"MyEvent 构造器执行"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">echo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"模拟业务逻辑执行"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="事件监听（MyListenerA-java、MyListenerB-java）"><a href="#事件监听（MyListenerA-java、MyListenerB-java）" class="headerlink" title="事件监听（MyListenerA.java、MyListenerB.java）"></a>事件监听（MyListenerA.java、MyListenerB.java）</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyListenerA</span> <span class="keyword">implements</span> <span class="title">ApplicationListener</span>&lt;<span class="title">MyEvent</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onApplicationEvent</span><span class="params">(MyEvent myEvent)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"MyListenerA"</span>);</span><br><span class="line">        myEvent.echo();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyListenerB</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@EventListener</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onApplicationEvent</span><span class="params">(MyEvent myEvent)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"MyListenerB"</span>);</span><br><span class="line">        myEvent.echo();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="事件发布（MyPublisher-java）"><a href="#事件发布（MyPublisher-java）" class="headerlink" title="事件发布（MyPublisher.java）"></a>事件发布（MyPublisher.java）</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyPublisher</span> <span class="keyword">implements</span> <span class="title">ApplicationContextAware</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ApplicationContext applicationContext;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setApplicationContext</span><span class="params">(ApplicationContext applicationContext)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.applicationContext = applicationContext;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 发布事件</span></span><br><span class="line"><span class="comment">     * 监听该事件的监听者都可以获取消息</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> myEvent</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">publisherEvent</span><span class="params">(MyEvent myEvent)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"---开始发布 myEvent 事件---"</span>);</span><br><span class="line">        applicationContext.publishEvent(myEvent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="单元测试"><a href="#单元测试" class="headerlink" title="单元测试"></a>单元测试</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@RunWith</span>(SpringRunner<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">SpringBootTest</span></span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">DesignPatternsApplicationTests</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MyPublisher myPublisher;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MyEvent myEvent;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">contextLoads</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        myPublisher.publisherEvent(myEvent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SpringSecurity-Session管理 (1)</title>
     <url>/2019/06/12/SpringSecurity-Session%E7%AE%A1%E7%90%86%20(1)/</url>
     <content><![CDATA[<h1 id="Session管理"><a href="#Session管理" class="headerlink" title="Session管理"></a>Session管理</h1><h2 id="内容概要"><a href="#内容概要" class="headerlink" title="内容概要"></a>内容概要</h2><ul>
@@ -831,58 +883,6 @@ public class EvolutionaryExpiredSessionStrategy implements SessionInformationExp
       </tags>
   </entry>
   <entry>
-    <title>观察者模式</title>
-    <url>/2019/06/12/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/</url>
-    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F.jpg" alt="观察者模式"></p>
-<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F%E7%B1%BB%E5%9B%BE.jpg" alt="观察者模式"></p>
-<h1 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h1><p>定义了一对多的关系，这样，当一方对象状态改变时，它的所有依赖都会收到通知，并自动更新。</p>
-<h1 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h1><p>Spring中的事件机制，是观察者模式思想的一种实现</p>
-<h2 id="Spring中观察者模式的四个角色"><a href="#Spring中观察者模式的四个角色" class="headerlink" title="Spring中观察者模式的四个角色"></a>Spring中观察者模式的四个角色</h2><ul>
-<li>事件（ApplicationEvent）</li>
-</ul>
-<p>ApplicationEvent 是所有事件对象的父类。ApplicationEvent 继承自 jdk 的 EventObject, 所有的事件都需要继承 ApplicationEvent, 并且通过source得到事件源。</p>
-<p>下列描述了Spring提供的内置事件：</p>
-<p>ContextRefreshedEvent：事件发布在 ApplicationContext 初始化或刷新时（例如：通过在 ConfigurableApplicationContext 接口使用refresh()方法）。这里,“初始化”意味着所有 bean 加载，post-processor bean 被检测到并且激活,单例预先实例化，ApplicationContext 对象可以使用了。只要上下文没有关闭,可以触发多次刷新, ApplicationContext 提供了一种可选择的支持这种“热”刷新。例如：XmlWebApplicationContext 支持热刷新,但 GenericApplicationContext 并非如此。具体是在 AbstractApplicationContext 的 finishRefresh() 方法中。</p>
-<p>ContextStartedEvent：事件发布在 ApplicationContext 开始使用 ConfigurableApplicationContext 接口 start() 方法。这里,“开始”意味着所有生命周期 bean 接收到一个明确的起始信号。通常,这个信号用于明确停止后重新启动,但它也可以用于启动组件没有被配置为自动运行（例如：组件还没有开始初始化）。</p>
-<p>ContextStoppedEvent：事件发布在 ApplicationContext 停止时通过使用 ConfigurableApplicationContext 接口上的 stop() 方法。在这里,“停止”意味着所有生命周期bean接收一个显式的停止信号。停止上下文可以通过重新调用start()方法。</p>
-<p>ContextClosedEvent：事件发布在 ApplicationContext 关闭时通过关闭 ConfigurableApplicationContext 接口()方法。这里,“封闭”意味着所有单例 bean 被摧毁。一个封闭的环境达到生命的终结。它不能刷新或重启。</p>
-<p>RequestHandledEvent：一个特定的web事件告诉所有能处理HTTP请求的bean 。这个事件是在请求完成后发布的。这个事件只适用于使用 Spring 的 DispatcherServlet 的web应用程序。</p>
-<ul>
-<li>事件监听（ApplicationListener）</li>
-</ul>
-<p>ApplicationListener 事件监听器，也就是观察者。继承自 jdk 的 EventListener，该类中只有一个方法 onApplicationEvent。当监听的事件发生后该方法会被执行。</p>
-<ul>
-<li>事件发布（ApplicationContext）</li>
-</ul>
-<p>ApplicationContext 是 Spring 中的核心容器，在事件监听中 ApplicationContext 可以作为事件的发布者，也就是事件源。因为 ApplicationContext 继承自 ApplicationEventPublisher。在 ApplicationEventPublisher 中定义了事件发布的方法 — publishEvent(Object event)</p>
-<ul>
-<li>事件管理（ApplicationEventMulticaster）</li>
-</ul>
-<p>ApplicationEventMulticaster 用于事件监听器的注册和事件的广播。监听器的注册就是通过它来实现的，它的作用是把 Applicationcontext 发布的 Event 广播给它的监听器列表。</p>
-<h2 id="Spring中实现观察者模式"><a href="#Spring中实现观察者模式" class="headerlink" title="Spring中实现观察者模式"></a>Spring中实现观察者模式</h2><ol>
-<li><p>自定义需要发布的事件类，需要继承 ApplicationEvent 类或 PayloadApplicationEvent (该类也仅仅是对 ApplicationEvent 的一层封装)</p>
-</li>
-<li><p>使用 @EventListener 来监听事件或者实现 ApplicationListener 接口。</p>
-</li>
-<li><p>使用 ApplicationEventPublisher 来发布自定义事件（@Autowired注入即可）</p>
-<p> @TransactionalEventListener 监听器：如果事件的发布不是在事务（@Transactional）范围内，则监听不到该事件，除非将 fallbackExecution 标志设置为 true（@TransactionalEventListener(fallbackExecution = true)）;如果在事务中，可以选择在事务的哪个阶段来监听事件，默认在事务提交后监听（@TransactionalEventListener(phase = TransactionPhase.AFTER_COMPLETION)）。</p>
-</li>
-</ol>
-<p>以上介绍的事件监听都是同步，如果需要开启异步支持的话：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableAsync</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AsyncEventConfiguration</span> <span class="keyword">implements</span> <span class="title">AsyncConfigurer</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Executor <span class="title">getAsyncExecutor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Executors.newCachedThreadPool();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h1><h2 id="事件（MyEvent-java"><a href="#事件（MyEvent-java" class="headerlink" title="事件（MyEvent.java)"></a>事件（MyEvent.java)</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyEvent</span> <span class="keyword">extends</span> <span class="title">ApplicationEvent</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyEvent</span><span class="params">(ApplicationContext source)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(source);</span><br><span class="line">        System.out.println(<span class="string">"MyEvent 构造器执行"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">echo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"模拟业务逻辑执行"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="事件监听（MyListenerA-java、MyListenerB-java）"><a href="#事件监听（MyListenerA-java、MyListenerB-java）" class="headerlink" title="事件监听（MyListenerA.java、MyListenerB.java）"></a>事件监听（MyListenerA.java、MyListenerB.java）</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyListenerA</span> <span class="keyword">implements</span> <span class="title">ApplicationListener</span>&lt;<span class="title">MyEvent</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onApplicationEvent</span><span class="params">(MyEvent myEvent)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"MyListenerA"</span>);</span><br><span class="line">        myEvent.echo();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyListenerB</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@EventListener</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onApplicationEvent</span><span class="params">(MyEvent myEvent)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"MyListenerB"</span>);</span><br><span class="line">        myEvent.echo();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="事件发布（MyPublisher-java）"><a href="#事件发布（MyPublisher-java）" class="headerlink" title="事件发布（MyPublisher.java）"></a>事件发布（MyPublisher.java）</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyPublisher</span> <span class="keyword">implements</span> <span class="title">ApplicationContextAware</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ApplicationContext applicationContext;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setApplicationContext</span><span class="params">(ApplicationContext applicationContext)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.applicationContext = applicationContext;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 发布事件</span></span><br><span class="line"><span class="comment">     * 监听该事件的监听者都可以获取消息</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> myEvent</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">publisherEvent</span><span class="params">(MyEvent myEvent)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"---开始发布 myEvent 事件---"</span>);</span><br><span class="line">        applicationContext.publishEvent(myEvent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="单元测试"><a href="#单元测试" class="headerlink" title="单元测试"></a>单元测试</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@RunWith</span>(SpringRunner<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">SpringBootTest</span></span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">DesignPatternsApplicationTests</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MyPublisher myPublisher;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MyEvent myEvent;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">contextLoads</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        myPublisher.publisherEvent(myEvent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>设计模式</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Spring Security（11）－OAuth协议简介</title>
     <url>/2019/06/11/Spring%20Security%EF%BC%8811%EF%BC%89%EF%BC%8DOAuth%E5%8D%8F%E8%AE%AE%E7%AE%80%E4%BB%8B/</url>
     <content><![CDATA[<p>概览：</p>
@@ -937,21 +937,6 @@ public class EvolutionaryExpiredSessionStrategy implements SessionInformationExp
       </tags>
   </entry>
   <entry>
-    <title>使用jdk自带工具jvisualvm查看.hprof文件</title>
-    <url>/2019/06/10/%E4%BD%BF%E7%94%A8jdk%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7jvisualvm%E6%9F%A5%E7%9C%8B.hprof%E6%96%87%E4%BB%B6/</url>
-    <content><![CDATA[<p>使用jdk自带的jvisualvm.exe程序来查看内存溢出文件</p>
-<p>位置：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$JAVA_HOME&#x2F;bin&#x2F;jvisualvm</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>JVM</category>
-      </categories>
-      <tags>
-        <tag>工具</tag>
-        <tag>JVM</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>策略模式</title>
     <url>/2019/06/10/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/</url>
     <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p>
@@ -980,6 +965,21 @@ public class EvolutionaryExpiredSessionStrategy implements SessionInformationExp
       </categories>
       <tags>
         <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用jdk自带工具jvisualvm查看.hprof文件</title>
+    <url>/2019/06/10/%E4%BD%BF%E7%94%A8jdk%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7jvisualvm%E6%9F%A5%E7%9C%8B.hprof%E6%96%87%E4%BB%B6/</url>
+    <content><![CDATA[<p>使用jdk自带的jvisualvm.exe程序来查看内存溢出文件</p>
+<p>位置：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$JAVA_HOME&#x2F;bin&#x2F;jvisualvm</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>JVM</category>
+      </categories>
+      <tags>
+        <tag>JVM</tag>
+        <tag>工具</tag>
       </tags>
   </entry>
   <entry>
@@ -1336,28 +1336,6 @@ public class DemoImageCodeGenerator implements ValidateCodeGenerator {
       </tags>
   </entry>
   <entry>
-    <title>适配器模式</title>
-    <url>/2019/06/06/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/</url>
-    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p>
-<p><img src="http://blog-pic-1254088127.cos.ap-shanghai.myqcloud.com/spring%E9%85%8D%E7%BD%AE%E4%BD%BF%E7%94%A8%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8Fdemo.jpg?sign=q-sign-algorithm%3Dsha1%26q-ak%3DAKIDXqq06t5vKykkmYS4RVyUdv4qVMUzspuR%26q-sign-time%3D1587048720%3B1587052380%26q-key-time%3D1587048720%3B1587052380%26q-header-list%3Dhost%26q-url-param-list%3D%26q-signature%3D0aef3886622ce1d4088e519dc6dedb0eac5eab4d&x-cos-security-token=f8cb0d55796632de0f57d4f78910c80f3172c8b310001" alt="spring适配器模式demo"></p>
-<h1 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h1><p>将一个类的接口，转换成客户期望的另一个接口。适配器让原本不兼容的接口可以合作无间。</p>
-<h1 id="对象适配器"><a href="#对象适配器" class="headerlink" title="对象适配器"></a>对象适配器</h1><ul>
-<li>采用组合模式</li>
-<li>不仅可以适配某类，还可以适配该类的任何子类。</li>
-</ul>
-<h1 id="类适配器"><a href="#类适配器" class="headerlink" title="类适配器"></a>类适配器</h1><ul>
-<li>采用继承模式</li>
-<li>不需要重新实现整个被适配者，必要的时候可以覆盖被适配者的行为。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>设计模式</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Spring Security（6）－图片验证码</title>
     <url>/2019/06/06/Spring%20Security%EF%BC%886%EF%BC%89%EF%BC%8D%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/</url>
     <content><![CDATA[<p>概要：</p>
@@ -1597,44 +1575,25 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
       </tags>
   </entry>
   <entry>
-    <title>Mysql（12）-Mysql事务隔离是如何实现的</title>
-    <url>/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/</url>
-    <content><![CDATA[<h1 id="事务的启动时机。"><a href="#事务的启动时机。" class="headerlink" title="事务的启动时机。"></a>事务的启动时机。</h1><p>begin/start transaction 命令并不是一个事务的起点，在执行到它们之后的第一个操作 InnoDB 表的语句，事务才真正启动。如果你想要马上启动一个事务，可以使用 start transaction with consistent snapshot 这个命令。</p>
-<p>第一种启动方式，一致性视图是在第执行第一个快照读语句时创建的；<br>第二种启动方式，一致性视图是在执行 start transaction with consistent snapshot 时创建的。</p>
-<h1 id="在-MySQL-里，有两个“视图”的概念"><a href="#在-MySQL-里，有两个“视图”的概念" class="headerlink" title="在 MySQL 里，有两个“视图”的概念"></a>在 MySQL 里，有两个“视图”的概念</h1><p>一个是 view。它是一个用查询语句定义的虚拟表，在调用的时候执行查询语句并生成结果。创建视图的语法是 create view … ，而它的查询方法与表一样。</p>
-<p>另一个是 InnoDB 在实现 MVCC 时用到的一致性读视图，即 consistent read view，用于支持 RC（Read Committed，读提交）和 RR（Repeatable Read，可重复读）隔离级别的实现。</p>
-<h1 id="“快照”在-MVCC-里是怎么工作的？"><a href="#“快照”在-MVCC-里是怎么工作的？" class="headerlink" title="“快照”在 MVCC 里是怎么工作的？"></a>“快照”在 MVCC 里是怎么工作的？</h1><p>在可重复读隔离级别下，事务在启动的时候就“拍了个快照”。注意，这个快照是基于整库的。</p>
-<p>InnoDB 里面每个事务有一个唯一的事务 ID，叫作 transaction id。它是在事务开始的时候向 InnoDB 的事务系统申请的，是按申请顺序严格递增的。</p>
-<p>而每行数据也都是有多个版本的。每次事务更新数据的时候，都会生成一个新的数据版本，并且把 transaction id 赋值给这个数据版本的事务 ID，记为 row trx_id。同时，旧的数据版本要保留，并且在新的数据版本中，能够有信息可以直接拿到它。</p>
-<p>也就是说，数据表中的一行记录，其实可能有多个版本 (row)，每个版本有自己的 row trx_id。</p>
-<p><img src="http://blog-pic-1254088127.cos.ap-shanghai.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg?sign=q-sign-algorithm%3Dsha1%26q-ak%3DAKIDyTYbLG4mUJ84SNtqHkjzHrxydi2l12xN%26q-sign-time%3D1586963672%3B1586967332%26q-key-time%3D1586963672%3B1586967332%26q-header-list%3Dhost%26q-url-param-list%3D%26q-signature%3D507f015585dfe3a66deae7caae1270f63ee4e7cd&x-cos-security-token=f443764a28aa591ab8000504f69ebfb2abf31ba910001" alt="Mysql数据MVVC"></p>
-<p>中的三个虚线箭头，就是 undo log；而 V1、V2、V3 并不是物理上真实存在的，而是每次需要的时候根据当前版本和 undo log 计算出来的。比如，需要 V2 的时候，就是通过 V4 依次执行 U3、U2 算出来。</p>
-<p>可重复读的定义：一个事务启动的时候，能够看到所有已经提交的事务结果。但是之后，这个事务执行期间，其他事务的更新对它不可见。</p>
-<p>因此，一个事务只需要在启动的时候声明说，“以我启动的时刻为准，如果一个数据版本是在我启动之前生成的，就认；如果是我启动以后才生成的，我就不认，我必须要找到它的上一个版本”。</p>
-<p>一个数据版本，对于一个事务视图来说，除了自己的更新总是可见以外，有三种情况：</p>
-<ol>
-<li>版本未提交，不可见；</li>
-<li>版本已提交，但是是在视图创建后提交的，不可见；</li>
-<li>版本已提交，而且是在视图创建前提交的，可见。</li>
-</ol>
-<p>更新数据都是先读后写的，而这个读，只能读当前的值，称为“当前读”（current read）。</p>
-<p>这里我们提到了一个概念，叫作当前读。其实，除了 update 语句外，select 语句如果加锁，也是当前读。</p>
-<h1 id="事务的可重复读的能力是怎么实现的？"><a href="#事务的可重复读的能力是怎么实现的？" class="headerlink" title="事务的可重复读的能力是怎么实现的？"></a>事务的可重复读的能力是怎么实现的？</h1><p>可重复读的核心就是一致性读（consistent read）；而事务更新数据的时候，只能用当前读。如果当前的记录的行锁被其他事务占用的话，就需要进入锁等待。</p>
-<h1 id="读提交的逻辑和可重复读的区别"><a href="#读提交的逻辑和可重复读的区别" class="headerlink" title="读提交的逻辑和可重复读的区别"></a>读提交的逻辑和可重复读的区别</h1><p>在可重复读隔离级别下，只需要在事务开始的时候创建一致性视图，之后事务里的其他查询都共用这个一致性视图；</p>
-<p>在读提交隔离级别下，每一个语句执行前都会重新算出一个新的视图。</p>
-<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>InnoDB 的行数据有多个版本，每个数据版本有自己的 row trx_id，每个事务或者语句有自己的一致性视图。普通查询语句是一致性读，一致性读会根据 row trx_id 和一致性视图确定数据版本的可见性。</p>
-<ul>
-<li>对于可重复读，查询只承认在事务启动前就已经提交完成的数据；</li>
-<li>对于读提交，查询只承认在语句启动前就已经提交完成的数据；</li>
-<li>而当前读，总是读取已经提交完成的最新版本。</li>
+    <title>适配器模式</title>
+    <url>/2019/06/06/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p>
+<p><img src="http://blog-pic-1254088127.cos.ap-shanghai.myqcloud.com/spring%E9%85%8D%E7%BD%AE%E4%BD%BF%E7%94%A8%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8Fdemo.jpg?sign=q-sign-algorithm%3Dsha1%26q-ak%3DAKIDXqq06t5vKykkmYS4RVyUdv4qVMUzspuR%26q-sign-time%3D1587048720%3B1587052380%26q-key-time%3D1587048720%3B1587052380%26q-header-list%3Dhost%26q-url-param-list%3D%26q-signature%3D0aef3886622ce1d4088e519dc6dedb0eac5eab4d&x-cos-security-token=f8cb0d55796632de0f57d4f78910c80f3172c8b310001" alt="spring适配器模式demo"></p>
+<h1 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h1><p>将一个类的接口，转换成客户期望的另一个接口。适配器让原本不兼容的接口可以合作无间。</p>
+<h1 id="对象适配器"><a href="#对象适配器" class="headerlink" title="对象适配器"></a>对象适配器</h1><ul>
+<li>采用组合模式</li>
+<li>不仅可以适配某类，还可以适配该类的任何子类。</li>
+</ul>
+<h1 id="类适配器"><a href="#类适配器" class="headerlink" title="类适配器"></a>类适配器</h1><ul>
+<li>采用继承模式</li>
+<li>不需要重新实现整个被适配者，必要的时候可以覆盖被适配者的行为。</li>
 </ul>
 ]]></content>
       <categories>
-        <category>DB</category>
+        <category>设计模式</category>
       </categories>
       <tags>
-        <tag>Mysql</tag>
-        <tag>事务</tag>
+        <tag>设计模式</tag>
       </tags>
   </entry>
   <entry>
@@ -1800,6 +1759,47 @@ public Object getCurrentUserToo(@AuthenticationPrincipal UserDetails userDetails
       </categories>
       <tags>
         <tag>Spring-Security</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mysql（12）-Mysql事务隔离是如何实现的</title>
+    <url>/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/</url>
+    <content><![CDATA[<h1 id="事务的启动时机。"><a href="#事务的启动时机。" class="headerlink" title="事务的启动时机。"></a>事务的启动时机。</h1><p>begin/start transaction 命令并不是一个事务的起点，在执行到它们之后的第一个操作 InnoDB 表的语句，事务才真正启动。如果你想要马上启动一个事务，可以使用 start transaction with consistent snapshot 这个命令。</p>
+<p>第一种启动方式，一致性视图是在第执行第一个快照读语句时创建的；<br>第二种启动方式，一致性视图是在执行 start transaction with consistent snapshot 时创建的。</p>
+<h1 id="在-MySQL-里，有两个“视图”的概念"><a href="#在-MySQL-里，有两个“视图”的概念" class="headerlink" title="在 MySQL 里，有两个“视图”的概念"></a>在 MySQL 里，有两个“视图”的概念</h1><p>一个是 view。它是一个用查询语句定义的虚拟表，在调用的时候执行查询语句并生成结果。创建视图的语法是 create view … ，而它的查询方法与表一样。</p>
+<p>另一个是 InnoDB 在实现 MVCC 时用到的一致性读视图，即 consistent read view，用于支持 RC（Read Committed，读提交）和 RR（Repeatable Read，可重复读）隔离级别的实现。</p>
+<h1 id="“快照”在-MVCC-里是怎么工作的？"><a href="#“快照”在-MVCC-里是怎么工作的？" class="headerlink" title="“快照”在 MVCC 里是怎么工作的？"></a>“快照”在 MVCC 里是怎么工作的？</h1><p>在可重复读隔离级别下，事务在启动的时候就“拍了个快照”。注意，这个快照是基于整库的。</p>
+<p>InnoDB 里面每个事务有一个唯一的事务 ID，叫作 transaction id。它是在事务开始的时候向 InnoDB 的事务系统申请的，是按申请顺序严格递增的。</p>
+<p>而每行数据也都是有多个版本的。每次事务更新数据的时候，都会生成一个新的数据版本，并且把 transaction id 赋值给这个数据版本的事务 ID，记为 row trx_id。同时，旧的数据版本要保留，并且在新的数据版本中，能够有信息可以直接拿到它。</p>
+<p>也就是说，数据表中的一行记录，其实可能有多个版本 (row)，每个版本有自己的 row trx_id。</p>
+<p><img src="http://blog-pic-1254088127.cos.ap-shanghai.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg?sign=q-sign-algorithm%3Dsha1%26q-ak%3DAKIDyTYbLG4mUJ84SNtqHkjzHrxydi2l12xN%26q-sign-time%3D1586963672%3B1586967332%26q-key-time%3D1586963672%3B1586967332%26q-header-list%3Dhost%26q-url-param-list%3D%26q-signature%3D507f015585dfe3a66deae7caae1270f63ee4e7cd&x-cos-security-token=f443764a28aa591ab8000504f69ebfb2abf31ba910001" alt="Mysql数据MVVC"></p>
+<p>中的三个虚线箭头，就是 undo log；而 V1、V2、V3 并不是物理上真实存在的，而是每次需要的时候根据当前版本和 undo log 计算出来的。比如，需要 V2 的时候，就是通过 V4 依次执行 U3、U2 算出来。</p>
+<p>可重复读的定义：一个事务启动的时候，能够看到所有已经提交的事务结果。但是之后，这个事务执行期间，其他事务的更新对它不可见。</p>
+<p>因此，一个事务只需要在启动的时候声明说，“以我启动的时刻为准，如果一个数据版本是在我启动之前生成的，就认；如果是我启动以后才生成的，我就不认，我必须要找到它的上一个版本”。</p>
+<p>一个数据版本，对于一个事务视图来说，除了自己的更新总是可见以外，有三种情况：</p>
+<ol>
+<li>版本未提交，不可见；</li>
+<li>版本已提交，但是是在视图创建后提交的，不可见；</li>
+<li>版本已提交，而且是在视图创建前提交的，可见。</li>
+</ol>
+<p>更新数据都是先读后写的，而这个读，只能读当前的值，称为“当前读”（current read）。</p>
+<p>这里我们提到了一个概念，叫作当前读。其实，除了 update 语句外，select 语句如果加锁，也是当前读。</p>
+<h1 id="事务的可重复读的能力是怎么实现的？"><a href="#事务的可重复读的能力是怎么实现的？" class="headerlink" title="事务的可重复读的能力是怎么实现的？"></a>事务的可重复读的能力是怎么实现的？</h1><p>可重复读的核心就是一致性读（consistent read）；而事务更新数据的时候，只能用当前读。如果当前的记录的行锁被其他事务占用的话，就需要进入锁等待。</p>
+<h1 id="读提交的逻辑和可重复读的区别"><a href="#读提交的逻辑和可重复读的区别" class="headerlink" title="读提交的逻辑和可重复读的区别"></a>读提交的逻辑和可重复读的区别</h1><p>在可重复读隔离级别下，只需要在事务开始的时候创建一致性视图，之后事务里的其他查询都共用这个一致性视图；</p>
+<p>在读提交隔离级别下，每一个语句执行前都会重新算出一个新的视图。</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>InnoDB 的行数据有多个版本，每个数据版本有自己的 row trx_id，每个事务或者语句有自己的一致性视图。普通查询语句是一致性读，一致性读会根据 row trx_id 和一致性视图确定数据版本的可见性。</p>
+<ul>
+<li>对于可重复读，查询只承认在事务启动前就已经提交完成的数据；</li>
+<li>对于读提交，查询只承认在语句启动前就已经提交完成的数据；</li>
+<li>而当前读，总是读取已经提交完成的最新版本。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
+        <tag>事务</tag>
       </tags>
   </entry>
   <entry>
@@ -3986,36 +3986,6 @@ OK
       </tags>
   </entry>
   <entry>
-    <title>Nginx-3：Nginx中的正则表达式</title>
-    <url>/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/</url>
-    <content><![CDATA[<p>正则表达式可以让我们匹配的功能更加强大</p>
-<h1 id="元字符"><a href="#元字符" class="headerlink" title="元字符"></a>元字符</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.   匹配除换行符之外的任意字符</span><br><span class="line">\w  匹配字母、数字、下划线或汉字</span><br><span class="line">\s  匹配任意的空白字符</span><br><span class="line">\d  匹配数字</span><br><span class="line">\b  匹配单词的开始或结束</span><br><span class="line">^   匹配字符串的开始</span><br><span class="line">$   匹配字符串的结束</span><br></pre></td></tr></table></figure>
-
-<h1 id="重复"><a href="#重复" class="headerlink" title="重复"></a>重复</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">*      重复0次或多次</span><br><span class="line">+      重复1次或多次</span><br><span class="line">？     重复0次或1次</span><br><span class="line">&#123;n&#125;    重复n次</span><br><span class="line">&#123;n,&#125;   重复n次或更多次</span><br><span class="line">&#123;n,m&#125;  重复n到m次</span><br></pre></td></tr></table></figure>
-
-<h1 id="转义符号"><a href="#转义符号" class="headerlink" title="转义符号"></a>转义符号</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">\: 取消元字符的特殊含义</span><br></pre></td></tr></table></figure>
-
-<h1 id="分组与取值"><a href="#分组与取值" class="headerlink" title="分组与取值"></a>分组与取值</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">():用来通过$方式取表达式中的值，或者进行分组</span><br></pre></td></tr></table></figure>
-
-<h1 id="pcretest"><a href="#pcretest" class="headerlink" title="pcretest"></a>pcretest</h1><p>PCRE(Perl Compatible Regular Expressions)是一个Perl库，包括 perl 兼容的正则表达式库。我们可以通过pcretest工具来测试<br>我们写的正则表达式的可用性。</p>
-<p>我们安装pcre-tools后就可以使用pcretools了：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo dnf install pcre-tools</span><br></pre></td></tr></table></figure>
-
-<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><p>原始url： /web/assets/view/salary/month-8/payslip/basicsalary.jpg<br>转换后的url： /web/assets/view/cnb-salary/payslip/basicsalary/month/8.jpg<br>匹配原始url的正则表达式：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;^\&#x2F;web\&#x2F;assets\&#x2F;view\&#x2F;salary\&#x2F;(\w+)-(\d&#123;1,2&#125;)\&#x2F;payslip\&#x2F;(\w+)\.(png|jpg|gif|jpeg|bmp)$&#x2F;</span><br><span class="line"></span><br><span class="line">rewrite ^&#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;(\w+)-(\d&#123;1,2&#125;)&#x2F;payslip&#x2F;(\w+).(png|jpg|gif|jpeg|bmp)$  &#x2F;web&#x2F;assets&#x2F;view&#x2F;cnb-salary&#x2F;payslip&#x2F;$3&#x2F;$1&#x2F;$2.$4 last;</span><br></pre></td></tr></table></figure>
-<p>我们通过pcretest进行测试</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@192 ~]$ pcretest</span><br><span class="line">PCRE version 8.43 2019-02-23</span><br><span class="line"></span><br><span class="line">  re&gt; &#x2F;^\&#x2F;web\&#x2F;assets\&#x2F;view\&#x2F;salary\&#x2F;(\w+)-(\d&#123;1,2&#125;)\&#x2F;payslip\&#x2F;(\w+)\.(png|jpg|gif|jpeg|bmp)$&#x2F;</span><br><span class="line">data&gt; &#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;month-8&#x2F;payslip&#x2F;basicsalary.jpg</span><br><span class="line"> 0: &#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;month-8&#x2F;payslip&#x2F;basicsalary.jpg</span><br><span class="line"> 1: month</span><br><span class="line"> 2: 8</span><br><span class="line"> 3: basicsalary</span><br><span class="line"> 4: jpg</span><br></pre></td></tr></table></figure>
-<p>可以看到通过正则表达式（）匹配到的各个值，然后就可以通过$1,$2…的方式使用这些值，达到rewrite的目的。</p>
-<p>注意在nginx中使用正则表达式是不需要使用反斜杠转义的，这里是为了在pcretest中测试</p>
-]]></content>
-      <categories>
-        <category>web</category>
-      </categories>
-      <tags>
-        <tag>nginx</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Nginx-2：Nginx安装</title>
     <url>/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/</url>
     <content><![CDATA[<p>安装nginx有两种方式：</p>
@@ -4085,6 +4055,36 @@ OK
 
 <p>这里最主要的nginx的二进制文件就在sbin目录下，决定nginx功能的配置文件在conf目录下</p>
 <p>以上就是nginx编译安装的全部步骤。</p>
+]]></content>
+      <categories>
+        <category>web</category>
+      </categories>
+      <tags>
+        <tag>nginx</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Nginx-3：Nginx中的正则表达式</title>
+    <url>/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/</url>
+    <content><![CDATA[<p>正则表达式可以让我们匹配的功能更加强大</p>
+<h1 id="元字符"><a href="#元字符" class="headerlink" title="元字符"></a>元字符</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.   匹配除换行符之外的任意字符</span><br><span class="line">\w  匹配字母、数字、下划线或汉字</span><br><span class="line">\s  匹配任意的空白字符</span><br><span class="line">\d  匹配数字</span><br><span class="line">\b  匹配单词的开始或结束</span><br><span class="line">^   匹配字符串的开始</span><br><span class="line">$   匹配字符串的结束</span><br></pre></td></tr></table></figure>
+
+<h1 id="重复"><a href="#重复" class="headerlink" title="重复"></a>重复</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">*      重复0次或多次</span><br><span class="line">+      重复1次或多次</span><br><span class="line">？     重复0次或1次</span><br><span class="line">&#123;n&#125;    重复n次</span><br><span class="line">&#123;n,&#125;   重复n次或更多次</span><br><span class="line">&#123;n,m&#125;  重复n到m次</span><br></pre></td></tr></table></figure>
+
+<h1 id="转义符号"><a href="#转义符号" class="headerlink" title="转义符号"></a>转义符号</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">\: 取消元字符的特殊含义</span><br></pre></td></tr></table></figure>
+
+<h1 id="分组与取值"><a href="#分组与取值" class="headerlink" title="分组与取值"></a>分组与取值</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">():用来通过$方式取表达式中的值，或者进行分组</span><br></pre></td></tr></table></figure>
+
+<h1 id="pcretest"><a href="#pcretest" class="headerlink" title="pcretest"></a>pcretest</h1><p>PCRE(Perl Compatible Regular Expressions)是一个Perl库，包括 perl 兼容的正则表达式库。我们可以通过pcretest工具来测试<br>我们写的正则表达式的可用性。</p>
+<p>我们安装pcre-tools后就可以使用pcretools了：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo dnf install pcre-tools</span><br></pre></td></tr></table></figure>
+
+<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><p>原始url： /web/assets/view/salary/month-8/payslip/basicsalary.jpg<br>转换后的url： /web/assets/view/cnb-salary/payslip/basicsalary/month/8.jpg<br>匹配原始url的正则表达式：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;^\&#x2F;web\&#x2F;assets\&#x2F;view\&#x2F;salary\&#x2F;(\w+)-(\d&#123;1,2&#125;)\&#x2F;payslip\&#x2F;(\w+)\.(png|jpg|gif|jpeg|bmp)$&#x2F;</span><br><span class="line"></span><br><span class="line">rewrite ^&#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;(\w+)-(\d&#123;1,2&#125;)&#x2F;payslip&#x2F;(\w+).(png|jpg|gif|jpeg|bmp)$  &#x2F;web&#x2F;assets&#x2F;view&#x2F;cnb-salary&#x2F;payslip&#x2F;$3&#x2F;$1&#x2F;$2.$4 last;</span><br></pre></td></tr></table></figure>
+<p>我们通过pcretest进行测试</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@192 ~]$ pcretest</span><br><span class="line">PCRE version 8.43 2019-02-23</span><br><span class="line"></span><br><span class="line">  re&gt; &#x2F;^\&#x2F;web\&#x2F;assets\&#x2F;view\&#x2F;salary\&#x2F;(\w+)-(\d&#123;1,2&#125;)\&#x2F;payslip\&#x2F;(\w+)\.(png|jpg|gif|jpeg|bmp)$&#x2F;</span><br><span class="line">data&gt; &#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;month-8&#x2F;payslip&#x2F;basicsalary.jpg</span><br><span class="line"> 0: &#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;month-8&#x2F;payslip&#x2F;basicsalary.jpg</span><br><span class="line"> 1: month</span><br><span class="line"> 2: 8</span><br><span class="line"> 3: basicsalary</span><br><span class="line"> 4: jpg</span><br></pre></td></tr></table></figure>
+<p>可以看到通过正则表达式（）匹配到的各个值，然后就可以通过$1,$2…的方式使用这些值，达到rewrite的目的。</p>
+<p>注意在nginx中使用正则表达式是不需要使用反斜杠转义的，这里是为了在pcretest中测试</p>
 ]]></content>
       <categories>
         <category>web</category>
@@ -4239,6 +4239,29 @@ OK
       </tags>
   </entry>
   <entry>
+    <title>SeLinux</title>
+    <url>/2019/03/20/SeLinux/</url>
+    <content><![CDATA[<p>一、关闭SeLinux</p>
+<p>查看SELinux状态：</p>
+<p>1、/usr/sbin/sestatus -v      ##如果SELinux status参数为enabled即为开启状态</p>
+<p>SELinux status:                 enabled</p>
+<p>2、getenforce                 ##也可以用这个命令检查</p>
+<p>关闭SELinux：</p>
+<p>1、临时关闭（不用重启机器）：</p>
+<p>setenforce 0                  ##设置SELinux 成为permissive模式</p>
+<p>##setenforce 1 设置SELinux 成为enforcing模式</p>
+<p>2、修改配置文件需要重启机器：</p>
+<p>修改/etc/selinux/config 文件</p>
+<p>将SELINUX=enforcing改为SELINUX=disabled</p>
+<p>重启机器即可</p>
+<p>二、执行下面的命令</p>
+<p>setsebool -P httpd_can_network_connect 1</p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+  </entry>
+  <entry>
     <title>Nginx-1：基本概念</title>
     <url>/2019/03/20/Nginx-1%EF%BC%9A%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</url>
     <content><![CDATA[<h1 id="Nginx组成"><a href="#Nginx组成" class="headerlink" title="Nginx组成"></a>Nginx组成</h1><h2 id="Ngnix二进制可执行文件"><a href="#Ngnix二进制可执行文件" class="headerlink" title="Ngnix二进制可执行文件"></a>Ngnix二进制可执行文件</h2><p>由各模块源码编译出来的一个文件</p>
@@ -4281,29 +4304,6 @@ OK
       <tags>
         <tag>nginx</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>SeLinux</title>
-    <url>/2019/03/20/SeLinux/</url>
-    <content><![CDATA[<p>一、关闭SeLinux</p>
-<p>查看SELinux状态：</p>
-<p>1、/usr/sbin/sestatus -v      ##如果SELinux status参数为enabled即为开启状态</p>
-<p>SELinux status:                 enabled</p>
-<p>2、getenforce                 ##也可以用这个命令检查</p>
-<p>关闭SELinux：</p>
-<p>1、临时关闭（不用重启机器）：</p>
-<p>setenforce 0                  ##设置SELinux 成为permissive模式</p>
-<p>##setenforce 1 设置SELinux 成为enforcing模式</p>
-<p>2、修改配置文件需要重启机器：</p>
-<p>修改/etc/selinux/config 文件</p>
-<p>将SELINUX=enforcing改为SELINUX=disabled</p>
-<p>重启机器即可</p>
-<p>二、执行下面的命令</p>
-<p>setsebool -P httpd_can_network_connect 1</p>
-]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
   </entry>
   <entry>
     <title>Linux笔记</title>
@@ -4657,6 +4657,47 @@ echo $PATH  //记录命令的搜索路径</code></pre></li>
       </categories>
   </entry>
   <entry>
+    <title>Linux使用私钥公钥(Public key)登录 - 免密码登录</title>
+    <url>/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/</url>
+    <content><![CDATA[<p>为了更安全、方便的登录Linux服务器，可以取消密码登录，使用私钥公钥的方式来登录，更方便也更安全。</p>
+<h1 id="生成密钥（客户端机器）"><a href="#生成密钥（客户端机器）" class="headerlink" title="生成密钥（客户端机器）"></a>生成密钥（客户端机器）</h1><pre><code>ssh-keygen -t [rsa|dsa] -P &apos;&apos;</code></pre><p>直接ssh-keygen然后三次回车就可以了。<br>-P表示密码，-P ‘’ 就表示空密码，也可以不用-P参数，这样就要三车回车，用-P就一次回车。<br>它在/home/chenlb下生成.ssh目录，.ssh下有id_rsa和id_rsa.pub这样一对公私钥。</p>
+<h1 id="上传公钥到服务器端"><a href="#上传公钥到服务器端" class="headerlink" title="上传公钥到服务器端"></a>上传公钥到服务器端</h1><p>先在服务器对应用户目录下创建~/.ssh/authorized_keys目录（如果目录已存在，这一步会被略过）</p>
+<p>ssh richey@host mkdir -p .ssh/authorized_keys</p>
+<p>把客户端的公钥_rsa.pub复制到服务器端机器的.ssh/authorized_keys文件里</p>
+<pre><code>* 可以用scp复制到服务器，然后再从服务器中把从客户端复制的id_rsa.pub添加到.ssh/authorzied_keys文件里。
+
+    scp .ssh/id_rsa.pub  richey@45.xx.xx.16:/home/richey/id_rsa.pub
+
+* 或者
+
+    cat .ssh/id_rsa.pub | ssh richey@hostB &apos;cat &gt;&gt; .ssh/authorized_keys&apos;</code></pre><ul>
+<li><p>上述的创建目录并复制的操作也可以通过一个 ssh-copy-id 命令一步完成：    </p>
+<pre><code>ssh-copy-id -i ~/.ssh/id_rsa.pub aliceB@hostB</code></pre></li>
+<li><p>authorized_keys的权限要是600。</p>
+<pre><code>chmod 600 .ssh/authorized_keys</code></pre></li>
+</ul>
+<h1 id="修改SSH的配置文件"><a href="#修改SSH的配置文件" class="headerlink" title="修改SSH的配置文件"></a>修改SSH的配置文件</h1><p>配置文件位置</p>
+<pre><code>/etc/ssh/sshd_config :
+
+#RSAAuthentication yes
+#PubkeyAuthentication yes
+#AuthorizedKeysFile .ssh/authorized_keys</code></pre><p>去调上面3行前面的#，保存后重启SSH服务。</p>
+<pre><code>使用SYSVINIT初始化系统的Linux系统：service sshd restart
+使用SYSTEMD初始化系统的Linux系统：systemctl restart sshd</code></pre><p>至此服务器端已经支持使用SSH私钥证书登录。</p>
+<h1 id="关闭root用户使用密码登陆"><a href="#关闭root用户使用密码登陆" class="headerlink" title="关闭root用户使用密码登陆"></a>关闭root用户使用密码登陆</h1><p>在使用SSH Key登录验证成功后，还是为了安全，建议关闭root用户使用密码登陆，关闭的方法如下：</p>
+<p>修改SSH的配置文件/etc/ssh/sshd_config，找到下面1行：</p>
+<pre><code>PasswordAuthentication yes</code></pre><p>修改为：</p>
+<pre><code>PasswordAuthentication no</code></pre><p>保存后重启SSH服务。</p>
+<pre><code>service sshd restart</code></pre><p>好了，至此只要你保存好你的私钥（为安全，建议删除服务器端的私钥），你的服务器相比原来使用root用户加密码登陆来说已经安全多了。</p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>ssh</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Linux常用命令</title>
     <url>/2019/03/12/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
     <content><![CDATA[<h4 id="1、查找文件"><a href="#1、查找文件" class="headerlink" title="1、查找文件"></a>1、查找文件</h4><pre><code>find . -name &quot;*.xml&quot; 递归查找所有的xml文件
@@ -4702,47 +4743,6 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
       <categories>
         <category>Linux</category>
       </categories>
-  </entry>
-  <entry>
-    <title>Linux使用私钥公钥(Public key)登录 - 免密码登录</title>
-    <url>/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/</url>
-    <content><![CDATA[<p>为了更安全、方便的登录Linux服务器，可以取消密码登录，使用私钥公钥的方式来登录，更方便也更安全。</p>
-<h1 id="生成密钥（客户端机器）"><a href="#生成密钥（客户端机器）" class="headerlink" title="生成密钥（客户端机器）"></a>生成密钥（客户端机器）</h1><pre><code>ssh-keygen -t [rsa|dsa] -P &apos;&apos;</code></pre><p>直接ssh-keygen然后三次回车就可以了。<br>-P表示密码，-P ‘’ 就表示空密码，也可以不用-P参数，这样就要三车回车，用-P就一次回车。<br>它在/home/chenlb下生成.ssh目录，.ssh下有id_rsa和id_rsa.pub这样一对公私钥。</p>
-<h1 id="上传公钥到服务器端"><a href="#上传公钥到服务器端" class="headerlink" title="上传公钥到服务器端"></a>上传公钥到服务器端</h1><p>先在服务器对应用户目录下创建~/.ssh/authorized_keys目录（如果目录已存在，这一步会被略过）</p>
-<p>ssh richey@host mkdir -p .ssh/authorized_keys</p>
-<p>把客户端的公钥_rsa.pub复制到服务器端机器的.ssh/authorized_keys文件里</p>
-<pre><code>* 可以用scp复制到服务器，然后再从服务器中把从客户端复制的id_rsa.pub添加到.ssh/authorzied_keys文件里。
-
-    scp .ssh/id_rsa.pub  richey@45.xx.xx.16:/home/richey/id_rsa.pub
-
-* 或者
-
-    cat .ssh/id_rsa.pub | ssh richey@hostB &apos;cat &gt;&gt; .ssh/authorized_keys&apos;</code></pre><ul>
-<li><p>上述的创建目录并复制的操作也可以通过一个 ssh-copy-id 命令一步完成：    </p>
-<pre><code>ssh-copy-id -i ~/.ssh/id_rsa.pub aliceB@hostB</code></pre></li>
-<li><p>authorized_keys的权限要是600。</p>
-<pre><code>chmod 600 .ssh/authorized_keys</code></pre></li>
-</ul>
-<h1 id="修改SSH的配置文件"><a href="#修改SSH的配置文件" class="headerlink" title="修改SSH的配置文件"></a>修改SSH的配置文件</h1><p>配置文件位置</p>
-<pre><code>/etc/ssh/sshd_config :
-
-#RSAAuthentication yes
-#PubkeyAuthentication yes
-#AuthorizedKeysFile .ssh/authorized_keys</code></pre><p>去调上面3行前面的#，保存后重启SSH服务。</p>
-<pre><code>使用SYSVINIT初始化系统的Linux系统：service sshd restart
-使用SYSTEMD初始化系统的Linux系统：systemctl restart sshd</code></pre><p>至此服务器端已经支持使用SSH私钥证书登录。</p>
-<h1 id="关闭root用户使用密码登陆"><a href="#关闭root用户使用密码登陆" class="headerlink" title="关闭root用户使用密码登陆"></a>关闭root用户使用密码登陆</h1><p>在使用SSH Key登录验证成功后，还是为了安全，建议关闭root用户使用密码登陆，关闭的方法如下：</p>
-<p>修改SSH的配置文件/etc/ssh/sshd_config，找到下面1行：</p>
-<pre><code>PasswordAuthentication yes</code></pre><p>修改为：</p>
-<pre><code>PasswordAuthentication no</code></pre><p>保存后重启SSH服务。</p>
-<pre><code>service sshd restart</code></pre><p>好了，至此只要你保存好你的私钥（为安全，建议删除服务器端的私钥），你的服务器相比原来使用root用户加密码登陆来说已经安全多了。</p>
-]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
-      <tags>
-        <tag>ssh</tag>
-      </tags>
   </entry>
   <entry>
     <title>Linux下iptables 禁止端口和开放端口</title>
@@ -4803,27 +4803,6 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
       </categories>
       <tags>
         <tag>iptables</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>hexo命令</title>
-    <url>/2019/03/08/hexo%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<ul>
-<li><p>hexo g 生成静态文件</p>
-</li>
-<li><p>hexo s 启动本地服务</p>
-</li>
-<li><p>hexo clean 清除缓存文件(db.json)和已生成的静态文件(public)</p>
-</li>
-<li><p>hexo g -d 生成文件并部署到github</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>其它</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -5039,6 +5018,27 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
       </categories>
       <tags>
         <tag>lambda</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hexo命令</title>
+    <url>/2019/03/08/hexo%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<ul>
+<li><p>hexo g 生成静态文件</p>
+</li>
+<li><p>hexo s 启动本地服务</p>
+</li>
+<li><p>hexo clean 清除缓存文件(db.json)和已生成的静态文件(public)</p>
+</li>
+<li><p>hexo g -d 生成文件并部署到github</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>其它</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
