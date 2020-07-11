@@ -1,0 +1,578 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Richey&#39;s Blog</title>
+  
+  <subtitle>面朝大海，春暖花开</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://10000hours.top/"/>
+  <updated>2020-07-11T05:31:13.556Z</updated>
+  <id>http://10000hours.top/</id>
+  
+  <author>
+    <name>Richey Liu</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Mysql（14）-Mysql位（bit）数据类型</title>
+    <link href="http://10000hours.top/2020/06/07/Mysql%EF%BC%8814%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/"/>
+    <id>http://10000hours.top/2020/06/07/Mysql%EF%BC%8814%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/</id>
+    <published>2020-06-06T16:00:00.000Z</published>
+    <updated>2020-07-11T05:31:13.556Z</updated>
+    
+    <content type="html"><![CDATA[<p>最近在线上碰到了一个诡异的问题，线上有个业务模块突然查询不出数据。问题反馈的时候是上午，前一天晚上进行了上线操作，基本可以判断跟上线有关系。</p><h1 id="问题定位"><a href="#问题定位" class="headerlink" title="问题定位"></a>问题定位</h1><p>先看日志，没有任何报错，接口都能正常返回。并且此处没有降级机制，arthas跟踪到数据库查询确实没有返回。</p><p>拿到具体的生产查询sql，直接在生产数据库查询，没有结果。但是同样的sql放到beta可以查询出结果。</p><p>这里基本可以定位到是sql查询的问题了。</p><p>先分析了下sql，简单的单表查询，where里有四个查询条件，其中一个字段引起了注意，如下：</p><p>select * from table_staff where companyId = ‘demo-companyId’ and isDelete = ‘0’;</p><p>isDelte在业务中是一个boolean类型，对应数据库中用的是位数据类型：bit(1)，首先尝试将查询条件isDelete=’0’改为isDelete=0或者isDelete=false，<br>可以在生产数据库查出结果。</p><p>进一步比对生产和beta环境该表的DDL，发现isDelete字段的数据类型是一致的，但是生产比beta数据库多了一个索引 idx_companId_isDelete(companyId和isDelete的一个联合索引，而且不是唯一索引)，<br>基本确认索引问题导致。</p><p>此时运维确认这个索引是前天晚上上线，为了提高跑批效率手动在生产加上去的，删掉idx_companId_isDelete索引后问题解决。</p><h1 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h1><p>首先肯定是走了索引，导致数据查询不出来</p><p>数据库中isDelete数据类型是bit(1),查询该类型的知识点：</p><blockquote><p>MySQL有少数几种存储类型使用紧凑的位存储数据。所有这些位类型，不管底层存储格式和处理方式如何，从技术上来说都是字符串类型。<br>MySQL把bit类型当作字符串类型，而不是数字类型。当检索BIT(1)的值时，结果是一个包含二进制0或者1值的字符串，而不是ASCII码的“0”或者“1”。<br>–《高性能MySQL》 P123 4.1.5-位数据类型</p></blockquote><p>MySQL把bit类型当作字符串类型，所以上例中当我们加了一个字符串索引，并且查询条件也使用的字符串查询时（isDelete=’0’），命中索引。而当我们把引号去掉或者使用false时（isDelete=0或isDelete=false）索引失效，进行了全表扫描。</p><p>问题在于，正常字符串索引即便是查询中使用了数字，也无非就是索引失效走全表扫描，不会查不出数据，这里明显是bit(1)数据类型的问题。</p><h1 id="场景还原"><a href="#场景还原" class="headerlink" title="场景还原"></a>场景还原</h1><p>在uat库加了跟生产同样的索引，还原了数据查询不出来的场景。</p><p>Explain 看了下命中索引是的执行计划，Extra中看到这样的描述</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Impossible WHERE noticed after reading const tables</span><br></pre></td></tr></table></figure><p>走了常量表，查询mysql Manual，发现了对这段描述的解释：</p><p>![Mysql-extra-impossible](<a href="http://blog-pic-1254088127.picsh.myqcloud.com/mysql-impossible-const.png）" target="_blank" rel="noopener">http://blog-pic-1254088127.picsh.myqcloud.com/mysql-impossible-const.png）</a></p><p>但是，上例中的查询并不符合这段解释中的要求</p><p>![Mysql索引常量](<a href="http://blog-pic-1254088127.picsh.myqcloud.com/mysql-index-const.png）" target="_blank" rel="noopener">http://blog-pic-1254088127.picsh.myqcloud.com/mysql-index-const.png）</a></p><h1 id="实践和结论"><a href="#实践和结论" class="headerlink" title="实践和结论"></a>实践和结论</h1><p>MySQL官方文档及其它资料中找不到合理的解释，这里给个实践结论。</p><p>对bit类型的字段的查询：</p><ul><li>不使用索引<br>查询bit的参数值是无论是数值还是字符，mysql都会进行类型转化,将字符转换为数值，并比较数值对应的ascii码</li><li>使用索引<br>检索BIT(1)列的值, 索引存的结果是一个字符串且内容是二进制位0或1, 而不是ASCII值”0″或”1″. 这就导致了为什么我们使用ASCII值”0”没有查询出结果。</li></ul><p>简言之：bit类型索引里存的是二进制类型的值（位类型bit），我们查询参数给的是ASCII码值</p><p>结论：<br>1、定义为text和image和bit数据类型的列不应该增加索引<br>2、加完索引一定要explain看一下<br>3、使用unsigned tinyint代替bit(1) 来表示是否<br>   @Column(columnDefinition= “TINYINT”,length = 1)    暂未验证</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;最近在线上碰到了一个诡异的问题，线上有个业务模块突然查询不出数据。问题反馈的时候是上午，前一天晚上进行了上线操作，基本可以判断跟上线有关系。&lt;/p&gt;
+&lt;h1 id=&quot;问题定位&quot;&gt;&lt;a href=&quot;#问题定位&quot; class=&quot;headerlink&quot; title=&quot;问题定位&quot;&gt;
+      
+    
+    </summary>
+    
+    
+      <category term="DB" scheme="http://10000hours.top/categories/DB/"/>
+    
+    
+      <category term="Mysql" scheme="http://10000hours.top/tags/Mysql/"/>
+    
+      <category term="索引" scheme="http://10000hours.top/tags/%E7%B4%A2%E5%BC%95/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Mysql-监控工具-innotop</title>
+    <link href="http://10000hours.top/2020/05/29/Mysql-%E7%9B%91%E6%8E%A7%E5%B7%A5%E5%85%B7-innotop/"/>
+    <id>http://10000hours.top/2020/05/29/Mysql-%E7%9B%91%E6%8E%A7%E5%B7%A5%E5%85%B7-innotop/</id>
+    <published>2020-05-28T16:00:00.000Z</published>
+    <updated>2020-07-11T05:31:13.471Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+      <category term="DB" scheme="http://10000hours.top/categories/DB/"/>
+    
+    
+      <category term="Mysql" scheme="http://10000hours.top/tags/Mysql/"/>
+    
+      <category term="工具" scheme="http://10000hours.top/tags/%E5%B7%A5%E5%85%B7/"/>
+    
+      <category term="监控" scheme="http://10000hours.top/tags/%E7%9B%91%E6%8E%A7/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>jvm工具-堆-jmap</title>
+    <link href="http://10000hours.top/2020/03/01/jvm%E5%B7%A5%E5%85%B7-%E5%A0%86-jmap/"/>
+    <id>http://10000hours.top/2020/03/01/jvm%E5%B7%A5%E5%85%B7-%E5%A0%86-jmap/</id>
+    <published>2020-02-29T16:00:00.000Z</published>
+    <updated>2020-05-27T16:46:52.610Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="将-JAVA-HOME-bin添加到当前环境变量"><a href="#将-JAVA-HOME-bin添加到当前环境变量" class="headerlink" title="将$JAVA_HOME/bin添加到当前环境变量"></a>将$JAVA_HOME/bin添加到当前环境变量</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">PATH=<span class="variable">$PATH</span>:<span class="variable">$JAVA_HOME</span>/bin</span></span><br><span class="line"><span class="meta">#</span><span class="bash">env  查看环境变量</span></span><br></pre></td></tr></table></figure><h1 id="什么时候使用"><a href="#什么时候使用" class="headerlink" title="什么时候使用"></a>什么时候使用</h1><p>当服务发生GC问题时，一般会使用jmap工具进行分析.</p><h1 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h1><ul><li>查看堆各个对象的数量、大小</li><li>dump堆里的对象信息,然后可以使用MAT等工具分析</li><li>查看堆的配置情况和GC算法</li><li>查看堆永久代信息</li></ul><h1 id="jmap命令"><a href="#jmap命令" class="headerlink" title="jmap命令"></a>jmap命令</h1><h2 id="jmap-histo-live-less"><a href="#jmap-histo-live-less" class="headerlink" title="jmap -histo[:live]  |less"></a>jmap -histo[:live] <pid> |less</h2><p>-histo：打印当前java堆中各个对象的数量、大小，添加了live，只会打印活跃的对象。</p><p>这个命令执行，JVM会先触发gc，然后再统计信息。</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">查看对象数最多的对象，并按降序排序输出：</span><br><span class="line">jmap -histo &lt;pid&gt;|grep alibaba|sort -k <span class="number">2</span> -g -r|less</span><br><span class="line"></span><br><span class="line">查看占用内存最多的最象，并按降序排序输出：</span><br><span class="line">jmap -histo &lt;pid&gt;|grep alibaba|sort -k <span class="number">3</span> -g -r|less</span><br></pre></td></tr></table></figure><h2 id="jmap-dump-live-format-b-file"><a href="#jmap-dump-live-format-b-file" class="headerlink" title="jmap -dump:[live,]format=b,file= "></a>jmap -dump:[live,]format=b,file=<filename> <pid></h2><p>-dump：把java堆中的对象dump到本地文件，然后使用MAT进行分析。如果添加了live，只会dump活跃的对象。</p><p>这个命令执行，JVM会将整个heap的信息dump写入到一个文件，heap如果比较大的话，就会导致这个过程比较耗时，并且执行的过程中为了保证dump的信息是可靠的，所以会暂停应用。</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">使用hprof二进制形式,输出jvm的heap内容到文件</span><br><span class="line">[richey<span class="meta">@localhost</span> ~]$ jmap -dump:live,format=b,file=jmap.hprof <span class="number">6274</span></span><br><span class="line">Dumping heap to /home/richey/jmap.hprof ...</span><br><span class="line">Heap dump file created</span><br></pre></td></tr></table></figure><h2 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h2><h2 id="让JVM在遇到OOM-OutOfMemoryError-时生成Dump文件"><a href="#让JVM在遇到OOM-OutOfMemoryError-时生成Dump文件" class="headerlink" title="让JVM在遇到OOM(OutOfMemoryError)时生成Dump文件"></a>让JVM在遇到OOM(OutOfMemoryError)时生成Dump文件</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/path/to/heap/dump</span><br></pre></td></tr></table></figure><blockquote><p>Error attaching to process: sun.jvm.hotspot.debugger.DebuggerException: Can’t attach to the process<br>在ubuntu中第一次使用jmap会报错：Error attaching to process: sun.jvm.hotspot.debugger.DebuggerException: Can’t attach to the process，这是oracla文档中提到的一个bug:<a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7050524,解决方式如下：" target="_blank" rel="noopener">http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7050524,解决方式如下：</a></p></blockquote><blockquote><p>echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope 该方法在下次重启前有效。</p></blockquote><blockquote><p>永久有效方法 sudo vi /etc/sysctl.d/10-ptrace.conf 编辑下面这行: kernel.yama.ptrace_scope = 1 修改为: kernel.yama.ptrace_scope = 0 重启系统，使修改生效。</p></blockquote>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;将-JAVA-HOME-bin添加到当前环境变量&quot;&gt;&lt;a href=&quot;#将-JAVA-HOME-bin添加到当前环境变量&quot; class=&quot;headerlink&quot; title=&quot;将$JAVA_HOME/bin添加到当前环境变量&quot;&gt;&lt;/a&gt;将$JAVA_HOME/bi
+      
+    
+    </summary>
+    
+    
+      <category term="JVM" scheme="http://10000hours.top/categories/JVM/"/>
+    
+    
+      <category term="JVM工具" scheme="http://10000hours.top/tags/JVM%E5%B7%A5%E5%85%B7/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Mysql常见问题总结</title>
+    <link href="http://10000hours.top/2019/12/01/Mysql%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/"/>
+    <id>http://10000hours.top/2019/12/01/Mysql%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/</id>
+    <published>2019-11-30T16:00:00.000Z</published>
+    <updated>2020-05-26T15:05:10.757Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="Mysql基本架构"><a href="#Mysql基本架构" class="headerlink" title="Mysql基本架构"></a>Mysql基本架构</h1><h1 id="Mysql中一条update语句是如何执行的"><a href="#Mysql中一条update语句是如何执行的" class="headerlink" title="Mysql中一条update语句是如何执行的"></a>Mysql中一条update语句是如何执行的</h1><h1 id="Mysql索引的实现方式，为什么这么实现"><a href="#Mysql索引的实现方式，为什么这么实现" class="headerlink" title="Mysql索引的实现方式，为什么这么实现"></a>Mysql索引的实现方式，为什么这么实现</h1><ul><li>Mysql索引是在存储引擎层实现的，InnoDB使用了B+树数据模型实现的索引，综合考虑了搜索效率和IO性能。</li><li>每个索引在InnoDB里对应一棵树</li></ul><h1 id="Mysql中有哪几种索引"><a href="#Mysql中有哪几种索引" class="headerlink" title="Mysql中有哪几种索引"></a>Mysql中有哪几种索引</h1><h1 id="什么时候使用联合索引？"><a href="#什么时候使用联合索引？" class="headerlink" title="什么时候使用联合索引？"></a>什么时候使用联合索引？</h1><h1 id="普通索引和唯一索引的区别"><a href="#普通索引和唯一索引的区别" class="headerlink" title="普通索引和唯一索引的区别"></a>普通索引和唯一索引的区别</h1><ul><li>查询</li><li>更新</li></ul><h1 id="索引失效的场景"><a href="#索引失效的场景" class="headerlink" title="索引失效的场景"></a>索引失效的场景</h1><h1 id="Mysql-有哪几种日志，分别有什么作用"><a href="#Mysql-有哪几种日志，分别有什么作用" class="headerlink" title="Mysql 有哪几种日志，分别有什么作用"></a>Mysql 有哪几种日志，分别有什么作用</h1><h1 id="死锁产生的原因以及解决方式"><a href="#死锁产生的原因以及解决方式" class="headerlink" title="死锁产生的原因以及解决方式"></a>死锁产生的原因以及解决方式</h1>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;Mysql基本架构&quot;&gt;&lt;a href=&quot;#Mysql基本架构&quot; class=&quot;headerlink&quot; title=&quot;Mysql基本架构&quot;&gt;&lt;/a&gt;Mysql基本架构&lt;/h1&gt;&lt;h1 id=&quot;Mysql中一条update语句是如何执行的&quot;&gt;&lt;a href=&quot;#Mys
+      
+    
+    </summary>
+    
+    
+      <category term="DB" scheme="http://10000hours.top/categories/DB/"/>
+    
+    
+      <category term="Mysql" scheme="http://10000hours.top/tags/Mysql/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>安装zookeeper</title>
+    <link href="http://10000hours.top/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/"/>
+    <id>http://10000hours.top/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/</id>
+    <published>2019-07-06T16:00:00.000Z</published>
+    <updated>2020-03-21T15:35:33.296Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="安装zookeeper"><a href="#安装zookeeper" class="headerlink" title="安装zookeeper"></a>安装zookeeper</h1><h2 id="单机服务"><a href="#单机服务" class="headerlink" title="单机服务"></a>单机服务</h2><p>从apache.org下载zookeeper,这里下载的是zookeeper-3.4.14.tar</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#tar -zxf zookeeper-3.4.14.tar.gz</span><br><span class="line">#mv zookeeper-3.4.14 &#x2F;usr&#x2F;local&#x2F;zookeeper</span><br><span class="line">#cat &gt; &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;conf&#x2F;zoo.cfg &lt;&lt; EOF</span><br><span class="line">&gt; tickTime&#x3D;2000</span><br><span class="line">&gt; dataDir&#x3D;&#x2F;var&#x2F;lib&#x2F;zookeeper</span><br><span class="line">&gt; clientPort&#x3D;2181</span><br><span class="line">&gt; EOF</span><br><span class="line">#&#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh start</span><br><span class="line">ZooKeeper JMX enabled by default</span><br><span class="line">Using config: &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;..&#x2F;conf&#x2F;zoo.cfg</span><br><span class="line">Starting zookeeper ... STARTED</span><br><span class="line">#</span><br></pre></td></tr></table></figure><p>现在可以连接到zookeeper端口上，通过发送四字命令srvr来验证zookeeper是否安装正确。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#telnet localhost 2181</span><br><span class="line">Trying ::1...</span><br><span class="line">Connected to localhost.</span><br><span class="line">Escape character is &#39;^]&#39;.</span><br><span class="line">srvr</span><br><span class="line">Zookeeper version: 3.4.14-4c25d480e66aadd371de8bd2fd8da255ac140bcf, built on 03&#x2F;06&#x2F;2019 16:18 GMT</span><br><span class="line">Latency min&#x2F;avg&#x2F;max: 0&#x2F;0&#x2F;0</span><br><span class="line">Received: 1</span><br><span class="line">Sent: 0</span><br><span class="line">Connections: 1</span><br><span class="line">Outstanding: 0</span><br><span class="line">Zxid: 0x0</span><br><span class="line">Mode: standalone</span><br><span class="line">Node count: 4</span><br><span class="line">Connection closed by foreign host.</span><br></pre></td></tr></table></figure><h2 id="Zookeeper群组"><a href="#Zookeeper群组" class="headerlink" title="Zookeeper群组"></a>Zookeeper群组</h2><p>Zookeeper集群被称为Zookeeper群组，Zookeeper使用的是一致性协议，所以每个群组里应该包含奇数个节点。因为只有群组里的大多数节点处于可用状态，zookeeper才能处理外部请求。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;安装zookeeper&quot;&gt;&lt;a href=&quot;#安装zookeeper&quot; class=&quot;headerlink&quot; title=&quot;安装zookeeper&quot;&gt;&lt;/a&gt;安装zookeeper&lt;/h1&gt;&lt;h2 id=&quot;单机服务&quot;&gt;&lt;a href=&quot;#单机服务&quot; class=&quot;
+      
+    
+    </summary>
+    
+    
+      <category term="架构" scheme="http://10000hours.top/categories/%E6%9E%B6%E6%9E%84/"/>
+    
+    
+      <category term="zookeeper" scheme="http://10000hours.top/tags/zookeeper/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>安装配置Kafka Broker</title>
+    <link href="http://10000hours.top/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/"/>
+    <id>http://10000hours.top/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/</id>
+    <published>2019-07-06T16:00:00.000Z</published>
+    <updated>2020-03-21T15:35:33.296Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="安装Kafka-Broker"><a href="#安装Kafka-Broker" class="headerlink" title="安装Kafka Broker"></a>安装Kafka Broker</h1><p>需要先安装号java和Zookeeper</p><p>从<a href="https://www.apache.org/dyn/closer.cgi?path=/kafka/" target="_blank" rel="noopener">https://www.apache.org/dyn/closer.cgi?path=/kafka/</a>下载最新版本kafka，这里下载的是kafka_2.12-2.2.0.tgz</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tar -zxf kafka_2.12-2.2.0.tgz</span><br><span class="line">mv kafka_2.12-2.2.0 &#x2F;usr&#x2F;local&#x2F;kafka</span><br><span class="line">mkdir &#x2F;tmp&#x2F;kafka-logs</span><br></pre></td></tr></table></figure><h2 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-server-start.sh -daemon &#x2F;usr&#x2F;local&#x2F;kafka&#x2F;config&#x2F;server.properties</span><br></pre></td></tr></table></figure><p>验证是否启动成功，比如创建一个测试主题，发布一些消息，然后读取它们。</p><h2 id="0-90版本之后验证方式"><a href="#0-90版本之后验证方式" class="headerlink" title="0.90版本之后验证方式"></a>0.90版本之后验证方式</h2><p>创建测试主题：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic test2-12</span><br></pre></td></tr></table></figure><p>查看主题：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --list --bootstrap-server localhost:9092</span><br><span class="line">test2-12</span><br></pre></td></tr></table></figure><p>发送消息到测试主题：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafconsole-producer.sh --broker-list  localhost:9092 --topic test2-12</span><br><span class="line">&gt;this is a message</span><br><span class="line">&gt;this is another message</span><br></pre></td></tr></table></figure><p>从测试主题读取消息</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test2-12 --from-beginning</span><br><span class="line">this is a message</span><br><span class="line">this is another message</span><br></pre></td></tr></table></figure><h2 id="0-90版本的验证方式"><a href="#0-90版本的验证方式" class="headerlink" title="0.90版本的验证方式"></a>0.90版本的验证方式</h2><p>创建并订阅主题：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test</span><br><span class="line"></span><br><span class="line"># &#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --zookeeper localhost:2181 --describe --topic &quot;test&quot;</span><br><span class="line">Topic:testPartitionCount:1ReplicationFactor:1Configs:</span><br><span class="line">Topic: testPartition: 0Leader: 0Replicas: 0Isr: 0</span><br></pre></td></tr></table></figure><p>往测试主题上发布消息：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-console-producer.sh --broker-list  localhost:9092 --topic test</span><br><span class="line">&gt;Test Message 1</span><br><span class="line">&gt;Test Message 2</span><br><span class="line">ctrl + c</span><br></pre></td></tr></table></figure><p>从测试主题上读取消息：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-console-consumer.sh --zookeeper localhost:2181 --topic test --from-beginning</span><br><span class="line">Test Message 1</span><br><span class="line">Test Message 2</span><br></pre></td></tr></table></figure><h1 id="Broker配置"><a href="#Broker配置" class="headerlink" title="Broker配置"></a>Broker配置</h1><h1 id="主题的默认配置"><a href="#主题的默认配置" class="headerlink" title="主题的默认配置"></a>主题的默认配置</h1>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;安装Kafka-Broker&quot;&gt;&lt;a href=&quot;#安装Kafka-Broker&quot; class=&quot;headerlink&quot; title=&quot;安装Kafka Broker&quot;&gt;&lt;/a&gt;安装Kafka Broker&lt;/h1&gt;&lt;p&gt;需要先安装号java和Zookeeper&lt;/
+      
+    
+    </summary>
+    
+    
+      <category term="MQ" scheme="http://10000hours.top/categories/MQ/"/>
+    
+    
+      <category term="kafka" scheme="http://10000hours.top/tags/kafka/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>vim命令</title>
+    <link href="http://10000hours.top/2019/07/05/vim%E5%91%BD%E4%BB%A4/"/>
+    <id>http://10000hours.top/2019/07/05/vim%E5%91%BD%E4%BB%A4/</id>
+    <published>2019-07-04T16:00:00.000Z</published>
+    <updated>2020-03-21T15:35:33.288Z</updated>
+    
+    <content type="html"><![CDATA[<ul><li>移动到当前行最后  shift+a</li></ul><ul><li><p>整页翻页 ctrl-f ctrl-b</p><p>  f就是forword b就是backward</p></li><li><p>翻半页 ctrl-d ctlr-u</p><p>  d=down u=up</p></li><li><p>滚一行 ctrl-e ctrl-y</p></li><li><p>zz 让光标所杂的行居屏幕中央</p></li><li><p>zt 让光标所杂的行居屏幕最上一行 t=top</p></li><li><p>zb 让光标所杂的行居屏幕最下一行 b=bottom</p></li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;ul&gt;
+&lt;li&gt;移动到当前行最后  shift+a&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;整页翻页 ctrl-f ctrl-b&lt;/p&gt;
+&lt;p&gt;  f就是forword b就是backward&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;翻半页 ctrl-d ctlr-u&lt;/p&gt;
+
+      
+    
+    </summary>
+    
+    
+      <category term="工具" scheme="http://10000hours.top/categories/%E5%B7%A5%E5%85%B7/"/>
+    
+    
+      <category term="vim" scheme="http://10000hours.top/tags/vim/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>使用多线程提高REST服务性能</title>
+    <link href="http://10000hours.top/2019/07/05/%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%8F%90%E9%AB%98REST%E6%9C%8D%E5%8A%A1%E6%80%A7%E8%83%BD/"/>
+    <id>http://10000hours.top/2019/07/05/%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%8F%90%E9%AB%98REST%E6%9C%8D%E5%8A%A1%E6%80%A7%E8%83%BD/</id>
+    <published>2019-07-04T16:00:00.000Z</published>
+    <updated>2020-03-21T15:35:33.296Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="异步处理REST服务"><a href="#异步处理REST服务" class="headerlink" title="异步处理REST服务"></a>异步处理REST服务</h2><ul><li>使用Callable处理异步Rest服务</li><li>使用DefferredResult异步处理Rest服务</li><li>异步处理配置</li></ul><h3 id="使用Callable处理异步Rest服务"><a href="#使用Callable处理异步Rest服务" class="headerlink" title="使用Callable处理异步Rest服务"></a>使用Callable处理异步Rest服务</h3><p>副线程是由主线程调起的，即副线程的代码是写在主线程里面的。</p><p><img src="http://ogiythg18.bkt.clouddn.com/%E5%BC%82%E6%AD%A5%E5%A4%84%E7%90%86REST%E6%9C%8D%E5%8A%A1%20%28%E5%A4%9A%E5%BA%94%E7%94%A8%29.jpg" alt="image"></p><pre><code>@GetMapping(&quot;/order/async&quot;)public Callable&lt;String&gt; ordeAsync() throws InterruptedException {    logger.info(&quot;主线程开始&quot;);    Callable&lt;String&gt; result =  () -&gt; {        logger.info(&quot;副线程开始&quot;);        Thread.sleep(2000);        logger.info(&quot;副线程结束&quot;);        return &quot;success&quot;;    };    logger.info(&quot;主线程结束&quot;);    return result;}</code></pre><p>对于调用方而言，该接口表现出来的还是一个同步的请求，即还是会过两秒多返回结果。这里异步的作用是提供服务方的吞吐能力。</p><h3 id="使用DefferredResult处理异步Rest服务"><a href="#使用DefferredResult处理异步Rest服务" class="headerlink" title="使用DefferredResult处理异步Rest服务"></a>使用DefferredResult处理异步Rest服务</h3><p>使用Callable处理Rest服务有一个限制，请求只能在一个服务中处理，即副线程必须由主线程调起。但有时候我们的业务比较复杂，比如收到请求后会先放到消息队列中，由其它服务来处理请求。这样请求的过程就不是在一个应用中处理的，这时我们需要用DefferredResult来处理异步Rest服务。</p><p><img src="http://ogiythg18.bkt.clouddn.com/%E5%BC%82%E6%AD%A5%E5%A4%84%E7%90%86REST%E6%9C%8D%E5%8A%A1%20.jpg" alt="多服务的异步处理"></p><pre><code>@GetMapping(&quot;/order/async/deferred&quot;)public DeferredResult&lt;String&gt; ordeAsyncDeferred() throws InterruptedException {    logger.info(&quot;主线程开始&quot;);    String orderNumber = RandomStringUtils.randomNumeric(8);    mockQueue.setPlaceOrder(orderNumber);    DeferredResult&lt;String&gt; result = new DeferredResult&lt;&gt;();    deferredResultHolder.getMap().put(orderNumber, result);    logger.info(&quot;主线程结束&quot;);    return result;}</code></pre><p>模拟MQ服务：</p><pre><code>@Componentpublic class MockQueue {    private Logger logger = LoggerFactory.getLogger(getClass());    private String placeOrder;    private String completeOrder;    public String getPlaceOrder() {        return placeOrder;    }    public void setPlaceOrder(String placeOrder)  {        new Thread(()-&gt;{            logger.info(&quot;接到下单请求：&quot; + placeOrder);            try {                Thread.sleep(1000);            } catch (InterruptedException e) {                e.printStackTrace();            }            this.completeOrder = placeOrder;            logger.info(&quot;下单请求处理完毕:&quot; + placeOrder);        }).start();    }    public String getCompleteOrder() {        return completeOrder;    }    public void setCompleteOrder(String completeOrder) {        this.completeOrder = completeOrder;    }}</code></pre><p>模拟应用２：</p><pre><code>@Componentpublic class QueueListener implements ApplicationListener&lt;ContextRefreshedEvent&gt; {    private Logger logger = LoggerFactory.getLogger(getClass());    @Autowired    MockQueue mockQueue;    @Autowired    DeferredResultHolder deferredResultHolder;    @Override    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {        new Thread(() -&gt; {            while (true) {                if (StringUtils.isNotBlank(mockQueue.getCompleteOrder())) {                    String orderNumber = mockQueue.getCompleteOrder();                    logger.info(&quot;返回订单处理结果：&quot; + orderNumber);                    deferredResultHolder.getMap().get(orderNumber).setResult(&quot;place order success&quot;);                    mockQueue.setCompleteOrder(null);                } else {                    try {                        Thread.sleep(1000);                    } catch (InterruptedException e) {                        e.printStackTrace();                    }                }            }        }).start();    }}</code></pre><p>DeferredResult上下文，持有DefferedResult</p><pre><code>@Componentpublic class QueueListener implements ApplicationListener&lt;ContextRefreshedEvent&gt; {    private Logger logger = LoggerFactory.getLogger(getClass());    @Autowired    MockQueue mockQueue;    @Autowired    DeferredResultHolder deferredResultHolder;    @Override    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {        new Thread(() -&gt; {            while (true) {                if (StringUtils.isNotBlank(mockQueue.getCompleteOrder())) {                    String orderNumber = mockQueue.getCompleteOrder();                    logger.info(&quot;返回订单处理结果：&quot; + orderNumber);                    deferredResultHolder.getMap().get(orderNumber).setResult(&quot;place order success&quot;);                    mockQueue.setCompleteOrder(null);                } else {                    try {                        Thread.sleep(1000);                    } catch (InterruptedException e) {                        e.printStackTrace();                    }                }            }        }).start();    }}</code></pre><h3 id="异步处理配置"><a href="#异步处理配置" class="headerlink" title="异步处理配置"></a>异步处理配置</h3><p>使用异步处理REST请求，默认拦截器是拦截不到异步请求的，需要配置拦截器，以及超时时间和线程可重用的线程池。</p><pre><code>@Configurationpublic class WebConfig extends WebMvcConfigurerAdapter {    /**     * 配置异步的支持     * @param configurer     */    @Override    public void configureAsyncSupport(AsyncSupportConfigurer configurer) {        super.configureAsyncSupport(configurer);        //注册异步的拦截器()        configurer.registerCallableInterceptors();        configurer.registerDeferredResultInterceptors();        //默认超时时间        configurer.setDefaultTimeout(30000);        //设置可重用的线程池,默认会启用新的线程不会重用线程//        configurer.setTaskExecutor()    }}</code></pre>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;异步处理REST服务&quot;&gt;&lt;a href=&quot;#异步处理REST服务&quot; class=&quot;headerlink&quot; title=&quot;异步处理REST服务&quot;&gt;&lt;/a&gt;异步处理REST服务&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;使用Callable处理异步Rest服务&lt;/li&gt;
+&lt;li&gt;使用
+      
+    
+    </summary>
+    
+    
+      <category term="Spring" scheme="http://10000hours.top/categories/Spring/"/>
+    
+    
+      <category term="Spring-Security" scheme="http://10000hours.top/tags/Spring-Security/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Mysql（13）-Mysql索引总结</title>
+    <link href="http://10000hours.top/2019/06/24/Mysql%EF%BC%8813%EF%BC%89-Mysql%E7%B4%A2%E5%BC%95%E6%80%BB%E7%BB%93/"/>
+    <id>http://10000hours.top/2019/06/24/Mysql%EF%BC%8813%EF%BC%89-Mysql%E7%B4%A2%E5%BC%95%E6%80%BB%E7%BB%93/</id>
+    <published>2019-06-23T16:00:00.000Z</published>
+    <updated>2020-04-15T15:25:01.776Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="回顾"><a href="#回顾" class="headerlink" title="回顾"></a>回顾</h1><p>写了几篇关于Mysql索引的文章了：</p><p>1.Mysql数据库索引——数据结构</p><p>2.Mysql数据库索引——必知必会</p><p>3.Mysql数据库索引——给字符串加索引</p><p>这里做一个总结，旨在对Mysql索引有一个整体的认识。</p><p><img src="http://blog-pic-1254088127.cos.ap-shanghai.myqcloud.com/Mysql%E7%B4%A2%E5%BC%95.png?sign=q-sign-algorithm%3Dsha1%26q-ak%3DAKIDPxf4roJXYhzaVA2kLj6p2BGBmtu768W1%26q-sign-time%3D1586964042%3B1586967702%26q-key-time%3D1586964042%3B1586967702%26q-header-list%3Dhost%26q-url-param-list%3D%26q-signature%3Dcd014d6ac3c42c3ffc3a3edf3ab2ec9795c325fb&x-cos-security-token=6a1f21b48fa8e9cc475ea192586536e172fcd1db10001" alt="Mysql索引知识体系图"></p><h1 id="Mysql索引总结"><a href="#Mysql索引总结" class="headerlink" title="Mysql索引总结"></a>Mysql索引总结</h1><h2 id="索引是什么"><a href="#索引是什么" class="headerlink" title="索引是什么"></a>索引是什么</h2><p>类似于目录，是用来提高查询效率的一种数据组织形式，Mysql中用索引组织数据。</p><h2 id="Mysql索引的实现方式"><a href="#Mysql索引的实现方式" class="headerlink" title="Mysql索引的实现方式"></a>Mysql索引的实现方式</h2><p>Mysql索引是在存储引擎层实现的，InnoDB使用了B+树数据模型实现的索引，综合考虑了搜索效率和IO性能。</p><p>每个索引在InnoDB里对应一棵树</p><p>这里引入了提高读写效率的几种数据结构：哈希表、有序数组、搜索树。</p><h2 id="Mysql中有哪几种索引"><a href="#Mysql中有哪几种索引" class="headerlink" title="Mysql中有哪几种索引"></a>Mysql中有哪几种索引</h2><p>主键索引（聚簇索引）：主键索引的叶子节点存的是整行的数据；</p><p>二级索引：二级索引的叶子节点存的是主键的值；</p><p>二级索引可能会产生回表操作</p><h2 id="索引维护成本"><a href="#索引维护成本" class="headerlink" title="索引维护成本"></a>索引维护成本</h2><h2 id="索引技巧"><a href="#索引技巧" class="headerlink" title="索引技巧"></a>索引技巧</h2><ul><li>索引覆盖</li><li>最左添缀</li><li>联合索引</li></ul><h2 id="什么时候使用联合索引？"><a href="#什么时候使用联合索引？" class="headerlink" title="什么时候使用联合索引？"></a>什么时候使用联合索引？</h2><h2 id="索引下推是什么？"><a href="#索引下推是什么？" class="headerlink" title="索引下推是什么？"></a>索引下推是什么？</h2><h2 id="普通索引和唯一所以的区别"><a href="#普通索引和唯一所以的区别" class="headerlink" title="普通索引和唯一所以的区别"></a>普通索引和唯一所以的区别</h2><ul><li>查询</li><li>更新</li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;回顾&quot;&gt;&lt;a href=&quot;#回顾&quot; class=&quot;headerlink&quot; title=&quot;回顾&quot;&gt;&lt;/a&gt;回顾&lt;/h1&gt;&lt;p&gt;写了几篇关于Mysql索引的文章了：&lt;/p&gt;
+&lt;p&gt;1.Mysql数据库索引——数据结构&lt;/p&gt;
+&lt;p&gt;2.Mysql数据库索引——必知必会
+      
+    
+    </summary>
+    
+    
+      <category term="DB" scheme="http://10000hours.top/categories/DB/"/>
+    
+    
+      <category term="Mysql" scheme="http://10000hours.top/tags/Mysql/"/>
+    
+      <category term="索引" scheme="http://10000hours.top/tags/%E7%B4%A2%E5%BC%95/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>SpringSocial(2)-绑定和解绑处理</title>
+    <link href="http://10000hours.top/2019/06/20/SpringSocial(2)-%E7%BB%91%E5%AE%9A%E5%92%8C%E8%A7%A3%E7%BB%91%E5%A4%84%E7%90%86/"/>
+    <id>http://10000hours.top/2019/06/20/SpringSocial(2)-%E7%BB%91%E5%AE%9A%E5%92%8C%E8%A7%A3%E7%BB%91%E5%A4%84%E7%90%86/</id>
+    <published>2019-06-19T16:00:00.000Z</published>
+    <updated>2020-03-21T15:35:33.284Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="概要说明"><a href="#概要说明" class="headerlink" title="概要说明"></a>概要说明</h2><p>绑定</p><ul><li>类似于第三方登录,需要走一个授权流程</li><li>登录时的授流程,是没有当前的登录信息的,本身就是去哪社交帐号的信息去做登录,而绑定的授权看流程,是已经知道了当前用户是谁再去走授权流程</li></ul><p>解除绑定</p><ul><li>非常简单,就是删除一条绑定的记录</li></ul><h2 id="获取绑定信息"><a href="#获取绑定信息" class="headerlink" title="获取绑定信息"></a>获取绑定信息</h2><p>SpringSocial默认提供了查询绑定信息接口,地址为/connect,但是没有提供相关视图,所以当我们访问绑定接口的时候会报一个405的”Whitelabel Error Page”</p><p><img src="http://ogiythg18.bkt.clouddn.com/SpringSecuriity-WEP.png" alt="image"><br>/connect接口在org.springframework.social.connect.web.ConnectController中提供</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@RequestMapping(method&#x3D;RequestMethod.GET)</span><br><span class="line">public String connectionStatus(NativeWebRequest request, Model model) &#123;</span><br><span class="line">setNoCache(request);</span><br><span class="line">processFlash(request, model);</span><br><span class="line">Map&lt;String, List&lt;Connection&lt;?&gt;&gt;&gt; connections &#x3D; connectionRepository.findAllConnections();</span><br><span class="line">model.addAttribute(&quot;providerIds&quot;, connectionFactoryLocator.registeredProviderIds());</span><br><span class="line">model.addAttribute(&quot;connectionMap&quot;, connections);</span><br><span class="line">return connectView();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><ul><li><p>可以看到这里会拿到所有的providerIds(这里是我们系统提供的第三方应用的id,例如QQ//WeChat等),以及当前用户所有connection信息,这里包含了绑定信息.</p></li><li><p>这里通过connectView()防范返回了一个String:”connect/status”,所以Spring会去寻找名字是connect/status的视图.默认我们没有提供该视图,所以最终会抛出PageNotFound异常.</p></li><li><p>所以我们要提供一个名为”connectt/status”的视图,这个视图我们只返回第三方应用是否绑定的一个信息就可以了.</p></li></ul><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * @author richey</span><br><span class="line"> * SpringSocial提供了&#x2F;connect接口获取绑定第三方用户的信息,默认返回该视图</span><br><span class="line"> * @see org.springframework.social.connect.web.ConnectController#connectionStatus(NativeWebRequest, Model)</span><br><span class="line"> *&#x2F;</span><br><span class="line">@Component(&quot;connect&#x2F;status&quot;)</span><br><span class="line">public class EvolutionaryConnectionStatusView extends AbstractView &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Autowired</span><br><span class="line">    private ObjectMapper objectMapper;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 渲染视图,这里我们只返回第三方应用及其是否绑定的信息就可以了</span><br><span class="line">     *</span><br><span class="line">     * @param map</span><br><span class="line">     * @param httpServletRequest</span><br><span class="line">     * @param httpServletResponse</span><br><span class="line">     * @throws Exception</span><br><span class="line">     *&#x2F;</span><br><span class="line">    @Override</span><br><span class="line">    protected void renderMergedOutputModel(Map&lt;String, Object&gt; map, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception &#123;</span><br><span class="line"></span><br><span class="line">        Map&lt;String, List&lt;Connection&lt;?&gt;&gt;&gt; connectionsMap &#x3D; (Map&lt;String, List&lt;Connection&lt;?&gt;&gt;&gt;) map.get(&quot;connectionMap&quot;);</span><br><span class="line"></span><br><span class="line">        Map&lt;String, Boolean&gt; result &#x3D; Maps.newHashMap();</span><br><span class="line">        connectionsMap.forEach((key, connections) -&gt;</span><br><span class="line">                result.put(key, CollectionUtils.isNotEmpty(connections))</span><br><span class="line">        );</span><br><span class="line">        httpServletResponse.setContentType(&quot;application&#x2F;json;charset&#x3D;UTF-8&quot;);</span><br><span class="line">        httpServletResponse.getWriter().write(objectMapper.writeValueAsString(result));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><ul><li><p>现在登录后访问”/connect”接口就会返回我们自定义的渲染信息:</p><pre><code>{&quot;qq&quot;:true,&quot;weixin&quot;:false}</code></pre></li></ul><h2 id="绑定服务"><a href="#绑定服务" class="headerlink" title="绑定服务"></a>绑定服务</h2><p>有了绑定信息{“qq”:true,”weixin”:false},我们就可以在前台展示哪些服务已经绑定,哪些服务可以绑定,下面我们来看一下如何进行绑定操作.</p><ul><li>SpringSocial同样提供了绑定的接口/connect/{providerId},我们调用该接口即可</li></ul><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;!--connect 是SpringSocial在ConnectController中提供的默认接口,qq是providerId,是QQProperties中可配置的--&gt;</span><br><span class="line">&lt;form action&#x3D;&quot;&#x2F;connect&#x2F;qq&quot; method&#x3D;&quot;post&quot;&gt;</span><br><span class="line">    &lt;button type&#x3D;&quot;submit&quot;&gt;QQ绑定&lt;&#x2F;button&gt;</span><br><span class="line">&lt;&#x2F;form&gt;</span><br></pre></td></tr></table></figure><ul><li>同样绑定成功后会返回一个视图</li></ul><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">   protected String connectView(String providerId) &#123;</span><br><span class="line">return getViewPath() + providerId + &quot;Connect&quot;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">   protected String connectedView(String providerId) &#123;</span><br><span class="line">return getViewPath() + providerId + &quot;Connected&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>我们提供一下该视图(connect/qqConnect):</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * @author richey</span><br><span class="line"> * SpringSocial绑定后跳转的视图</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class EvolutionaryConnectView extends AbstractView &#123;</span><br><span class="line">    @Override</span><br><span class="line">    protected void renderMergedOutputModel(Map&lt;String, Object&gt; map, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception &#123;</span><br><span class="line"></span><br><span class="line">        httpServletResponse.setContentType(&quot;text&#x2F;html;charset&#x3D;UTF-8&quot;);</span><br><span class="line">        if (map.get(&quot;connection&quot;) &#x3D;&#x3D; null) &#123;</span><br><span class="line">            httpServletResponse.getWriter().write(&quot;&lt;h3&gt;解绑成功&lt;&#x2F;h3&gt;&quot;);</span><br><span class="line"></span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            httpServletResponse.getWriter().write(&quot;&lt;h3&gt;绑定成功&lt;&#x2F;h3&gt;&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>注意:这里我们并没有用@Component注解直接标注,因为我们希望这是一个通用的视图,不管是qq/weixin还是其它的第三方应用都可以使用,所以,我们在相关服务的配置文件中各自配置该视图Bean,同时采用了@ConditionalOnMissingBean注解,方便用户自行提供定制化视图:</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">**</span><br><span class="line"> * @author richey</span><br><span class="line"> *&#x2F;</span><br><span class="line">@Configuration</span><br><span class="line">@ConditionalOnProperty(prefix &#x3D; &quot;evolutionary.security.social.qq&quot;, name &#x3D; &quot;app-id&quot;)</span><br><span class="line">public class QQAutoConfig extends SocialAutoConfigurerAdapter &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Bean(&#123;&quot;connect&#x2F;qqConnect&quot;, &quot;connect&#x2F;qqConnected&quot;&#125;)</span><br><span class="line">    @ConditionalOnMissingBean(name &#x3D; &quot;qqConnectedView&quot;)</span><br><span class="line">    public View weixinConnectedView() &#123;</span><br><span class="line">        return new EvolutionaryConnectView();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h2 id="解绑"><a href="#解绑" class="headerlink" title="解绑"></a>解绑</h2><ul><li>解绑是绑定的逆操作,SpringSocial为解绑提供的接口地址同绑定是相同的,不同的是绑定的请求方式是POST,解绑是DELETE</li><li>解绑成功同样会返回一个视图,需要我们自己提供.</li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;概要说明&quot;&gt;&lt;a href=&quot;#概要说明&quot; class=&quot;headerlink&quot; title=&quot;概要说明&quot;&gt;&lt;/a&gt;概要说明&lt;/h2&gt;&lt;p&gt;绑定&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;类似于第三方登录,需要走一个授权流程&lt;/li&gt;
+&lt;li&gt;登录时的授流程,是没有当前的登录信息
+      
+    
+    </summary>
+    
+    
+      <category term="Spring" scheme="http://10000hours.top/categories/Spring/"/>
+    
+    
+      <category term="Spring-Social" scheme="http://10000hours.top/tags/Spring-Social/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>SpringSocial(2)-第三方登录原理</title>
+    <link href="http://10000hours.top/2019/06/19/SpringSocial(2)-%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E5%8E%9F%E7%90%86/"/>
+    <id>http://10000hours.top/2019/06/19/SpringSocial(2)-%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E5%8E%9F%E7%90%86/</id>
+    <published>2019-06-18T16:00:00.000Z</published>
+    <updated>2020-03-21T15:35:33.284Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="http://on-img.com/chart_image/5b9ccb5de4b0bd4db93d9616.png" alt="image"></p><p>对照上面的流程我们来分析一下SpringSocial实现第三方登录的原理:</p><ul><li>登录的实现还是用的SpringSecurity,SpringSocial只不过是将第三方登录的过程对接到了SpringSecurity</li><li>既然是SpringSecurity,拿核心依然是过滤器链,SpringSocial提供了SocialAuthenticationFilter.</li><li>SpringSocial将OAuth2认证流程封装,最终产出的结果就是标准的Connection,Connection里面包含了用户的信息</li><li>SocialAuthenticationService封装了取Connection的过程</li><li>拿到Connection相当于拿到了用户登录的Authentication,但此时的Authentication是未认证通过的,到这里相当于只是拿到了用于用于登录的数据</li><li>处理用户登录,当然还是要回到SpringSecurity的授权流程,通过AuthenticationManager,找到对应的AthenticationProvider,这里是SpringSocial提供了SocialAuthenticationProvider处理登录信息.</li><li>Connection信息维护了一个第三方用户和当前服务业务用户的一个映射关系,拿到connection,我们就可以拿到用户在当前服务的userId</li><li>有了userId,我们就可以通过SocialUserDetailService来得到SocialUserDeail,到这里相当于拿到了用户的信息</li><li>将用户信息维护进Connection再继续走授权流程,处理session等,整个第三方登录过程大致就是这样.</li></ul><p>总结:整个过程其实就是整合了SpringSecurity认证流程以及SpringSocial实现OAuth2的流程,之后前的文章我们已经分别分析了SpringSecurity及SpringSocial,流程万变不离其宗,流程和原理知道了,如果实际的开发过程中遇到问题,看一下源码也是非常便捷的.</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;&lt;img src=&quot;http://on-img.com/chart_image/5b9ccb5de4b0bd4db93d9616.png&quot; alt=&quot;image&quot;&gt;&lt;/p&gt;
+&lt;p&gt;对照上面的流程我们来分析一下SpringSocial实现第三方登录的原理:&lt;/p&gt;
+&lt;ul&gt;
+
+      
+    
+    </summary>
+    
+    
+      <category term="Spring" scheme="http://10000hours.top/categories/Spring/"/>
+    
+    
+      <category term="Spring-Social" scheme="http://10000hours.top/tags/Spring-Social/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>SpringSocial(1)-开发QQ登录</title>
+    <link href="http://10000hours.top/2019/06/17/SpringSocial(1)-%E5%BC%80%E5%8F%91QQ%E7%99%BB%E5%BD%95/"/>
+    <id>http://10000hours.top/2019/06/17/SpringSocial(1)-%E5%BC%80%E5%8F%91QQ%E7%99%BB%E5%BD%95/</id>
+    <published>2019-06-16T16:00:00.000Z</published>
+    <updated>2020-03-21T15:35:33.284Z</updated>
+    
+    <content type="html"><![CDATA[<p>在用SpringSocial开发QQ第三方登录之前，我们先来回顾下SpringSocial实现OAuth第三方登录的流程：</p><p><img src="http://ogiythg18.bkt.clouddn.com/SpringSocial%E5%AE%9E%E7%8E%B0OAuah%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81.png" alt="image"></p><p>SpringSocial是同各种第三方服务进行对接最终得到的是标准的Connectionn，并最终保存到db中。</p><p>我们要做的就是提供生成Connection所需要的各种接口的实现类，这些接口的作用上一篇已经说了，其中SpringSocial为一些接口已经提供了抽象实现，我们继承就可以了。</p><p>代码细节就不说了，<a href="https://github.com/liubaolin/evolutionary/tree/master/evolutionary-security" target="_blank" rel="noopener">具体可以去github看</a>，这里分析下这个流程中几个重要的地方：</p><ul><li>在实现号所有接口后，提供具体配置</li></ul><pre><code>@Configuration@ConditionalOnProperty(prefix = &quot;evolutionary.security.social.qq&quot;, name = &quot;app-id&quot;)public class QQAutoConfig extends SocialAutoConfigurerAdapter {    @Autowired    private SecurityProperties securityProperties;    @Override    protected ConnectionFactory&lt;?&gt; createConnectionFactory() {        QQProperties qqConfig = securityProperties.getSocial().getQq();        return new QQConnectionFactory(qqConfig.getProviderId(), qqConfig.getAppId(), qqConfig.getAppSecret());    }}</code></pre><ul><li><p>数据库表</p><p>  我们在JdbcUsersConnectionRepository相同的包路径下可以看到JdbcUsersConnectionRepository.sql，没错，考出来执行一下就可以了。</p></li><li><p>SocialCoinfig</p></li></ul><pre><code>@Configuration@EnableSocialpublic class SocialConfig extends SocialConfigurerAdapter {    @Autowired    private DataSource dataSource;    @Override    public UsersConnectionRepository getUsersConnectionRepository(ConnectionFactoryLocator connectionFactoryLocator) {        JdbcUsersConnectionRepository repository = new JdbcUsersConnectionRepository(dataSource, connectionFactoryLocator, Encryptors.noOpText());//        repository.setTablePrefix(&quot;evolutionary_&quot;);        return repository;    }    @Bean    public SpringSocialConfigurer evolutionarySocialSecurityConfig() {        return new SpringSocialConfigurer();    }}</code></pre><ul><li>将SpringSocial的配置配到SpringSecurity中</li></ul><pre><code>protected void configure(HttpSecurity http) throws Exception {    http.apply(evolutionarySocialConfigurer)；}</code></pre><ul><li><p>前端页面</p><pre><code>&lt;h3&gt;社交登录&lt;/h3&gt;&lt;a href=&quot;/auth/qq&quot;&gt;QQ登录&lt;/a&gt;</code></pre></li></ul><pre><code>注意我们页面写的这个QQ登录的地址“/auth/qq&quot;,前面的”/auth/“是SpringSocial的默认请求处理地址前缀，是在SpringSocialAuthenticationFilter中提供的默认路径。 后面的qq是我们自己提供的，在构建ConnectionFactory时，传入了，实际上该参数就是我们封装的服务提供商Provider的标识。public class QQProperties extends SocialProperties {    /**     * 用于区分不同的provider的     */    private String providerId = &quot;qq&quot;;    public String getProviderId() {        return providerId;    }    public void setProviderId(String providerId) {        this.providerId = providerId;    }}ConnectionFactory需要传入qqConfig.getProviderId()@Configuration@ConditionalOnProperty(prefix = &quot;evolutionary.security.social.qq&quot;, name = &quot;app-id&quot;)public class QQAutoConfig extends SocialAutoConfigurerAdapter {    @Autowired    private SecurityProperties securityProperties;    @Override    protected ConnectionFactory&lt;?&gt; createConnectionFactory() {        QQProperties qqConfig = securityProperties.getSocial().getQq();        return new QQConnectionFactory(qqConfig.getProviderId(), qqConfig.getAppId(), qqConfig.getAppSecret());    }}</code></pre><p><img src="http://ogiythg18.bkt.clouddn.com/OAuth%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95.png" alt="image"></p><p><strong>注意：</strong></p><p>”/auth/qq“这个地址就是上图中触发第一步：将用户导向认证服务器的地址，同时也是第三步：用户同意授权后跳转回来的地址。</p><h3 id="修改SpringSocial默认请求拦截路径-auth"><a href="#修改SpringSocial默认请求拦截路径-auth" class="headerlink" title="修改SpringSocial默认请求拦截路径/auth"></a>修改SpringSocial默认请求拦截路径/auth</h3><pre><code>@Configuration@EnableSocialpublic class SocialConfig extends SocialConfigurerAdapter {    @Autowired    private DataSource dataSource;    @Override    public UsersConnectionRepository getUsersConnectionRepository(ConnectionFactoryLocator connectionFactoryLocator) {        JdbcUsersConnectionRepository repository = new JdbcUsersConnectionRepository(dataSource, connectionFactoryLocator, Encryptors.noOpText());//        repository.setTablePrefix(&quot;evolutionary_&quot;);        return repository;    }    @Bean    public SpringSocialConfigurer evolutionarySocialSecurityConfig() {        return new SpringSocialConfigurer();    }}</code></pre><p>在SpringSocialConfigurer中将SpringsocialAuthenticationFilter放到了SpringSecurity的过滤器链上，并做了一些处理，源码如下：</p><pre><code>http.authenticationProvider(new SocialAuthenticationProvider(usersConnectionRepository, socialUsersDetailsService)).addFilterBefore((Filter)this.postProcess(filter), AbstractPreAuthenticatedProcessingFilter.class);</code></pre><p>我们可以看到在加到过滤器链之前做了一个后处理操作this.postProcess(filter)，我们可以在重写这个方法，对SpringsocialAuthenticationFilter做一些定制化的操作。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;在用SpringSocial开发QQ第三方登录之前，我们先来回顾下SpringSocial实现OAuth第三方登录的流程：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://ogiythg18.bkt.clouddn.com/SpringSocial%E5%AE%9E%E7%
+      
+    
+    </summary>
+    
+    
+      <category term="Spring" scheme="http://10000hours.top/categories/Spring/"/>
+    
+    
+      <category term="Spring-Social" scheme="http://10000hours.top/tags/Spring-Social/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>SpringSocial(0)-SpringSocial简介</title>
+    <link href="http://10000hours.top/2019/06/16/SpringSocial(0)-SpringSocial%E7%AE%80%E4%BB%8B/"/>
+    <id>http://10000hours.top/2019/06/16/SpringSocial(0)-SpringSocial%E7%AE%80%E4%BB%8B/</id>
+    <published>2019-06-15T16:00:00.000Z</published>
+    <updated>2020-03-21T15:35:33.284Z</updated>
+    
+    <content type="html"><![CDATA[<p>之前我们介绍了OAuth协议，知道了OAuth协议中的各种角色及认证流程，着重说明了授权码模式的认证。这里我们以授权码默认认证为基础说一下第三方登录的流程：</p><p>在拿到令牌后，第三方应用就可以从服务提供商这里获取用户基本信息了，拿到用户基本信息后，我们构建Authentication并放到SecurityContext中，这样就完成了登录。</p><p><img src="http://ogiythg18.bkt.clouddn.com/OAuth%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95.png" alt="image"></p><p>这就是OAuth和Spring Security配合完成第三方登录的流程。SpringSocial将这个流程封装到了SocialAuthenticationFilter中，并放到了Spring Security的过滤器链中：</p><p><img src="http://ogiythg18.bkt.clouddn.com/SocialAuthenticationFilter.png" alt="image"></p><h2 id="SpringSocial开发第三方登录"><a href="#SpringSocial开发第三方登录" class="headerlink" title="SpringSocial开发第三方登录"></a>SpringSocial开发第三方登录</h2><p>在上面的OAuth第三方登录流程中，我们可以看出1-6步都需要同服务提供商交互，并并且对于不同的登录1-5步都是一样的，第6步不同的服务提供商提供的用户信息的数据结构不尽相同。</p><p>我们对照图片看一下Spring Social对上面的流程做了怎样的封装：</p><p><img src="http://ogiythg18.bkt.clouddn.com/SpringSocial%E5%AE%9E%E7%8E%B0OAuah%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81.png" alt="image"></p><ul><li><p>对于服务提供商</p><ul><li>SpringSocial将与服务商的交互封装进了ServiceProvider，并提供了抽象的实现AbstractOAutrh2ServiceProvider；</li><li>SpringSocial将前5步操作封装进了OAuth2Operations，并提供了默认实现OAuth2Template；</li><li>对于第6步获取用户信息，由于不同的服务商提供的数据格式不一样，SpringSocial提供了一个接口，以及抽象的类AbstractOAuth2ApiBinding，方便我们继承完善。</li></ul></li><li><p>对于第三方应用</p><p>  SpringSocial将从服务提供商获取用户基本信息的整个过程封装成了一个Connection：</p><ul><li>通过ServiceProvider取用户基信息</li><li>通ApiAdapter处理适配用户信息数据</li><li>通过工厂类ConnectionFactory获取Connection</li><li>拿到服务提供你商提供的用户信息后，用户信息与第三方应用本身用户的映射关系存在表UserConnection中</li><li>通过UsersConnectionRepository操作UserConnection</li></ul></li></ul><p>上面就是SpringSocial实现OAuth2第三方登录的流程，上面的这些接口需要为我们配合实现。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;之前我们介绍了OAuth协议，知道了OAuth协议中的各种角色及认证流程，着重说明了授权码模式的认证。这里我们以授权码默认认证为基础说一下第三方登录的流程：&lt;/p&gt;
+&lt;p&gt;在拿到令牌后，第三方应用就可以从服务提供商这里获取用户基本信息了，拿到用户基本信息后，我们构建Auth
+      
+    
+    </summary>
+    
+    
+      <category term="Spring" scheme="http://10000hours.top/categories/Spring/"/>
+    
+    
+      <category term="Spring-Social" scheme="http://10000hours.top/tags/Spring-Social/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>SpringSecurity-退出登录</title>
+    <link href="http://10000hours.top/2019/06/14/SpringSecurity-%E9%80%80%E5%87%BA%E7%99%BB%E5%BD%95/"/>
+    <id>http://10000hours.top/2019/06/14/SpringSecurity-%E9%80%80%E5%87%BA%E7%99%BB%E5%BD%95/</id>
+    <published>2019-06-13T16:00:00.000Z</published>
+    <updated>2020-03-21T15:35:33.284Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="Spring-Security默认的退出处理逻辑"><a href="#Spring-Security默认的退出处理逻辑" class="headerlink" title="Spring Security默认的退出处理逻辑"></a>Spring Security默认的退出处理逻辑</h1><ol><li>是当前session失效</li><li>清除与当前用户相关的remember-me记录</li><li>清空当前的SecurityContext</li><li>重定向到登录页</li></ol><h1 id="与退出登录相关的配置"><a href="#与退出登录相关的配置" class="headerlink" title="与退出登录相关的配置"></a>与退出登录相关的配置</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">.logout()</span><br><span class="line">    .logoutUrl(&quot;logout&quot;)</span><br><span class="line">&#x2F;&#x2F;  .logoutSuccessUrl(&quot;&#x2F;evolutionary-logout.html&quot;)</span><br><span class="line">    .logoutSuccessHandler(logoutSuccessHandler)</span><br><span class="line">    .deleteCookies(&quot;JSESSIONID&quot;)</span><br><span class="line">    .and()</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * 默认的退出成功处理器，如果设置了evolutionary.security.browser.signOutUrl，则跳到配置的地址上，</span><br><span class="line"> * 如果没配置，则返回json格式的响应。</span><br><span class="line"> *</span><br><span class="line"> * @author richey</span><br><span class="line"> *</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class EvolutionaryLogoutSuccessHandler implements LogoutSuccessHandler &#123;</span><br><span class="line"></span><br><span class="line">private Logger logger &#x3D; LoggerFactory.getLogger(getClass());</span><br><span class="line"></span><br><span class="line">public EvolutionaryLogoutSuccessHandler(String signOutSuccessUrl) &#123;</span><br><span class="line">this.signOutSuccessUrl &#x3D; signOutSuccessUrl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private String signOutSuccessUrl;</span><br><span class="line"></span><br><span class="line">private ObjectMapper objectMapper &#x3D; new ObjectMapper();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@Override</span><br><span class="line">public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)</span><br><span class="line">throws IOException, ServletException &#123;</span><br><span class="line"></span><br><span class="line">logger.info(&quot;退出成功&quot;);</span><br><span class="line"></span><br><span class="line">if (StringUtils.isBlank(signOutSuccessUrl)) &#123;</span><br><span class="line">response.setContentType(&quot;application&#x2F;json;charset&#x3D;UTF-8&quot;);</span><br><span class="line">response.getWriter().write(objectMapper.writeValueAsString(new SimpleResult(&quot;退出成功&quot;)));</span><br><span class="line">&#125; else &#123;</span><br><span class="line">response.sendRedirect(signOutSuccessUrl);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;Spring-Security默认的退出处理逻辑&quot;&gt;&lt;a href=&quot;#Spring-Security默认的退出处理逻辑&quot; class=&quot;headerlink&quot; title=&quot;Spring Security默认的退出处理逻辑&quot;&gt;&lt;/a&gt;Spring Securit
+      
+    
+    </summary>
+    
+    
+      <category term="Spring" scheme="http://10000hours.top/categories/Spring/"/>
+    
+    
+      <category term="Spring-Security" scheme="http://10000hours.top/tags/Spring-Security/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>SpringSecurity-Session管理</title>
+    <link href="http://10000hours.top/2019/06/13/SpringSecurity-Session%E7%AE%A1%E7%90%86/"/>
+    <id>http://10000hours.top/2019/06/13/SpringSecurity-Session%E7%AE%A1%E7%90%86/</id>
+    <published>2019-06-12T16:00:00.000Z</published>
+    <updated>2020-03-21T15:35:33.283Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="Sesison超时"><a href="#Sesison超时" class="headerlink" title="Sesison超时"></a>Sesison超时</h1><ul><li><p>Spring boot设置sesison超时时间</p><pre><code>spring.session.timeout = 10; // 单位是s,默认是30分钟</code></pre><p>从源码可以看出最短超时时间是1分钟,如下:</p></li></ul><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">    TomcatEmbeddedServletContainerFactory#configureSession()</span><br><span class="line"></span><br><span class="line">    private long getSessionTimeoutInMinutes() &#123;</span><br><span class="line">long sessionTimeout &#x3D; getSessionTimeout();</span><br><span class="line">if (sessionTimeout &gt; 0) &#123;</span><br><span class="line">sessionTimeout &#x3D; Math.max(TimeUnit.SECONDS.toMinutes(sessionTimeout), 1L);</span><br><span class="line">&#125;</span><br><span class="line">return sessionTimeout;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure><ul><li><p>Session失效后的程序处理</p><p>  设置Sesison失效后的跳转路径</p><pre><code>.sessionManagement()  .invalidSessionUrl(&quot;/session/invalid&quot;) //Session失效后跳转的地址  .and()</code></pre><p>  提供session失效跳转的接口</p><pre><code>@GetMapping(&quot;/session/invalid&quot;)@ResponseStatus(code = HttpStatus.UNAUTHORIZED)public SimpleResult sessionInvalid() {  String message = &quot;session失效&quot;;  return new SimpleResult(message);}</code></pre></li></ul><h1 id="Session并发控制"><a href="#Session并发控制" class="headerlink" title="Session并发控制"></a>Session并发控制</h1><ul><li><p>一个帐号同时只允许一个用户登录,后面登录用户踢掉前面用户</p><pre><code>.maximumSessions(1).and()</code></pre><p>对于后面session过期(后面的用户挤掉之前的用户)事件的处理策略:</p><pre><code>.expiredSessionStrategy(SessionInformationExpiredStrategy)</code></pre><p>下面写一个session超时策略的实现</p></li></ul><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * @author richey</span><br><span class="line"> *</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class AbstractSessionStrategy &#123;</span><br><span class="line"></span><br><span class="line">private final Logger logger &#x3D; LoggerFactory.getLogger(getClass());</span><br><span class="line">&#x2F;**</span><br><span class="line"> * 跳转的url</span><br><span class="line"> *&#x2F;</span><br><span class="line">private String destinationUrl;</span><br><span class="line">&#x2F;**</span><br><span class="line"> * 系统配置信息</span><br><span class="line"> *&#x2F;</span><br><span class="line">private SecurityProperties securityPropertie;</span><br><span class="line">&#x2F;**</span><br><span class="line"> * 重定向策略</span><br><span class="line"> *&#x2F;</span><br><span class="line">private RedirectStrategy redirectStrategy &#x3D; new DefaultRedirectStrategy();</span><br><span class="line">&#x2F;**</span><br><span class="line"> * 跳转前是否创建新的session</span><br><span class="line"> *&#x2F;</span><br><span class="line">private boolean createNewSession &#x3D; true;</span><br><span class="line"></span><br><span class="line">private ObjectMapper objectMapper &#x3D; new ObjectMapper();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public AbstractSessionStrategy(SecurityProperties securityPropertie) &#123;</span><br><span class="line">String invalidSessionUrl &#x3D; securityPropertie.getBrower().getSession().getSessionInvalidUrl();</span><br><span class="line">Assert.isTrue(UrlUtils.isValidRedirectUrl(invalidSessionUrl), &quot;url must start with &#39;&#x2F;&#39; or with &#39;http(s)&#39;&quot;);</span><br><span class="line">Assert.isTrue(StringUtils.endsWithIgnoreCase(invalidSessionUrl, &quot;.html&quot;), &quot;url must end with &#39;.html&#39;&quot;);</span><br><span class="line">this.destinationUrl &#x3D; invalidSessionUrl;</span><br><span class="line">this.securityPropertie &#x3D; securityPropertie;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">protected void onSessionInvalid(HttpServletRequest request, HttpServletResponse response) throws IOException &#123;</span><br><span class="line"></span><br><span class="line">logger.info(&quot;session失效&quot;);</span><br><span class="line"></span><br><span class="line">if (createNewSession) &#123;</span><br><span class="line">request.getSession();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">String sourceUrl &#x3D; request.getRequestURI();</span><br><span class="line">String targetUrl;</span><br><span class="line"></span><br><span class="line">if (StringUtils.endsWithIgnoreCase(sourceUrl, &quot;.html&quot;)) &#123;</span><br><span class="line">if(StringUtils.equals(sourceUrl, securityPropertie.getBrower().getLoginPage())</span><br><span class="line">|| StringUtils.equals(sourceUrl, securityPropertie.getBrower().getSignOutUrl()))&#123;</span><br><span class="line">targetUrl &#x3D; sourceUrl;</span><br><span class="line">&#125;else&#123;</span><br><span class="line">targetUrl &#x3D; destinationUrl;</span><br><span class="line">&#125;</span><br><span class="line">logger.info(&quot;跳转到:&quot;+targetUrl);</span><br><span class="line">redirectStrategy.sendRedirect(request, response, targetUrl);</span><br><span class="line">&#125; else &#123;</span><br><span class="line">Object result &#x3D; buildResponseContent(request);</span><br><span class="line">response.setStatus(HttpStatus.UNAUTHORIZED.value());</span><br><span class="line">response.setContentType(&quot;application&#x2F;json;charset&#x3D;UTF-8&quot;);</span><br><span class="line">response.getWriter().write(objectMapper.writeValueAsString(result));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @param request</span><br><span class="line"> * @return</span><br><span class="line"> *&#x2F;</span><br><span class="line">protected Object buildResponseContent(HttpServletRequest request) &#123;</span><br><span class="line">String message &#x3D; &quot;session已失效&quot;;</span><br><span class="line">if (isConcurrency()) &#123;</span><br><span class="line">message &#x3D; message + &quot;，有可能是并发登录导致的&quot;;</span><br><span class="line">&#125;</span><br><span class="line">return new SimpleResult(message);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * session失效是否是并发导致的</span><br><span class="line"> *</span><br><span class="line"> * @return</span><br><span class="line"> *&#x2F;</span><br><span class="line">protected boolean isConcurrency() &#123;</span><br><span class="line">return false;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * Determines whether a new session should be created before redirecting (to</span><br><span class="line"> * avoid possible looping issues where the same session ID is sent with the</span><br><span class="line"> * redirected request). Alternatively, ensure that the configured URL does</span><br><span class="line"> * not pass through the &#123;@code SessionManagementFilter&#125;.</span><br><span class="line"> *</span><br><span class="line"> * @param createNewSession</span><br><span class="line"> *            defaults to &#123;@code true&#125;.</span><br><span class="line"> *&#x2F;</span><br><span class="line">public void setCreateNewSession(boolean createNewSession) &#123;</span><br><span class="line">this.createNewSession &#x3D; createNewSession;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author richey</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class EvolutionaryExpiredSessionStrategy extends AbstractSessionStrategy implements SessionInformationExpiredStrategy&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    public EvolutionaryExpiredSessionStrategy(SecurityProperties securityPropertie) &#123;</span><br><span class="line">        super(securityPropertie);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void onExpiredSessionDetected(SessionInformationExpiredEvent event) throws IOException, ServletException &#123;</span><br><span class="line">        onSessionInvalid(event.getRequest(), event.getResponse());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><ul><li>一个帐号同时只允许一个用户登录,后面登录用户不允许登录</li></ul><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.maximumSessions(1)</span><br><span class="line">.maxSessionsPreventsLogin(true) &#x2F;&#x2F;session达到最大数量后,不允许后面的用户登录</span><br><span class="line">.and()</span><br></pre></td></tr></table></figure><h1 id="集群Session管理"><a href="#集群Session管理" class="headerlink" title="集群Session管理"></a>集群Session管理</h1><ul><li><p>spring-session,将session信息单独存储</p><p>依赖</p>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.session&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-session&lt;&#x2F;artifactId&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure><p>Spring-session支持的存储类型</p></li></ul><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">REDIS,</span><br><span class="line">MONGO,</span><br><span class="line">JDBC,</span><br><span class="line">HAZELCAST,</span><br><span class="line">HASH_MAP,</span><br><span class="line">NONE;</span><br></pre></td></tr></table></figure><ul><li>指定spring-session的存储类型</li></ul><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">spring.session.store-type&#x3D;REDIS</span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;Sesison超时&quot;&gt;&lt;a href=&quot;#Sesison超时&quot; class=&quot;headerlink&quot; title=&quot;Sesison超时&quot;&gt;&lt;/a&gt;Sesison超时&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Spring boot设置sesison超时时间&lt;/p&gt;
+&lt;pre
+      
+    
+    </summary>
+    
+    
+      <category term="Spring" scheme="http://10000hours.top/categories/Spring/"/>
+    
+    
+      <category term="Spring-Security" scheme="http://10000hours.top/tags/Spring-Security/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>观察者模式</title>
+    <link href="http://10000hours.top/2019/06/12/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/"/>
+    <id>http://10000hours.top/2019/06/12/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/</id>
+    <published>2019-06-11T16:00:00.000Z</published>
+    <updated>2020-04-16T15:04:37.347Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F.jpg" alt="观察者模式"></p><p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F%E7%B1%BB%E5%9B%BE.jpg" alt="观察者模式"></p><h1 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h1><p>定义了一对多的关系，这样，当一方对象状态改变时，它的所有依赖都会收到通知，并自动更新。</p><h1 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h1><p>Spring中的事件机制，是观察者模式思想的一种实现</p><h2 id="Spring中观察者模式的四个角色"><a href="#Spring中观察者模式的四个角色" class="headerlink" title="Spring中观察者模式的四个角色"></a>Spring中观察者模式的四个角色</h2><ul><li>事件（ApplicationEvent）</li></ul><p>ApplicationEvent 是所有事件对象的父类。ApplicationEvent 继承自 jdk 的 EventObject, 所有的事件都需要继承 ApplicationEvent, 并且通过source得到事件源。</p><p>下列描述了Spring提供的内置事件：</p><p>ContextRefreshedEvent：事件发布在 ApplicationContext 初始化或刷新时（例如：通过在 ConfigurableApplicationContext 接口使用refresh()方法）。这里,“初始化”意味着所有 bean 加载，post-processor bean 被检测到并且激活,单例预先实例化，ApplicationContext 对象可以使用了。只要上下文没有关闭,可以触发多次刷新, ApplicationContext 提供了一种可选择的支持这种“热”刷新。例如：XmlWebApplicationContext 支持热刷新,但 GenericApplicationContext 并非如此。具体是在 AbstractApplicationContext 的 finishRefresh() 方法中。</p><p>ContextStartedEvent：事件发布在 ApplicationContext 开始使用 ConfigurableApplicationContext 接口 start() 方法。这里,“开始”意味着所有生命周期 bean 接收到一个明确的起始信号。通常,这个信号用于明确停止后重新启动,但它也可以用于启动组件没有被配置为自动运行（例如：组件还没有开始初始化）。</p><p>ContextStoppedEvent：事件发布在 ApplicationContext 停止时通过使用 ConfigurableApplicationContext 接口上的 stop() 方法。在这里,“停止”意味着所有生命周期bean接收一个显式的停止信号。停止上下文可以通过重新调用start()方法。</p><p>ContextClosedEvent：事件发布在 ApplicationContext 关闭时通过关闭 ConfigurableApplicationContext 接口()方法。这里,“封闭”意味着所有单例 bean 被摧毁。一个封闭的环境达到生命的终结。它不能刷新或重启。</p><p>RequestHandledEvent：一个特定的web事件告诉所有能处理HTTP请求的bean 。这个事件是在请求完成后发布的。这个事件只适用于使用 Spring 的 DispatcherServlet 的web应用程序。</p><ul><li>事件监听（ApplicationListener）</li></ul><p>ApplicationListener 事件监听器，也就是观察者。继承自 jdk 的 EventListener，该类中只有一个方法 onApplicationEvent。当监听的事件发生后该方法会被执行。</p><ul><li>事件发布（ApplicationContext）</li></ul><p>ApplicationContext 是 Spring 中的核心容器，在事件监听中 ApplicationContext 可以作为事件的发布者，也就是事件源。因为 ApplicationContext 继承自 ApplicationEventPublisher。在 ApplicationEventPublisher 中定义了事件发布的方法 — publishEvent(Object event)</p><ul><li>事件管理（ApplicationEventMulticaster）</li></ul><p>ApplicationEventMulticaster 用于事件监听器的注册和事件的广播。监听器的注册就是通过它来实现的，它的作用是把 Applicationcontext 发布的 Event 广播给它的监听器列表。</p><h2 id="Spring中实现观察者模式"><a href="#Spring中实现观察者模式" class="headerlink" title="Spring中实现观察者模式"></a>Spring中实现观察者模式</h2><ol><li><p>自定义需要发布的事件类，需要继承 ApplicationEvent 类或 PayloadApplicationEvent (该类也仅仅是对 ApplicationEvent 的一层封装)</p></li><li><p>使用 @EventListener 来监听事件或者实现 ApplicationListener 接口。</p></li><li><p>使用 ApplicationEventPublisher 来发布自定义事件（@Autowired注入即可）</p><p> @TransactionalEventListener 监听器：如果事件的发布不是在事务（@Transactional）范围内，则监听不到该事件，除非将 fallbackExecution 标志设置为 true（@TransactionalEventListener(fallbackExecution = true)）;如果在事务中，可以选择在事务的哪个阶段来监听事件，默认在事务提交后监听（@TransactionalEventListener(phase = TransactionPhase.AFTER_COMPLETION)）。</p></li></ol><p>以上介绍的事件监听都是同步，如果需要开启异步支持的话：</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableAsync</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AsyncEventConfiguration</span> <span class="keyword">implements</span> <span class="title">AsyncConfigurer</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Executor <span class="title">getAsyncExecutor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Executors.newCachedThreadPool();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h1 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h1><h2 id="事件（MyEvent-java"><a href="#事件（MyEvent-java" class="headerlink" title="事件（MyEvent.java)"></a>事件（MyEvent.java)</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyEvent</span> <span class="keyword">extends</span> <span class="title">ApplicationEvent</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyEvent</span><span class="params">(ApplicationContext source)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(source);</span><br><span class="line">        System.out.println(<span class="string">"MyEvent 构造器执行"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">echo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"模拟业务逻辑执行"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h2 id="事件监听（MyListenerA-java、MyListenerB-java）"><a href="#事件监听（MyListenerA-java、MyListenerB-java）" class="headerlink" title="事件监听（MyListenerA.java、MyListenerB.java）"></a>事件监听（MyListenerA.java、MyListenerB.java）</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyListenerA</span> <span class="keyword">implements</span> <span class="title">ApplicationListener</span>&lt;<span class="title">MyEvent</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onApplicationEvent</span><span class="params">(MyEvent myEvent)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"MyListenerA"</span>);</span><br><span class="line">        myEvent.echo();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyListenerB</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@EventListener</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onApplicationEvent</span><span class="params">(MyEvent myEvent)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"MyListenerB"</span>);</span><br><span class="line">        myEvent.echo();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h2 id="事件发布（MyPublisher-java）"><a href="#事件发布（MyPublisher-java）" class="headerlink" title="事件发布（MyPublisher.java）"></a>事件发布（MyPublisher.java）</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyPublisher</span> <span class="keyword">implements</span> <span class="title">ApplicationContextAware</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ApplicationContext applicationContext;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setApplicationContext</span><span class="params">(ApplicationContext applicationContext)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.applicationContext = applicationContext;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 发布事件</span></span><br><span class="line"><span class="comment">     * 监听该事件的监听者都可以获取消息</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> myEvent</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">publisherEvent</span><span class="params">(MyEvent myEvent)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"---开始发布 myEvent 事件---"</span>);</span><br><span class="line">        applicationContext.publishEvent(myEvent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h2 id="单元测试"><a href="#单元测试" class="headerlink" title="单元测试"></a>单元测试</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RunWith</span>(SpringRunner<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">SpringBootTest</span></span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">DesignPatternsApplicationTests</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MyPublisher myPublisher;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MyEvent myEvent;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">contextLoads</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        myPublisher.publisherEvent(myEvent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;&lt;img src=&quot;http://blog-pic-1254088127.picsh.myqcloud.com/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F.jpg&quot; alt=&quot;观察者模式&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;
+      
+    
+    </summary>
+    
+    
+      <category term="设计模式" scheme="http://10000hours.top/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
+    
+    
+      <category term="设计模式" scheme="http://10000hours.top/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>SpringSecurity-Session管理 (1)</title>
+    <link href="http://10000hours.top/2019/06/12/SpringSecurity-Session%E7%AE%A1%E7%90%86%20(1)/"/>
+    <id>http://10000hours.top/2019/06/12/SpringSecurity-Session%E7%AE%A1%E7%90%86%20(1)/</id>
+    <published>2019-06-11T16:00:00.000Z</published>
+    <updated>2020-03-21T15:35:33.283Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="Session管理"><a href="#Session管理" class="headerlink" title="Session管理"></a>Session管理</h1><h2 id="内容概要"><a href="#内容概要" class="headerlink" title="内容概要"></a>内容概要</h2><ul><li>Session超时处理</li><li>Session并发控制</li><li>集群Session管理</li></ul><h2 id="Session超时处理"><a href="#Session超时处理" class="headerlink" title="Session超时处理"></a>Session超时处理</h2><p>在Spring Boot中Session的超时时间非常简单,在配置文件中配置即可:</p><pre><code>server.session.timeout=1000</code></pre><p>单位是秒,默认是30分钟,如果查看Spring Boot源代码的话,你会发现,实际生效的最短时间是1分钟:</p><pre><code>TomcatEmbeddedServletContainerFactory#configureSessionprivate void configureSession(Context context) {    long sessionTimeout = this.getSessionTimeoutInMinutes();    context.setSessionTimeout((int)sessionTimeout);    if (this.isPersistSession()) {        Manager manager = context.getManager();        if (manager == null) {            manager = new StandardManager();            context.setManager((Manager)manager);        }        this.configurePersistSession((Manager)manager);    } else {        context.addLifecycleListener(new TomcatEmbeddedServletContainerFactory.DisablePersistSessionListener(null));    }}private long getSessionTimeoutInMinutes() {    long sessionTimeout = (long)this.getSessionTimeout();    if (sessionTimeout &gt; 0L) {        //这里拿设置的值跟一分钟做了比较,取最大值        sessionTimeout = Math.max(TimeUnit.SECONDS.toMinutes(sessionTimeout), 1L);    }    return sessionTimeout;}</code></pre><ul><li><p>当Session失效之后再刷新页面,我们要知道是因为Session失效,从而对应的做一些特殊的提示等操作:</p><p>  在配置中配置失效后请求地址</p><pre><code>.sessionManagement()                    .invalidSessionUrl(&quot;/session/invalid&quot;)                    .and()@GetMapping(&quot;/session/invalid&quot;)@ResponseStatus(code = HttpStatus.UNAUTHORIZED)public SimpleResult sessionInvalid() {    String message = &quot;session失效&quot;;    return new SimpleResult(message);}</code></pre><p>  将该地址设置为免校验</p><pre><code>.antMatchers(&quot;/session/invalid&quot;)                .permitAll()</code></pre></li></ul><h2 id="Session并发控制"><a href="#Session并发控制" class="headerlink" title="Session并发控制"></a>Session并发控制</h2><ul><li><p>一个用户同时只能在一台设备登录,第二个设备登录后,第一个失效,并记录</p><pre><code>.sessionManagement()    .invalidSessionUrl(&quot;/session/invalid&quot;)    .maximumSessions(1)//最大登录数    .expiredSessionStrategy(new EvolutionaryExpiredSessionStrategy())    .and()    .and()/** * @author richey */public class EvolutionaryExpiredSessionStrategy implements SessionInformationExpiredStrategy{</code></pre></li></ul><pre><code>    @Override    public void onExpiredSessionDetected(SessionInformationExpiredEvent event) throws IOException, ServletException {        //这里可以记录并发登录造成Session失效的信息        event.getResponse().setContentType(&quot;application/json;charset=UTF-8&quot;);        event.getResponse().getWriter().write(&quot;并发登录!&quot;);    }}</code></pre><ul><li><p>一个用户同时只能在一台设备登录,第二个设备不允许登录</p><pre><code>.sessionManagement()    .invalidSessionUrl(&quot;/session/invalid&quot;)    .maximumSessions(1)//最大登录数    .maxSessionsPreventsLogin(true)//当Session的数量达到最大数量后,阻止后续的登录行为    .expiredSessionStrategy(new EvolutionaryExpiredSessionStrategy())    .and()    .and()</code></pre></li></ul><h2 id="集群Session管理"><a href="#集群Session管理" class="headerlink" title="集群Session管理"></a>集群Session管理</h2><ul><li>使用redis的好处</li></ul><p>Session访问非常频繁<br>redis自带超时特性</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;Session管理&quot;&gt;&lt;a href=&quot;#Session管理&quot; class=&quot;headerlink&quot; title=&quot;Session管理&quot;&gt;&lt;/a&gt;Session管理&lt;/h1&gt;&lt;h2 id=&quot;内容概要&quot;&gt;&lt;a href=&quot;#内容概要&quot; class=&quot;headerli
+      
+    
+    </summary>
+    
+    
+      <category term="Spring" scheme="http://10000hours.top/categories/Spring/"/>
+    
+    
+      <category term="Spring-Security" scheme="http://10000hours.top/tags/Spring-Security/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Spring Security（11）－OAuth协议简介</title>
+    <link href="http://10000hours.top/2019/06/11/Spring%20Security%EF%BC%8811%EF%BC%89%EF%BC%8DOAuth%E5%8D%8F%E8%AE%AE%E7%AE%80%E4%BB%8B/"/>
+    <id>http://10000hours.top/2019/06/11/Spring%20Security%EF%BC%8811%EF%BC%89%EF%BC%8DOAuth%E5%8D%8F%E8%AE%AE%E7%AE%80%E4%BB%8B/</id>
+    <published>2019-06-10T16:00:00.000Z</published>
+    <updated>2020-03-21T15:35:33.274Z</updated>
+    
+    <content type="html"><![CDATA[<p>概览：</p><ul><li><p>OAuth协议要解决的问题</p></li><li><p>OAuth协议中的各种角色</p></li><li><p>OAuth协议运行流程</p></li></ul><h2 id="OAuth协议要解决的问题"><a href="#OAuth协议要解决的问题" class="headerlink" title="OAuth协议要解决的问题"></a>OAuth协议要解决的问题</h2><p>OAuth协议主要是为了解决传统的授权（比如用户名密码授权）存在的问题：</p><ol><li>授权后应用可以访问所有数据（危险）</li><li>用户只有修改密码才能收回授权</li><li>密码泄露的可能性高</li></ol><h2 id="OAuth协议中的各种角色"><a href="#OAuth协议中的各种角色" class="headerlink" title="OAuth协议中的各种角色"></a>OAuth协议中的各种角色</h2><ol><li><p>服务提供商（Provider)</p><p> 提供令牌Token</p><p> 在服务提供商中还存在了两个子角色：</p><ul><li>认证服务器（Authorization Server）,用于生成令牌</li><li>资源服务器(Resource Server)，用户保存用户数据及验证令牌</li></ul></li><li><p>资源所有者(Resource Owner)</p><p> 资源所有者一般是用户自己</p></li><li><p>第三方应用(Client)</p></li></ol><p><img src="http://ogiythg18.bkt.clouddn.com/OAuth%E5%8D%8F%E8%AE%AE%E4%B8%AD%E7%9A%84%E8%A7%92%E8%89%B2.png" alt="image"></p><h2 id="OAuth协议运行流程"><a href="#OAuth协议运行流程" class="headerlink" title="OAuth协议运行流程"></a>OAuth协议运行流程</h2><p>知道了OAuth协议中的各种角色，下面我们来看下这些角色之间是怎么协作运行的。</p><p><img src="http://ogiythg18.bkt.clouddn.com/OAuth%E5%8D%8F%E8%AE%AE%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B.png" alt="image"></p><p>上面的流程中第二步：同意授权是关键，只有用户同意授权了之后，后面的流程才会继续下去，OAuth协议中支持了4种授权模式：</p><ol><li>授权码模式(authorization code)</li><li>简化模式(implicit)</li><li>密码模式(resource owner password credentials)</li><li>客户端模式(client credentials)</li></ol><p>目前市场上服务提供商基本上都采用的是授权码模式来完成整个OAuth流程的，这种模式也是四种模式中年功能最完整，流程最严密的授权模式。下面我们说一下授权码模式的认证流程。</p><p>授权码模式：</p><p><img src="http://ogiythg18.bkt.clouddn.com/OAuth%E6%8E%88%E6%9D%83%E7%A0%81%E8%AE%A4%E8%AF%81.png" alt="image"></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;概览：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;OAuth协议要解决的问题&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;OAuth协议中的各种角色&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;OAuth协议运行流程&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;OAuth协议要解决的问题&quot;&gt;&lt;a h
+      
+    
+    </summary>
+    
+    
+      <category term="Spring" scheme="http://10000hours.top/categories/Spring/"/>
+    
+    
+      <category term="Spring-Security" scheme="http://10000hours.top/tags/Spring-Security/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>策略模式</title>
+    <link href="http://10000hours.top/2019/06/10/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/"/>
+    <id>http://10000hours.top/2019/06/10/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/</id>
+    <published>2019-06-09T16:00:00.000Z</published>
+    <updated>2020-04-16T15:08:54.836Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p><h2 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h2><ul><li><p>抽象策略略⻆色<br>  这个是⼀一个抽象的角色，通常情况下使⽤接口或者抽象类去实现。比如我们的Comparator接⼝口。</p></li><li><p>具体策略略⻆色<br>  包装了了具体的算法和⾏行行为。比如实现了Comparator接口的一组实现类。</p></li><li><p>环境⻆角⾊色Context<br>  内部会持有⼀个抽象⻆色的引⽤用，给客户端调⽤策略模式用于封装系列的算法，这些算法通常被封装在一个被称为 Context 类中，<br>客户端程序可以⾃由选择其中一种算法，或让 Context 为客户端选择一个最佳的算法——使⽤策略模式的优势是为了⽀支持算法的自由切换。</p></li></ul><h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><ul><li><p>Resource和策略略模式<br>  Resource 接口就是策略模式的典型应用，Resource 接口就代表资源访问策略，但具体采⽤用哪种策略实现，Resource 接口并不理理会。<br>客户端程序只和Resource 接口耦合，并不知道底层采⽤何种资源访问策略，这样应用可以在不同的资源访问策略之间自由切换。</p></li><li><p>Spring 框架的 Context 如何“智能”地选择资源访问策略<br>  Spring提供两个标志性接口：</p><ul><li>ResourceLoader：该接口实现类的实例可以获得⼀个 Resource 实例例。</li><li>ResourceLoaderAware：该接口实现类的实例将获得一个 ResourceLoader 的引用。<br>在 ResourceLoader 接口里有如下方法：Resource getResource(String location)：该接口仅包含这个⽅法，该方法⽤于返回一个 Resource 实例例。</li></ul><p>ApplicationContext 的实现类都实现 ResourceLoader 接⼝，因此 ApplicationContext 可⽤于直接获取 Resource 实例。</p></li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;&lt;img src=&quot;http://blog-pic-1254088127.picsh.myqcloud.com/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.jpg&quot; alt=&quot;适配器模式&quot;&gt;&lt;/p&gt;
+&lt;h2 id=&quot;组成&quot;&gt;&lt;a href=&quot;#
+      
+    
+    </summary>
+    
+    
+      <category term="设计模式" scheme="http://10000hours.top/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
+    
+    
+      <category term="设计模式" scheme="http://10000hours.top/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>使用jdk自带工具jvisualvm查看.hprof文件</title>
+    <link href="http://10000hours.top/2019/06/10/%E4%BD%BF%E7%94%A8jdk%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7jvisualvm%E6%9F%A5%E7%9C%8B.hprof%E6%96%87%E4%BB%B6/"/>
+    <id>http://10000hours.top/2019/06/10/%E4%BD%BF%E7%94%A8jdk%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7jvisualvm%E6%9F%A5%E7%9C%8B.hprof%E6%96%87%E4%BB%B6/</id>
+    <published>2019-06-09T16:00:00.000Z</published>
+    <updated>2020-04-15T14:03:24.688Z</updated>
+    
+    <content type="html"><![CDATA[<p>使用jdk自带的jvisualvm.exe程序来查看内存溢出文件</p><p>位置：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$JAVA_HOME&#x2F;bin&#x2F;jvisualvm</span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;使用jdk自带的jvisualvm.exe程序来查看内存溢出文件&lt;/p&gt;
+&lt;p&gt;位置：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/
+      
+    
+    </summary>
+    
+    
+      <category term="JVM" scheme="http://10000hours.top/categories/JVM/"/>
+    
+    
+      <category term="JVM" scheme="http://10000hours.top/tags/JVM/"/>
+    
+      <category term="工具" scheme="http://10000hours.top/tags/%E5%B7%A5%E5%85%B7/"/>
+    
+  </entry>
+  
+</feed>

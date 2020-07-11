@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Mysql," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="Richey's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="数据库相关查看数据库版本1select version();  查看所有数据库1show databases;  查看master数据库当前正在使用的二进制日志及当前执行二进制日志位置1show master status;  查看数据库创建语句1show create database database_name; 创建数据库1234567CREATE DATABASE [IF NOT EXIS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mysql（1）-常用命令">
+<meta property="og:url" content="http://10000hours.top/2019/03/06/Mysql%EF%BC%881%EF%BC%89-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/index.html">
+<meta property="og:site_name" content="Richey&#39;s Blog">
+<meta property="og:description" content="数据库相关查看数据库版本1select version();  查看所有数据库1show databases;  查看master数据库当前正在使用的二进制日志及当前执行二进制日志位置1show master status;  查看数据库创建语句1show create database database_name; 创建数据库1234567CREATE DATABASE [IF NOT EXIS">
+<meta property="article:published_time" content="2019-03-05T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-04-14T15:32:04.874Z">
+<meta property="article:author" content="Richey Liu">
+<meta property="article:tag" content="Mysql">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://10000hours.top/2019/03/06/Mysql（1）-常用命令/"/>
+
+
+
+
+
+  <title>Mysql（1）-常用命令 | Richey's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Richey's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">面朝大海，春暖花开</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/06/Mysql%EF%BC%881%EF%BC%89-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Mysql（1）-常用命令</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-06T00:00:00+08:00">
+                2019-03-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/DB/" itemprop="url" rel="index">
+                    <span itemprop="name">DB</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/03/06/Mysql%EF%BC%881%EF%BC%89-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/06/Mysql%EF%BC%881%EF%BC%89-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/03/06/Mysql%EF%BC%881%EF%BC%89-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" class="leancloud_visitors" data-flag-title="Mysql（1）-常用命令">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="数据库相关"><a href="#数据库相关" class="headerlink" title="数据库相关"></a>数据库相关</h1><h2 id="查看数据库版本"><a href="#查看数据库版本" class="headerlink" title="查看数据库版本"></a>查看数据库版本</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select version();</span><br></pre></td></tr></table></figure>
+
+<h2 id="查看所有数据库"><a href="#查看所有数据库" class="headerlink" title="查看所有数据库"></a>查看所有数据库</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show databases;</span><br></pre></td></tr></table></figure>
+
+<h2 id="查看master数据库当前正在使用的二进制日志及当前执行二进制日志位置"><a href="#查看master数据库当前正在使用的二进制日志及当前执行二进制日志位置" class="headerlink" title="查看master数据库当前正在使用的二进制日志及当前执行二进制日志位置"></a>查看master数据库当前正在使用的二进制日志及当前执行二进制日志位置</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show master status;</span><br></pre></td></tr></table></figure>
+
+<h2 id="查看数据库创建语句"><a href="#查看数据库创建语句" class="headerlink" title="查看数据库创建语句"></a>查看数据库创建语句</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show create database database_name;</span><br></pre></td></tr></table></figure>
+<h2 id="创建数据库"><a href="#创建数据库" class="headerlink" title="创建数据库"></a>创建数据库</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">CREATE DATABASE [IF NOT EXISTS] &lt;数据库名&gt;</span><br><span class="line">[[DEFAULT] CHARACTER SET &lt;字符集名&gt;] [[DEFAULT] COLLATE &lt;校对规则名&gt;];</span><br><span class="line"></span><br><span class="line">eg:</span><br><span class="line"></span><br><span class="line">CREATE DATABASE IF NOT EXISTS mysql_study</span><br><span class="line">DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;</span><br></pre></td></tr></table></figure>
+
+<h2 id="确定数据库大小"><a href="#确定数据库大小" class="headerlink" title="确定数据库大小"></a>确定数据库大小</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">SELECT</span><br><span class="line">    ROUND(SUM(data_length + index_length) &#x2F; 1024 &#x2F; 1024) AS total_mb,</span><br><span class="line">    ROUND(SUM(data_length) &#x2F; 1024 &#x2F; 1024) AS data_mb,</span><br><span class="line">    ROUND(SUM(index_length) &#x2F; 1024 &#x2F; 1024) AS index_mb</span><br><span class="line">FROM</span><br><span class="line">    INFORMATION_SCHEMA.tables;</span><br><span class="line">&#96;&#96;&#96;   </span><br><span class="line"></span><br><span class="line"># 表相关</span><br><span class="line"></span><br><span class="line">## 创建表(建表语句)</span><br><span class="line"></span><br><span class="line">&#96;&#96;&#96;mysql</span><br><span class="line">CREATE TABLE IF NOT EXISTS &#96;user_info&#96;(</span><br><span class="line">  &#96;id&#96; INT  AUTO_INCREMENT,</span><br><span class="line">  &#96;name&#96; VARCHAR(100) NOT NULL,</span><br><span class="line">  &#96;companyId&#96; VARCHAR(40) NOT NULL,</span><br><span class="line">  &#96;birthday&#96; DATE,</span><br><span class="line">  PRIMARY KEY (&#96;id&#96;),</span><br><span class="line">  index idx_companyId_name(&#96;id&#96;,&#96;name&#96;)</span><br><span class="line">)ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_unicode_ci;</span><br></pre></td></tr></table></figure>
+
+<h2 id="查看建表语句"><a href="#查看建表语句" class="headerlink" title="查看建表语句"></a>查看建表语句</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show create table table_name;</span><br></pre></td></tr></table></figure>
+
+<h2 id="查看表字段"><a href="#查看表字段" class="headerlink" title="查看表字段"></a>查看表字段</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">desc tb_books;</span><br><span class="line">or</span><br><span class="line">show columns from tb_books;</span><br></pre></td></tr></table></figure>
+
+<h2 id="修改列名"><a href="#修改列名" class="headerlink" title="修改列名"></a>修改列名</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alter table t1 modify name varchar(30) default null;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="删除外键"><a href="#删除外键" class="headerlink" title="删除外键"></a>删除外键</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alter table vip drop foreign key FK1C81D1738DA76</span><br></pre></td></tr></table></figure>
+
+<h2 id="删除索引"><a href="#删除索引" class="headerlink" title="删除索引"></a>删除索引</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">alter table table_name drop index index_name ;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># How can I employ “if exists” for creating or dropping an index in MySQL?</span><br><span class="line">set @exist :&#x3D; (select count(*) from information_schema.statistics where table_name &#x3D; &#39;table&#39; and index_name &#x3D; &#39;index&#39; and table_schema &#x3D; database());</span><br><span class="line">set @sqlstmt :&#x3D; if( @exist &gt; 0, &#39;select &#39;&#39;INFO: Index already exists.&#39;&#39;&#39;, &#39;create index i_index on tablename ( columnname )&#39;);</span><br><span class="line">PREPARE stmt FROM @sqlstmt;</span><br><span class="line">EXECUTE stmt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="删除主键"><a href="#删除主键" class="headerlink" title="删除主键"></a>删除主键</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alter table table_test drop primary key;</span><br></pre></td></tr></table></figure>
+
+<h2 id="增加主键"><a href="#增加主键" class="headerlink" title="增加主键"></a>增加主键</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alter table table_test add primary key(id);</span><br></pre></td></tr></table></figure>
+
+<h2 id="执行语句手动关闭安全更新模式"><a href="#执行语句手动关闭安全更新模式" class="headerlink" title="执行语句手动关闭安全更新模式"></a>执行语句手动关闭安全更新模式</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SET SQL_SAFE_UPDATES &#x3D; 0;</span><br></pre></td></tr></table></figure>
+
+<h1 id="用户相关"><a href="#用户相关" class="headerlink" title="用户相关"></a>用户相关</h1><h2 id="创建用户（CREATE-USER）"><a href="#创建用户（CREATE-USER）" class="headerlink" title="创建用户（CREATE USER）"></a>创建用户（CREATE USER）</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create user &#39;richey&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;!@#$1234Richey&#39;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="给数据库用户授权（GRANT-PERMISSIONS）"><a href="#给数据库用户授权（GRANT-PERMISSIONS）" class="headerlink" title="给数据库用户授权（GRANT PERMISSIONS）"></a>给数据库用户授权（GRANT PERMISSIONS）</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; GRANT ALL ON mysql_study.* TO &#39;richey&#39;@&#39;localhost&#39;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="刷新权限-（FLUSH-PRIVILEGES-Tell-the-server-to-reload-the-grant-tables）"><a href="#刷新权限-（FLUSH-PRIVILEGES-Tell-the-server-to-reload-the-grant-tables）" class="headerlink" title="刷新权限 （FLUSH PRIVILEGES, Tell the server to reload the grant tables）"></a>刷新权限 （FLUSH PRIVILEGES, Tell the server to reload the grant tables）</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; FLUSH PRIVILEGES;</span><br></pre></td></tr></table></figure>
+
+<h1 id="系统表"><a href="#系统表" class="headerlink" title="系统表"></a>系统表</h1><h2 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">select * from information_schema.processlist</span><br><span class="line">select * from information_schema.innodb_trx; ## 当前运行的所有事务</span><br><span class="line">select * from information_schema.innodb_locks; ## 当前出现的锁</span><br><span class="line">select * from information_schema.innodb_lock_waits; ## 锁等待的对应关系</span><br></pre></td></tr></table></figure>
+<h2 id="日志"><a href="#日志" class="headerlink" title="日志"></a>日志</h2><h3 id="查看binglog文件列表"><a href="#查看binglog文件列表" class="headerlink" title="查看binglog文件列表"></a>查看binglog文件列表</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show binary logs;</span><br><span class="line">报错：</span><br><span class="line">ERROR 1381 (HY000): You are not using binary logging</span><br><span class="line">mysql&gt; show mysql&gt; show variables like &#39;log_bin&#39;;</span><br><span class="line">发现二进制文件没有开启</span><br><span class="line">+---------------+-------+</span><br><span class="line">| Variable_name | Value |</span><br><span class="line">+---------------+-------+</span><br><span class="line">| log_bin       | OFF   |</span><br><span class="line">+---------------+-------+</span><br><span class="line"></span><br><span class="line">Linux下MySQL的配置文件是my.cnf,一般会放在&#x2F;etc&#x2F;my.cnf,&#x2F;etc&#x2F;mysql&#x2F;my.cnf。</span><br><span class="line"></span><br><span class="line">在mysqld配置项下面加上log_bin&#x3D;mysql_bin</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">log_bin &#x3D; mysql_bin</span><br><span class="line"></span><br><span class="line">重启mysql</span><br><span class="line">systemctl restart mysql</span><br></pre></td></tr></table></figure>
+
+<h3 id="查看在写入的binlog文件"><a href="#查看在写入的binlog文件" class="headerlink" title="查看在写入的binlog文件"></a>查看在写入的binlog文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show master status；</span><br></pre></td></tr></table></figure>
+
+<h3 id="查看指定binlog文件的内容"><a href="#查看指定binlog文件的内容" class="headerlink" title="查看指定binlog文件的内容"></a>查看指定binlog文件的内容</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show binlog events [in &#39;log_name&#39;] [FROM pos] [limit [offset,] row_count]</span><br></pre></td></tr></table></figure>
+<h3 id="mysqlbinlog查看binlog文件内容"><a href="#mysqlbinlog查看binlog文件内容" class="headerlink" title="mysqlbinlog查看binlog文件内容"></a>mysqlbinlog查看binlog文件内容</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqlbinlog binlog文件</span><br></pre></td></tr></table></figure>
+
+<h3 id="输出指定position位置的binlog日志"><a href="#输出指定position位置的binlog日志" class="headerlink" title="输出指定position位置的binlog日志"></a>输出指定position位置的binlog日志</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqlbinlog --start-position&#x3D;&quot;指定开始位置&quot; --stop-position&#x3D;&quot;指定结束位置&quot; binlog文件</span><br></pre></td></tr></table></figure>
+<h3 id="输出指定position位置的binlog日志到指定文件中"><a href="#输出指定position位置的binlog日志到指定文件中" class="headerlink" title="输出指定position位置的binlog日志到指定文件中"></a>输出指定position位置的binlog日志到指定文件中</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqlbinlog --start-position&#x3D;&quot;指定开始位置&quot; --stop-position&#x3D;&quot;指定结束位置&quot; binlog文件 &gt; 输出文件名</span><br></pre></td></tr></table></figure>
+<h3 id="输出指定开始时间的binlog日志"><a href="#输出指定开始时间的binlog日志" class="headerlink" title="输出指定开始时间的binlog日志"></a>输出指定开始时间的binlog日志</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqlbinlog --start-datetime&#x3D;&quot;yyyy-MM-dd HH:mm:ss&quot; binlog文件</span><br></pre></td></tr></table></figure>
+<h1 id="时间处理"><a href="#时间处理" class="headerlink" title="时间处理"></a>时间处理</h1><p>获取当前日期+时间</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select now();</span><br><span class="line">+---------------------+</span><br><span class="line">| now()               |</span><br><span class="line">+---------------------+</span><br><span class="line">| 2019-06-05 21:30:43 |</span><br><span class="line">+---------------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<p>获得当前时间戳函数：current_timestamp, current_timestamp()</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select current_timestamp, current_timestamp();</span><br><span class="line">+---------------------+---------------------+</span><br><span class="line">| current_timestamp   | current_timestamp() |</span><br><span class="line">+---------------------+---------------------+</span><br><span class="line">| 2019-06-05 21:31:36 | 2019-06-05 21:31:36 |</span><br><span class="line">+---------------------+---------------------+</span><br></pre></td></tr></table></figure>
+<p>日期/时间转换为字符串</p>
+<p>函数：date_format(date,format), time_format(time,format)能够把一个日期/时间转换成各种各样的字符串格式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select date_format(&#39;2019-06-05 21:31:36&#39;,&#39;%Y%m%d%H%i%s&#39;);</span><br><span class="line">+---------------------------------------------------+</span><br><span class="line">| date_format(&#39;2019-06-05 21:31:36&#39;,&#39;%Y%m%d%H%i%s&#39;) |</span><br><span class="line">+---------------------------------------------------+</span><br><span class="line">| 20190605213136                                    |</span><br><span class="line">+---------------------------------------------------+</span><br></pre></td></tr></table></figure>
+<p>字符串转换为日期</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">函数：str_to_date(str, format)</span><br><span class="line"></span><br><span class="line">mysql&gt; select str_to_date(&#39;2019-06-05 21:31:36&#39;,&#39;%Y-%m-%d %H:%i:%s&#39;);</span><br><span class="line">+--------------------------------------------------------+</span><br><span class="line">| str_to_date(&#39;2019-06-05 21:31:36&#39;,&#39;%Y-%m-%d %H:%i:%s&#39;) |</span><br><span class="line">+--------------------------------------------------------+</span><br><span class="line">| 2019-06-05 21:31:36                                    |</span><br><span class="line">+--------------------------------------------------------+</span><br></pre></td></tr></table></figure>
+<p>Unix 时间戳、日期转换函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">unix_timestamp(),</span><br><span class="line">unix_timestamp(date),</span><br><span class="line">from_unixtime(unix_timestamp),</span><br><span class="line">from_unixtime(unix_timestamp,format)</span><br><span class="line"></span><br><span class="line">mysql&gt; select unix_timestamp();</span><br><span class="line">+------------------+</span><br><span class="line">| unix_timestamp() |</span><br><span class="line">+------------------+</span><br><span class="line">|       1559742262 |</span><br><span class="line">+------------------+</span><br><span class="line"></span><br><span class="line">mysql&gt; mysql&gt; select unix_timestamp(&#39;2019-06-05&#39;);</span><br><span class="line">+------------------------------+</span><br><span class="line">| unix_timestamp(&#39;2019-06-05&#39;) |</span><br><span class="line">+------------------------------+</span><br><span class="line">|                   1559664000 |</span><br><span class="line">+------------------------------+</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; mysql&gt; select unix_timestamp(&#39;2019-06-05 21:31:36&#39;);</span><br><span class="line">+---------------------------------------+</span><br><span class="line">| unix_timestamp(&#39;2019-06-05 21:31:36&#39;) |</span><br><span class="line">+---------------------------------------+</span><br><span class="line">|                            1559741496 |</span><br><span class="line">+---------------------------------------+</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; select from_unixtime(1559742262);</span><br><span class="line">+---------------------------+</span><br><span class="line">| from_unixtime(1559742262) |</span><br><span class="line">+---------------------------+</span><br><span class="line">| 2019-06-05 21:44:22       |</span><br><span class="line">+---------------------------+</span><br><span class="line">1 row in set (0.01 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select from_unixtime(1559664000);</span><br><span class="line">+---------------------------+</span><br><span class="line">| from_unixtime(1559664000) |</span><br><span class="line">+---------------------------+</span><br><span class="line">| 2019-06-05 00:00:00       |</span><br><span class="line">+---------------------------+</span><br><span class="line"></span><br><span class="line">mysql&gt; select from_unixtime(1559741496);</span><br><span class="line">+---------------------------+</span><br><span class="line">| from_unixtime(1559741496) |</span><br><span class="line">+---------------------------+</span><br><span class="line">| 2019-06-05 21:31:36       |</span><br><span class="line">+---------------------------+</span><br></pre></td></tr></table></figure>
+<p>日期时间计算函数</p>
+<p>为日期增加一个时间间隔：date_add()</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">mysql&gt; select date_add(now(),interval 1 day);</span><br><span class="line">+--------------------------------+</span><br><span class="line">| date_add(now(),interval 1 day) |</span><br><span class="line">+--------------------------------+</span><br><span class="line">| 2019-06-06 21:52:50            |</span><br><span class="line">+--------------------------------+</span><br><span class="line"></span><br><span class="line">mysql&gt; select date_add(now(),interval 1 hour);</span><br><span class="line">mysql&gt; select date_add(now(),interval 1 minute);</span><br><span class="line">mysql&gt; select date_add(now(),interval 1 second);</span><br><span class="line">mysql&gt; select date_add(now(),interval 1 microsecond);</span><br><span class="line">mysql&gt; select date_add(now(),interval 1 week);</span><br><span class="line">mysql&gt; select date_add(now(),interval 1 month);</span><br><span class="line">mysql&gt; select date_add(now(),interval 1 quarter);</span><br><span class="line">mysql&gt; select date_add(now(),interval 1 year);</span><br><span class="line"></span><br><span class="line">select date_add(now(), interval -1 day);</span><br></pre></td></tr></table></figure>
+<p>为日期减去一个时间间隔：date_sub()</p>
+<p>时区（timezone）转换函数</p>
+<p>函数：convert_tz(dt,from_tz,to_tz)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select convert_tz(&#39;2019-06-05 12:00:00&#39;, &#39;+08:00&#39;, &#39;+00:00&#39;);</span><br><span class="line">+-------------------------------------------------------+</span><br><span class="line">| convert_tz(&#39;2019-06-05 12:00:00&#39;, &#39;+08:00&#39;, &#39;+00:00&#39;) |</span><br><span class="line">+-------------------------------------------------------+</span><br><span class="line">| 2019-06-05 04:00:00                                   |</span><br><span class="line">+-------------------------------------------------------+</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.png" alt="Richey Liu 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Richey Liu 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Richey Liu
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://10000hours.top/2019/03/06/Mysql%EF%BC%881%EF%BC%89-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" title="Mysql（1）-常用命令">http://10000hours.top/2019/03/06/Mysql%EF%BC%881%EF%BC%89-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Mysql/" rel="tag"># Mysql</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/02/08/ES6%E7%AC%94%E8%AE%B0/" rel="next" title="ES6笔记">
+                <i class="fa fa-chevron-left"></i> ES6笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/08/Java%E5%9F%BA%E7%A1%80/" rel="prev" title="Java基础">
+                Java基础 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Richey Liu" />
+            
+              <p class="site-author-name" itemprop="name">Richey Liu</p>
+              <p class="site-description motion-element" itemprop="description">花有重开时人无再少年</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">100</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/liubaolin" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="brin.baolin@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-globe"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#数据库相关"><span class="nav-number">1.</span> <span class="nav-text">数据库相关</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#查看数据库版本"><span class="nav-number">1.1.</span> <span class="nav-text">查看数据库版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看所有数据库"><span class="nav-number">1.2.</span> <span class="nav-text">查看所有数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看master数据库当前正在使用的二进制日志及当前执行二进制日志位置"><span class="nav-number">1.3.</span> <span class="nav-text">查看master数据库当前正在使用的二进制日志及当前执行二进制日志位置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看数据库创建语句"><span class="nav-number">1.4.</span> <span class="nav-text">查看数据库创建语句</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建数据库"><span class="nav-number">1.5.</span> <span class="nav-text">创建数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#确定数据库大小"><span class="nav-number">1.6.</span> <span class="nav-text">确定数据库大小</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看建表语句"><span class="nav-number">1.7.</span> <span class="nav-text">查看建表语句</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看表字段"><span class="nav-number">1.8.</span> <span class="nav-text">查看表字段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改列名"><span class="nav-number">1.9.</span> <span class="nav-text">修改列名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除外键"><span class="nav-number">1.10.</span> <span class="nav-text">删除外键</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除索引"><span class="nav-number">1.11.</span> <span class="nav-text">删除索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除主键"><span class="nav-number">1.12.</span> <span class="nav-text">删除主键</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#增加主键"><span class="nav-number">1.13.</span> <span class="nav-text">增加主键</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行语句手动关闭安全更新模式"><span class="nav-number">1.14.</span> <span class="nav-text">执行语句手动关闭安全更新模式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#用户相关"><span class="nav-number">2.</span> <span class="nav-text">用户相关</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建用户（CREATE-USER）"><span class="nav-number">2.1.</span> <span class="nav-text">创建用户（CREATE USER）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#给数据库用户授权（GRANT-PERMISSIONS）"><span class="nav-number">2.2.</span> <span class="nav-text">给数据库用户授权（GRANT PERMISSIONS）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#刷新权限-（FLUSH-PRIVILEGES-Tell-the-server-to-reload-the-grant-tables）"><span class="nav-number">2.3.</span> <span class="nav-text">刷新权限 （FLUSH PRIVILEGES, Tell the server to reload the grant tables）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#系统表"><span class="nav-number">3.</span> <span class="nav-text">系统表</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#事务"><span class="nav-number">3.1.</span> <span class="nav-text">事务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#日志"><span class="nav-number">3.2.</span> <span class="nav-text">日志</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#查看binglog文件列表"><span class="nav-number">3.2.1.</span> <span class="nav-text">查看binglog文件列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看在写入的binlog文件"><span class="nav-number">3.2.2.</span> <span class="nav-text">查看在写入的binlog文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看指定binlog文件的内容"><span class="nav-number">3.2.3.</span> <span class="nav-text">查看指定binlog文件的内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mysqlbinlog查看binlog文件内容"><span class="nav-number">3.2.4.</span> <span class="nav-text">mysqlbinlog查看binlog文件内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#输出指定position位置的binlog日志"><span class="nav-number">3.2.5.</span> <span class="nav-text">输出指定position位置的binlog日志</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#输出指定position位置的binlog日志到指定文件中"><span class="nav-number">3.2.6.</span> <span class="nav-text">输出指定position位置的binlog日志到指定文件中</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#输出指定开始时间的binlog日志"><span class="nav-number">3.2.7.</span> <span class="nav-text">输出指定开始时间的binlog日志</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#时间处理"><span class="nav-number">4.</span> <span class="nav-text">时间处理</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Richey Liu</span>
+
+  
+</div>
+
+
+
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'espIarB7yj7vR1el85iiMLjb-gzGzoHsz',
+        appKey: 'v35zFd1Yc4PX5KsGn2wHgrob',
+        placeholder: '欢迎留言！',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("98BykxDu7C0UsRu0zaggGlMu-gzGzoHsz", "a21Q7nym42YYGdxdx2XxxQNM");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
