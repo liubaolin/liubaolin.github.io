@@ -73,7 +73,7 @@
     <link href="http://10000hours.top/2020/03/01/jvm%E5%B7%A5%E5%85%B7-%E5%A0%86-jmap/"/>
     <id>http://10000hours.top/2020/03/01/jvm%E5%B7%A5%E5%85%B7-%E5%A0%86-jmap/</id>
     <published>2020-02-29T16:00:00.000Z</published>
-    <updated>2020-05-27T16:46:52.610Z</updated>
+    <updated>2020-05-27T16:46:52.712Z</updated>
     
     <content type="html"><![CDATA[<h1 id="将-JAVA-HOME-bin添加到当前环境变量"><a href="#将-JAVA-HOME-bin添加到当前环境变量" class="headerlink" title="将$JAVA_HOME/bin添加到当前环境变量"></a>将$JAVA_HOME/bin添加到当前环境变量</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">PATH=<span class="variable">$PATH</span>:<span class="variable">$JAVA_HOME</span>/bin</span></span><br><span class="line"><span class="meta">#</span><span class="bash">env  查看环境变量</span></span><br></pre></td></tr></table></figure><h1 id="什么时候使用"><a href="#什么时候使用" class="headerlink" title="什么时候使用"></a>什么时候使用</h1><p>当服务发生GC问题时，一般会使用jmap工具进行分析.</p><h1 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h1><ul><li>查看堆各个对象的数量、大小</li><li>dump堆里的对象信息,然后可以使用MAT等工具分析</li><li>查看堆的配置情况和GC算法</li><li>查看堆永久代信息</li></ul><h1 id="jmap命令"><a href="#jmap命令" class="headerlink" title="jmap命令"></a>jmap命令</h1><h2 id="jmap-histo-live-less"><a href="#jmap-histo-live-less" class="headerlink" title="jmap -histo[:live]  |less"></a>jmap -histo[:live] <pid> |less</h2><p>-histo：打印当前java堆中各个对象的数量、大小，添加了live，只会打印活跃的对象。</p><p>这个命令执行，JVM会先触发gc，然后再统计信息。</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">查看对象数最多的对象，并按降序排序输出：</span><br><span class="line">jmap -histo &lt;pid&gt;|grep alibaba|sort -k <span class="number">2</span> -g -r|less</span><br><span class="line"></span><br><span class="line">查看占用内存最多的最象，并按降序排序输出：</span><br><span class="line">jmap -histo &lt;pid&gt;|grep alibaba|sort -k <span class="number">3</span> -g -r|less</span><br></pre></td></tr></table></figure><h2 id="jmap-dump-live-format-b-file"><a href="#jmap-dump-live-format-b-file" class="headerlink" title="jmap -dump:[live,]format=b,file= "></a>jmap -dump:[live,]format=b,file=<filename> <pid></h2><p>-dump：把java堆中的对象dump到本地文件，然后使用MAT进行分析。如果添加了live，只会dump活跃的对象。</p><p>这个命令执行，JVM会将整个heap的信息dump写入到一个文件，heap如果比较大的话，就会导致这个过程比较耗时，并且执行的过程中为了保证dump的信息是可靠的，所以会暂停应用。</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">使用hprof二进制形式,输出jvm的heap内容到文件</span><br><span class="line">[richey<span class="meta">@localhost</span> ~]$ jmap -dump:live,format=b,file=jmap.hprof <span class="number">6274</span></span><br><span class="line">Dumping heap to /home/richey/jmap.hprof ...</span><br><span class="line">Heap dump file created</span><br></pre></td></tr></table></figure><h2 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h2><h2 id="让JVM在遇到OOM-OutOfMemoryError-时生成Dump文件"><a href="#让JVM在遇到OOM-OutOfMemoryError-时生成Dump文件" class="headerlink" title="让JVM在遇到OOM(OutOfMemoryError)时生成Dump文件"></a>让JVM在遇到OOM(OutOfMemoryError)时生成Dump文件</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/path/to/heap/dump</span><br></pre></td></tr></table></figure><blockquote><p>Error attaching to process: sun.jvm.hotspot.debugger.DebuggerException: Can’t attach to the process<br>在ubuntu中第一次使用jmap会报错：Error attaching to process: sun.jvm.hotspot.debugger.DebuggerException: Can’t attach to the process，这是oracla文档中提到的一个bug:<a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7050524,解决方式如下：" target="_blank" rel="noopener">http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7050524,解决方式如下：</a></p></blockquote><blockquote><p>echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope 该方法在下次重启前有效。</p></blockquote><blockquote><p>永久有效方法 sudo vi /etc/sysctl.d/10-ptrace.conf 编辑下面这行: kernel.yama.ptrace_scope = 1 修改为: kernel.yama.ptrace_scope = 0 重启系统，使修改生效。</p></blockquote>]]></content>
     
@@ -121,32 +121,6 @@
   </entry>
   
   <entry>
-    <title>安装zookeeper</title>
-    <link href="http://10000hours.top/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/"/>
-    <id>http://10000hours.top/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/</id>
-    <published>2019-07-06T16:00:00.000Z</published>
-    <updated>2020-03-21T15:35:33.296Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="安装zookeeper"><a href="#安装zookeeper" class="headerlink" title="安装zookeeper"></a>安装zookeeper</h1><h2 id="单机服务"><a href="#单机服务" class="headerlink" title="单机服务"></a>单机服务</h2><p>从apache.org下载zookeeper,这里下载的是zookeeper-3.4.14.tar</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#tar -zxf zookeeper-3.4.14.tar.gz</span><br><span class="line">#mv zookeeper-3.4.14 &#x2F;usr&#x2F;local&#x2F;zookeeper</span><br><span class="line">#cat &gt; &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;conf&#x2F;zoo.cfg &lt;&lt; EOF</span><br><span class="line">&gt; tickTime&#x3D;2000</span><br><span class="line">&gt; dataDir&#x3D;&#x2F;var&#x2F;lib&#x2F;zookeeper</span><br><span class="line">&gt; clientPort&#x3D;2181</span><br><span class="line">&gt; EOF</span><br><span class="line">#&#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh start</span><br><span class="line">ZooKeeper JMX enabled by default</span><br><span class="line">Using config: &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;..&#x2F;conf&#x2F;zoo.cfg</span><br><span class="line">Starting zookeeper ... STARTED</span><br><span class="line">#</span><br></pre></td></tr></table></figure><p>现在可以连接到zookeeper端口上，通过发送四字命令srvr来验证zookeeper是否安装正确。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#telnet localhost 2181</span><br><span class="line">Trying ::1...</span><br><span class="line">Connected to localhost.</span><br><span class="line">Escape character is &#39;^]&#39;.</span><br><span class="line">srvr</span><br><span class="line">Zookeeper version: 3.4.14-4c25d480e66aadd371de8bd2fd8da255ac140bcf, built on 03&#x2F;06&#x2F;2019 16:18 GMT</span><br><span class="line">Latency min&#x2F;avg&#x2F;max: 0&#x2F;0&#x2F;0</span><br><span class="line">Received: 1</span><br><span class="line">Sent: 0</span><br><span class="line">Connections: 1</span><br><span class="line">Outstanding: 0</span><br><span class="line">Zxid: 0x0</span><br><span class="line">Mode: standalone</span><br><span class="line">Node count: 4</span><br><span class="line">Connection closed by foreign host.</span><br></pre></td></tr></table></figure><h2 id="Zookeeper群组"><a href="#Zookeeper群组" class="headerlink" title="Zookeeper群组"></a>Zookeeper群组</h2><p>Zookeeper集群被称为Zookeeper群组，Zookeeper使用的是一致性协议，所以每个群组里应该包含奇数个节点。因为只有群组里的大多数节点处于可用状态，zookeeper才能处理外部请求。</p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h1 id=&quot;安装zookeeper&quot;&gt;&lt;a href=&quot;#安装zookeeper&quot; class=&quot;headerlink&quot; title=&quot;安装zookeeper&quot;&gt;&lt;/a&gt;安装zookeeper&lt;/h1&gt;&lt;h2 id=&quot;单机服务&quot;&gt;&lt;a href=&quot;#单机服务&quot; class=&quot;
-      
-    
-    </summary>
-    
-    
-      <category term="架构" scheme="http://10000hours.top/categories/%E6%9E%B6%E6%9E%84/"/>
-    
-    
-      <category term="zookeeper" scheme="http://10000hours.top/tags/zookeeper/"/>
-    
-  </entry>
-  
-  <entry>
     <title>安装配置Kafka Broker</title>
     <link href="http://10000hours.top/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/"/>
     <id>http://10000hours.top/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/</id>
@@ -169,6 +143,32 @@
     
     
       <category term="kafka" scheme="http://10000hours.top/tags/kafka/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>安装zookeeper</title>
+    <link href="http://10000hours.top/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/"/>
+    <id>http://10000hours.top/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/</id>
+    <published>2019-07-06T16:00:00.000Z</published>
+    <updated>2020-03-21T15:35:33.296Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="安装zookeeper"><a href="#安装zookeeper" class="headerlink" title="安装zookeeper"></a>安装zookeeper</h1><h2 id="单机服务"><a href="#单机服务" class="headerlink" title="单机服务"></a>单机服务</h2><p>从apache.org下载zookeeper,这里下载的是zookeeper-3.4.14.tar</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#tar -zxf zookeeper-3.4.14.tar.gz</span><br><span class="line">#mv zookeeper-3.4.14 &#x2F;usr&#x2F;local&#x2F;zookeeper</span><br><span class="line">#cat &gt; &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;conf&#x2F;zoo.cfg &lt;&lt; EOF</span><br><span class="line">&gt; tickTime&#x3D;2000</span><br><span class="line">&gt; dataDir&#x3D;&#x2F;var&#x2F;lib&#x2F;zookeeper</span><br><span class="line">&gt; clientPort&#x3D;2181</span><br><span class="line">&gt; EOF</span><br><span class="line">#&#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh start</span><br><span class="line">ZooKeeper JMX enabled by default</span><br><span class="line">Using config: &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;..&#x2F;conf&#x2F;zoo.cfg</span><br><span class="line">Starting zookeeper ... STARTED</span><br><span class="line">#</span><br></pre></td></tr></table></figure><p>现在可以连接到zookeeper端口上，通过发送四字命令srvr来验证zookeeper是否安装正确。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#telnet localhost 2181</span><br><span class="line">Trying ::1...</span><br><span class="line">Connected to localhost.</span><br><span class="line">Escape character is &#39;^]&#39;.</span><br><span class="line">srvr</span><br><span class="line">Zookeeper version: 3.4.14-4c25d480e66aadd371de8bd2fd8da255ac140bcf, built on 03&#x2F;06&#x2F;2019 16:18 GMT</span><br><span class="line">Latency min&#x2F;avg&#x2F;max: 0&#x2F;0&#x2F;0</span><br><span class="line">Received: 1</span><br><span class="line">Sent: 0</span><br><span class="line">Connections: 1</span><br><span class="line">Outstanding: 0</span><br><span class="line">Zxid: 0x0</span><br><span class="line">Mode: standalone</span><br><span class="line">Node count: 4</span><br><span class="line">Connection closed by foreign host.</span><br></pre></td></tr></table></figure><h2 id="Zookeeper群组"><a href="#Zookeeper群组" class="headerlink" title="Zookeeper群组"></a>Zookeeper群组</h2><p>Zookeeper集群被称为Zookeeper群组，Zookeeper使用的是一致性协议，所以每个群组里应该包含奇数个节点。因为只有群组里的大多数节点处于可用状态，zookeeper才能处理外部请求。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;安装zookeeper&quot;&gt;&lt;a href=&quot;#安装zookeeper&quot; class=&quot;headerlink&quot; title=&quot;安装zookeeper&quot;&gt;&lt;/a&gt;安装zookeeper&lt;/h1&gt;&lt;h2 id=&quot;单机服务&quot;&gt;&lt;a href=&quot;#单机服务&quot; class=&quot;
+      
+    
+    </summary>
+    
+    
+      <category term="架构" scheme="http://10000hours.top/categories/%E6%9E%B6%E6%9E%84/"/>
+    
+    
+      <category term="zookeeper" scheme="http://10000hours.top/tags/zookeeper/"/>
     
   </entry>
   
@@ -431,6 +431,32 @@
   </entry>
   
   <entry>
+    <title>SpringSecurity-Session管理 (1)</title>
+    <link href="http://10000hours.top/2019/06/12/SpringSecurity-Session%E7%AE%A1%E7%90%86%20(1)/"/>
+    <id>http://10000hours.top/2019/06/12/SpringSecurity-Session%E7%AE%A1%E7%90%86%20(1)/</id>
+    <published>2019-06-11T16:00:00.000Z</published>
+    <updated>2020-03-21T15:35:33.283Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="Session管理"><a href="#Session管理" class="headerlink" title="Session管理"></a>Session管理</h1><h2 id="内容概要"><a href="#内容概要" class="headerlink" title="内容概要"></a>内容概要</h2><ul><li>Session超时处理</li><li>Session并发控制</li><li>集群Session管理</li></ul><h2 id="Session超时处理"><a href="#Session超时处理" class="headerlink" title="Session超时处理"></a>Session超时处理</h2><p>在Spring Boot中Session的超时时间非常简单,在配置文件中配置即可:</p><pre><code>server.session.timeout=1000</code></pre><p>单位是秒,默认是30分钟,如果查看Spring Boot源代码的话,你会发现,实际生效的最短时间是1分钟:</p><pre><code>TomcatEmbeddedServletContainerFactory#configureSessionprivate void configureSession(Context context) {    long sessionTimeout = this.getSessionTimeoutInMinutes();    context.setSessionTimeout((int)sessionTimeout);    if (this.isPersistSession()) {        Manager manager = context.getManager();        if (manager == null) {            manager = new StandardManager();            context.setManager((Manager)manager);        }        this.configurePersistSession((Manager)manager);    } else {        context.addLifecycleListener(new TomcatEmbeddedServletContainerFactory.DisablePersistSessionListener(null));    }}private long getSessionTimeoutInMinutes() {    long sessionTimeout = (long)this.getSessionTimeout();    if (sessionTimeout &gt; 0L) {        //这里拿设置的值跟一分钟做了比较,取最大值        sessionTimeout = Math.max(TimeUnit.SECONDS.toMinutes(sessionTimeout), 1L);    }    return sessionTimeout;}</code></pre><ul><li><p>当Session失效之后再刷新页面,我们要知道是因为Session失效,从而对应的做一些特殊的提示等操作:</p><p>  在配置中配置失效后请求地址</p><pre><code>.sessionManagement()                    .invalidSessionUrl(&quot;/session/invalid&quot;)                    .and()@GetMapping(&quot;/session/invalid&quot;)@ResponseStatus(code = HttpStatus.UNAUTHORIZED)public SimpleResult sessionInvalid() {    String message = &quot;session失效&quot;;    return new SimpleResult(message);}</code></pre><p>  将该地址设置为免校验</p><pre><code>.antMatchers(&quot;/session/invalid&quot;)                .permitAll()</code></pre></li></ul><h2 id="Session并发控制"><a href="#Session并发控制" class="headerlink" title="Session并发控制"></a>Session并发控制</h2><ul><li><p>一个用户同时只能在一台设备登录,第二个设备登录后,第一个失效,并记录</p><pre><code>.sessionManagement()    .invalidSessionUrl(&quot;/session/invalid&quot;)    .maximumSessions(1)//最大登录数    .expiredSessionStrategy(new EvolutionaryExpiredSessionStrategy())    .and()    .and()/** * @author richey */public class EvolutionaryExpiredSessionStrategy implements SessionInformationExpiredStrategy{</code></pre></li></ul><pre><code>    @Override    public void onExpiredSessionDetected(SessionInformationExpiredEvent event) throws IOException, ServletException {        //这里可以记录并发登录造成Session失效的信息        event.getResponse().setContentType(&quot;application/json;charset=UTF-8&quot;);        event.getResponse().getWriter().write(&quot;并发登录!&quot;);    }}</code></pre><ul><li><p>一个用户同时只能在一台设备登录,第二个设备不允许登录</p><pre><code>.sessionManagement()    .invalidSessionUrl(&quot;/session/invalid&quot;)    .maximumSessions(1)//最大登录数    .maxSessionsPreventsLogin(true)//当Session的数量达到最大数量后,阻止后续的登录行为    .expiredSessionStrategy(new EvolutionaryExpiredSessionStrategy())    .and()    .and()</code></pre></li></ul><h2 id="集群Session管理"><a href="#集群Session管理" class="headerlink" title="集群Session管理"></a>集群Session管理</h2><ul><li>使用redis的好处</li></ul><p>Session访问非常频繁<br>redis自带超时特性</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;Session管理&quot;&gt;&lt;a href=&quot;#Session管理&quot; class=&quot;headerlink&quot; title=&quot;Session管理&quot;&gt;&lt;/a&gt;Session管理&lt;/h1&gt;&lt;h2 id=&quot;内容概要&quot;&gt;&lt;a href=&quot;#内容概要&quot; class=&quot;headerli
+      
+    
+    </summary>
+    
+    
+      <category term="Spring" scheme="http://10000hours.top/categories/Spring/"/>
+    
+    
+      <category term="Spring-Security" scheme="http://10000hours.top/tags/Spring-Security/"/>
+    
+  </entry>
+  
+  <entry>
     <title>观察者模式</title>
     <link href="http://10000hours.top/2019/06/12/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/"/>
     <id>http://10000hours.top/2019/06/12/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/</id>
@@ -454,32 +480,6 @@
     
     
       <category term="设计模式" scheme="http://10000hours.top/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>SpringSecurity-Session管理 (1)</title>
-    <link href="http://10000hours.top/2019/06/12/SpringSecurity-Session%E7%AE%A1%E7%90%86%20(1)/"/>
-    <id>http://10000hours.top/2019/06/12/SpringSecurity-Session%E7%AE%A1%E7%90%86%20(1)/</id>
-    <published>2019-06-11T16:00:00.000Z</published>
-    <updated>2020-03-21T15:35:33.283Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="Session管理"><a href="#Session管理" class="headerlink" title="Session管理"></a>Session管理</h1><h2 id="内容概要"><a href="#内容概要" class="headerlink" title="内容概要"></a>内容概要</h2><ul><li>Session超时处理</li><li>Session并发控制</li><li>集群Session管理</li></ul><h2 id="Session超时处理"><a href="#Session超时处理" class="headerlink" title="Session超时处理"></a>Session超时处理</h2><p>在Spring Boot中Session的超时时间非常简单,在配置文件中配置即可:</p><pre><code>server.session.timeout=1000</code></pre><p>单位是秒,默认是30分钟,如果查看Spring Boot源代码的话,你会发现,实际生效的最短时间是1分钟:</p><pre><code>TomcatEmbeddedServletContainerFactory#configureSessionprivate void configureSession(Context context) {    long sessionTimeout = this.getSessionTimeoutInMinutes();    context.setSessionTimeout((int)sessionTimeout);    if (this.isPersistSession()) {        Manager manager = context.getManager();        if (manager == null) {            manager = new StandardManager();            context.setManager((Manager)manager);        }        this.configurePersistSession((Manager)manager);    } else {        context.addLifecycleListener(new TomcatEmbeddedServletContainerFactory.DisablePersistSessionListener(null));    }}private long getSessionTimeoutInMinutes() {    long sessionTimeout = (long)this.getSessionTimeout();    if (sessionTimeout &gt; 0L) {        //这里拿设置的值跟一分钟做了比较,取最大值        sessionTimeout = Math.max(TimeUnit.SECONDS.toMinutes(sessionTimeout), 1L);    }    return sessionTimeout;}</code></pre><ul><li><p>当Session失效之后再刷新页面,我们要知道是因为Session失效,从而对应的做一些特殊的提示等操作:</p><p>  在配置中配置失效后请求地址</p><pre><code>.sessionManagement()                    .invalidSessionUrl(&quot;/session/invalid&quot;)                    .and()@GetMapping(&quot;/session/invalid&quot;)@ResponseStatus(code = HttpStatus.UNAUTHORIZED)public SimpleResult sessionInvalid() {    String message = &quot;session失效&quot;;    return new SimpleResult(message);}</code></pre><p>  将该地址设置为免校验</p><pre><code>.antMatchers(&quot;/session/invalid&quot;)                .permitAll()</code></pre></li></ul><h2 id="Session并发控制"><a href="#Session并发控制" class="headerlink" title="Session并发控制"></a>Session并发控制</h2><ul><li><p>一个用户同时只能在一台设备登录,第二个设备登录后,第一个失效,并记录</p><pre><code>.sessionManagement()    .invalidSessionUrl(&quot;/session/invalid&quot;)    .maximumSessions(1)//最大登录数    .expiredSessionStrategy(new EvolutionaryExpiredSessionStrategy())    .and()    .and()/** * @author richey */public class EvolutionaryExpiredSessionStrategy implements SessionInformationExpiredStrategy{</code></pre></li></ul><pre><code>    @Override    public void onExpiredSessionDetected(SessionInformationExpiredEvent event) throws IOException, ServletException {        //这里可以记录并发登录造成Session失效的信息        event.getResponse().setContentType(&quot;application/json;charset=UTF-8&quot;);        event.getResponse().getWriter().write(&quot;并发登录!&quot;);    }}</code></pre><ul><li><p>一个用户同时只能在一台设备登录,第二个设备不允许登录</p><pre><code>.sessionManagement()    .invalidSessionUrl(&quot;/session/invalid&quot;)    .maximumSessions(1)//最大登录数    .maxSessionsPreventsLogin(true)//当Session的数量达到最大数量后,阻止后续的登录行为    .expiredSessionStrategy(new EvolutionaryExpiredSessionStrategy())    .and()    .and()</code></pre></li></ul><h2 id="集群Session管理"><a href="#集群Session管理" class="headerlink" title="集群Session管理"></a>集群Session管理</h2><ul><li>使用redis的好处</li></ul><p>Session访问非常频繁<br>redis自带超时特性</p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h1 id=&quot;Session管理&quot;&gt;&lt;a href=&quot;#Session管理&quot; class=&quot;headerlink&quot; title=&quot;Session管理&quot;&gt;&lt;/a&gt;Session管理&lt;/h1&gt;&lt;h2 id=&quot;内容概要&quot;&gt;&lt;a href=&quot;#内容概要&quot; class=&quot;headerli
-      
-    
-    </summary>
-    
-    
-      <category term="Spring" scheme="http://10000hours.top/categories/Spring/"/>
-    
-    
-      <category term="Spring-Security" scheme="http://10000hours.top/tags/Spring-Security/"/>
     
   </entry>
   
@@ -519,33 +519,6 @@
   </entry>
   
   <entry>
-    <title>策略模式</title>
-    <link href="http://10000hours.top/2019/06/10/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/"/>
-    <id>http://10000hours.top/2019/06/10/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/</id>
-    <published>2019-06-09T16:00:00.000Z</published>
-    <updated>2020-04-16T15:08:54.836Z</updated>
-    
-    <content type="html"><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p><h2 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h2><ul><li><p>抽象策略略⻆色<br>  这个是⼀一个抽象的角色，通常情况下使⽤接口或者抽象类去实现。比如我们的Comparator接⼝口。</p></li><li><p>具体策略略⻆色<br>  包装了了具体的算法和⾏行行为。比如实现了Comparator接口的一组实现类。</p></li><li><p>环境⻆角⾊色Context<br>  内部会持有⼀个抽象⻆色的引⽤用，给客户端调⽤策略模式用于封装系列的算法，这些算法通常被封装在一个被称为 Context 类中，<br>客户端程序可以⾃由选择其中一种算法，或让 Context 为客户端选择一个最佳的算法——使⽤策略模式的优势是为了⽀支持算法的自由切换。</p></li></ul><h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><ul><li><p>Resource和策略略模式<br>  Resource 接口就是策略模式的典型应用，Resource 接口就代表资源访问策略，但具体采⽤用哪种策略实现，Resource 接口并不理理会。<br>客户端程序只和Resource 接口耦合，并不知道底层采⽤何种资源访问策略，这样应用可以在不同的资源访问策略之间自由切换。</p></li><li><p>Spring 框架的 Context 如何“智能”地选择资源访问策略<br>  Spring提供两个标志性接口：</p><ul><li>ResourceLoader：该接口实现类的实例可以获得⼀个 Resource 实例例。</li><li>ResourceLoaderAware：该接口实现类的实例将获得一个 ResourceLoader 的引用。<br>在 ResourceLoader 接口里有如下方法：Resource getResource(String location)：该接口仅包含这个⽅法，该方法⽤于返回一个 Resource 实例例。</li></ul><p>ApplicationContext 的实现类都实现 ResourceLoader 接⼝，因此 ApplicationContext 可⽤于直接获取 Resource 实例。</p></li></ul>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;p&gt;&lt;img src=&quot;http://blog-pic-1254088127.picsh.myqcloud.com/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.jpg&quot; alt=&quot;适配器模式&quot;&gt;&lt;/p&gt;
-&lt;h2 id=&quot;组成&quot;&gt;&lt;a href=&quot;#
-      
-    
-    </summary>
-    
-    
-      <category term="设计模式" scheme="http://10000hours.top/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
-    
-    
-      <category term="设计模式" scheme="http://10000hours.top/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
-    
-  </entry>
-  
-  <entry>
     <title>使用jdk自带工具jvisualvm查看.hprof文件</title>
     <link href="http://10000hours.top/2019/06/10/%E4%BD%BF%E7%94%A8jdk%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7jvisualvm%E6%9F%A5%E7%9C%8B.hprof%E6%96%87%E4%BB%B6/"/>
     <id>http://10000hours.top/2019/06/10/%E4%BD%BF%E7%94%A8jdk%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7jvisualvm%E6%9F%A5%E7%9C%8B.hprof%E6%96%87%E4%BB%B6/</id>
@@ -569,9 +542,36 @@
       <category term="JVM" scheme="http://10000hours.top/categories/JVM/"/>
     
     
+      <category term="工具" scheme="http://10000hours.top/tags/%E5%B7%A5%E5%85%B7/"/>
+    
       <category term="JVM" scheme="http://10000hours.top/tags/JVM/"/>
     
-      <category term="工具" scheme="http://10000hours.top/tags/%E5%B7%A5%E5%85%B7/"/>
+  </entry>
+  
+  <entry>
+    <title>策略模式</title>
+    <link href="http://10000hours.top/2019/06/10/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/"/>
+    <id>http://10000hours.top/2019/06/10/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/</id>
+    <published>2019-06-09T16:00:00.000Z</published>
+    <updated>2020-04-16T15:08:54.836Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p><h2 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h2><ul><li><p>抽象策略略⻆色<br>  这个是⼀一个抽象的角色，通常情况下使⽤接口或者抽象类去实现。比如我们的Comparator接⼝口。</p></li><li><p>具体策略略⻆色<br>  包装了了具体的算法和⾏行行为。比如实现了Comparator接口的一组实现类。</p></li><li><p>环境⻆角⾊色Context<br>  内部会持有⼀个抽象⻆色的引⽤用，给客户端调⽤策略模式用于封装系列的算法，这些算法通常被封装在一个被称为 Context 类中，<br>客户端程序可以⾃由选择其中一种算法，或让 Context 为客户端选择一个最佳的算法——使⽤策略模式的优势是为了⽀支持算法的自由切换。</p></li></ul><h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><ul><li><p>Resource和策略略模式<br>  Resource 接口就是策略模式的典型应用，Resource 接口就代表资源访问策略，但具体采⽤用哪种策略实现，Resource 接口并不理理会。<br>客户端程序只和Resource 接口耦合，并不知道底层采⽤何种资源访问策略，这样应用可以在不同的资源访问策略之间自由切换。</p></li><li><p>Spring 框架的 Context 如何“智能”地选择资源访问策略<br>  Spring提供两个标志性接口：</p><ul><li>ResourceLoader：该接口实现类的实例可以获得⼀个 Resource 实例例。</li><li>ResourceLoaderAware：该接口实现类的实例将获得一个 ResourceLoader 的引用。<br>在 ResourceLoader 接口里有如下方法：Resource getResource(String location)：该接口仅包含这个⽅法，该方法⽤于返回一个 Resource 实例例。</li></ul><p>ApplicationContext 的实现类都实现 ResourceLoader 接⼝，因此 ApplicationContext 可⽤于直接获取 Resource 实例。</p></li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;&lt;img src=&quot;http://blog-pic-1254088127.picsh.myqcloud.com/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.jpg&quot; alt=&quot;适配器模式&quot;&gt;&lt;/p&gt;
+&lt;h2 id=&quot;组成&quot;&gt;&lt;a href=&quot;#
+      
+    
+    </summary>
+    
+    
+      <category term="设计模式" scheme="http://10000hours.top/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
+    
+    
+      <category term="设计模式" scheme="http://10000hours.top/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
     
   </entry>
   
