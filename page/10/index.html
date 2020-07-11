@@ -288,6 +288,240 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/03/3%E3%80%81React%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%85%B6%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/01/03/3%E3%80%81React%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%85%B6%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/" itemprop="url">3、React组件及其生命周期和使用场景</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-03T00:00:00+08:00">
+                2019-01-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/01/03/3%E3%80%81React%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%85%B6%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/03/3%E3%80%81React%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%85%B6%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/01/03/3%E3%80%81React%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%85%B6%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/" class="leancloud_visitors" data-flag-title="3、React组件及其生命周期和使用场景">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="理解React组件"><a href="#理解React组件" class="headerlink" title="理解React组件"></a>理解React组件</h1><ol>
+<li>React组件一般不提供方法，而是提供某种状态机</li>
+<li>React组件可以理解为一个纯函数（接收的参数是什么，则输出的结果是确定的）</li>
+<li>单向数据绑定，数据变动同通过事件告诉外部</li>
+</ol>
+<h2 id="一个简单的React组件"><a href="#一个简单的React组件" class="headerlink" title="一个简单的React组件"></a>一个简单的React组件</h2><ol>
+<li><p>创建静态UI</p>
+</li>
+<li><p>考虑组件的状态组成</p>
+<p> 来自外部或者在内部维护</p>
+</li>
+<li><p>考虑组件的交互方式</p>
+</li>
+</ol>
+<h2 id="受控组件VS非受控组件"><a href="#受控组件VS非受控组件" class="headerlink" title="受控组件VS非受控组件"></a>受控组件VS非受控组件</h2><p>主用应用与form表单中</p>
+<ol>
+<li><p>受控组件</p>
+<p> 表单元素状态由使用者维护，必须指定value和onChange，<br> 即value的值是来自于外部的属性，而不是用户的输入。</p>
+</li>
+<li><p>非受控组件</p>
+<p> 表单元素状态DOM自身维护；</p>
+</li>
+</ol>
+<h2 id="创建React组件的几个原则"><a href="#创建React组件的几个原则" class="headerlink" title="创建React组件的几个原则"></a>创建React组件的几个原则</h2><ol>
+<li><p>单一职责原则</p>
+<ul>
+<li>每个组件只做一件事；</li>
+<li>如果组件变得负责，那么因该拆分成小组件</li>
+</ul>
+</li>
+<li><p>数据状态管理:DRY原则</p>
+<ul>
+<li>能计算得到的状态就不要单独存储</li>
+<li>组件尽量无状态，所需数据通过props获取</li>
+</ul>
+</li>
+</ol>
+<h1 id="React组件生命周期"><a href="#React组件生命周期" class="headerlink" title="React组件生命周期"></a>React组件生命周期</h1><p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/react-lifecycle-methods.png" alt="image"></p>
+<h1 id="constructor-NaN"><a href="#constructor-NaN" class="headerlink" title="constructor"></a>constructor</h1><ol>
+<li>用于初始化内部状态,很少使用</li>
+<li>唯一可以直接修改state的地方</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">this.state.xxx &#x3D; &#39;abc&#39;;</span><br></pre></td></tr></table></figure>
+
+<h1 id="getDerivedStateFromProps"><a href="#getDerivedStateFromProps" class="headerlink" title="getDerivedStateFromProps"></a>getDerivedStateFromProps</h1><ol>
+<li>当state需要从props初始化时使用</li>
+<li>尽量不要使用:维护两者状态一致性会增加复杂度</li>
+<li>每次render都会调用</li>
+<li>典型场景:表单控件获取默认值</li>
+</ol>
+<h1 id="componentDidMount"><a href="#componentDidMount" class="headerlink" title="componentDidMount"></a>componentDidMount</h1><ol>
+<li>UI渲染完成后调用</li>
+<li>值执行一次</li>
+<li>典型场景:获取外部资源</li>
+</ol>
+<h1 id="componentWillUnmount"><a href="#componentWillUnmount" class="headerlink" title="componentWillUnmount"></a>componentWillUnmount</h1><ol>
+<li>组件移除时调用</li>
+<li>典型场景:资源释放</li>
+</ol>
+<h1 id="getSnapshotBeforeUpdate"><a href="#getSnapshotBeforeUpdate" class="headerlink" title="getSnapshotBeforeUpdate"></a>getSnapshotBeforeUpdate</h1><ol>
+<li>在页面render之前调用,state已更新</li>
+<li>典型场景:获取render之前的DOM状态</li>
+</ol>
+<h1 id="componentDisUpdate"><a href="#componentDisUpdate" class="headerlink" title="componentDisUpdate"></a>componentDisUpdate</h1><ol>
+<li>每次UI更新时被调用</li>
+<li>典型场景:页面需要根据props变化重新获取数据</li>
+</ol>
+<h1 id="shouldComponentUpdate"><a href="#shouldComponentUpdate" class="headerlink" title="shouldComponentUpdate"></a>shouldComponentUpdate</h1><ol>
+<li>决定Virtual DOM是否要重绘</li>
+<li>一般可以有PureComponent自动实现</li>
+<li>典型场景:性能优化</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/02/2%E3%80%81React-JSX/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1903,206 +2137,11 @@ sublime-style-column-selection</code></pre>
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2014/03/02/http%E5%8D%8F%E8%AE%AE/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2014/03/02/http%E5%8D%8F%E8%AE%AE/" itemprop="url">http协议</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2014-03-02T00:00:00+08:00">
-                2014-03-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index">
-                    <span itemprop="name">网络</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2014/03/02/http%E5%8D%8F%E8%AE%AE/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2014/03/02/http%E5%8D%8F%E8%AE%AE/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2014/03/02/http%E5%8D%8F%E8%AE%AE/" class="leancloud_visitors" data-flag-title="http协议">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="http协议是什么"><a href="#http协议是什么" class="headerlink" title="http协议是什么"></a>http协议是什么</h1><p>由W3C组织制定的一种应用层协议，用于定义浏览器和WEB服务器之间通信的过程和数据的格式。简单的讲，在浏览器中点击一个连接后，浏览器会向服务器发送一段文本，告诉浏览器要访问的信息。这段文本遵循HTTP协议格式，包含访问方式，所用的HTTP版本、当前的浏览器及当前的页面地址信息等。（下面是用访问<a href="http://www.baidu.com时用httpwatch抓取消息头，关于httpwatch的使用方法网上有很多）" target="_blank" rel="noopener">www.baidu.com时用httpwatch抓取消息头，关于httpwatch的使用方法网上有很多）</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">(Request-Line)GET&#x2F;HTTP&#x2F;1.1</span><br><span class="line">Accept text&#x2F;html,application&#x2F;xhtml+xml,*&#x2F;*</span><br><span class="line">Accept-Encoding gzip, deflate</span><br><span class="line">Accept-Language zh-CN</span><br><span class="line">Connection Keep-Alive</span><br><span class="line">Cookie BD\_UPN&#x3D;1126314351; ispeed\_lsm&#x3D;2; BD\_LAST\_QID&#x3D;12126890578877287783; BD\_HOME&#x3D;0; BAIDUID&#x3D;C323FECD3763243205877E5BE6138F7D:FG&#x3D;1; BIDUPSID&#x3D;9A5864149C1C43304A1236E12F4C5175; PSTM&#x3D;1444447058; BDRCVFR\[kVc2Ho6h-mm\]&#x3D;I67x6TjHwwYf0; H\_PS\_PSSID&#x3D;17521\_1455\_17619\_14429\_17001\_17470\_17073\_15422\_11730\_17051   </span><br><span class="line">Host www.baidu.com User-Agent Mozilla&#x2F;5.0 (Windows NT 6.1; Trident&#x2F;7.0; rv:11.0) like Gecko X-HttpWatch-RID 41695-10075</span><br></pre></td></tr></table></figure>
-<p>服务器知道了网址，便将网页的内容输出给浏览器。输出的内容既可以是html文本，也可以是二进制的数据，如图片、声音、视频等，浏览器会将html文本显示为网页，将二进制的数据还原为图片、声音、视频，予以显示或播放。</p>
-<h1 id="通信的过程（http-1-0和http-1-1的区别）"><a href="#通信的过程（http-1-0和http-1-1的区别）" class="headerlink" title="通信的过程（http/1.0和http/1.1的区别）"></a>通信的过程（http/1.0和http/1.1的区别）</h1><p>http/1.0版本和http/1.1版本的通信过程是由很大的差别的，http/1.1全面兼容了http/1.0,目前最通用的标准是HTTP/1.1。 一个WEB站点每天可能要接收百万级别以上的的用户请求，为了提供系统的效率，http/1.0规定浏览器和服务器之间只能保持短暂的连接，服务器不跟踪每个客户也不记录过去的请求。浏览器每次请求都要和服务器建立一个TCP连接，服务器做出响应后立马断开连接。这样可以利用有限的连接个数为更多的客户端提供服务，提高效率，但是，这也造成了一些性能上的缺陷，例如，一个包含有许多图像的网页文件中并没有包含真正的图像数据内容，而只是指明了这些图像的URL地址，当WEB浏览器访问这个网页文件时，浏览器首先要发出针对该网页文件的请求，当浏览器解析WEB服务器返回的该网页文档中的HTML内容时，发现其中的图像标签后，浏览器将根据标签中的src属性所指定的URL地址再次向服务器发出下载图像数据的请求，如图所示：</p>
-<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/http01.jpg" alt="http"></p>
-<p> 显 然，访问一个包含有许多图像的网页文件的整个过程包含了多次请求和响应，每次请求和响应都需要建立一个单独的连接，每次连接只是传输一个文档和图像，上一次和下一次请求完全分离。即使图像文件都很小，但是客户端和服务器端每次建立和关闭连接却是一个相对比较费时的过程，并且会严重影响客户机和服务器的性 能。当一个网页文件中包含Applet，JavaScript文件，CSS文件等内容时，也会出现类似上述的情况。 为了克服HTTP 1.0的这个缺陷，HTTP 1.1支持持久连接，在一个TCP连接上可以传送多个HTTP请求和响应，减少了建立和关闭连接的消耗和延迟。一个包含有许多图像的网页文件的多个请求和应答可以在一个连接中传输，但每个单独的网页文件的请求和应答仍然需要使用各自的连接。HTTP 1.1还允许客户端不用等待上一次请求结果返回，就可以发出下一次请求，但服务器端必须按照接收到客户端请求的先后顺序依次回送响应结果，以保证客户端能够区分出每次请求的响应内容，这样也显著地减少了整个下载过程所需要的时间。基于HTTP 1.1协议的客户机与服务器的信息交换过程，如图所示：</p>
-<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/http02.jpg" alt="http"></p>
-<p> 总之，http/1.0一次连接只能发送一次请求，http/1.1可以一次连接发送多次请求，如图：</p>
-<p> <img src="http://blog-pic-1254088127.picsh.myqcloud.com/http03.jpg" alt="http"></p>
-<p> 可见，HTTP/1.1在继承了HTTP/1.0优点的基础上，也克服了HTTP/1.0的性能问题。不仅如此，HTTP/1.1还通过增加更多的请求头和响应头来改进和扩充HTTP/1.0的功能。例如，由于HTTP/1.0不支持Host请求头字段，WEB浏览器无法使用主机头名来明确表示要访问服务器上的哪个WEB站点，这样就无法使用WEB服务器在同一个IP地址和端口号上配置多个虚拟WEB站点。在HTTP/1.1中增加Host请求头字段后，WEB浏览器可以使用主机头名来明确表示要访问服务器上的哪个WEB站点，这才实现了在一台WEB服务器上可以在同一个IP地址和端口号上使用不同的主机名来创建多个虚拟WEB站点。HTTP/1.1的持续连接，也需要增加新的请求头来帮助实现，例如，Connection请求头的值为Keep-Alive时，客户端通知服务器返回本次请求结果后保持连接；Connection请求头的值为close时，客户端通知服务器返回本次请求结果后关闭连接。HTTP/1.1还提供了与身份认证、状态管理和Cache缓存等机制相关的请求头和响应头，同时http/1.1支持断点续传。</p>
-<h1 id="数据的格式"><a href="#数据的格式" class="headerlink" title="数据的格式"></a>数据的格式</h1><h2 id="请求数据包"><a href="#请求数据包" class="headerlink" title="请求数据包"></a>请求数据包</h2><ol>
-<li>请求行（请求方式、请求资源路径、协议类型和版本）<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(Request-Line) GET &#x2F;</span><br><span class="line">v.gif?pid&#x3D;107&amp;url&#x3D;http%3A%2F%2Fzhidao.baidu.com%2F&amp;type&#x3D;0&amp;m&#x3D;11&amp;col&#x3D;502&amp;pn&#x3D;2&amp;t&#x3D;%E7%9F%A5%E9%81%93&amp;ra&#x3D;0.47945168</span><br></pre></td></tr></table></figure></li>
-<li>若干消息头 消息头是一些键值对，通信的双方都可以发送。比如浏览器可以发送”User-Agent”消息头，告诉服务器浏览器的类型和版本， 一般来说，消息头是自动生成的。有些时候需要编程生成一些消息头。</li>
-<li>实体内容 如果发送get请求，实体内容为空。 只有发送post请求时，实体内容才会有数据（即请求参数值，比如name=tom），如果发送的是get请求，请求参数会放在请求资源路径的后面。</li>
-</ol>
-<h2 id="响应数据包"><a href="#响应数据包" class="headerlink" title="响应数据包"></a>响应数据包</h2><ol>
-<li><p>状态行（协议类型和版本、状态码、状态描状态行述）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Accept text&#x2F;html, application&#x2F;xhtml+xml, *&#x2F;*</span><br><span class="line">Accept-Encoding gzip, deflate</span><br><span class="line">Accept-Language zh-CN</span><br><span class="line">Connection Keep-Alive</span><br><span class="line">Cookie BD\_UPN&#x3D;1126314351; ispeed\_lsm&#x3D;2; BD\_LAST\_QID&#x3D;12126890578877287783; BD\_HOME&#x3D;0; BAIDUID&#x3D;C323FECD3763243205877E5BE6138F7D:FG&#x3D;1; BIDUPSID&#x3D;9A5864149C1C43304A1236E12F4C5175; PSTM&#x3D;1444447058; BDRCVFR\[kVc2Ho6h-mm\]&#x3D;I67x6TjHwwYf0; H\_PS\_PSSID&#x3D;17521\_1455\_17619\_14429\_17001\_17470\_17073\_15422\_11730\_17051</span><br><span class="line">Host www.baidu.com   </span><br><span class="line">User-Agent Mozilla&#x2F;5.0 (Windows NT 6.1; Trident&#x2F;7.0; rv:11.0) like Gecko X-HttpWatch-RID 41695-10075 (Status-Line) HTTP&#x2F;1.1 200 OK</span><br></pre></td></tr></table></figure>
-<p>1xx:信息响应类，表示接收到请求并且继续处理<br>2xx:处理成功响应类，表示动作被成功接收、理解和接受<br>3xx:重定向响应类，为了完成指定的动作，必须接受进一步处理<br>4xx:客户端错误，客户请求包含语法错误或者是不能正确执行<br>5xx:服务端错误，服务器不能正确执行一个正确的请求 <strong>常见的状态码：</strong><br>200：正常；<br>404：依据请求地址找不到对应的资源<br>500：系统错误，一般是程序运行出现了异常。</p>
-</li>
-<li><p>若干消息头 服务器也可以向浏览器发送一些消息头，比如”content-type”,告诉浏览器返回的数据类型以及编码格式。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Accept-Ranges bytes Cache-Control max-age&#x3D;0 Content-Length 0 Content-Type image&#x2F;gif Date Mon, 19 Oct 2015 15:14:04 GMT Etag “4280832337” Expires Mon, 19 Oct 2015 15:14:04 GMT Last-Modified Fri, 23 Oct 2009 08:06:04 GMT Pragma no-cache Server BWS&#x2F;1.0</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>实体内容 程序处理的结果，浏览器会取出这些数据，生成相应的页面。</p>
-</li>
-</ol>
-<h1 id="GET与POST请求"><a href="#GET与POST请求" class="headerlink" title="GET与POST请求"></a>GET与POST请求</h1><ol>
-<li>哪些情况浏览器会发送get请求？ a.直接在浏览器地址栏输入某个地址 b.点击链接 c.表单的默认提交方式</li>
-<li>哪些情况浏览器会发送post请求？ 表单设置了method=”post”<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;form action&#x3D;&quot;处理请求的程序&quot; method&#x3D;&quot;get&#x2F;post&quot;&gt;</span><br></pre></td></tr></table></figure></li>
-<li>get方式的特点 a.会将请求参数添加到请求资源路径的后面，而且只能提交少量的数据给web服务器（get方式提交的网址不能超过256个字符） b.get请求会将请求参数显示在浏览器地址栏，不安全（路由器会记录这些地址）</li>
-<li>post方式的特点 a.会将请求参数添加到实体内容中，所以可以提交大量的数据 b.post方式不会将请求参数显示在浏览器地址栏，所以相对安全（但是并没有加密） post请求需要提供要提交的数据类型及长度，数据的类型有两种，一种是普通的文本数据（ASCII数据），类型为”application/x-www-form-urlencoded”，另一种是文件数据（二进制数据），类型为”multipart/form-data”,例如；<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">POST &#x2F;s HTTP&#x2F;1.1 Content-Type:application&#x2F;x-www-form-urlencoded Content-Length:7</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/9/">&lt;i class&#x3D;&quot;fa fa-angle-left&quot;&gt;&lt;&#x2F;i&gt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span>
+    <a class="extend prev" rel="prev" href="/page/9/">&lt;i class&#x3D;&quot;fa fa-angle-left&quot;&gt;&lt;&#x2F;i&gt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/11/">&lt;i class&#x3D;&quot;fa fa-angle-right&quot;&gt;&lt;&#x2F;i&gt;</a>
   </nav>
 
 
@@ -2152,7 +2191,7 @@ sublime-style-column-selection</code></pre>
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">100</span>
+                  <span class="site-state-item-count">101</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2174,7 +2213,7 @@ sublime-style-column-selection</code></pre>
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-count">33</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

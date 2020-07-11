@@ -94,7 +94,41 @@
         <category>JVM</category>
       </categories>
       <tags>
-        <tag>JVM工具</tag>
+        <tag>JVM</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java4种引用类型</title>
+    <url>/2020/02/01/Java4%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/</url>
+    <content><![CDATA[<p>Java的“引用”决定了对象的存活.</p>
+<p>JDK1.2之后，java提供了4中引用类型：</p>
+<ul>
+<li><p>强引用</p>
+<p>创建对象时默认声明的就是强引用，只要强引用和还在，垃圾收集器不会回收掉被引用的对象。</p>
+</li>
+</ul>
+<ul>
+<li><p>软引用</p>
+<p>用来描述一些有用，但非必须的对象。系统在内存溢出之前（内存不足的时候）会对软引用关联的对象进行回收。</p>
+<p>主要应用于缓存实现，内存不足的时候释放缓存。</p>
+</li>
+</ul>
+<ul>
+<li><p>弱引用</p>
+<p>被弱引用关联的对象只能存活到下一次GC之前。弱引用完全不会影响对象的生命周期。</p>
+<p>索引想使用某些对象，又不想影响其本身的生命周期的时候可以使用。</p>
+</li>
+<li><p>虚引用（幽灵引用、幻影引用）</p>
+<p>最弱的一种引用关系。无法通过虚引用来获取一个对象实例，没有单独使用的意义。</p>
+<p>设置虚引用关联的唯一目的就是能在这个对象被GC会收到一个系统消息。</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>JVM</category>
+      </categories>
+      <tags>
+        <tag>JVM</tag>
       </tags>
   </entry>
   <entry>
@@ -1336,6 +1370,28 @@ public class DemoImageCodeGenerator implements ValidateCodeGenerator {
       </tags>
   </entry>
   <entry>
+    <title>适配器模式</title>
+    <url>/2019/06/06/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p>
+<p><img src="http://blog-pic-1254088127.cos.ap-shanghai.myqcloud.com/spring%E9%85%8D%E7%BD%AE%E4%BD%BF%E7%94%A8%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8Fdemo.jpg?sign=q-sign-algorithm%3Dsha1%26q-ak%3DAKIDXqq06t5vKykkmYS4RVyUdv4qVMUzspuR%26q-sign-time%3D1587048720%3B1587052380%26q-key-time%3D1587048720%3B1587052380%26q-header-list%3Dhost%26q-url-param-list%3D%26q-signature%3D0aef3886622ce1d4088e519dc6dedb0eac5eab4d&x-cos-security-token=f8cb0d55796632de0f57d4f78910c80f3172c8b310001" alt="spring适配器模式demo"></p>
+<h1 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h1><p>将一个类的接口，转换成客户期望的另一个接口。适配器让原本不兼容的接口可以合作无间。</p>
+<h1 id="对象适配器"><a href="#对象适配器" class="headerlink" title="对象适配器"></a>对象适配器</h1><ul>
+<li>采用组合模式</li>
+<li>不仅可以适配某类，还可以适配该类的任何子类。</li>
+</ul>
+<h1 id="类适配器"><a href="#类适配器" class="headerlink" title="类适配器"></a>类适配器</h1><ul>
+<li>采用继承模式</li>
+<li>不需要重新实现整个被适配者，必要的时候可以覆盖被适配者的行为。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Spring Security（6）－图片验证码</title>
     <url>/2019/06/06/Spring%20Security%EF%BC%886%EF%BC%89%EF%BC%8D%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/</url>
     <content><![CDATA[<p>概要：</p>
@@ -1575,25 +1631,44 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
       </tags>
   </entry>
   <entry>
-    <title>适配器模式</title>
-    <url>/2019/06/06/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/</url>
-    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p>
-<p><img src="http://blog-pic-1254088127.cos.ap-shanghai.myqcloud.com/spring%E9%85%8D%E7%BD%AE%E4%BD%BF%E7%94%A8%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8Fdemo.jpg?sign=q-sign-algorithm%3Dsha1%26q-ak%3DAKIDXqq06t5vKykkmYS4RVyUdv4qVMUzspuR%26q-sign-time%3D1587048720%3B1587052380%26q-key-time%3D1587048720%3B1587052380%26q-header-list%3Dhost%26q-url-param-list%3D%26q-signature%3D0aef3886622ce1d4088e519dc6dedb0eac5eab4d&x-cos-security-token=f8cb0d55796632de0f57d4f78910c80f3172c8b310001" alt="spring适配器模式demo"></p>
-<h1 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h1><p>将一个类的接口，转换成客户期望的另一个接口。适配器让原本不兼容的接口可以合作无间。</p>
-<h1 id="对象适配器"><a href="#对象适配器" class="headerlink" title="对象适配器"></a>对象适配器</h1><ul>
-<li>采用组合模式</li>
-<li>不仅可以适配某类，还可以适配该类的任何子类。</li>
-</ul>
-<h1 id="类适配器"><a href="#类适配器" class="headerlink" title="类适配器"></a>类适配器</h1><ul>
-<li>采用继承模式</li>
-<li>不需要重新实现整个被适配者，必要的时候可以覆盖被适配者的行为。</li>
+    <title>Mysql（12）-Mysql事务隔离是如何实现的</title>
+    <url>/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/</url>
+    <content><![CDATA[<h1 id="事务的启动时机。"><a href="#事务的启动时机。" class="headerlink" title="事务的启动时机。"></a>事务的启动时机。</h1><p>begin/start transaction 命令并不是一个事务的起点，在执行到它们之后的第一个操作 InnoDB 表的语句，事务才真正启动。如果你想要马上启动一个事务，可以使用 start transaction with consistent snapshot 这个命令。</p>
+<p>第一种启动方式，一致性视图是在第执行第一个快照读语句时创建的；<br>第二种启动方式，一致性视图是在执行 start transaction with consistent snapshot 时创建的。</p>
+<h1 id="在-MySQL-里，有两个“视图”的概念"><a href="#在-MySQL-里，有两个“视图”的概念" class="headerlink" title="在 MySQL 里，有两个“视图”的概念"></a>在 MySQL 里，有两个“视图”的概念</h1><p>一个是 view。它是一个用查询语句定义的虚拟表，在调用的时候执行查询语句并生成结果。创建视图的语法是 create view … ，而它的查询方法与表一样。</p>
+<p>另一个是 InnoDB 在实现 MVCC 时用到的一致性读视图，即 consistent read view，用于支持 RC（Read Committed，读提交）和 RR（Repeatable Read，可重复读）隔离级别的实现。</p>
+<h1 id="“快照”在-MVCC-里是怎么工作的？"><a href="#“快照”在-MVCC-里是怎么工作的？" class="headerlink" title="“快照”在 MVCC 里是怎么工作的？"></a>“快照”在 MVCC 里是怎么工作的？</h1><p>在可重复读隔离级别下，事务在启动的时候就“拍了个快照”。注意，这个快照是基于整库的。</p>
+<p>InnoDB 里面每个事务有一个唯一的事务 ID，叫作 transaction id。它是在事务开始的时候向 InnoDB 的事务系统申请的，是按申请顺序严格递增的。</p>
+<p>而每行数据也都是有多个版本的。每次事务更新数据的时候，都会生成一个新的数据版本，并且把 transaction id 赋值给这个数据版本的事务 ID，记为 row trx_id。同时，旧的数据版本要保留，并且在新的数据版本中，能够有信息可以直接拿到它。</p>
+<p>也就是说，数据表中的一行记录，其实可能有多个版本 (row)，每个版本有自己的 row trx_id。</p>
+<p><img src="http://blog-pic-1254088127.cos.ap-shanghai.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg?sign=q-sign-algorithm%3Dsha1%26q-ak%3DAKIDyTYbLG4mUJ84SNtqHkjzHrxydi2l12xN%26q-sign-time%3D1586963672%3B1586967332%26q-key-time%3D1586963672%3B1586967332%26q-header-list%3Dhost%26q-url-param-list%3D%26q-signature%3D507f015585dfe3a66deae7caae1270f63ee4e7cd&x-cos-security-token=f443764a28aa591ab8000504f69ebfb2abf31ba910001" alt="Mysql数据MVVC"></p>
+<p>中的三个虚线箭头，就是 undo log；而 V1、V2、V3 并不是物理上真实存在的，而是每次需要的时候根据当前版本和 undo log 计算出来的。比如，需要 V2 的时候，就是通过 V4 依次执行 U3、U2 算出来。</p>
+<p>可重复读的定义：一个事务启动的时候，能够看到所有已经提交的事务结果。但是之后，这个事务执行期间，其他事务的更新对它不可见。</p>
+<p>因此，一个事务只需要在启动的时候声明说，“以我启动的时刻为准，如果一个数据版本是在我启动之前生成的，就认；如果是我启动以后才生成的，我就不认，我必须要找到它的上一个版本”。</p>
+<p>一个数据版本，对于一个事务视图来说，除了自己的更新总是可见以外，有三种情况：</p>
+<ol>
+<li>版本未提交，不可见；</li>
+<li>版本已提交，但是是在视图创建后提交的，不可见；</li>
+<li>版本已提交，而且是在视图创建前提交的，可见。</li>
+</ol>
+<p>更新数据都是先读后写的，而这个读，只能读当前的值，称为“当前读”（current read）。</p>
+<p>这里我们提到了一个概念，叫作当前读。其实，除了 update 语句外，select 语句如果加锁，也是当前读。</p>
+<h1 id="事务的可重复读的能力是怎么实现的？"><a href="#事务的可重复读的能力是怎么实现的？" class="headerlink" title="事务的可重复读的能力是怎么实现的？"></a>事务的可重复读的能力是怎么实现的？</h1><p>可重复读的核心就是一致性读（consistent read）；而事务更新数据的时候，只能用当前读。如果当前的记录的行锁被其他事务占用的话，就需要进入锁等待。</p>
+<h1 id="读提交的逻辑和可重复读的区别"><a href="#读提交的逻辑和可重复读的区别" class="headerlink" title="读提交的逻辑和可重复读的区别"></a>读提交的逻辑和可重复读的区别</h1><p>在可重复读隔离级别下，只需要在事务开始的时候创建一致性视图，之后事务里的其他查询都共用这个一致性视图；</p>
+<p>在读提交隔离级别下，每一个语句执行前都会重新算出一个新的视图。</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>InnoDB 的行数据有多个版本，每个数据版本有自己的 row trx_id，每个事务或者语句有自己的一致性视图。普通查询语句是一致性读，一致性读会根据 row trx_id 和一致性视图确定数据版本的可见性。</p>
+<ul>
+<li>对于可重复读，查询只承认在事务启动前就已经提交完成的数据；</li>
+<li>对于读提交，查询只承认在语句启动前就已经提交完成的数据；</li>
+<li>而当前读，总是读取已经提交完成的最新版本。</li>
 </ul>
 ]]></content>
       <categories>
-        <category>设计模式</category>
+        <category>DB</category>
       </categories>
       <tags>
-        <tag>设计模式</tag>
+        <tag>Mysql</tag>
+        <tag>事务</tag>
       </tags>
   </entry>
   <entry>
@@ -1759,47 +1834,6 @@ public Object getCurrentUserToo(@AuthenticationPrincipal UserDetails userDetails
       </categories>
       <tags>
         <tag>Spring-Security</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Mysql（12）-Mysql事务隔离是如何实现的</title>
-    <url>/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/</url>
-    <content><![CDATA[<h1 id="事务的启动时机。"><a href="#事务的启动时机。" class="headerlink" title="事务的启动时机。"></a>事务的启动时机。</h1><p>begin/start transaction 命令并不是一个事务的起点，在执行到它们之后的第一个操作 InnoDB 表的语句，事务才真正启动。如果你想要马上启动一个事务，可以使用 start transaction with consistent snapshot 这个命令。</p>
-<p>第一种启动方式，一致性视图是在第执行第一个快照读语句时创建的；<br>第二种启动方式，一致性视图是在执行 start transaction with consistent snapshot 时创建的。</p>
-<h1 id="在-MySQL-里，有两个“视图”的概念"><a href="#在-MySQL-里，有两个“视图”的概念" class="headerlink" title="在 MySQL 里，有两个“视图”的概念"></a>在 MySQL 里，有两个“视图”的概念</h1><p>一个是 view。它是一个用查询语句定义的虚拟表，在调用的时候执行查询语句并生成结果。创建视图的语法是 create view … ，而它的查询方法与表一样。</p>
-<p>另一个是 InnoDB 在实现 MVCC 时用到的一致性读视图，即 consistent read view，用于支持 RC（Read Committed，读提交）和 RR（Repeatable Read，可重复读）隔离级别的实现。</p>
-<h1 id="“快照”在-MVCC-里是怎么工作的？"><a href="#“快照”在-MVCC-里是怎么工作的？" class="headerlink" title="“快照”在 MVCC 里是怎么工作的？"></a>“快照”在 MVCC 里是怎么工作的？</h1><p>在可重复读隔离级别下，事务在启动的时候就“拍了个快照”。注意，这个快照是基于整库的。</p>
-<p>InnoDB 里面每个事务有一个唯一的事务 ID，叫作 transaction id。它是在事务开始的时候向 InnoDB 的事务系统申请的，是按申请顺序严格递增的。</p>
-<p>而每行数据也都是有多个版本的。每次事务更新数据的时候，都会生成一个新的数据版本，并且把 transaction id 赋值给这个数据版本的事务 ID，记为 row trx_id。同时，旧的数据版本要保留，并且在新的数据版本中，能够有信息可以直接拿到它。</p>
-<p>也就是说，数据表中的一行记录，其实可能有多个版本 (row)，每个版本有自己的 row trx_id。</p>
-<p><img src="http://blog-pic-1254088127.cos.ap-shanghai.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg?sign=q-sign-algorithm%3Dsha1%26q-ak%3DAKIDyTYbLG4mUJ84SNtqHkjzHrxydi2l12xN%26q-sign-time%3D1586963672%3B1586967332%26q-key-time%3D1586963672%3B1586967332%26q-header-list%3Dhost%26q-url-param-list%3D%26q-signature%3D507f015585dfe3a66deae7caae1270f63ee4e7cd&x-cos-security-token=f443764a28aa591ab8000504f69ebfb2abf31ba910001" alt="Mysql数据MVVC"></p>
-<p>中的三个虚线箭头，就是 undo log；而 V1、V2、V3 并不是物理上真实存在的，而是每次需要的时候根据当前版本和 undo log 计算出来的。比如，需要 V2 的时候，就是通过 V4 依次执行 U3、U2 算出来。</p>
-<p>可重复读的定义：一个事务启动的时候，能够看到所有已经提交的事务结果。但是之后，这个事务执行期间，其他事务的更新对它不可见。</p>
-<p>因此，一个事务只需要在启动的时候声明说，“以我启动的时刻为准，如果一个数据版本是在我启动之前生成的，就认；如果是我启动以后才生成的，我就不认，我必须要找到它的上一个版本”。</p>
-<p>一个数据版本，对于一个事务视图来说，除了自己的更新总是可见以外，有三种情况：</p>
-<ol>
-<li>版本未提交，不可见；</li>
-<li>版本已提交，但是是在视图创建后提交的，不可见；</li>
-<li>版本已提交，而且是在视图创建前提交的，可见。</li>
-</ol>
-<p>更新数据都是先读后写的，而这个读，只能读当前的值，称为“当前读”（current read）。</p>
-<p>这里我们提到了一个概念，叫作当前读。其实，除了 update 语句外，select 语句如果加锁，也是当前读。</p>
-<h1 id="事务的可重复读的能力是怎么实现的？"><a href="#事务的可重复读的能力是怎么实现的？" class="headerlink" title="事务的可重复读的能力是怎么实现的？"></a>事务的可重复读的能力是怎么实现的？</h1><p>可重复读的核心就是一致性读（consistent read）；而事务更新数据的时候，只能用当前读。如果当前的记录的行锁被其他事务占用的话，就需要进入锁等待。</p>
-<h1 id="读提交的逻辑和可重复读的区别"><a href="#读提交的逻辑和可重复读的区别" class="headerlink" title="读提交的逻辑和可重复读的区别"></a>读提交的逻辑和可重复读的区别</h1><p>在可重复读隔离级别下，只需要在事务开始的时候创建一致性视图，之后事务里的其他查询都共用这个一致性视图；</p>
-<p>在读提交隔离级别下，每一个语句执行前都会重新算出一个新的视图。</p>
-<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>InnoDB 的行数据有多个版本，每个数据版本有自己的 row trx_id，每个事务或者语句有自己的一致性视图。普通查询语句是一致性读，一致性读会根据 row trx_id 和一致性视图确定数据版本的可见性。</p>
-<ul>
-<li>对于可重复读，查询只承认在事务启动前就已经提交完成的数据；</li>
-<li>对于读提交，查询只承认在语句启动前就已经提交完成的数据；</li>
-<li>而当前读，总是读取已经提交完成的最新版本。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-        <tag>事务</tag>
       </tags>
   </entry>
   <entry>
@@ -3103,149 +3137,6 @@ public class SpringBootDemoApplication {
       </tags>
   </entry>
   <entry>
-    <title>Mysql（8）-搞定Mysql字符集及校对规则</title>
-    <url>/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/</url>
-    <content><![CDATA[<h1 id="MySQL的字符集（Character-Set"><a href="#MySQL的字符集（Character-Set" class="headerlink" title="MySQL的字符集（Character Set)"></a>MySQL的字符集（Character Set)</h1><p>关于字符集，之前转载了一篇文章讲的非常好——<a href="">关于字符编码，你所需要知道的（ASCII,Unicode,Utf-8,GB2312…）</a></p>
-<p>常见字符集：</p>
-<ul>
-<li>ASCII字符集：基于罗马字母表的一套字符集，它采用1个字节的低7位表示字符，高位始终为0。</li>
-<li>LATIN1字符集：相对于ASCII字符集做了扩展，仍然使用一个字节表示字符，但启用了高位，扩展了字符集的表示范围。</li>
-<li>GBK字符集：支持中文，字符有一字节编码和两字节编码方式。</li>
-<li>UTF8字符集：Unicode字符集的一种，是计算机科学领域里的一项业界标准，支持了所有国家的文字字符，utf8采用1-4个字节表示字符。</li>
-</ul>
-<h1 id="MySQL与字符集"><a href="#MySQL与字符集" class="headerlink" title="MySQL与字符集"></a>MySQL与字符集</h1><p>查看NySQL系统变量：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| Variable_name            | Value                      |</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| character_set_client     | utf8                       |</span><br><span class="line">| character_set_connection | utf8                       |</span><br><span class="line">| character_set_database   | latin1                     |</span><br><span class="line">| character_set_filesystem | binary                     |</span><br><span class="line">| character_set_results    | utf8                       |</span><br><span class="line">| character_set_server     | latin1                     |</span><br><span class="line">| character_set_system     | utf8                       |</span><br><span class="line">| character_sets_dir       | &#x2F;usr&#x2F;share&#x2F;mysql&#x2F;charsets&#x2F; |</span><br><span class="line">+--------------------------+----------------------------+</span><br></pre></td></tr></table></figure>
-<p>正确使用字符集</p>
-<table>
-<thead>
-<tr>
-<th>参数名</th>
-<th>变量作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>character_set_client</td>
-<td>客户端来源数据使用的字符集</td>
-</tr>
-<tr>
-<td>character_set_connection</td>
-<td>连接层字符集</td>
-</tr>
-<tr>
-<td>character_set_database</td>
-<td>当前选中数据库的默认字符集</td>
-</tr>
-<tr>
-<td>character_set_results</td>
-<td>查询结果字符集</td>
-</tr>
-<tr>
-<td>character_set_server</td>
-<td>默认的内部操作字符集</td>
-</tr>
-<tr>
-<td>character_set_system</td>
-<td>数据元数据（字段名等）字符集</td>
-</tr>
-</tbody></table>
-<p>这些字符集参数的作用说明：</p>
-<ol>
-<li>设置库、表、列字符集<ul>
-<li>建库时，若未明确指定字符集，则采用character_set_server指定的字符集。</li>
-<li>建表时，若未明确指定字符集，则采用当前库所采用的字符集。</li>
-<li>新增时，修改表字段时，若未明确指定字符集，则采用当前表所采用的字符集。</li>
-</ul>
-</li>
-<li>更新查询涉及的字符集变量<ul>
-<li>更新流程字符集转换过程：character_set_client–&gt;character_set_connection–&gt;表字符集。</li>
-<li>查询流程字符集转换过程：表字符集–&gt;character_set_result</li>
-</ul>
-</li>
-<li>character_set_database<ul>
-<li>当前默认数据库的字符集，比如执行use xxx后，当前数据库变为xxx，若xxx的字符集为utf8，那么此变量值就变为utf8(供系统设置，无需人工设置)。</li>
-</ul>
-</li>
-</ol>
-<h1 id="MySQL客户端与字符集"><a href="#MySQL客户端与字符集" class="headerlink" title="MySQL客户端与字符集"></a>MySQL客户端与字符集</h1><p>1.对于输入来说：</p>
-<p>客户端使用的字符集必须通过character_set_client、character_set_connection体现出来：</p>
-<ul>
-<li>在客户端对数据进行编码（Linux：utf8、windows：gbk）</li>
-<li>MySQL接到SQL语句后(比如insert)，发现有字符，询问客户端通过什么方式对字符编码：客户端通过character_set_client参数告知MySQL客户端的编码方式(所以此参数需要正确反映客户端对应的编码)</li>
-<li>当MySQL发现客户端的client所传输的字符集与自己的connection不一样时，会将client的字符集转换为connection的字符集</li>
-<li>MySQL将转换后的编码存储到MySQL表的列上，在存储的时候再判断编码是否与内部存储字符集（按照优先级判断字符集类型）上的编码一致，如果不一致需要再次转换</li>
-</ul>
-<p>2.对于查询来说：</p>
-<p>客户端使用的字符集必须通过character_set_results来体现，服务器询问客户端字符集，通过character_set_results将结果转换为与客户端相同的字符集传递给客户端。(character_set_results默认等于character_set_client)</p>
-<h1 id="字符集常见处理操作"><a href="#字符集常见处理操作" class="headerlink" title="字符集常见处理操作"></a>字符集常见处理操作</h1><p>查看字符集编码设置</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br></pre></td></tr></table></figure>
-
-<p>运行时设置字符集编码</p>
-<p>运行时修改（重启后会失效，如果想要重启后保持不变，需要写进配置文件里）</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; set names &#39;utf8&#39;;</span><br><span class="line"></span><br><span class="line">相当于同时：</span><br><span class="line"></span><br><span class="line">set character_set_client &#x3D; utf8;</span><br><span class="line">set character_set_results &#x3D; utf8;</span><br><span class="line">set character_set_connection &#x3D; utf8;</span><br></pre></td></tr></table></figure>
-<p>修改数据库字符集</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; alter database database_name character set xxx;</span><br></pre></td></tr></table></figure>
-<p>只修改库的字符集，影响后续创建的表的默认定义；对于已创建的表的字符集不受影响。（一般在数据库实现字符集即可，表和列都默认采用数据库的字符集）</p>
-<p>修改表的字符集</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-- 只修改表的字符集，影响后续该表新增列的默认定义，已有列的字符集不受影响。</span><br><span class="line">mysql&gt; alter table table_name character set xxx；</span><br><span class="line"></span><br><span class="line">-- 同时修改表字符集和已有列字符集，并将已有数据进行字符集编码转换。</span><br><span class="line">mysql&gt; alter table table_name convert to character set xxx;</span><br></pre></td></tr></table></figure>
-<p>修改列的字符集</p>
-<p>格式：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ALTER TABLE table_name MODIFY</span><br><span class="line">column_name &#123;CHAR | VARCHAR | TEXT&#125; (column_length)</span><br><span class="line">    [CHARACTER SET charset_name]</span><br><span class="line">    [COLLATE collation_name]</span><br><span class="line">mysql&gt; alter table table_name modify col_name varchar(col_length) character set xxx;</span><br></pre></td></tr></table></figure>
-<p>启动服务时指定字符集</p>
-<p>可以在MySQL服务启动时，指定server字符集、字符序。如不指定，默认的字符序分别为latin1、latin1_swedish_ci</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1 \</span><br><span class="line">       --collation-server&#x3D;latin1_swedish_ci</span><br></pre></td></tr></table></figure>
-<p>单独指定server字符集，此时，server字符序为latin1的默认字符序latin1_swedish_ci。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1</span><br></pre></td></tr></table></figure>
-<p>配置文件指定字符集</p>
-<p>除了在命令行参数里指定，也可以在配置文件里指定，如下所示。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysql]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">collation-server &#x3D; utf8_unicode_ci</span><br><span class="line">init-connect&#x3D;&#39;SET NAMES utf8&#39;</span><br><span class="line">character-set-server &#x3D; utf8</span><br></pre></td></tr></table></figure>
-<p>字符集的正确实践<br>MySQL软件工具本身是没有字符集的，主要是因为工具所在的OS的字符集（Windows：gbk、Linux：utf8），所以字符集的正确实践非常重要：</p>
-<ol>
-<li>对于insert来说，character_set_client、character_set_connection相同，而且正确反映客户端使用的字符集</li>
-<li>对于select来说，character_set_results正确反映客户端字符集</li>
-<li>数据库字符集取决于我们要存储的字符类型</li>
-<li>字符集转换最多发生一次，这就要求character_set_client、character_set_connection相同</li>
-<li>所有的字符集转换都发生在数据库端</li>
-</ol>
-<p>综述：</p>
-<ol>
-<li>建立数据库的时候注意字符集（gbk、utf8）；</li>
-<li>连接数据库以后，无论是执行dml还是select，只要涉及到varchar、char列，就需要设置正确的字符集参数。</li>
-</ol>
-<h1 id="MySQL的校对规则"><a href="#MySQL的校对规则" class="headerlink" title="MySQL的校对规则"></a>MySQL的校对规则</h1><p>字符集是一套符号和对应的编号</p>
-<ol start="4">
-<li><p>查看数据库支持的所有字符集(charset)：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show character set;</span><br></pre></td></tr></table></figure>
-<p>校对规则(collation)是在字符集内用于字符比较和排序的一套规则，比如有的规则区分大小写，有的则无视。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; create table t1(id int,name varchar(20)); -- t1建表没有指定校对规则</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    1 | A    |</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
-<p>查看数据库支持的校对规则</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show collation;</span><br></pre></td></tr></table></figure>
-<p>查看当前字符集和校对规则设置</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; mysql&gt; show variables like &#39;collation_%&#39;;</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| Variable_name        | Value             |</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| collation_connection | utf8_general_ci   |</span><br><span class="line">| collation_database   | utf8_general_ci   |</span><br><span class="line">| collation_server     | latin1_swedish_ci |</span><br><span class="line">+----------------------+-------------------+</span><br></pre></td></tr></table></figure>
-<p>校对规则特征：</p>
-</li>
-<li><p>两个不同的字符集不能有相同的校对规则；</p>
-</li>
-<li><p>每个字符集有一个默认校对规则；</p>
-</li>
-<li><p>存在校对规则命名约定：以其相关的字符集名开始，中间包括一个语言名，并且以_ci（大小写不敏感）、_cs（大小写敏感）或_bin（二元）结束。<br>注意：</p>
-</li>
-</ol>
-<p>系统使用utf8字符集，若使用utf8_bin校对规则执行SQL查询时区分大小写，使用utf8_general_ci不区分大小写(默认的utf8字符集对应的校对规则是utf8_general_ci)。</p>
-<p>示例：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; create table t2(id int,name varchar(20)) character set&#x3D;utf8 collate&#x3D;utf8_bin;</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line"></span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
-<p>相关连接</p>
-<p><a href="https://www.cnblogs.com/chyingp/p/mysql-character-set-collation.html" target="_blank" rel="noopener">再见乱码：5分钟读懂MySQL字符集设置</a></p>
-<p><a href="https://www.cnblogs.com/geaozhang/p/6724393.html" target="_blank" rel="noopener">MySQL字符集及校对规则的理解</a></p>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-        <tag>编码</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Redis02-命令速查</title>
     <url>/2019/04/06/Redis02-%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/</url>
     <content><![CDATA[<h1 id="过期时间"><a href="#过期时间" class="headerlink" title="过期时间"></a>过期时间</h1><pre><code>127.0.0.1:6379&gt; SET expirecode foo
@@ -3476,6 +3367,149 @@ hgetall(key)：返回名称为key的hash中所有的键（field）及其对应�
       </categories>
       <tags>
         <tag>maven</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mysql（8）-搞定Mysql字符集及校对规则</title>
+    <url>/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/</url>
+    <content><![CDATA[<h1 id="MySQL的字符集（Character-Set"><a href="#MySQL的字符集（Character-Set" class="headerlink" title="MySQL的字符集（Character Set)"></a>MySQL的字符集（Character Set)</h1><p>关于字符集，之前转载了一篇文章讲的非常好——<a href="">关于字符编码，你所需要知道的（ASCII,Unicode,Utf-8,GB2312…）</a></p>
+<p>常见字符集：</p>
+<ul>
+<li>ASCII字符集：基于罗马字母表的一套字符集，它采用1个字节的低7位表示字符，高位始终为0。</li>
+<li>LATIN1字符集：相对于ASCII字符集做了扩展，仍然使用一个字节表示字符，但启用了高位，扩展了字符集的表示范围。</li>
+<li>GBK字符集：支持中文，字符有一字节编码和两字节编码方式。</li>
+<li>UTF8字符集：Unicode字符集的一种，是计算机科学领域里的一项业界标准，支持了所有国家的文字字符，utf8采用1-4个字节表示字符。</li>
+</ul>
+<h1 id="MySQL与字符集"><a href="#MySQL与字符集" class="headerlink" title="MySQL与字符集"></a>MySQL与字符集</h1><p>查看NySQL系统变量：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| Variable_name            | Value                      |</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| character_set_client     | utf8                       |</span><br><span class="line">| character_set_connection | utf8                       |</span><br><span class="line">| character_set_database   | latin1                     |</span><br><span class="line">| character_set_filesystem | binary                     |</span><br><span class="line">| character_set_results    | utf8                       |</span><br><span class="line">| character_set_server     | latin1                     |</span><br><span class="line">| character_set_system     | utf8                       |</span><br><span class="line">| character_sets_dir       | &#x2F;usr&#x2F;share&#x2F;mysql&#x2F;charsets&#x2F; |</span><br><span class="line">+--------------------------+----------------------------+</span><br></pre></td></tr></table></figure>
+<p>正确使用字符集</p>
+<table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>变量作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>character_set_client</td>
+<td>客户端来源数据使用的字符集</td>
+</tr>
+<tr>
+<td>character_set_connection</td>
+<td>连接层字符集</td>
+</tr>
+<tr>
+<td>character_set_database</td>
+<td>当前选中数据库的默认字符集</td>
+</tr>
+<tr>
+<td>character_set_results</td>
+<td>查询结果字符集</td>
+</tr>
+<tr>
+<td>character_set_server</td>
+<td>默认的内部操作字符集</td>
+</tr>
+<tr>
+<td>character_set_system</td>
+<td>数据元数据（字段名等）字符集</td>
+</tr>
+</tbody></table>
+<p>这些字符集参数的作用说明：</p>
+<ol>
+<li>设置库、表、列字符集<ul>
+<li>建库时，若未明确指定字符集，则采用character_set_server指定的字符集。</li>
+<li>建表时，若未明确指定字符集，则采用当前库所采用的字符集。</li>
+<li>新增时，修改表字段时，若未明确指定字符集，则采用当前表所采用的字符集。</li>
+</ul>
+</li>
+<li>更新查询涉及的字符集变量<ul>
+<li>更新流程字符集转换过程：character_set_client–&gt;character_set_connection–&gt;表字符集。</li>
+<li>查询流程字符集转换过程：表字符集–&gt;character_set_result</li>
+</ul>
+</li>
+<li>character_set_database<ul>
+<li>当前默认数据库的字符集，比如执行use xxx后，当前数据库变为xxx，若xxx的字符集为utf8，那么此变量值就变为utf8(供系统设置，无需人工设置)。</li>
+</ul>
+</li>
+</ol>
+<h1 id="MySQL客户端与字符集"><a href="#MySQL客户端与字符集" class="headerlink" title="MySQL客户端与字符集"></a>MySQL客户端与字符集</h1><p>1.对于输入来说：</p>
+<p>客户端使用的字符集必须通过character_set_client、character_set_connection体现出来：</p>
+<ul>
+<li>在客户端对数据进行编码（Linux：utf8、windows：gbk）</li>
+<li>MySQL接到SQL语句后(比如insert)，发现有字符，询问客户端通过什么方式对字符编码：客户端通过character_set_client参数告知MySQL客户端的编码方式(所以此参数需要正确反映客户端对应的编码)</li>
+<li>当MySQL发现客户端的client所传输的字符集与自己的connection不一样时，会将client的字符集转换为connection的字符集</li>
+<li>MySQL将转换后的编码存储到MySQL表的列上，在存储的时候再判断编码是否与内部存储字符集（按照优先级判断字符集类型）上的编码一致，如果不一致需要再次转换</li>
+</ul>
+<p>2.对于查询来说：</p>
+<p>客户端使用的字符集必须通过character_set_results来体现，服务器询问客户端字符集，通过character_set_results将结果转换为与客户端相同的字符集传递给客户端。(character_set_results默认等于character_set_client)</p>
+<h1 id="字符集常见处理操作"><a href="#字符集常见处理操作" class="headerlink" title="字符集常见处理操作"></a>字符集常见处理操作</h1><p>查看字符集编码设置</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br></pre></td></tr></table></figure>
+
+<p>运行时设置字符集编码</p>
+<p>运行时修改（重启后会失效，如果想要重启后保持不变，需要写进配置文件里）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; set names &#39;utf8&#39;;</span><br><span class="line"></span><br><span class="line">相当于同时：</span><br><span class="line"></span><br><span class="line">set character_set_client &#x3D; utf8;</span><br><span class="line">set character_set_results &#x3D; utf8;</span><br><span class="line">set character_set_connection &#x3D; utf8;</span><br></pre></td></tr></table></figure>
+<p>修改数据库字符集</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; alter database database_name character set xxx;</span><br></pre></td></tr></table></figure>
+<p>只修改库的字符集，影响后续创建的表的默认定义；对于已创建的表的字符集不受影响。（一般在数据库实现字符集即可，表和列都默认采用数据库的字符集）</p>
+<p>修改表的字符集</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-- 只修改表的字符集，影响后续该表新增列的默认定义，已有列的字符集不受影响。</span><br><span class="line">mysql&gt; alter table table_name character set xxx；</span><br><span class="line"></span><br><span class="line">-- 同时修改表字符集和已有列字符集，并将已有数据进行字符集编码转换。</span><br><span class="line">mysql&gt; alter table table_name convert to character set xxx;</span><br></pre></td></tr></table></figure>
+<p>修改列的字符集</p>
+<p>格式：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ALTER TABLE table_name MODIFY</span><br><span class="line">column_name &#123;CHAR | VARCHAR | TEXT&#125; (column_length)</span><br><span class="line">    [CHARACTER SET charset_name]</span><br><span class="line">    [COLLATE collation_name]</span><br><span class="line">mysql&gt; alter table table_name modify col_name varchar(col_length) character set xxx;</span><br></pre></td></tr></table></figure>
+<p>启动服务时指定字符集</p>
+<p>可以在MySQL服务启动时，指定server字符集、字符序。如不指定，默认的字符序分别为latin1、latin1_swedish_ci</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1 \</span><br><span class="line">       --collation-server&#x3D;latin1_swedish_ci</span><br></pre></td></tr></table></figure>
+<p>单独指定server字符集，此时，server字符序为latin1的默认字符序latin1_swedish_ci。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1</span><br></pre></td></tr></table></figure>
+<p>配置文件指定字符集</p>
+<p>除了在命令行参数里指定，也可以在配置文件里指定，如下所示。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysql]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">collation-server &#x3D; utf8_unicode_ci</span><br><span class="line">init-connect&#x3D;&#39;SET NAMES utf8&#39;</span><br><span class="line">character-set-server &#x3D; utf8</span><br></pre></td></tr></table></figure>
+<p>字符集的正确实践<br>MySQL软件工具本身是没有字符集的，主要是因为工具所在的OS的字符集（Windows：gbk、Linux：utf8），所以字符集的正确实践非常重要：</p>
+<ol>
+<li>对于insert来说，character_set_client、character_set_connection相同，而且正确反映客户端使用的字符集</li>
+<li>对于select来说，character_set_results正确反映客户端字符集</li>
+<li>数据库字符集取决于我们要存储的字符类型</li>
+<li>字符集转换最多发生一次，这就要求character_set_client、character_set_connection相同</li>
+<li>所有的字符集转换都发生在数据库端</li>
+</ol>
+<p>综述：</p>
+<ol>
+<li>建立数据库的时候注意字符集（gbk、utf8）；</li>
+<li>连接数据库以后，无论是执行dml还是select，只要涉及到varchar、char列，就需要设置正确的字符集参数。</li>
+</ol>
+<h1 id="MySQL的校对规则"><a href="#MySQL的校对规则" class="headerlink" title="MySQL的校对规则"></a>MySQL的校对规则</h1><p>字符集是一套符号和对应的编号</p>
+<ol start="4">
+<li><p>查看数据库支持的所有字符集(charset)：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show character set;</span><br></pre></td></tr></table></figure>
+<p>校对规则(collation)是在字符集内用于字符比较和排序的一套规则，比如有的规则区分大小写，有的则无视。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; create table t1(id int,name varchar(20)); -- t1建表没有指定校对规则</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    1 | A    |</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
+<p>查看数据库支持的校对规则</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show collation;</span><br></pre></td></tr></table></figure>
+<p>查看当前字符集和校对规则设置</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; mysql&gt; show variables like &#39;collation_%&#39;;</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| Variable_name        | Value             |</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| collation_connection | utf8_general_ci   |</span><br><span class="line">| collation_database   | utf8_general_ci   |</span><br><span class="line">| collation_server     | latin1_swedish_ci |</span><br><span class="line">+----------------------+-------------------+</span><br></pre></td></tr></table></figure>
+<p>校对规则特征：</p>
+</li>
+<li><p>两个不同的字符集不能有相同的校对规则；</p>
+</li>
+<li><p>每个字符集有一个默认校对规则；</p>
+</li>
+<li><p>存在校对规则命名约定：以其相关的字符集名开始，中间包括一个语言名，并且以_ci（大小写不敏感）、_cs（大小写敏感）或_bin（二元）结束。<br>注意：</p>
+</li>
+</ol>
+<p>系统使用utf8字符集，若使用utf8_bin校对规则执行SQL查询时区分大小写，使用utf8_general_ci不区分大小写(默认的utf8字符集对应的校对规则是utf8_general_ci)。</p>
+<p>示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; create table t2(id int,name varchar(20)) character set&#x3D;utf8 collate&#x3D;utf8_bin;</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line"></span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
+<p>相关连接</p>
+<p><a href="https://www.cnblogs.com/chyingp/p/mysql-character-set-collation.html" target="_blank" rel="noopener">再见乱码：5分钟读懂MySQL字符集设置</a></p>
+<p><a href="https://www.cnblogs.com/geaozhang/p/6724393.html" target="_blank" rel="noopener">MySQL字符集及校对规则的理解</a></p>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
+        <tag>编码</tag>
       </tags>
   </entry>
   <entry>
@@ -3986,84 +4020,6 @@ OK
       </tags>
   </entry>
   <entry>
-    <title>Nginx-2：Nginx安装</title>
-    <url>/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/</url>
-    <content><![CDATA[<p>安装nginx有两种方式：</p>
-<ul>
-<li>编译</li>
-<li>使用操作系统商自带的工具比如Yarm、apt-get、yum 等直接安装Nginx。</li>
-</ul>
-<p>直接安装Nginx有个问题，无法安装第三方模块，安装第三方模块只能通过编译的方式安装。</p>
-<h1 id="下载Nginx"><a href="#下载Nginx" class="headerlink" title="下载Nginx"></a>下载Nginx</h1><p>进入官网 <a href="http://nginx.org/" target="_blank" rel="noopener">http://nginx.org/</a> 找到download，点击进入。</p>
-<p>nignx官方有两种版本：</p>
-<ul>
-<li>Mainline Version 主线版本</li>
-<li>Stable Version 稳定版本</li>
-</ul>
-<p>下载最新nginx stable版本</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">wget http:&#x2F;&#x2F;nginx.org&#x2F;download&#x2F;nginx-1.16.0.tar.gz</span><br><span class="line"></span><br><span class="line">tar -zxf nginx-1.16.0.tar.gz</span><br></pre></td></tr></table></figure>
-
-<h1 id="源码目录"><a href="#源码目录" class="headerlink" title="源码目录"></a>源码目录</h1><ul>
-<li><p>conf</p>
-<p>示例文件，方便配置的示例</p>
-</li>
-<li><p>configure</p>
-<p>configure脚本，用来生成中间文件，执行编译前的必备动作</p>
-</li>
-<li><p>contrib</p>
-<p>提供了一些工具，比如vim编辑nginx配置的高亮支持（将contrib/vim中的文件全部copy到~/.vim中即可）</p>
-</li>
-<li><p>html</p>
-<p>提供了两个标准的html文件，50x.html和默认nginx欢迎界面index.html</p>
-</li>
-<li><p>src</p>
-<p>nginx源码文件</p>
-</li>
-</ul>
-<h1 id="configure介绍"><a href="#configure介绍" class="headerlink" title="configure介绍"></a>configure介绍</h1><p>查看configure脚本支持哪些参数</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.&#x2F;configure --help|more</span><br></pre></td></tr></table></figure>
-
-<p>主要分为三大类：</p>
-<ul>
-<li><p>nginx执行中会去哪些目录下的文件作为它的辅助的一些文件</p>
-<p>比如–modules-path指定动态模块，通常我们只需要指定–prefix=PATH(安装目录)即可，其它的模块会在prefix指定的路径下建文件夹</p>
-</li>
-<li><p>第二类参数用来确定使用或者不使用哪些模块</p>
-<p>–with开头的参数表示的模块，默认不会被编译进nginx</p>
-<p>–without开头的模块，默认会被编译进nginx</p>
-</li>
-<li><p>第三类参数指定了nginx编译中的特殊参数</p>
-<p>比如–with-debug表示需要打印级别的日志</p>
-<p>编译nginx</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.&#x2F;configure --prefix&#x3D;&#x2F;opt&#x2F;nginx</span><br></pre></td></tr></table></figure>
-
-<p>执行完configure脚本后会生成一些中间文件，这些文夹放在objs文件下</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.</span><br><span class="line">├── autoconf.err</span><br><span class="line">├── Makefile</span><br><span class="line">├── ngx_auto_config.h</span><br><span class="line">├── ngx_auto_headers.h</span><br><span class="line">├── ngx_modules.c</span><br><span class="line">└── src</span><br><span class="line">    ├── core</span><br><span class="line">    ├── event</span><br><span class="line">    │   └── modules</span><br><span class="line">    ├── http</span><br><span class="line">    │   ├── modules</span><br><span class="line">    │   │   └── perl</span><br><span class="line">    │   └── v2</span><br><span class="line">    ├── mail</span><br><span class="line">    ├── misc</span><br><span class="line">    ├── os</span><br><span class="line">    │   ├── unix</span><br><span class="line">    │   └── win32</span><br><span class="line">    └── stream</span><br></pre></td></tr></table></figure>
-
-<p>这里ngx_modules.c文件指定了哪些模块会被编译进nginx</p>
-</li>
-</ul>
-<h1 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#执行make编译</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
-
-<p>我们可以看到执行过程中生成了大量的中间文件，执行结束最终在objs中生成了可执行的nginx二进制文件</p>
-<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>如果是升级安装，则把可执行的nginx二进制文件copy到安装文件即可。</p>
-<p>如果是首次安装，则继续执行make install 安装</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@192 nginx-1.16.0]$ make install</span><br><span class="line">make -f objs&#x2F;Makefile install</span><br><span class="line">make[1]: 进入目录“&#x2F;opt&#x2F;nginx-1.16.0”</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#39; || mkdir -p &#39;&#x2F;opt&#x2F;nginx&#39;</span><br><span class="line">mkdir: 无法创建目录 “&#x2F;opt&#x2F;nginx”: Permission denied</span><br><span class="line">make[1]: *** [objs&#x2F;Makefile:1206：install] 错误 1</span><br><span class="line">make[1]: 离开目录“&#x2F;opt&#x2F;nginx-1.16.0”</span><br><span class="line">make: *** [Makefile:11：install] 错误 2</span><br><span class="line">[richey@192 nginx-1.16.0]$ sudo make install</span><br><span class="line">[sudo] richey 的密码：</span><br><span class="line">make -f objs&#x2F;Makefile install</span><br><span class="line">make[1]: 进入目录“&#x2F;opt&#x2F;nginx-1.16.0”</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#39; || mkdir -p &#39;&#x2F;opt&#x2F;nginx&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#39;</span><br><span class="line">test ! -f &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#x2F;nginx&#39; \</span><br><span class="line">	|| mv &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#x2F;nginx&#39; \</span><br><span class="line">		&#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#x2F;nginx.old&#39;</span><br><span class="line">cp objs&#x2F;nginx &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#x2F;nginx&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;koi-win &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;koi-utf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;win-utf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;mime.types&#39; \</span><br><span class="line">	|| cp conf&#x2F;mime.types &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;mime.types &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;mime.types.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;fastcgi_params&#39; \</span><br><span class="line">	|| cp conf&#x2F;fastcgi_params &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;fastcgi_params \</span><br><span class="line">	&#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;fastcgi_params.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;fastcgi.conf&#39; \</span><br><span class="line">	|| cp conf&#x2F;fastcgi.conf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;fastcgi.conf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;fastcgi.conf.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;uwsgi_params&#39; \</span><br><span class="line">	|| cp conf&#x2F;uwsgi_params &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;uwsgi_params \</span><br><span class="line">	&#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;uwsgi_params.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;scgi_params&#39; \</span><br><span class="line">	|| cp conf&#x2F;scgi_params &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;scgi_params \</span><br><span class="line">	&#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;scgi_params.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;nginx.conf&#39; \</span><br><span class="line">	|| cp conf&#x2F;nginx.conf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;nginx.conf&#39;</span><br><span class="line">cp conf&#x2F;nginx.conf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;nginx.conf.default&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;html&#39; \</span><br><span class="line">	|| cp -R html &#39;&#x2F;opt&#x2F;nginx&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39;</span><br><span class="line">make[1]: 离开目录“&#x2F;opt&#x2F;nginx-1.16.0”</span><br></pre></td></tr></table></figure>
-
-<p>执行完之后，我们去–prefix指定的安装目录中</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@192 nginx]$ tree</span><br><span class="line">.</span><br><span class="line">├── conf</span><br><span class="line">│   ├── fastcgi.conf</span><br><span class="line">│   ├── fastcgi.conf.default</span><br><span class="line">│   ├── fastcgi_params</span><br><span class="line">│   ├── fastcgi_params.default</span><br><span class="line">│   ├── koi-utf</span><br><span class="line">│   ├── koi-win</span><br><span class="line">│   ├── mime.types</span><br><span class="line">│   ├── mime.types.default</span><br><span class="line">│   ├── nginx.conf</span><br><span class="line">│   ├── nginx.conf.default</span><br><span class="line">│   ├── scgi_params</span><br><span class="line">│   ├── scgi_params.default</span><br><span class="line">│   ├── uwsgi_params</span><br><span class="line">│   ├── uwsgi_params.default</span><br><span class="line">│   └── win-utf</span><br><span class="line">├── html</span><br><span class="line">│   ├── 50x.html</span><br><span class="line">│   └── index.html</span><br><span class="line">├── logs</span><br><span class="line">└── sbin</span><br><span class="line">    └── nginx</span><br></pre></td></tr></table></figure>
-
-<p>这里最主要的nginx的二进制文件就在sbin目录下，决定nginx功能的配置文件在conf目录下</p>
-<p>以上就是nginx编译安装的全部步骤。</p>
-]]></content>
-      <categories>
-        <category>web</category>
-      </categories>
-      <tags>
-        <tag>nginx</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Nginx-3：Nginx中的正则表达式</title>
     <url>/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/</url>
     <content><![CDATA[<p>正则表达式可以让我们匹配的功能更加强大</p>
@@ -4148,6 +4104,84 @@ OK
       </categories>
       <tags>
         <tag>Mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Nginx-2：Nginx安装</title>
+    <url>/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/</url>
+    <content><![CDATA[<p>安装nginx有两种方式：</p>
+<ul>
+<li>编译</li>
+<li>使用操作系统商自带的工具比如Yarm、apt-get、yum 等直接安装Nginx。</li>
+</ul>
+<p>直接安装Nginx有个问题，无法安装第三方模块，安装第三方模块只能通过编译的方式安装。</p>
+<h1 id="下载Nginx"><a href="#下载Nginx" class="headerlink" title="下载Nginx"></a>下载Nginx</h1><p>进入官网 <a href="http://nginx.org/" target="_blank" rel="noopener">http://nginx.org/</a> 找到download，点击进入。</p>
+<p>nignx官方有两种版本：</p>
+<ul>
+<li>Mainline Version 主线版本</li>
+<li>Stable Version 稳定版本</li>
+</ul>
+<p>下载最新nginx stable版本</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">wget http:&#x2F;&#x2F;nginx.org&#x2F;download&#x2F;nginx-1.16.0.tar.gz</span><br><span class="line"></span><br><span class="line">tar -zxf nginx-1.16.0.tar.gz</span><br></pre></td></tr></table></figure>
+
+<h1 id="源码目录"><a href="#源码目录" class="headerlink" title="源码目录"></a>源码目录</h1><ul>
+<li><p>conf</p>
+<p>示例文件，方便配置的示例</p>
+</li>
+<li><p>configure</p>
+<p>configure脚本，用来生成中间文件，执行编译前的必备动作</p>
+</li>
+<li><p>contrib</p>
+<p>提供了一些工具，比如vim编辑nginx配置的高亮支持（将contrib/vim中的文件全部copy到~/.vim中即可）</p>
+</li>
+<li><p>html</p>
+<p>提供了两个标准的html文件，50x.html和默认nginx欢迎界面index.html</p>
+</li>
+<li><p>src</p>
+<p>nginx源码文件</p>
+</li>
+</ul>
+<h1 id="configure介绍"><a href="#configure介绍" class="headerlink" title="configure介绍"></a>configure介绍</h1><p>查看configure脚本支持哪些参数</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.&#x2F;configure --help|more</span><br></pre></td></tr></table></figure>
+
+<p>主要分为三大类：</p>
+<ul>
+<li><p>nginx执行中会去哪些目录下的文件作为它的辅助的一些文件</p>
+<p>比如–modules-path指定动态模块，通常我们只需要指定–prefix=PATH(安装目录)即可，其它的模块会在prefix指定的路径下建文件夹</p>
+</li>
+<li><p>第二类参数用来确定使用或者不使用哪些模块</p>
+<p>–with开头的参数表示的模块，默认不会被编译进nginx</p>
+<p>–without开头的模块，默认会被编译进nginx</p>
+</li>
+<li><p>第三类参数指定了nginx编译中的特殊参数</p>
+<p>比如–with-debug表示需要打印级别的日志</p>
+<p>编译nginx</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.&#x2F;configure --prefix&#x3D;&#x2F;opt&#x2F;nginx</span><br></pre></td></tr></table></figure>
+
+<p>执行完configure脚本后会生成一些中间文件，这些文夹放在objs文件下</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.</span><br><span class="line">├── autoconf.err</span><br><span class="line">├── Makefile</span><br><span class="line">├── ngx_auto_config.h</span><br><span class="line">├── ngx_auto_headers.h</span><br><span class="line">├── ngx_modules.c</span><br><span class="line">└── src</span><br><span class="line">    ├── core</span><br><span class="line">    ├── event</span><br><span class="line">    │   └── modules</span><br><span class="line">    ├── http</span><br><span class="line">    │   ├── modules</span><br><span class="line">    │   │   └── perl</span><br><span class="line">    │   └── v2</span><br><span class="line">    ├── mail</span><br><span class="line">    ├── misc</span><br><span class="line">    ├── os</span><br><span class="line">    │   ├── unix</span><br><span class="line">    │   └── win32</span><br><span class="line">    └── stream</span><br></pre></td></tr></table></figure>
+
+<p>这里ngx_modules.c文件指定了哪些模块会被编译进nginx</p>
+</li>
+</ul>
+<h1 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#执行make编译</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
+
+<p>我们可以看到执行过程中生成了大量的中间文件，执行结束最终在objs中生成了可执行的nginx二进制文件</p>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>如果是升级安装，则把可执行的nginx二进制文件copy到安装文件即可。</p>
+<p>如果是首次安装，则继续执行make install 安装</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@192 nginx-1.16.0]$ make install</span><br><span class="line">make -f objs&#x2F;Makefile install</span><br><span class="line">make[1]: 进入目录“&#x2F;opt&#x2F;nginx-1.16.0”</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#39; || mkdir -p &#39;&#x2F;opt&#x2F;nginx&#39;</span><br><span class="line">mkdir: 无法创建目录 “&#x2F;opt&#x2F;nginx”: Permission denied</span><br><span class="line">make[1]: *** [objs&#x2F;Makefile:1206：install] 错误 1</span><br><span class="line">make[1]: 离开目录“&#x2F;opt&#x2F;nginx-1.16.0”</span><br><span class="line">make: *** [Makefile:11：install] 错误 2</span><br><span class="line">[richey@192 nginx-1.16.0]$ sudo make install</span><br><span class="line">[sudo] richey 的密码：</span><br><span class="line">make -f objs&#x2F;Makefile install</span><br><span class="line">make[1]: 进入目录“&#x2F;opt&#x2F;nginx-1.16.0”</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#39; || mkdir -p &#39;&#x2F;opt&#x2F;nginx&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#39;</span><br><span class="line">test ! -f &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#x2F;nginx&#39; \</span><br><span class="line">	|| mv &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#x2F;nginx&#39; \</span><br><span class="line">		&#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#x2F;nginx.old&#39;</span><br><span class="line">cp objs&#x2F;nginx &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#x2F;nginx&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;koi-win &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;koi-utf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;win-utf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;mime.types&#39; \</span><br><span class="line">	|| cp conf&#x2F;mime.types &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;mime.types &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;mime.types.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;fastcgi_params&#39; \</span><br><span class="line">	|| cp conf&#x2F;fastcgi_params &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;fastcgi_params \</span><br><span class="line">	&#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;fastcgi_params.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;fastcgi.conf&#39; \</span><br><span class="line">	|| cp conf&#x2F;fastcgi.conf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;fastcgi.conf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;fastcgi.conf.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;uwsgi_params&#39; \</span><br><span class="line">	|| cp conf&#x2F;uwsgi_params &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;uwsgi_params \</span><br><span class="line">	&#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;uwsgi_params.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;scgi_params&#39; \</span><br><span class="line">	|| cp conf&#x2F;scgi_params &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;scgi_params \</span><br><span class="line">	&#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;scgi_params.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;nginx.conf&#39; \</span><br><span class="line">	|| cp conf&#x2F;nginx.conf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;nginx.conf&#39;</span><br><span class="line">cp conf&#x2F;nginx.conf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;nginx.conf.default&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;html&#39; \</span><br><span class="line">	|| cp -R html &#39;&#x2F;opt&#x2F;nginx&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39;</span><br><span class="line">make[1]: 离开目录“&#x2F;opt&#x2F;nginx-1.16.0”</span><br></pre></td></tr></table></figure>
+
+<p>执行完之后，我们去–prefix指定的安装目录中</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@192 nginx]$ tree</span><br><span class="line">.</span><br><span class="line">├── conf</span><br><span class="line">│   ├── fastcgi.conf</span><br><span class="line">│   ├── fastcgi.conf.default</span><br><span class="line">│   ├── fastcgi_params</span><br><span class="line">│   ├── fastcgi_params.default</span><br><span class="line">│   ├── koi-utf</span><br><span class="line">│   ├── koi-win</span><br><span class="line">│   ├── mime.types</span><br><span class="line">│   ├── mime.types.default</span><br><span class="line">│   ├── nginx.conf</span><br><span class="line">│   ├── nginx.conf.default</span><br><span class="line">│   ├── scgi_params</span><br><span class="line">│   ├── scgi_params.default</span><br><span class="line">│   ├── uwsgi_params</span><br><span class="line">│   ├── uwsgi_params.default</span><br><span class="line">│   └── win-utf</span><br><span class="line">├── html</span><br><span class="line">│   ├── 50x.html</span><br><span class="line">│   └── index.html</span><br><span class="line">├── logs</span><br><span class="line">└── sbin</span><br><span class="line">    └── nginx</span><br></pre></td></tr></table></figure>
+
+<p>这里最主要的nginx的二进制文件就在sbin目录下，决定nginx功能的配置文件在conf目录下</p>
+<p>以上就是nginx编译安装的全部步骤。</p>
+]]></content>
+      <categories>
+        <category>web</category>
+      </categories>
+      <tags>
+        <tag>nginx</tag>
       </tags>
   </entry>
   <entry>
@@ -4239,29 +4273,6 @@ OK
       </tags>
   </entry>
   <entry>
-    <title>SeLinux</title>
-    <url>/2019/03/20/SeLinux/</url>
-    <content><![CDATA[<p>一、关闭SeLinux</p>
-<p>查看SELinux状态：</p>
-<p>1、/usr/sbin/sestatus -v      ##如果SELinux status参数为enabled即为开启状态</p>
-<p>SELinux status:                 enabled</p>
-<p>2、getenforce                 ##也可以用这个命令检查</p>
-<p>关闭SELinux：</p>
-<p>1、临时关闭（不用重启机器）：</p>
-<p>setenforce 0                  ##设置SELinux 成为permissive模式</p>
-<p>##setenforce 1 设置SELinux 成为enforcing模式</p>
-<p>2、修改配置文件需要重启机器：</p>
-<p>修改/etc/selinux/config 文件</p>
-<p>将SELINUX=enforcing改为SELINUX=disabled</p>
-<p>重启机器即可</p>
-<p>二、执行下面的命令</p>
-<p>setsebool -P httpd_can_network_connect 1</p>
-]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
-  </entry>
-  <entry>
     <title>Nginx-1：基本概念</title>
     <url>/2019/03/20/Nginx-1%EF%BC%9A%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</url>
     <content><![CDATA[<h1 id="Nginx组成"><a href="#Nginx组成" class="headerlink" title="Nginx组成"></a>Nginx组成</h1><h2 id="Ngnix二进制可执行文件"><a href="#Ngnix二进制可执行文件" class="headerlink" title="Ngnix二进制可执行文件"></a>Ngnix二进制可执行文件</h2><p>由各模块源码编译出来的一个文件</p>
@@ -4304,6 +4315,29 @@ OK
       <tags>
         <tag>nginx</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>SeLinux</title>
+    <url>/2019/03/20/SeLinux/</url>
+    <content><![CDATA[<p>一、关闭SeLinux</p>
+<p>查看SELinux状态：</p>
+<p>1、/usr/sbin/sestatus -v      ##如果SELinux status参数为enabled即为开启状态</p>
+<p>SELinux status:                 enabled</p>
+<p>2、getenforce                 ##也可以用这个命令检查</p>
+<p>关闭SELinux：</p>
+<p>1、临时关闭（不用重启机器）：</p>
+<p>setenforce 0                  ##设置SELinux 成为permissive模式</p>
+<p>##setenforce 1 设置SELinux 成为enforcing模式</p>
+<p>2、修改配置文件需要重启机器：</p>
+<p>修改/etc/selinux/config 文件</p>
+<p>将SELINUX=enforcing改为SELINUX=disabled</p>
+<p>重启机器即可</p>
+<p>二、执行下面的命令</p>
+<p>setsebool -P httpd_can_network_connect 1</p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
   </entry>
   <entry>
     <title>Linux笔记</title>

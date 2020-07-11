@@ -288,6 +288,204 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/05/15/Spring%20Boot(%EF%BC%95)-%E5%B8%B8%E7%94%A8%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/05/15/Spring%20Boot(%EF%BC%95)-%E5%B8%B8%E7%94%A8%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE/" itemprop="url">Spring Boot(５)-常用属性配置</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-15T00:00:00+08:00">
+                2019-05-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/05/15/Spring%20Boot(%EF%BC%95)-%E5%B8%B8%E7%94%A8%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/15/Spring%20Boot(%EF%BC%95)-%E5%B8%B8%E7%94%A8%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/05/15/Spring%20Boot(%EF%BC%95)-%E5%B8%B8%E7%94%A8%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE/" class="leancloud_visitors" data-flag-title="Spring Boot(５)-常用属性配置">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="日志配置"><a href="#日志配置" class="headerlink" title="日志配置"></a>日志配置</h3><p>默认Spring Boot会用Logback来记录日志，并用INFO级别输出到控制台。</p>
+<h5 id="使用其它日志实现替换Logback"><a href="#使用其它日志实现替换Logback" class="headerlink" title="使用其它日志实现替换Logback"></a>使用其它日志实现替换Logback</h5><p>一般来说我们不需要切换日志实现，但是如果我们决定使用Log4j或Log4j2，那么只需要修改依赖，引入相应日志的起步依赖，同时排除掉Logback。</p>
+<pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter&lt;/artifactId&gt;
+    &lt;exclusions&gt;
+        &lt;exclusion&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-logging&lt;/artifactId&gt;
+        &lt;/exclusion&gt;
+    &lt;/exclusions&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-log4j&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre><h5 id="logback-xml"><a href="#logback-xml" class="headerlink" title="logback.xml"></a>logback.xml</h5><p>要完全掌握日志配置可以在Classpath的根目录(src/min/resources)里创建logback.xml文件。具体配置可以参考Logback文档。</p>
+<p>除了日志格式外，加lockback.xml配置和不加该配置文件的默认配置差不多。</p>
+<p>实际上，我们对日配置最常做的改动就是修改日志级别和指定日志输出文件，使用了Spring Boot的配置属性后，我们可以在不创建logback文件的情况下修改这些配置：</p>
+<pre><code>logging.level.root=warn
+logging.level.top.evolutionary=debug
+logging.path=/var/logs
+logging.file=evolutionary.log
+# 默认情况下，日志文件的大小达到１０Ｍ会切分一次
+logging.file.max-size=20M</code></pre><h3 id="配置数据源"><a href="#配置数据源" class="headerlink" title="配置数据源"></a>配置数据源</h3><p>只需要通过属性配置数据库的URL和身份信息等就可以了。</p>
+<pre><code># 数据源
+spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+spring.datasource.url=jdbc:mysql://localhost:3306/evolutionary_security?useUnicode=true&amp;characterEncoding=utf8
+spring.datasource.username=root
+spring.datasource.password=root</code></pre><p>在自动配置DataSource Bean的时候，Spring Boot 会使用这里的连接数据。DataSource Bean是一个连接池，如果Classpath里有Tomcat的连接池DataSource，那么会使用这个连接池，否则Spring Boot会在Classpath下找以下连接池:</p>
+<ul>
+<li>HikariCP</li>
+<li>Commons DBCP</li>
+<li>Commons DBCP2</li>
+</ul>
+<p>这里列出的只是自动配置支持的连接池，我们还可以自己配DataSource Bean,用我们喜欢的各种连接池。</p>
+<pre><code># 从jndi里查找DataSource
+#spring.datasource.jndi-name=</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/05/14/Spring%20Boot(4)-%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE%E4%BB%8B%E7%BB%8D/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1279,299 +1477,6 @@ public class SpringBootDemoApplication {
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/" itemprop="url">Mysql（8）-搞定Mysql字符集及校对规则</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-06T00:00:00+08:00">
-                2019-04-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/DB/" itemprop="url" rel="index">
-                    <span itemprop="name">DB</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/" class="leancloud_visitors" data-flag-title="Mysql（8）-搞定Mysql字符集及校对规则">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="MySQL的字符集（Character-Set"><a href="#MySQL的字符集（Character-Set" class="headerlink" title="MySQL的字符集（Character Set)"></a>MySQL的字符集（Character Set)</h1><p>关于字符集，之前转载了一篇文章讲的非常好——<a href="">关于字符编码，你所需要知道的（ASCII,Unicode,Utf-8,GB2312…）</a></p>
-<p>常见字符集：</p>
-<ul>
-<li>ASCII字符集：基于罗马字母表的一套字符集，它采用1个字节的低7位表示字符，高位始终为0。</li>
-<li>LATIN1字符集：相对于ASCII字符集做了扩展，仍然使用一个字节表示字符，但启用了高位，扩展了字符集的表示范围。</li>
-<li>GBK字符集：支持中文，字符有一字节编码和两字节编码方式。</li>
-<li>UTF8字符集：Unicode字符集的一种，是计算机科学领域里的一项业界标准，支持了所有国家的文字字符，utf8采用1-4个字节表示字符。</li>
-</ul>
-<h1 id="MySQL与字符集"><a href="#MySQL与字符集" class="headerlink" title="MySQL与字符集"></a>MySQL与字符集</h1><p>查看NySQL系统变量：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| Variable_name            | Value                      |</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| character_set_client     | utf8                       |</span><br><span class="line">| character_set_connection | utf8                       |</span><br><span class="line">| character_set_database   | latin1                     |</span><br><span class="line">| character_set_filesystem | binary                     |</span><br><span class="line">| character_set_results    | utf8                       |</span><br><span class="line">| character_set_server     | latin1                     |</span><br><span class="line">| character_set_system     | utf8                       |</span><br><span class="line">| character_sets_dir       | &#x2F;usr&#x2F;share&#x2F;mysql&#x2F;charsets&#x2F; |</span><br><span class="line">+--------------------------+----------------------------+</span><br></pre></td></tr></table></figure>
-<p>正确使用字符集</p>
-<table>
-<thead>
-<tr>
-<th>参数名</th>
-<th>变量作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>character_set_client</td>
-<td>客户端来源数据使用的字符集</td>
-</tr>
-<tr>
-<td>character_set_connection</td>
-<td>连接层字符集</td>
-</tr>
-<tr>
-<td>character_set_database</td>
-<td>当前选中数据库的默认字符集</td>
-</tr>
-<tr>
-<td>character_set_results</td>
-<td>查询结果字符集</td>
-</tr>
-<tr>
-<td>character_set_server</td>
-<td>默认的内部操作字符集</td>
-</tr>
-<tr>
-<td>character_set_system</td>
-<td>数据元数据（字段名等）字符集</td>
-</tr>
-</tbody></table>
-<p>这些字符集参数的作用说明：</p>
-<ol>
-<li>设置库、表、列字符集<ul>
-<li>建库时，若未明确指定字符集，则采用character_set_server指定的字符集。</li>
-<li>建表时，若未明确指定字符集，则采用当前库所采用的字符集。</li>
-<li>新增时，修改表字段时，若未明确指定字符集，则采用当前表所采用的字符集。</li>
-</ul>
-</li>
-<li>更新查询涉及的字符集变量<ul>
-<li>更新流程字符集转换过程：character_set_client–&gt;character_set_connection–&gt;表字符集。</li>
-<li>查询流程字符集转换过程：表字符集–&gt;character_set_result</li>
-</ul>
-</li>
-<li>character_set_database<ul>
-<li>当前默认数据库的字符集，比如执行use xxx后，当前数据库变为xxx，若xxx的字符集为utf8，那么此变量值就变为utf8(供系统设置，无需人工设置)。</li>
-</ul>
-</li>
-</ol>
-<h1 id="MySQL客户端与字符集"><a href="#MySQL客户端与字符集" class="headerlink" title="MySQL客户端与字符集"></a>MySQL客户端与字符集</h1><p>1.对于输入来说：</p>
-<p>客户端使用的字符集必须通过character_set_client、character_set_connection体现出来：</p>
-<ul>
-<li>在客户端对数据进行编码（Linux：utf8、windows：gbk）</li>
-<li>MySQL接到SQL语句后(比如insert)，发现有字符，询问客户端通过什么方式对字符编码：客户端通过character_set_client参数告知MySQL客户端的编码方式(所以此参数需要正确反映客户端对应的编码)</li>
-<li>当MySQL发现客户端的client所传输的字符集与自己的connection不一样时，会将client的字符集转换为connection的字符集</li>
-<li>MySQL将转换后的编码存储到MySQL表的列上，在存储的时候再判断编码是否与内部存储字符集（按照优先级判断字符集类型）上的编码一致，如果不一致需要再次转换</li>
-</ul>
-<p>2.对于查询来说：</p>
-<p>客户端使用的字符集必须通过character_set_results来体现，服务器询问客户端字符集，通过character_set_results将结果转换为与客户端相同的字符集传递给客户端。(character_set_results默认等于character_set_client)</p>
-<h1 id="字符集常见处理操作"><a href="#字符集常见处理操作" class="headerlink" title="字符集常见处理操作"></a>字符集常见处理操作</h1><p>查看字符集编码设置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br></pre></td></tr></table></figure>
-
-<p>运行时设置字符集编码</p>
-<p>运行时修改（重启后会失效，如果想要重启后保持不变，需要写进配置文件里）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; set names &#39;utf8&#39;;</span><br><span class="line"></span><br><span class="line">相当于同时：</span><br><span class="line"></span><br><span class="line">set character_set_client &#x3D; utf8;</span><br><span class="line">set character_set_results &#x3D; utf8;</span><br><span class="line">set character_set_connection &#x3D; utf8;</span><br></pre></td></tr></table></figure>
-<p>修改数据库字符集</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; alter database database_name character set xxx;</span><br></pre></td></tr></table></figure>
-<p>只修改库的字符集，影响后续创建的表的默认定义；对于已创建的表的字符集不受影响。（一般在数据库实现字符集即可，表和列都默认采用数据库的字符集）</p>
-<p>修改表的字符集</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-- 只修改表的字符集，影响后续该表新增列的默认定义，已有列的字符集不受影响。</span><br><span class="line">mysql&gt; alter table table_name character set xxx；</span><br><span class="line"></span><br><span class="line">-- 同时修改表字符集和已有列字符集，并将已有数据进行字符集编码转换。</span><br><span class="line">mysql&gt; alter table table_name convert to character set xxx;</span><br></pre></td></tr></table></figure>
-<p>修改列的字符集</p>
-<p>格式：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE table_name MODIFY</span><br><span class="line">column_name &#123;CHAR | VARCHAR | TEXT&#125; (column_length)</span><br><span class="line">    [CHARACTER SET charset_name]</span><br><span class="line">    [COLLATE collation_name]</span><br><span class="line">mysql&gt; alter table table_name modify col_name varchar(col_length) character set xxx;</span><br></pre></td></tr></table></figure>
-<p>启动服务时指定字符集</p>
-<p>可以在MySQL服务启动时，指定server字符集、字符序。如不指定，默认的字符序分别为latin1、latin1_swedish_ci</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1 \</span><br><span class="line">       --collation-server&#x3D;latin1_swedish_ci</span><br></pre></td></tr></table></figure>
-<p>单独指定server字符集，此时，server字符序为latin1的默认字符序latin1_swedish_ci。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1</span><br></pre></td></tr></table></figure>
-<p>配置文件指定字符集</p>
-<p>除了在命令行参数里指定，也可以在配置文件里指定，如下所示。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysql]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">collation-server &#x3D; utf8_unicode_ci</span><br><span class="line">init-connect&#x3D;&#39;SET NAMES utf8&#39;</span><br><span class="line">character-set-server &#x3D; utf8</span><br></pre></td></tr></table></figure>
-<p>字符集的正确实践<br>MySQL软件工具本身是没有字符集的，主要是因为工具所在的OS的字符集（Windows：gbk、Linux：utf8），所以字符集的正确实践非常重要：</p>
-<ol>
-<li>对于insert来说，character_set_client、character_set_connection相同，而且正确反映客户端使用的字符集</li>
-<li>对于select来说，character_set_results正确反映客户端字符集</li>
-<li>数据库字符集取决于我们要存储的字符类型</li>
-<li>字符集转换最多发生一次，这就要求character_set_client、character_set_connection相同</li>
-<li>所有的字符集转换都发生在数据库端</li>
-</ol>
-<p>综述：</p>
-<ol>
-<li>建立数据库的时候注意字符集（gbk、utf8）；</li>
-<li>连接数据库以后，无论是执行dml还是select，只要涉及到varchar、char列，就需要设置正确的字符集参数。</li>
-</ol>
-<h1 id="MySQL的校对规则"><a href="#MySQL的校对规则" class="headerlink" title="MySQL的校对规则"></a>MySQL的校对规则</h1><p>字符集是一套符号和对应的编号</p>
-<ol start="4">
-<li><p>查看数据库支持的所有字符集(charset)：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show character set;</span><br></pre></td></tr></table></figure>
-<p>校对规则(collation)是在字符集内用于字符比较和排序的一套规则，比如有的规则区分大小写，有的则无视。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create table t1(id int,name varchar(20)); -- t1建表没有指定校对规则</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    1 | A    |</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
-<p>查看数据库支持的校对规则</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show collation;</span><br></pre></td></tr></table></figure>
-<p>查看当前字符集和校对规则设置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; mysql&gt; show variables like &#39;collation_%&#39;;</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| Variable_name        | Value             |</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| collation_connection | utf8_general_ci   |</span><br><span class="line">| collation_database   | utf8_general_ci   |</span><br><span class="line">| collation_server     | latin1_swedish_ci |</span><br><span class="line">+----------------------+-------------------+</span><br></pre></td></tr></table></figure>
-<p>校对规则特征：</p>
-</li>
-<li><p>两个不同的字符集不能有相同的校对规则；</p>
-</li>
-<li><p>每个字符集有一个默认校对规则；</p>
-</li>
-<li><p>存在校对规则命名约定：以其相关的字符集名开始，中间包括一个语言名，并且以_ci（大小写不敏感）、_cs（大小写敏感）或_bin（二元）结束。<br>注意：</p>
-</li>
-</ol>
-<p>系统使用utf8字符集，若使用utf8_bin校对规则执行SQL查询时区分大小写，使用utf8_general_ci不区分大小写(默认的utf8字符集对应的校对规则是utf8_general_ci)。</p>
-<p>示例：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create table t2(id int,name varchar(20)) character set&#x3D;utf8 collate&#x3D;utf8_bin;</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line"></span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
-<p>相关连接</p>
-<p><a href="https://www.cnblogs.com/chyingp/p/mysql-character-set-collation.html" target="_blank" rel="noopener">再见乱码：5分钟读懂MySQL字符集设置</a></p>
-<p><a href="https://www.cnblogs.com/geaozhang/p/6724393.html" target="_blank" rel="noopener">MySQL字符集及校对规则的理解</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/04/06/Redis02-%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2107,6 +2012,299 @@ hgetall(key)：返回名称为key的hash中所有的键（field）及其对应�
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/" itemprop="url">Mysql（8）-搞定Mysql字符集及校对规则</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-06T00:00:00+08:00">
+                2019-04-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/DB/" itemprop="url" rel="index">
+                    <span itemprop="name">DB</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/" class="leancloud_visitors" data-flag-title="Mysql（8）-搞定Mysql字符集及校对规则">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="MySQL的字符集（Character-Set"><a href="#MySQL的字符集（Character-Set" class="headerlink" title="MySQL的字符集（Character Set)"></a>MySQL的字符集（Character Set)</h1><p>关于字符集，之前转载了一篇文章讲的非常好——<a href="">关于字符编码，你所需要知道的（ASCII,Unicode,Utf-8,GB2312…）</a></p>
+<p>常见字符集：</p>
+<ul>
+<li>ASCII字符集：基于罗马字母表的一套字符集，它采用1个字节的低7位表示字符，高位始终为0。</li>
+<li>LATIN1字符集：相对于ASCII字符集做了扩展，仍然使用一个字节表示字符，但启用了高位，扩展了字符集的表示范围。</li>
+<li>GBK字符集：支持中文，字符有一字节编码和两字节编码方式。</li>
+<li>UTF8字符集：Unicode字符集的一种，是计算机科学领域里的一项业界标准，支持了所有国家的文字字符，utf8采用1-4个字节表示字符。</li>
+</ul>
+<h1 id="MySQL与字符集"><a href="#MySQL与字符集" class="headerlink" title="MySQL与字符集"></a>MySQL与字符集</h1><p>查看NySQL系统变量：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| Variable_name            | Value                      |</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| character_set_client     | utf8                       |</span><br><span class="line">| character_set_connection | utf8                       |</span><br><span class="line">| character_set_database   | latin1                     |</span><br><span class="line">| character_set_filesystem | binary                     |</span><br><span class="line">| character_set_results    | utf8                       |</span><br><span class="line">| character_set_server     | latin1                     |</span><br><span class="line">| character_set_system     | utf8                       |</span><br><span class="line">| character_sets_dir       | &#x2F;usr&#x2F;share&#x2F;mysql&#x2F;charsets&#x2F; |</span><br><span class="line">+--------------------------+----------------------------+</span><br></pre></td></tr></table></figure>
+<p>正确使用字符集</p>
+<table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>变量作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>character_set_client</td>
+<td>客户端来源数据使用的字符集</td>
+</tr>
+<tr>
+<td>character_set_connection</td>
+<td>连接层字符集</td>
+</tr>
+<tr>
+<td>character_set_database</td>
+<td>当前选中数据库的默认字符集</td>
+</tr>
+<tr>
+<td>character_set_results</td>
+<td>查询结果字符集</td>
+</tr>
+<tr>
+<td>character_set_server</td>
+<td>默认的内部操作字符集</td>
+</tr>
+<tr>
+<td>character_set_system</td>
+<td>数据元数据（字段名等）字符集</td>
+</tr>
+</tbody></table>
+<p>这些字符集参数的作用说明：</p>
+<ol>
+<li>设置库、表、列字符集<ul>
+<li>建库时，若未明确指定字符集，则采用character_set_server指定的字符集。</li>
+<li>建表时，若未明确指定字符集，则采用当前库所采用的字符集。</li>
+<li>新增时，修改表字段时，若未明确指定字符集，则采用当前表所采用的字符集。</li>
+</ul>
+</li>
+<li>更新查询涉及的字符集变量<ul>
+<li>更新流程字符集转换过程：character_set_client–&gt;character_set_connection–&gt;表字符集。</li>
+<li>查询流程字符集转换过程：表字符集–&gt;character_set_result</li>
+</ul>
+</li>
+<li>character_set_database<ul>
+<li>当前默认数据库的字符集，比如执行use xxx后，当前数据库变为xxx，若xxx的字符集为utf8，那么此变量值就变为utf8(供系统设置，无需人工设置)。</li>
+</ul>
+</li>
+</ol>
+<h1 id="MySQL客户端与字符集"><a href="#MySQL客户端与字符集" class="headerlink" title="MySQL客户端与字符集"></a>MySQL客户端与字符集</h1><p>1.对于输入来说：</p>
+<p>客户端使用的字符集必须通过character_set_client、character_set_connection体现出来：</p>
+<ul>
+<li>在客户端对数据进行编码（Linux：utf8、windows：gbk）</li>
+<li>MySQL接到SQL语句后(比如insert)，发现有字符，询问客户端通过什么方式对字符编码：客户端通过character_set_client参数告知MySQL客户端的编码方式(所以此参数需要正确反映客户端对应的编码)</li>
+<li>当MySQL发现客户端的client所传输的字符集与自己的connection不一样时，会将client的字符集转换为connection的字符集</li>
+<li>MySQL将转换后的编码存储到MySQL表的列上，在存储的时候再判断编码是否与内部存储字符集（按照优先级判断字符集类型）上的编码一致，如果不一致需要再次转换</li>
+</ul>
+<p>2.对于查询来说：</p>
+<p>客户端使用的字符集必须通过character_set_results来体现，服务器询问客户端字符集，通过character_set_results将结果转换为与客户端相同的字符集传递给客户端。(character_set_results默认等于character_set_client)</p>
+<h1 id="字符集常见处理操作"><a href="#字符集常见处理操作" class="headerlink" title="字符集常见处理操作"></a>字符集常见处理操作</h1><p>查看字符集编码设置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br></pre></td></tr></table></figure>
+
+<p>运行时设置字符集编码</p>
+<p>运行时修改（重启后会失效，如果想要重启后保持不变，需要写进配置文件里）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; set names &#39;utf8&#39;;</span><br><span class="line"></span><br><span class="line">相当于同时：</span><br><span class="line"></span><br><span class="line">set character_set_client &#x3D; utf8;</span><br><span class="line">set character_set_results &#x3D; utf8;</span><br><span class="line">set character_set_connection &#x3D; utf8;</span><br></pre></td></tr></table></figure>
+<p>修改数据库字符集</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; alter database database_name character set xxx;</span><br></pre></td></tr></table></figure>
+<p>只修改库的字符集，影响后续创建的表的默认定义；对于已创建的表的字符集不受影响。（一般在数据库实现字符集即可，表和列都默认采用数据库的字符集）</p>
+<p>修改表的字符集</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-- 只修改表的字符集，影响后续该表新增列的默认定义，已有列的字符集不受影响。</span><br><span class="line">mysql&gt; alter table table_name character set xxx；</span><br><span class="line"></span><br><span class="line">-- 同时修改表字符集和已有列字符集，并将已有数据进行字符集编码转换。</span><br><span class="line">mysql&gt; alter table table_name convert to character set xxx;</span><br></pre></td></tr></table></figure>
+<p>修改列的字符集</p>
+<p>格式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE table_name MODIFY</span><br><span class="line">column_name &#123;CHAR | VARCHAR | TEXT&#125; (column_length)</span><br><span class="line">    [CHARACTER SET charset_name]</span><br><span class="line">    [COLLATE collation_name]</span><br><span class="line">mysql&gt; alter table table_name modify col_name varchar(col_length) character set xxx;</span><br></pre></td></tr></table></figure>
+<p>启动服务时指定字符集</p>
+<p>可以在MySQL服务启动时，指定server字符集、字符序。如不指定，默认的字符序分别为latin1、latin1_swedish_ci</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1 \</span><br><span class="line">       --collation-server&#x3D;latin1_swedish_ci</span><br></pre></td></tr></table></figure>
+<p>单独指定server字符集，此时，server字符序为latin1的默认字符序latin1_swedish_ci。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1</span><br></pre></td></tr></table></figure>
+<p>配置文件指定字符集</p>
+<p>除了在命令行参数里指定，也可以在配置文件里指定，如下所示。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysql]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">collation-server &#x3D; utf8_unicode_ci</span><br><span class="line">init-connect&#x3D;&#39;SET NAMES utf8&#39;</span><br><span class="line">character-set-server &#x3D; utf8</span><br></pre></td></tr></table></figure>
+<p>字符集的正确实践<br>MySQL软件工具本身是没有字符集的，主要是因为工具所在的OS的字符集（Windows：gbk、Linux：utf8），所以字符集的正确实践非常重要：</p>
+<ol>
+<li>对于insert来说，character_set_client、character_set_connection相同，而且正确反映客户端使用的字符集</li>
+<li>对于select来说，character_set_results正确反映客户端字符集</li>
+<li>数据库字符集取决于我们要存储的字符类型</li>
+<li>字符集转换最多发生一次，这就要求character_set_client、character_set_connection相同</li>
+<li>所有的字符集转换都发生在数据库端</li>
+</ol>
+<p>综述：</p>
+<ol>
+<li>建立数据库的时候注意字符集（gbk、utf8）；</li>
+<li>连接数据库以后，无论是执行dml还是select，只要涉及到varchar、char列，就需要设置正确的字符集参数。</li>
+</ol>
+<h1 id="MySQL的校对规则"><a href="#MySQL的校对规则" class="headerlink" title="MySQL的校对规则"></a>MySQL的校对规则</h1><p>字符集是一套符号和对应的编号</p>
+<ol start="4">
+<li><p>查看数据库支持的所有字符集(charset)：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show character set;</span><br></pre></td></tr></table></figure>
+<p>校对规则(collation)是在字符集内用于字符比较和排序的一套规则，比如有的规则区分大小写，有的则无视。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create table t1(id int,name varchar(20)); -- t1建表没有指定校对规则</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    1 | A    |</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
+<p>查看数据库支持的校对规则</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show collation;</span><br></pre></td></tr></table></figure>
+<p>查看当前字符集和校对规则设置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; mysql&gt; show variables like &#39;collation_%&#39;;</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| Variable_name        | Value             |</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| collation_connection | utf8_general_ci   |</span><br><span class="line">| collation_database   | utf8_general_ci   |</span><br><span class="line">| collation_server     | latin1_swedish_ci |</span><br><span class="line">+----------------------+-------------------+</span><br></pre></td></tr></table></figure>
+<p>校对规则特征：</p>
+</li>
+<li><p>两个不同的字符集不能有相同的校对规则；</p>
+</li>
+<li><p>每个字符集有一个默认校对规则；</p>
+</li>
+<li><p>存在校对规则命名约定：以其相关的字符集名开始，中间包括一个语言名，并且以_ci（大小写不敏感）、_cs（大小写敏感）或_bin（二元）结束。<br>注意：</p>
+</li>
+</ol>
+<p>系统使用utf8字符集，若使用utf8_bin校对规则执行SQL查询时区分大小写，使用utf8_general_ci不区分大小写(默认的utf8字符集对应的校对规则是utf8_general_ci)。</p>
+<p>示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create table t2(id int,name varchar(20)) character set&#x3D;utf8 collate&#x3D;utf8_bin;</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line"></span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
+<p>相关连接</p>
+<p><a href="https://www.cnblogs.com/chyingp/p/mysql-character-set-collation.html" target="_blank" rel="noopener">再见乱码：5分钟读懂MySQL字符集设置</a></p>
+<p><a href="https://www.cnblogs.com/geaozhang/p/6724393.html" target="_blank" rel="noopener">MySQL字符集及校对规则的理解</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/04/05/Redis01-%E5%85%A5%E9%97%A8%E5%8F%8A%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2496,221 +2694,11 @@ OK
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/04/02/Mysql%EF%BC%887%EF%BC%89-Mysql%E9%94%81/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/04/02/Mysql%EF%BC%887%EF%BC%89-Mysql%E9%94%81/" itemprop="url">Mysql（7）-Mysql锁</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-02T00:00:00+08:00">
-                2019-04-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/DB/" itemprop="url" rel="index">
-                    <span itemprop="name">DB</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/04/02/Mysql%EF%BC%887%EF%BC%89-Mysql%E9%94%81/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/04/02/Mysql%EF%BC%887%EF%BC%89-Mysql%E9%94%81/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/04/02/Mysql%EF%BC%887%EF%BC%89-Mysql%E9%94%81/" class="leancloud_visitors" data-flag-title="Mysql（7）-Mysql锁">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="http://blog-pic-1254088127.cos.ap-shanghai.myqcloud.com/mysql%E9%94%81.jpg?sign=q-sign-algorithm%3Dsha1%26q-ak%3DAKIDKOfaja7nOa3KHWbFL05UkUNOoVTY2s26%26q-sign-time%3D1586879918%3B1586883578%26q-key-time%3D1586879918%3B1586883578%26q-header-list%3Dhost%26q-url-param-list%3D%26q-signature%3Dbe79272e06e1d4597db9824acbe78f9e6e6caeb8&x-cos-security-token=142759bae5a48d94881f336349f839399649d7f210001" alt="Mysql锁"></p>
-<p>数据库锁设计的初衷是处理并发问题。</p>
-<p>Mysql加锁范围分类</p>
-<h1 id="全局锁"><a href="#全局锁" class="headerlink" title="全局锁"></a>全局锁</h1><p>全局锁就是对整个数据库实例加锁。MySQL 提供了一个加全局读锁的方法，命令是 Flush tables with read lock (FTWRL)。</p>
-<p>全局锁的典型使用场景是，做全库逻辑备份。也就是把整库每个表都 select 出来存成文本。</p>
-<p>官方自带的逻辑备份工具是mysqldump。当 mysqldump使用参数–single-transaction 的时候，导数据之前就会启动一个事务，来确保拿到一致性视图。而由于 MVCC的支持，这个过程中数据是可以正常更新的。</p>
-<p>single-transaction方法只适用于所有的表使用事务引擎的库。对于 MyISAM 这种不支持事务的引擎，如果备份过程中有更新，总是只能取到最新的数据，那么就破坏了备份的一致性。这时，我们就需要使用 FTWRL 命令了。</p>
-<p>既然要全库只读，为什么不使用 set global readonly=true 的方式呢？</p>
-<p>确实，readonly方式也可以让全库进入只读状态，但还是会建议使用 FTWRL 方式，主要有两个原因：</p>
-<p>一是，在有些系统中，readonly 的值会被用来做其他逻辑，比如用来判断一个库是主库还是备库。因此，修改 global 变量的方式影响面更大，我不建议你使用。</p>
-<p>二是，在异常处理机制上有差异。如果执行 FTWRL命令之后由于客户端发生异常断开，那么 MySQL 会自动释放这个全局锁，整个库回到可以正常更新的状态。而将整个库设置为 readonly 之后，如果客户端发生异常，则数据库就会一直保持 readonly 状态，这样会导致整个库长时间处于不可写状态，风险较高。</p>
-<h1 id="表级锁"><a href="#表级锁" class="headerlink" title="表级锁"></a>表级锁</h1><h2 id="表锁"><a href="#表锁" class="headerlink" title="表锁"></a>表锁</h2><p>表锁的语法是 lock tables … read/write。与 FTWRL 类似，可以用 unlock tables主动释放锁，也可以在客户端断开的时候自动释放。</p>
-<h2 id="元数据锁（meta-data-lock，MDL"><a href="#元数据锁（meta-data-lock，MDL" class="headerlink" title="元数据锁（meta data lock，MDL)"></a>元数据锁（meta data lock，MDL)</h2><p>MDL 不需要显式使用，在访问一个表的时候会被自动加上。MDL的作用是，保证读写的正确性。</p>
-<p>在 MySQL 5.5 版本中引入了 MDL，当对一个表做增删改查操作的时候，加 MDL读锁；当要对表做结构变更操作的时候，加 MDL 写锁。</p>
-<p>读锁之间不互斥，因此你可以有多个线程同时对一张表增删改查。</p>
-<p>读写锁之间、写锁之间是互斥的，用来保证变更表结构操作的安全性。因此，如果有两个线程要同时给一个表加字段，其中一个要等另一个执行完才能开始执行。</p>
-<p>事务中的 MDL锁，在语句执行开始时申请，但是语句结束后并不会马上释放，而会等到整个事务提交后再释放。</p>
-<p>如何安全地给小表加字段？</p>
-<p>首先我们要解决长事务，事务不提交，就会一直占着 MDL 锁。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-- 在 MySQL 的 information_schema 库的 innodb_trx表中，你可以查到当前执行中的事务</span><br></pre></td></tr></table></figure>
-<p>如果你要做DDL变更的表刚好有长事务在执行，要考虑先暂停DDL，或者kill掉这个长事务。</p>
-<p>如果你要变更的表是一个热点表，虽然数据量不大，但是上面的请求很频繁，而你不得不加个字段，你该怎么做呢？</p>
-<p>这时候kill可能未必管用，因为新的请求马上就来了。比较理想的机制是，在 alter table语句里面设定等待时间，如果在这个指定的等待时间里面能够拿到 MDL 写锁最好，拿不到也不要阻塞后面的业务语句，先放弃。之后开发人员或者DBA再通过重试命令重复这个过程。</p>
-<p>MariaDB 已经合并了AliSQL的这个功能，所以这两个开源分支目前都支持 DDL NOWAIT/WAIT n 这个语法。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE tbl_name NOWAIT add column ...</span><br><span class="line">ALTER TABLE tbl_name WAIT N add column ...</span><br></pre></td></tr></table></figure>
-<h2 id="行锁"><a href="#行锁" class="headerlink" title="行锁"></a>行锁</h2><p>MySQL 的行锁是在引擎层由各个引擎自己实现的。但并不是所有的引擎都支持行锁，比如 MyISAM 引擎就不支持行锁。</p>
-<p>InnoDB 支持行锁，这也是 MyISAM 被 InnoDB 替代的重要原因之一。</p>
-<h2 id="InnoDB-的行锁"><a href="#InnoDB-的行锁" class="headerlink" title="InnoDB 的行锁"></a>InnoDB 的行锁</h2><p>两阶段锁</p>
-<p>在 InnoDB 事务中，行锁是在需要的时候才加上的，但并不是不需要了就立刻释放，而是要等到事务结束时才释放。这个就是两阶段锁协议。</p>
-<p>如果你的事务中需要锁多个行，要把最可能造成锁冲突、最可能影响并发度的锁尽量往后放。</p>
-<h2 id="死锁和死锁检测"><a href="#死锁和死锁检测" class="headerlink" title="死锁和死锁检测"></a>死锁和死锁检测</h2><p>当并发系统中不同线程出现循环资源依赖，涉及的线程都在等待别的线程释放资源时，就会导致这几个线程都进入无限等待的状态，称为死锁。</p>
-<p>当出现死锁以后，有两种策略：</p>
-<ul>
-<li>一种策略是，直接进入等待，直到超时。这个超时时间可以通过参数 innodb_lock_wait_timeout 来设置。在 InnoDB 中，innodb_lock_wait_timeout 的默认值是 50s.</li>
-<li>另一种策略是，发起死锁检测，发现死锁后，主动回滚死锁链条中的某一个事务，让其他事务得以继续执行。将参数 innodb_deadlock_detect 设置为 on，表示开启这个逻辑。<br>正常情况下我们还是要采用第二种策略，即：主动死锁检测，而且 innodb_deadlock_detect 的默认值本身就是 on。主动死锁检测在发生死锁的时候，是能够快速发现并进行处理的，但是它也是有额外负担的。</li>
-</ul>
-<p>主动死锁监测：</p>
-<p>当一个事务被锁的时候，就要看看它所依赖的线程有没有被别人锁住，如此循环，最后判断是否出现了循环等待，也就是死锁。</p>
-<p>每个新来的被堵住的线程，都要判断会不会由于自己的加入导致了死锁，这是一个时间复杂度是 O(n) 的操作。假设有 1000 个并发线程要同时更新同一行，那么死锁检测操作就是 100 万这个量级的。虽然最终检测的结果是没有死锁，但是这期间要消耗大量的 CPU 资源。因此，你就会看到 CPU 利用率很高，但是每秒却执行不了几个事务。</p>
-<p>怎么解决由这种热点行更新导致的性能问题呢？问题的症结在于，死锁检测要耗费大量的 CPU 资源.<br>。</p>
-<ul>
-<li><p>如果你能确保这个业务一定不会出现死锁，可以临时把死锁检测关掉。</p>
-</li>
-<li><p>另一个思路是控制并发度。一个直接的想法就是，在客户端做并发控制。但是，你会很快发现这个方法不太可行，因为客户端很多。<br>因此，这个并发控制要做在数据库服务端。基本思路就是，对于相同行的更新，在进入引擎之前排队。这样在 InnoDB 内部就不会有大量的死锁检测工作了。在中间件或者Mysql 源码中修。</p>
-</li>
-<li><p>通过业务层面实现。</p>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/">&lt;i class&#x3D;&quot;fa fa-angle-left&quot;&gt;&lt;&#x2F;i&gt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/6/">&lt;i class&#x3D;&quot;fa fa-angle-right&quot;&gt;&lt;&#x2F;i&gt;</a>
+    <a class="extend prev" rel="prev" href="/page/4/">&lt;i class&#x3D;&quot;fa fa-angle-left&quot;&gt;&lt;&#x2F;i&gt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/6/">&lt;i class&#x3D;&quot;fa fa-angle-right&quot;&gt;&lt;&#x2F;i&gt;</a>
   </nav>
 
 
@@ -2760,7 +2748,7 @@ OK
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">100</span>
+                  <span class="site-state-item-count">101</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2782,7 +2770,7 @@ OK
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-count">33</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

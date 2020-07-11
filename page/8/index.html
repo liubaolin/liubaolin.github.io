@@ -288,6 +288,318 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/02/07/Docker(5)%20-%20%E9%95%9C%E5%83%8F%E5%92%8C%E4%BB%93%E5%BA%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/02/07/Docker(5)%20-%20%E9%95%9C%E5%83%8F%E5%92%8C%E4%BB%93%E5%BA%93/" itemprop="url">Docker(5) - 镜像和仓库</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-07T00:00:00+08:00">
+                2019-02-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%B9%E5%99%A8/" itemprop="url" rel="index">
+                    <span itemprop="name">容器</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/02/07/Docker(5)%20-%20%E9%95%9C%E5%83%8F%E5%92%8C%E4%BB%93%E5%BA%93/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/02/07/Docker(5)%20-%20%E9%95%9C%E5%83%8F%E5%92%8C%E4%BB%93%E5%BA%93/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/02/07/Docker(5)%20-%20%E9%95%9C%E5%83%8F%E5%92%8C%E4%BB%93%E5%BA%93/" class="leancloud_visitors" data-flag-title="Docker(5) - 镜像和仓库">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="镜像"><a href="#镜像" class="headerlink" title="镜像"></a>镜像</h1><h2 id="1、列出镜像"><a href="#1、列出镜像" class="headerlink" title="1、列出镜像"></a>1、列出镜像</h2><pre><code>sudo docker images
+
+sudo docker images fedora //列出指定镜像名（如fedora）的镜像</code></pre><ul>
+<li><p>镜像是从仓库中下载下来。镜像保存在仓库中，而仓库位于Register中。默认的Register式Docker公司提供的register服务，即Docker Hub</p>
+</li>
+<li><p>为了区分同一仓库中的不同镜像，Docker提供来一种称为标签（tag）的功能</p>
+</li>
+<li><p>运行一个带标签的镜像</p>
+<pre><code>sudo docker run -i -t --name new_container ubuntu:12.04 /bin/bash</code></pre></li>
+<li><p>一个镜像可以有多个标签，这使我们可以方便的对镜像进行打标签，并且很容器查找镜像</p>
+</li>
+<li><p>在构建容器时，==指定镜像的标签是一个很好的习惯==，可以准确的知道容器来源于哪里。</p>
+</li>
+<li><p>Docker Hub中有两种类型的仓库：==用户仓库==（user repository）和==顶层仓库==（top-level repository).</p>
+</li>
+<li><p>用户仓库的命名由用户名和仓库名两部分组成，如richey/my_repo</p>
+</li>
+</ul>
+<h2 id="2、拉取镜像"><a href="#2、拉取镜像" class="headerlink" title="2、拉取镜像"></a>2、拉取镜像</h2><ul>
+<li><p>用docker run 命令创建并启动一个容器的时候，如果指定的镜像不在本地，Docker会先从Docker Hub下载该镜像。如果没有指定具体的镜像标签，那么Docker会自动下载latest标签的镜像。</p>
+</li>
+<li><p>也可以通过docker pull命令先将镜像拉取到本地</p>
+<pre><code>sudo docker pull ubuntu:12.04</code></pre></li>
+</ul>
+<h2 id="3、查找镜像"><a href="#3、查找镜像" class="headerlink" title="3、查找镜像"></a>3、查找镜像</h2><ul>
+<li><p>可以通过docker search命令来查找所有Docker Hub上公共的可用镜像</p>
+<pre><code>sudo docker search fedora    </code></pre></li>
+<li><p>也可以在Docker Hub网站上在线查找可用镜像</p>
+</li>
+</ul>
+<h2 id="4、构建镜像"><a href="#4、构建镜像" class="headerlink" title="4、构建镜像"></a>4、构建镜像</h2><ul>
+<li><p>登录Docker Hub</p>
+<pre><code>docker login //登录
+
+docker logout //退出</code></pre></li>
+<li><p>登录后会将用户的个人信息保存到$HOME/.docker/config.json中</p>
+</li>
+</ul>
+<ul>
+<li><p>Docker 构建镜像有两种方法</p>
+<ul>
+<li>使用docker commit命令（不推荐）</li>
+<li>使用docker build命令和Dockerfile文件</li>
+</ul>
+</li>
+</ul>
+<h3 id="使用docker-commit-命令创建镜像"><a href="#使用docker-commit-命令创建镜像" class="headerlink" title="使用docker commit 命令创建镜像"></a>使用docker commit 命令创建镜像</h3><p>可以将此想象成我们往版本控制系统里提交变更。我们先创建一个容器，并在容器里作出修改，就像改代码一样，最后将修改提交为一个新的镜像。</p>
+<ol>
+<li><p>创建一个要进行修改的容器</p>
+<pre><code>sudo docker run -i -t ubuntu /bin/bash</code></pre></li>
+<li><p>安装apache软件包</p>
+<pre><code>apt-get -y update
+
+apt-get -y install apache2</code></pre></li>
+<li><p>exit从容器里退出后运行docker commit命令</p>
+<p> sudo docker commit -m “A new custom image” -a “Richey”  2c2224ec5ea3 richey/testrepo:test-commit</p>
+<ul>
+<li>-m 用来指定创建新镜像时的提交信息</li>
+<li>-a 镜像的作者信息</li>
+</ul>
+</li>
+</ol>
+<h3 id="用Dockerfile构建镜像"><a href="#用Dockerfile构建镜像" class="headerlink" title="用Dockerfile构建镜像"></a>用Dockerfile构建镜像</h3><p>推荐使用被成为Dockerfile的定义文件和docker build命令来构建镜像，因为这种方式更具备可重复性、透明性、幂等性。</p>
+<p>一有了Dockerfile，我们就可以用docker build命令基于该Dockerfile中的指令创建一个新的镜像。</p>
+<p>这里我们以创建一个包含简单的Web服务器的Docker镜像为例，说明如何使用Dockerfile文件构建镜像：</p>
+<ul>
+<li><p>创建一个目录，并在里面创建初始的Dockerfile文件；</p>
+<pre><code>mkdir static_web_context
+cd mkdir static_web_context
+touch Dockerfile    </code></pre></li>
+</ul>
+<pre><code>static_web_context目录：这就是我们的构建环境，Docker称此环境为上下文（context）或构建上下文（build context）。Docker在构建镜像时会将该上下文和上下文中的目录及文件上传到Docker守护进程。这样守护进程就能直接访问用户想在镜像中存储的任何代码、文件或其它数据。
+
+Dockerfile：这里我们创建了一个空的Dockerfile文件，Dockerfile文件由一系列的指令和参数组成，每条指令都必须时大写字母，且后面要跟一个参数。Dockerfile中的指令会按照顺序从上往下执行。
+
+    #version:0.0.1
+    FROM ubuntu:16.04
+    MAINTAINER Richey &quot;xx.xx@gmail.com&quot;
+    RUN apt-get update &amp;&amp; apt-get install -y nginx
+    RUN echo &apos;Hi,I am in your container&apos; &gt; /usr/share/nginx/html/index.html
+    EXPOSE 80
+
+每条指令都会创建一个镜像层并对镜像进行提交，所以当通过Dockerfile构建镜像时，即使由于某些原因（比如Dockerfile中的某条命令执行失败了），没有正常结束，我们仍然可以得到一个可用的镜像。这对调试非常的有作用，我们可以通过运行该镜像得到一个可以交互的容器，然后执行失败的命令，查看失败的具体原因，以此对Dockerfile文件中的指令进行修改等操作，调试完后通过新的Dockerfile文件重新构建镜像。
+
+Dockerfile文件支持注释，以#开头的行会被认为是注释
+
+每个Dockerfile文件的第一行必须时FROM，FROM用于指定一个已存在的镜像，后续指令都将基于该镜像执行，该镜像被成为基础镜像。
+
+MAINTAIN指令用来说明该镜像的作者及邮箱等信息
+
+RUN指令会在当前镜像中运行指定的命令，RUN指令可以有多条，每条RUN指令都会创建一个新的镜像层。默认情况下RUN指令会在shell里面使用命令包装器/bin/sh -c执行。如果在不支持shell的平台运行或不希望在shell中执行，也可以使用exec格式的RUN指令，如：
+
+    RUN [&quot;apt-get&quot;,&quot;install&quot;,&quot;-y&quot;,&quot;nginx&quot;]
+
+EXPOSE指令，这条命令告诉Docker，该容器向外部宿主机公开的端口，可以公开多个端口。但并非设置该参数后，就可以随意访问该容器的这些端口，Docker并不会自打开这些端口，需要用户使用docker run时来指定需要打开哪些端口。
+
+Docker也使用EXPOSE指令来帮助将多个容器链接，用户也可以在运行时在运行docker run 命令时通过--expose选项来指定对外公开的端口。</code></pre><ul>
+<li><p>基于Dockerfile构建新镜像</p>
+<p>  上面我们已经创建了一个简单的构建上下文环境（docker context）和Dockerfile文件,下面我们基于此构建一个新的镜像。</p>
+<p>  执行docker build命令时，Dockerfile中的所有指令都会被执行且提交，该命令执行成功后会得到一个新的镜像。</p>
+<pre><code>cd static_web_context/
+sudo docker build -t &quot;richey/static_web:v1&quot; .</code></pre><p>  -t参数为镜像设置了仓库和名称,以及标签v1，如果没有指定任何标签，Docker将为镜像设置一个latest标签。</p>
+<p>  上面命令后面的点（.）告诉Docker到本地目录中去寻找Dockerfile文件，也可以指定一个Git仓库的源地址来指定Dockerfile的位置，当然该Git仓库的根目录下面要存在Dockerfile文件。</p>
+<p>  自Docker1.5.0以后,也可以通过-f参数指定一个区别于标准Dockerfile构建源的位置，如：</p>
+<pre><code>docker build -t &quot;richey/static_web&quot; -f path/file</code></pre><p>  这个文件可以不必命名为Dockerfile，但是必须要位于构建上下文（build context）中。</p>
+<p>  在构建上下文目录中，可以设置.dockerignor文件来过滤匹配模式。</p>
+</li>
+</ul>
+<h3 id="Dockerfile和构建缓存"><a href="#Dockerfile和构建缓存" class="headerlink" title="Dockerfile和构建缓存"></a>Dockerfile和构建缓存</h3><p>由于每一步的构建过程都会将结果提交为镜像，所以Docker会将每一层的镜像看作缓存，比如当我们构建出错，修改后重新构建时，不会重新从地一层开始构建，会直接基于缓存从发生变化了的指令开始构建，这样会省很多时间.</p>
+<p>如果要确保不使用缓存可以用docker build的–nocache参数:</p>
+<pre><code>docker build --nocache -t &quot;richey/static_web&quot; .</code></pre><h3 id="基于构建缓存的Dockerfile模板"><a href="#基于构建缓存的Dockerfile模板" class="headerlink" title="基于构建缓存的Dockerfile模板"></a>基于构建缓存的Dockerfile模板</h3><p>可以通过在Dockerfile文件的顶部使用相同的人指令集模板,从而尽可能的确保缓存命中,例如:</p>
+<pre><code>FROM fedora:26
+MAINTAINER Richey &quot;brin.baolin@gmail.com&quot;
+ENV REFRESHED_AT 2017-01-08
+RUN dnf -q update</code></pre><p>这里通过ENV指令设置了一个环境变量REFRESHED_AT,用来记录该模板的最后更新时间.有了这个模板,如果我们要刷新构建,只需要更改ENV指令中的日期,Docker就会从ENV指令这行开始重置缓存.</p>
+<h3 id="从镜像中启动一个容器"><a href="#从镜像中启动一个容器" class="headerlink" title="从镜像中启动一个容器"></a>从镜像中启动一个容器</h3><pre><code>sudo docker run -i -t -d -p 80 --name my_static_web  richey/static_web:v1</code></pre><p>-d:以detached,分离的方式在后台运行<br>-p:控制Docker在运行时公开哪些网络端口给宿主机</p>
+<ul>
+<li>运行一个容器时,Docker可用通过两种方式来在宿主机上分配端口:<ul>
+<li>Docker可以在宿主上随机选择一个32768~61000的一个比较大的端口来映射到容器中的80端口上</li>
+<li>可以在Docker宿主机中指定一个具体的端口号来映射到容器的80端口上</li>
+</ul>
+</li>
+</ul>
+<h3 id="推送镜像"><a href="#推送镜像" class="headerlink" title="推送镜像"></a>推送镜像</h3><pre><code>docker push  NAME[:TAG] | [REGISTRY_HOST[:REGISTRY_PORT]/]NAME[:TAG]</code></pre><h3 id="docker-rmi-删除镜像"><a href="#docker-rmi-删除镜像" class="headerlink" title="docker rmi  删除镜像"></a>docker rmi  删除镜像</h3><h1 id="命令总结"><a href="#命令总结" class="headerlink" title="命令总结"></a>命令总结</h1><ul>
+<li><p>查看系统中的镜像</p>
+<pre><code>sudo docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+richey/static_web   v1                  8cf769dd27de        26 hours ago        206 MB
+docker.io/ubuntu    16.04               00fd29ccc6f1        3 weeks ago         111 MB</code></pre></li>
+<li><p>列出指定镜像名（如fedora）的镜像</p>
+<pre><code>sudo docker images fedora</code></pre></li>
+</ul>
+<ul>
+<li><p>查看镜像详细信息</p>
+<pre><code>sudo docker inspect richey/testreps:test-commit</code></pre></li>
+<li><p>得到刚创建的容器的id</p>
+<pre><code>sudo docker ps -l -q</code></pre></li>
+</ul>
+<ul>
+<li><p>如果想探究镜像是如何被构建出来的,可以使用docker history命令</p>
+<pre><code>[richey@192 ~]$ sudo docker history 8cf769dd27de</code></pre></li>
+</ul>
+<ul>
+<li><p>运行一个带标签的镜像</p>
+<pre><code>sudo docker run -i -t --name new_container ubuntu:12.04 /bin/bash</code></pre></li>
+<li><p>拉去镜像(docker run 的时候,如果本地没有会自动从仓库拉取)</p>
+<pre><code>sudo docker pull ubuntu:12.04</code></pre></li>
+<li><p>查找镜像</p>
+<pre><code>sudo docker search fedora</code></pre></li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/02/06/Docker%EF%BC%884%EF%BC%89-%20%E5%85%A5%E9%97%A8%EF%BC%88%E5%91%BD%E4%BB%A4%EF%BC%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2225,186 +2537,11 @@ docker inspect --format=&apos;{{ .NetworkSettings.IPAddress }}&apos; containner_
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/13/13%E3%80%81React%EF%BC%9ARedux%E2%80%94%E2%80%94%E7%90%86%E8%A7%A3%E4%B8%8D%E5%8F%AF%E5%8F%98%E6%95%B0%E6%8D%AE%EF%BC%88immutable%20data%EF%BC%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/13/13%E3%80%81React%EF%BC%9ARedux%E2%80%94%E2%80%94%E7%90%86%E8%A7%A3%E4%B8%8D%E5%8F%AF%E5%8F%98%E6%95%B0%E6%8D%AE%EF%BC%88immutable%20data%EF%BC%89/" itemprop="url">13、React：Redux——理解不可变数据（immutable data）</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-13T00:00:00+08:00">
-                2019-01-13
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
-                    <span itemprop="name">前端</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/01/13/13%E3%80%81React%EF%BC%9ARedux%E2%80%94%E2%80%94%E7%90%86%E8%A7%A3%E4%B8%8D%E5%8F%AF%E5%8F%98%E6%95%B0%E6%8D%AE%EF%BC%88immutable%20data%EF%BC%89/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/13/13%E3%80%81React%EF%BC%9ARedux%E2%80%94%E2%80%94%E7%90%86%E8%A7%A3%E4%B8%8D%E5%8F%AF%E5%8F%98%E6%95%B0%E6%8D%AE%EF%BC%88immutable%20data%EF%BC%89/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/01/13/13%E3%80%81React%EF%BC%9ARedux%E2%80%94%E2%80%94%E7%90%86%E8%A7%A3%E4%B8%8D%E5%8F%AF%E5%8F%98%E6%95%B0%E6%8D%AE%EF%BC%88immutable%20data%EF%BC%89/" class="leancloud_visitors" data-flag-title="13、React：Redux——理解不可变数据（immutable data）">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="Redux中的不可变数据"><a href="#Redux中的不可变数据" class="headerlink" title="Redux中的不可变数据"></a>Redux中的不可变数据</h1><p>Redux的store每一个结点都是不可变数据，修改它必须通过复制一份的方式进行，不能直接修改。</p>
-<p>是Redux的运行基础。</p>
-<h1 id="为什么需要不可变数据"><a href="#为什么需要不可变数据" class="headerlink" title="为什么需要不可变数据"></a>为什么需要不可变数据</h1><ol>
-<li>性能优化，不需要遍历数据，只需要比较引用就可以确定当前的store有没有变，从而决定是否更新组件；</li>
-<li>易于调试和跟踪；</li>
-<li>易于推测，比较action前后store的值</li>
-</ol>
-<h1 id="如何操作不可变数据"><a href="#如何操作不可变数据" class="headerlink" title="如何操作不可变数据"></a>如何操作不可变数据</h1><ol>
-<li>原生写法：{…},Object.assign</li>
-<li>immutability-helper</li>
-<li>immer 性能稍弱</li>
-</ol>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> update <span class="keyword">from</span> <span class="string">'immutability-helper'</span>;</span><br><span class="line"><span class="keyword">import</span> produce <span class="keyword">from</span> <span class="string">'immer'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//如果操作不可变数据</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> state = &#123;<span class="attr">filter</span>: <span class="string">'completed'</span>, <span class="attr">todos</span>: [<span class="string">'Learn React'</span>]&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//原生写法</span></span><br><span class="line"><span class="comment">//通过延展属性</span></span><br><span class="line"><span class="keyword">const</span> newState = &#123;...state, <span class="attr">todos</span>: [...state.todos, <span class="string">'Learn Redux'</span>]&#125;</span><br><span class="line"><span class="comment">//Es6写法  性能最高的写法</span></span><br><span class="line"><span class="keyword">const</span> newState2 = <span class="built_in">Object</span>.assign(&#123;&#125;, state, &#123;<span class="attr">todos</span>: [...state.todos, <span class="string">'Learn Redux'</span>]&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//复杂场景，比如对象层级比较深</span></span><br><span class="line"><span class="keyword">const</span> newState3 = update(state, &#123;<span class="attr">todos</span>: &#123;<span class="attr">$push</span>: [<span class="string">'Learn Redux'</span>]&#125;&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//immer 需要为每个属性做代理，性能稍差，适用与简单场景，属性较多或层级较深时慎用</span></span><br><span class="line"><span class="keyword">const</span> newState4 = produce(state, draftState =&gt; &#123;</span><br><span class="line">    draftState.todos.push(<span class="string">'Learn Redux'</span>);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/7/">&lt;i class&#x3D;&quot;fa fa-angle-left&quot;&gt;&lt;&#x2F;i&gt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/9/">&lt;i class&#x3D;&quot;fa fa-angle-right&quot;&gt;&lt;&#x2F;i&gt;</a>
+    <a class="extend prev" rel="prev" href="/page/7/">&lt;i class&#x3D;&quot;fa fa-angle-left&quot;&gt;&lt;&#x2F;i&gt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/9/">&lt;i class&#x3D;&quot;fa fa-angle-right&quot;&gt;&lt;&#x2F;i&gt;</a>
   </nav>
 
 
@@ -2454,7 +2591,7 @@ docker inspect --format=&apos;{{ .NetworkSettings.IPAddress }}&apos; containner_
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">100</span>
+                  <span class="site-state-item-count">101</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2476,7 +2613,7 @@ docker inspect --format=&apos;{{ .NetworkSettings.IPAddress }}&apos; containner_
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-count">33</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
