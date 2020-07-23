@@ -288,6 +288,222 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/14/14%E3%80%81React%EF%BC%9AReact%20Router/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/01/14/14%E3%80%81React%EF%BC%9AReact%20Router/" itemprop="url">14、React：React Router</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-14T00:00:00+08:00">
+                2019-01-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/01/14/14%E3%80%81React%EF%BC%9AReact%20Router/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/14/14%E3%80%81React%EF%BC%9AReact%20Router/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/01/14/14%E3%80%81React%EF%BC%9AReact%20Router/" class="leancloud_visitors" data-flag-title="14、React：React Router">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="为什么需要陆游"><a href="#为什么需要陆游" class="headerlink" title="为什么需要陆游"></a>为什么需要陆游</h1><ol>
+<li>单页应用需要进行页面切换</li>
+<li>通过URL可以定位到页面</li>
+<li>更有语义的组织资源</li>
+</ol>
+<h1 id="路由实现的基本架构"><a href="#路由实现的基本架构" class="headerlink" title="路由实现的基本架构"></a>路由实现的基本架构</h1><p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/react-router.png" alt="image"></p>
+<h1 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h1><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">"react"</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;</span><br><span class="line">    <span class="comment">//BrowserRouter as Router,</span></span><br><span class="line">    HashRouter <span class="keyword">as</span> Router,</span><br><span class="line">    Route,</span><br><span class="line">    Link,</span><br><span class="line">    NavLink,</span><br><span class="line">    Prompt,</span><br><span class="line">    Redirect,</span><br><span class="line">    Switch</span><br><span class="line">&#125; <span class="keyword">from</span> <span class="string">"react-router-dom"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123;MemoryRouter&#125; <span class="keyword">from</span> <span class="string">"react-router"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"./RouterSample.css"</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> ReactPage = <span class="function"><span class="params">()</span> =&gt;</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>ReactPage<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"><span class="keyword">const</span> AngularPage = <span class="function"><span class="params">()</span> =&gt;</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>AngularPage<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"><span class="keyword">const</span> VuePage = <span class="function"><span class="params">()</span> =&gt;</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>VuePage<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"><span class="keyword">const</span> NavLinkPage = <span class="function"><span class="params">()</span> =&gt;</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>NavLinkPage<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"><span class="keyword">const</span> LoginPage = <span class="function"><span class="params">()</span> =&gt;</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>LoginPage<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"><span class="keyword">const</span> HomePage = <span class="function"><span class="params">()</span> =&gt;</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>HomePage<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"><span class="keyword">const</span> SwitchPage1 = <span class="function"><span class="params">()</span> =&gt;</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>SwitchPage1<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"><span class="keyword">const</span> SwitchPage2 = <span class="function"><span class="params">()</span> =&gt;</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>SwitchPage2<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">RouterSample</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">PureComponent</span> </span>&#123;</span><br><span class="line">    render() &#123;</span><br><span class="line">        <span class="keyword">let</span> formIsHalfFielledOut = <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">let</span> loggedIn = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> (</span><br><span class="line">            &lt;Router&gt;</span><br><span class="line">                &lt;div&gt;</span><br><span class="line">                    &lt;ul id=<span class="string">"menu"</span>&gt;</span><br><span class="line">                        &lt;li&gt;</span><br><span class="line">                            &lt;Link to=<span class="string">"/LoginPage"</span>&gt;LoginPage&lt;<span class="regexp">/Link&gt;</span></span><br><span class="line"><span class="regexp">                        &lt;/</span>li&gt;</span><br><span class="line">                        &lt;li&gt;</span><br><span class="line">                            &lt;Link to=<span class="string">"/ReactPage"</span>&gt;ReactPage&lt;<span class="regexp">/Link&gt;</span></span><br><span class="line"><span class="regexp">                        &lt;/</span>li&gt;</span><br><span class="line">                        &lt;li&gt;</span><br><span class="line">                            &lt;Link to=<span class="string">"/AngularPage"</span>&gt;AngularPage&lt;<span class="regexp">/Link&gt;</span></span><br><span class="line"><span class="regexp">                        &lt;/</span>li&gt;</span><br><span class="line">                        &lt;li&gt;</span><br><span class="line">                            &lt;Link to=<span class="string">"/VuePage"</span>&gt;VuePage&lt;<span class="regexp">/Link&gt;</span></span><br><span class="line"><span class="regexp">                        &lt;/</span>li&gt;</span><br><span class="line">                        &lt;li&gt;</span><br><span class="line">                            &lt;NavLink to=<span class="string">"/NavLinkPage"</span> activeClassName=<span class="string">"selected"</span>&gt;NavLinkPage&lt;<span class="regexp">/NavLink&gt;</span></span><br><span class="line"><span class="regexp">                        &lt;/</span>li&gt;</span><br><span class="line">                        &lt;li&gt;</span><br><span class="line">                            &lt;Link to=<span class="string">"/LoginPage"</span> &gt;LoginPage&lt;<span class="regexp">/Link&gt;</span></span><br><span class="line"><span class="regexp">                        &lt;/</span>li&gt;</span><br><span class="line">                        &lt;li&gt;</span><br><span class="line">                            &lt;Link to=<span class="string">"/SwitchPage"</span> &gt;SwitchPage&lt;<span class="regexp">/Link&gt;</span></span><br><span class="line"><span class="regexp">                        &lt;/</span>li&gt;</span><br><span class="line">                    &lt;<span class="regexp">/ul&gt;</span></span><br><span class="line"><span class="regexp">                    &#123;/</span>*<span class="xml"><span class="tag">&lt;<span class="name">Prompt</span> <span class="attr">to</span>=<span class="string">"/PromptPage"</span> <span class="attr">when</span>=<span class="string">&#123;formIsHalfFielledOut&#125;</span> <span class="attr">message</span>=<span class="string">"确定要离开吗？"</span> /&gt;</span></span>*<span class="regexp">/&#125;</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">                    &lt;div id="page-container"&gt;</span></span><br><span class="line"><span class="regexp">                        &lt;Route path="/</span>ReactPage<span class="string">" component=&#123;ReactPage&#125;/&gt;</span></span><br><span class="line"><span class="string">                        &lt;Route path="</span>/AngularPage<span class="string">" component=&#123;AngularPage&#125;/&gt;</span></span><br><span class="line"><span class="string">                        &lt;Route path="</span>/VuePage<span class="string">" component=&#123;VuePage&#125;/&gt;</span></span><br><span class="line"><span class="string">                        &lt;Route path="</span>/NavLinkPage<span class="string">" component=&#123;NavLinkPage&#125;/&gt;</span></span><br><span class="line"><span class="string">                        &lt;Route exact path="</span>/LoginPage<span class="string">" render=&#123;() =&gt; (</span></span><br><span class="line"><span class="string">                            loggedIn</span></span><br><span class="line"><span class="string">                                ? (&lt;Redirect to="</span>/ReactPage<span class="string">"/&gt;)</span></span><br><span class="line"><span class="string">                                :(&lt;HomePage/&gt;)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">                        )&#125;/&gt;</span></span><br><span class="line"><span class="string">                       &lt;Switch&gt;</span></span><br><span class="line"><span class="string">                           &lt;Route path="</span>/SwitchPage<span class="string">" component=&#123;SwitchPage1&#125;/&gt;</span></span><br><span class="line"><span class="string">                           &lt;Route path="</span>/SwitchPage<span class="string">" component=&#123;SwitchPage2&#125;/&gt;</span></span><br><span class="line"><span class="string">                       &lt;/Switch&gt;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">                    &lt;/div&gt;</span></span><br><span class="line"><span class="string">                &lt;/div&gt;</span></span><br><span class="line"><span class="string">            &lt;/Router&gt;</span></span><br><span class="line"><span class="string">        );</span></span><br><span class="line"><span class="string">    &#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="React-Router的特性"><a href="#React-Router的特性" class="headerlink" title="React Router的特性"></a>React Router的特性</h1><ol>
+<li>声明式路由定义</li>
+</ol>
+<p>可以在页面的任何地方写路由</p>
+<ol start="2">
+<li>动态路由</li>
+</ol>
+<h1 id="三种路由实现方式"><a href="#三种路由实现方式" class="headerlink" title="三种路由实现方式"></a>三种路由实现方式</h1><ol>
+<li>URL路径</li>
+</ol>
+<p>BrowserRouter</p>
+<ol start="2">
+<li>hash路由</li>
+</ol>
+<p>HashRouter，针对低版本浏览器，url变了页面不刷新的情况<br>3. 内存路由</p>
+<p>MemoryRouter，<br>路由并不会反映到url上，通常做服务器端渲染的时候会有用。</p>
+<h1 id="基于路由配置进行资源组织"><a href="#基于路由配置进行资源组织" class="headerlink" title="基于路由配置进行资源组织"></a>基于路由配置进行资源组织</h1><ol>
+<li>实现业务逻辑的松耦合</li>
+<li>易于扩展，重构和维护</li>
+<li>路由层面实现Lazy Load</li>
+</ol>
+<h1 id="React-Router-API"><a href="#React-Router-API" class="headerlink" title="React Router API"></a>React Router API</h1><ol>
+<li><Link>:普通链接，不会触发浏览器刷新</li>
+<li><p><NavLink>:类似Link但是会添加当前选中状态，增加一个css样式</p>
+</li>
+<li><p><Prompt>:满足条件时提示用户是否离开当前页面</p>
+</li>
+<li><p><Redirect>:重定向当前页面，例如登录判断</p>
+</li>
+<li><p><Route>:路由配的额核心标记，路径匹配时显示对应组件</p>
+<p> exact属性：精确匹配<br> Route不是排他的，及可以用时有多个相同path的Route，都会生效</p>
+</li>
+<li><p><Switch>:只显示第一个匹配的路由</p>
+</li>
+</ol>
+<h1 id="通过URL传递参数"><a href="#通过URL传递参数" class="headerlink" title="通过URL传递参数"></a>通过URL传递参数</h1><ol>
+<li>如何通过URL传递参数：&lt;Route path=”/topic:id” …/&gt;</li>
+<li>如何获取参数: this.props.match.params</li>
+<li><a href="https://github.com/pillarjs/path-to-regexp" target="_blank" rel="noopener">https://github.com/pillarjs/path-to-regexp</a> 通过正则表达式的方式做模糊正则匹配</li>
+</ol>
+<h1 id="何时需要URL参数"><a href="#何时需要URL参数" class="headerlink" title="何时需要URL参数"></a>何时需要URL参数</h1><p>页面状态尽量通过URL参数来定义</p>
+<p>React Router中url变化，组件也会刷新</p>
+<h1 id="嵌套路由"><a href="#嵌套路由" class="headerlink" title="嵌套路由"></a>嵌套路由</h1><ol>
+<li>每个React组件都可以是路由容器</li>
+<li>React Router声明式语法可以方便的定义嵌套路由</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/13/13%E3%80%81React%EF%BC%9ARedux%E2%80%94%E2%80%94%E7%90%86%E8%A7%A3%E4%B8%8D%E5%8F%AF%E5%8F%98%E6%95%B0%E6%8D%AE%EF%BC%88immutable%20data%EF%BC%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1855,175 +2071,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/04/4%E3%80%81React-%E7%90%86%E8%A7%A3Virtual%20DOM%E5%8F%8Akey%E5%B1%9E%E6%80%A7%E7%9A%84%E4%BD%9C%E7%94%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/04/4%E3%80%81React-%E7%90%86%E8%A7%A3Virtual%20DOM%E5%8F%8Akey%E5%B1%9E%E6%80%A7%E7%9A%84%E4%BD%9C%E7%94%A8/" itemprop="url">4、React-理解Virtual DOM及key属性的作用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-04T00:00:00+08:00">
-                2019-01-04
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
-                    <span itemprop="name">前端</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/01/04/4%E3%80%81React-%E7%90%86%E8%A7%A3Virtual%20DOM%E5%8F%8Akey%E5%B1%9E%E6%80%A7%E7%9A%84%E4%BD%9C%E7%94%A8/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/04/4%E3%80%81React-%E7%90%86%E8%A7%A3Virtual%20DOM%E5%8F%8Akey%E5%B1%9E%E6%80%A7%E7%9A%84%E4%BD%9C%E7%94%A8/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/01/04/4%E3%80%81React-%E7%90%86%E8%A7%A3Virtual%20DOM%E5%8F%8Akey%E5%B1%9E%E6%80%A7%E7%9A%84%E4%BD%9C%E7%94%A8/" class="leancloud_visitors" data-flag-title="4、React-理解Virtual DOM及key属性的作用">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>JSX的运行基础:Virtual DOM</p>
-<p>React组件在内部维护了一套虚拟DOM的状态,这套虚拟DOM的状态最终会映射到真实DOM的节点上,当虚拟DOM发生变化的时候,内部需要计算虚拟DOM的区别来产生一个diff,并不会刷新所有的真实DOM,只会更新diff的部份.</p>
-<h1 id="虚拟DOM是如何工作的"><a href="#虚拟DOM是如何工作的" class="headerlink" title="虚拟DOM是如何工作的"></a>虚拟DOM是如何工作的</h1><p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E8%99%9A%E6%8B%9FDOM%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84.png" alt="image"></p>
-<h1 id="虚拟DOM的两个假设"><a href="#虚拟DOM的两个假设" class="headerlink" title="虚拟DOM的两个假设"></a>虚拟DOM的两个假设</h1><ol>
-<li>组件的DOM结构是相对稳定的</li>
-<li>类型相同的兄节点可以被唯一标识</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2078,7 +2125,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">101</span>
+                  <span class="site-state-item-count">102</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

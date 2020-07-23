@@ -288,6 +288,408 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/04/05/Redis01-%E5%85%A5%E9%97%A8%E5%8F%8A%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/04/05/Redis01-%E5%85%A5%E9%97%A8%E5%8F%8A%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url">Redis01-入门及基础数据结构</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-05T00:00:00+08:00">
+                2019-04-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/DB/" itemprop="url" rel="index">
+                    <span itemprop="name">DB</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/04/05/Redis01-%E5%85%A5%E9%97%A8%E5%8F%8A%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/04/05/Redis01-%E5%85%A5%E9%97%A8%E5%8F%8A%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/04/05/Redis01-%E5%85%A5%E9%97%A8%E5%8F%8A%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="leancloud_visitors" data-flag-title="Redis01-入门及基础数据结构">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="一、安装"><a href="#一、安装" class="headerlink" title="一、安装"></a>一、安装</h1><ol>
+<li>使用 Docker 安装。</li>
+<li>通过 Github 源码编译。</li>
+<li>直接安装 apt-get install(Ubuntu)、yum install(RedHat) 或者 brew install(Mac)。</li>
+</ol>
+<h2 id="Docker-方式"><a href="#Docker-方式" class="headerlink" title="Docker 方式"></a>Docker 方式</h2><pre><code># 拉取 redis 镜像
+&gt; docker pull redis
+# 运行 redis 容器
+&gt; docker run --name myredis -d -p6379:6379 redis
+# 执行容器中的 redis-cli，可以直接使用命令行操作 redis
+&gt; docker exec -it myredis redis-cli
+Github 源码编译方式</code></pre><h2 id="下载源码"><a href="#下载源码" class="headerlink" title="下载源码"></a>下载源码</h2><pre><code>&gt; git clone --branch 2.8 --depth 1 git@github.com:antirez/redis.git
+&gt; cd redis
+# 编译
+&gt; make
+&gt; cd src
+# 运行服务器，daemonize表示在后台运行
+&gt; ./redis-server --daemonize yes
+# 运行命令行
+&gt; ./redis-cli</code></pre><h2 id="直接安装方式"><a href="#直接安装方式" class="headerlink" title="直接安装方式"></a>直接安装方式</h2><pre><code># mac
+&gt; brew install redis
+# ubuntu
+&gt; apt-get install redis
+# redhat
+&gt; yum install redis
+# 运行客户端
+&gt; redis-cli...</code></pre><h1 id="二、Redis基础数据结构"><a href="#二、Redis基础数据结构" class="headerlink" title="二、Redis基础数据结构"></a>二、Redis基础数据结构</h1><ol>
+<li>string(字符串)</li>
+<li>list(列表)</li>
+<li>set(集合)</li>
+<li>hash(哈系)</li>
+<li>zset(有序集合)</li>
+</ol>
+<p>Redis 所有的数据结构都是以唯一的 key 字符串作为名称，然后通过这个唯一 key 值来获取相应的 value 数据。不同类型的数据结构的差异就在于 value 的结构不一样。</p>
+<h2 id="string-字符串"><a href="#string-字符串" class="headerlink" title="string(字符串)"></a>string(字符串)</h2><p>字符串结构使用非常广泛，一个常见的用途就是缓存用户信息。</p>
+<ul>
+<li><p>键值对    </p>
+<pre><code>[richey@192 ~]$ redis-cli
+127.0.0.1:6379&gt; set name richey
+OK
+127.0.0.1:6379&gt; get name
+&quot;richey&quot;
+127.0.0.1:6379&gt; exists name
+(integer) 1
+127.0.0.1:6379&gt; EXISTS name
+(integer) 1
+127.0.0.1:6379&gt; DEL name
+(integer) 1
+127.0.0.1:6379&gt;</code></pre></li>
+<li><p>批量键值对</p>
+<pre><code>127.0.0.1:6379&gt; set name1 richey
+OK
+127.0.0.1:6379&gt; set name2 kelly
+OK
+127.0.0.1:6379&gt; MGET name1 name2 name3
+1) &quot;richey&quot;
+2) &quot;kelly&quot;
+3) (nil)</code></pre></li>
+</ul>
+<pre><code>127.0.0.1:6379&gt; mset name1 aoo name2 boo name3 coo
+OK
+127.0.0.1:6379&gt; mget name1 name2 name3
+1) &quot;aoo&quot;
+2) &quot;boo&quot;</code></pre><ul>
+<li><p>过期和set命令扩展</p>
+<pre><code>127.0.0.1:6379&gt; set name richey
+OK
+127.0.0.1:6379&gt; get name
+&quot;richey&quot;
+127.0.0.1:6379&gt; EXPIRE name 5
+(integer) 1
+... wait for 5s
+127.0.0.1:6379&gt; get name
+(nil)</code></pre></li>
+</ul>
+<pre><code>127.0.0.1:6379&gt; SETEX name 5 richey # 设置name并在5s后过期 相当于set+expire
+OK
+127.0.0.1:6379&gt; get name
+&quot;richey&quot;
+127.0.0.1:6379&gt; get name
+(nil)
+
+127.0.0.1:6379&gt; SETNX name richey # 如果name不存在就执行set创建
+(integer) 1
+127.0.0.1:6379&gt; get name
+&quot;richey&quot;
+127.0.0.1:6379&gt; SETNX name kelly # 因为name已经存在所以执行set创建不成功
+(integer) 0
+127.0.0.1:6379&gt; get name
+&quot;richey&quot;</code></pre><ul>
+<li><p>计数</p>
+<p>  如果 value 值是一个整数，还可以对它进行自增操作。自增是有范围的，它的范围是 signed long 的最大最小值，超过了这个值，Redis 会报错。</p>
+<pre><code>127.0.0.1:6379&gt; set age 18
+OK
+127.0.0.1:6379&gt; INCR age
+(integer) 19
+127.0.0.1:6379&gt; INCRBY age 5
+(integer) 24
+127.0.0.1:6379&gt; INCRBY age -5
+(integer) 19
+127.0.0.1:6379&gt; set maxInteger 9223372036854775807 # Long.Max
+OK
+127.0.0.1:6379&gt; INCR maxInteger
+(error) ERR increment or decrement would overflow</code></pre></li>
+</ul>
+<h2 id="list-列表"><a href="#list-列表" class="headerlink" title="list(列表)"></a>list(列表)</h2><p>Redis的列表相当于java的LinkedList,是链表.</p>
+<ul>
+<li><p>右边进左边出(或左边进右边出):队列</p>
+<pre><code>27.0.0.1:6379&gt; LPOP books
+&quot;java&quot;
+127.0.0.1:6379&gt; LPUSH movies m1 m2 m3
+(integer) 3
+127.0.0.1:6379&gt; RPOP movies
+&quot;m1&quot;
+127.0.0.1:6379&gt; RPOP movies
+&quot;m2&quot;
+127.0.0.1:6379&gt; RPOP movies
+&quot;m3&quot;
+127.0.0.1:6379&gt; RPOP movies
+(nil)</code></pre></li>
+<li><p>右边进右边出(或左边进左边出):栈</p>
+<pre><code>127.0.0.1:6379&gt; LPUSH book java python go
+(integer) 3
+127.0.0.1:6379&gt; LPOP book
+&quot;go&quot;</code></pre></li>
+<li><p>慢操作</p>
+<pre><code>127.0.0.1:6379&gt; RPUSH books java go python
+(integer) 3
+127.0.0.1:6379&gt; LINDEX books 1 #相当于get(int index)
+&quot;go&quot;
+127.0.0.1:6379&gt; LRANGE books 0 -1 # -1表示倒数第一个元素
+1) &quot;java&quot;
+2) &quot;go&quot;
+3) &quot;python&quot;
+127.0.0.1:6379&gt; LTRIM books 1 -1 #保留第2个到最后一个元素
+OK
+127.0.0.1:6379&gt; LRANGE books 0 -1 #获取所有元素
+1) &quot;go&quot;
+2) &quot;python&quot;
+
+127.0.0.1:6379&gt; LTRIM books 1 0 # 相当于清空真个列表,因为区间长度为负
+OK
+127.0.0.1:6379&gt; LLEN books
+(integer) 0</code></pre></li>
+</ul>
+<h2 id="hash-字典"><a href="#hash-字典" class="headerlink" title="hash(字典)"></a>hash(字典)</h2><p>Redis的字典相当于java的HashMap,它是无序字典.</p>
+<p>hash也可以用来存储用户信息,不同于字符串一次性需要序列化整个对象,hash可以对用户结构中的每个字段单独存储.这样当我们需要获取用户的信息时可以单独获取.而以字符串的形式存储就只能一次性全部读取,这样会比较浪费网络流量.</p>
+<p>hash也有缺点,hash的存储消耗要高于单个字符串,到底要用hash还是字符串要根据具体情况分析权衡.</p>
+<pre><code>127.0.0.1:6379&gt; HSET books java &quot;think in java&quot;
+(integer) 1
+127.0.0.1:6379&gt; HSET books go &quot;concurrency in go&quot;
+(integer) 1
+127.0.0.1:6379&gt; HSET books python &quot;python cookbook&quot;
+(integer) 1
+127.0.0.1:6379&gt; HGETALL books
+1) &quot;java&quot;
+2) &quot;think in java&quot;
+3) &quot;go&quot;
+4) &quot;concurrency in go&quot;
+5) &quot;python&quot;
+6) &quot;python cookbook&quot;
+127.0.0.1:6379&gt; HLEN books
+(integer) 3
+127.0.0.1:6379&gt; HGET books go
+&quot;concurrency in go&quot;
+127.0.0.1:6379&gt; HMSET books java &quot;effective java&quot; python &quot;learning python&quot; go &quot;modern golang&quot;
+OK
+127.0.0.1:6379&gt; HGETALL books
+1) &quot;java&quot;
+2) &quot;effective java&quot;
+3) &quot;go&quot;
+4) &quot;modern golang&quot;
+5) &quot;python&quot;
+6) &quot;learning python&quot;    </code></pre><ul>
+<li><p>计数</p>
+<p>  hash结构中的单个子key的value也可以计数</p>
+<pre><code>127.0.0.1:6379&gt; HINCRBY richey age 1
+(integer) 1
+127.0.0.1:6379&gt; HGET richey age
+&quot;1&quot;
+127.0.0.1:6379&gt; HINCRBY richey age 2
+(integer) 3
+127.0.0.1:6379&gt; HGET richey age
+&quot;3&quot;</code></pre></li>
+</ul>
+<h2 id="set-集合"><a href="#set-集合" class="headerlink" title="set(集合)"></a>set(集合)</h2><p>Redis中的集合相当于java中的HashSet,它内部的键值对是无序的唯一的.</p>
+<pre><code>127.0.0.1:6379&gt; SADD books java
+(integer) 1
+127.0.0.1:6379&gt; SADD books java # 重复加不进去
+(integer) 0
+127.0.0.1:6379&gt; SADD books java python
+(integer) 1
+127.0.0.1:6379&gt; SADD books golang
+(integer) 1
+127.0.0.1:6379&gt; SMEMBERS books # 注意顺序跟加进去的顺序不一致,是无序的
+1) &quot;python&quot;
+2) &quot;golang&quot;
+3) &quot;java&quot;
+127.0.0.1:6379&gt; SISMEMBER books java #查询某个value是否存在
+(integer) 1
+127.0.0.1:6379&gt; SISMEMBER books js
+(integer) 0
+127.0.0.1:6379&gt; SCARD books # 获取集合长度
+(integer) 3
+127.0.0.1:6379&gt; SPOP books # 弹出一个
+&quot;java&quot;
+127.0.0.1:6379&gt;</code></pre><h2 id="zset-有序集合"><a href="#zset-有序集合" class="headerlink" title="zset(有序集合)"></a>zset(有序集合)</h2><p>zset类似与java中的SortedSEt和HashMap的结合.一方便它是一个set,保证了内部value的唯一性,另一个方面它可以给每个value赋予一个score,代表这个value的排序权重.</p>
+<p>zset可以用来存储学生的成绩,value值是学生的id,score是他的考试成绩.可以根据成绩进行排序.</p>
+<pre><code>127.0.0.1:6379&gt; ZADD books 9.0 &quot;think in java&quot;
+(integer) 1
+127.0.0.1:6379&gt; ZADD books 8.5 &quot;java concurrency&quot;
+(integer) 1
+127.0.0.1:6379&gt; ZADD books 8.1 &quot;java cookbook&quot;
+(integer) 1
+127.0.0.1:6379&gt; ZRANGE books 0 -1  # 按score排序列出,参数区间为排名范围
+1) &quot;java cookbook&quot;
+2) &quot;java concurrency&quot;
+3) &quot;think in java&quot;
+127.0.0.1:6379&gt; ZREVRANGE books 0 -1 # 逆序
+1) &quot;think in java&quot;
+2) &quot;java concurrency&quot;
+3) &quot;java cookbook&quot;
+127.0.0.1:6379&gt; ZCARD books # 相当于count()
+(integer) 3
+127.0.0.1:6379&gt; ZSCORE books &quot;think in java&quot; # 获取指定value的score
+&quot;9&quot;
+127.0.0.1:6379&gt; ZRANK books &quot;java concurrency&quot; #排名
+(integer) 1
+127.0.0.1:6379&gt; ZRANK books &quot;think in java&quot;
+(integer) 2
+127.0.0.1:6379&gt; ZRANGEBYSCORE books 0 8.91 # 根据分数区间遍历zset
+1) &quot;java cookbook&quot;
+2) &quot;java concurrency&quot;
+127.0.0.1:6379&gt; ZRANGEBYSCORE books -inf 8.91 # 根据分数区间遍历zset inf代表infinite,无穷大的意思
+1) &quot;java cookbook&quot;
+2) &quot;java concurrency&quot;
+127.0.0.1:6379&gt; ZREM books &quot;think in java&quot; # 删除
+(integer) 1
+127.0.0.1:6379&gt; ZRANGE books 0 -1
+1) &quot;java cookbook&quot;
+2) &quot;java concurrency&quot;</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/04/02/Mysql%EF%BC%887%EF%BC%89-Mysql%E9%94%81/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1299,7 +1701,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Richey Liu">
@@ -1318,7 +1720,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/" itemprop="url">Nginx-3：Nginx中的正则表达式</a></h1>
+                <a class="post-title-link" href="/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/" itemprop="url">Nginx-2：Nginx安装</a></h1>
         
 
         <div class="post-meta">
@@ -1371,8 +1773,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/" itemprop="commentCount"></span>
+                <a href="/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1380,7 +1782,7 @@
 
           
           
-             <span id="/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/" class="leancloud_visitors" data-flag-title="Nginx-3：Nginx中的正则表达式">
+             <span id="/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/" class="leancloud_visitors" data-flag-title="Nginx-2：Nginx安装">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -1413,25 +1815,73 @@
       
         
           
-            <p>正则表达式可以让我们匹配的功能更加强大</p>
-<h1 id="元字符"><a href="#元字符" class="headerlink" title="元字符"></a>元字符</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">.   匹配除换行符之外的任意字符</span><br><span class="line">\w  匹配字母、数字、下划线或汉字</span><br><span class="line">\s  匹配任意的空白字符</span><br><span class="line">\d  匹配数字</span><br><span class="line">\b  匹配单词的开始或结束</span><br><span class="line">^   匹配字符串的开始</span><br><span class="line">$   匹配字符串的结束</span><br></pre></td></tr></table></figure>
+            <p>安装nginx有两种方式：</p>
+<ul>
+<li>编译</li>
+<li>使用操作系统商自带的工具比如Yarm、apt-get、yum 等直接安装Nginx。</li>
+</ul>
+<p>直接安装Nginx有个问题，无法安装第三方模块，安装第三方模块只能通过编译的方式安装。</p>
+<h1 id="下载Nginx"><a href="#下载Nginx" class="headerlink" title="下载Nginx"></a>下载Nginx</h1><p>进入官网 <a href="http://nginx.org/" target="_blank" rel="noopener">http://nginx.org/</a> 找到download，点击进入。</p>
+<p>nignx官方有两种版本：</p>
+<ul>
+<li>Mainline Version 主线版本</li>
+<li>Stable Version 稳定版本</li>
+</ul>
+<p>下载最新nginx stable版本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget http:&#x2F;&#x2F;nginx.org&#x2F;download&#x2F;nginx-1.16.0.tar.gz</span><br><span class="line"></span><br><span class="line">tar -zxf nginx-1.16.0.tar.gz</span><br></pre></td></tr></table></figure>
 
-<h1 id="重复"><a href="#重复" class="headerlink" title="重复"></a>重复</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">*      重复0次或多次</span><br><span class="line">+      重复1次或多次</span><br><span class="line">？     重复0次或1次</span><br><span class="line">&#123;n&#125;    重复n次</span><br><span class="line">&#123;n,&#125;   重复n次或更多次</span><br><span class="line">&#123;n,m&#125;  重复n到m次</span><br></pre></td></tr></table></figure>
+<h1 id="源码目录"><a href="#源码目录" class="headerlink" title="源码目录"></a>源码目录</h1><ul>
+<li><p>conf</p>
+<p>示例文件，方便配置的示例</p>
+</li>
+<li><p>configure</p>
+<p>configure脚本，用来生成中间文件，执行编译前的必备动作</p>
+</li>
+<li><p>contrib</p>
+<p>提供了一些工具，比如vim编辑nginx配置的高亮支持（将contrib/vim中的文件全部copy到~/.vim中即可）</p>
+</li>
+<li><p>html</p>
+<p>提供了两个标准的html文件，50x.html和默认nginx欢迎界面index.html</p>
+</li>
+<li><p>src</p>
+<p>nginx源码文件</p>
+</li>
+</ul>
+<h1 id="configure介绍"><a href="#configure介绍" class="headerlink" title="configure介绍"></a>configure介绍</h1><p>查看configure脚本支持哪些参数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;configure --help|more</span><br></pre></td></tr></table></figure>
 
-<h1 id="转义符号"><a href="#转义符号" class="headerlink" title="转义符号"></a>转义符号</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\: 取消元字符的特殊含义</span><br></pre></td></tr></table></figure>
+<p>主要分为三大类：</p>
+<ul>
+<li><p>nginx执行中会去哪些目录下的文件作为它的辅助的一些文件</p>
+<p>比如–modules-path指定动态模块，通常我们只需要指定–prefix=PATH(安装目录)即可，其它的模块会在prefix指定的路径下建文件夹</p>
+</li>
+<li><p>第二类参数用来确定使用或者不使用哪些模块</p>
+<p>–with开头的参数表示的模块，默认不会被编译进nginx</p>
+<p>–without开头的模块，默认会被编译进nginx</p>
+</li>
+<li><p>第三类参数指定了nginx编译中的特殊参数</p>
+<p>比如–with-debug表示需要打印级别的日志</p>
+<p>编译nginx</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;configure --prefix&#x3D;&#x2F;opt&#x2F;nginx</span><br></pre></td></tr></table></figure>
 
-<h1 id="分组与取值"><a href="#分组与取值" class="headerlink" title="分组与取值"></a>分组与取值</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">():用来通过$方式取表达式中的值，或者进行分组</span><br></pre></td></tr></table></figure>
+<p>执行完configure脚本后会生成一些中间文件，这些文夹放在objs文件下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── autoconf.err</span><br><span class="line">├── Makefile</span><br><span class="line">├── ngx_auto_config.h</span><br><span class="line">├── ngx_auto_headers.h</span><br><span class="line">├── ngx_modules.c</span><br><span class="line">└── src</span><br><span class="line">    ├── core</span><br><span class="line">    ├── event</span><br><span class="line">    │   └── modules</span><br><span class="line">    ├── http</span><br><span class="line">    │   ├── modules</span><br><span class="line">    │   │   └── perl</span><br><span class="line">    │   └── v2</span><br><span class="line">    ├── mail</span><br><span class="line">    ├── misc</span><br><span class="line">    ├── os</span><br><span class="line">    │   ├── unix</span><br><span class="line">    │   └── win32</span><br><span class="line">    └── stream</span><br></pre></td></tr></table></figure>
 
-<h1 id="pcretest"><a href="#pcretest" class="headerlink" title="pcretest"></a>pcretest</h1><p>PCRE(Perl Compatible Regular Expressions)是一个Perl库，包括 perl 兼容的正则表达式库。我们可以通过pcretest工具来测试<br>我们写的正则表达式的可用性。</p>
-<p>我们安装pcre-tools后就可以使用pcretools了：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo dnf install pcre-tools</span><br></pre></td></tr></table></figure>
+<p>这里ngx_modules.c文件指定了哪些模块会被编译进nginx</p>
+</li>
+</ul>
+<h1 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#执行make编译</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
 
-<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><p>原始url： /web/assets/view/salary/month-8/payslip/basicsalary.jpg<br>转换后的url： /web/assets/view/cnb-salary/payslip/basicsalary/month/8.jpg<br>匹配原始url的正则表达式：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;^\&#x2F;web\&#x2F;assets\&#x2F;view\&#x2F;salary\&#x2F;(\w+)-(\d&#123;1,2&#125;)\&#x2F;payslip\&#x2F;(\w+)\.(png|jpg|gif|jpeg|bmp)$&#x2F;</span><br><span class="line"></span><br><span class="line">rewrite ^&#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;(\w+)-(\d&#123;1,2&#125;)&#x2F;payslip&#x2F;(\w+).(png|jpg|gif|jpeg|bmp)$  &#x2F;web&#x2F;assets&#x2F;view&#x2F;cnb-salary&#x2F;payslip&#x2F;$3&#x2F;$1&#x2F;$2.$4 last;</span><br></pre></td></tr></table></figure>
-<p>我们通过pcretest进行测试</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[richey@192 ~]$ pcretest</span><br><span class="line">PCRE version 8.43 2019-02-23</span><br><span class="line"></span><br><span class="line">  re&gt; &#x2F;^\&#x2F;web\&#x2F;assets\&#x2F;view\&#x2F;salary\&#x2F;(\w+)-(\d&#123;1,2&#125;)\&#x2F;payslip\&#x2F;(\w+)\.(png|jpg|gif|jpeg|bmp)$&#x2F;</span><br><span class="line">data&gt; &#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;month-8&#x2F;payslip&#x2F;basicsalary.jpg</span><br><span class="line"> 0: &#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;month-8&#x2F;payslip&#x2F;basicsalary.jpg</span><br><span class="line"> 1: month</span><br><span class="line"> 2: 8</span><br><span class="line"> 3: basicsalary</span><br><span class="line"> 4: jpg</span><br></pre></td></tr></table></figure>
-<p>可以看到通过正则表达式（）匹配到的各个值，然后就可以通过$1,$2…的方式使用这些值，达到rewrite的目的。</p>
-<p>注意在nginx中使用正则表达式是不需要使用反斜杠转义的，这里是为了在pcretest中测试</p>
+<p>我们可以看到执行过程中生成了大量的中间文件，执行结束最终在objs中生成了可执行的nginx二进制文件</p>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>如果是升级安装，则把可执行的nginx二进制文件copy到安装文件即可。</p>
+<p>如果是首次安装，则继续执行make install 安装</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">[richey@192 nginx-1.16.0]$ make install</span><br><span class="line">make -f objs&#x2F;Makefile install</span><br><span class="line">make[1]: 进入目录“&#x2F;opt&#x2F;nginx-1.16.0”</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#39; || mkdir -p &#39;&#x2F;opt&#x2F;nginx&#39;</span><br><span class="line">mkdir: 无法创建目录 “&#x2F;opt&#x2F;nginx”: Permission denied</span><br><span class="line">make[1]: *** [objs&#x2F;Makefile:1206：install] 错误 1</span><br><span class="line">make[1]: 离开目录“&#x2F;opt&#x2F;nginx-1.16.0”</span><br><span class="line">make: *** [Makefile:11：install] 错误 2</span><br><span class="line">[richey@192 nginx-1.16.0]$ sudo make install</span><br><span class="line">[sudo] richey 的密码：</span><br><span class="line">make -f objs&#x2F;Makefile install</span><br><span class="line">make[1]: 进入目录“&#x2F;opt&#x2F;nginx-1.16.0”</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#39; || mkdir -p &#39;&#x2F;opt&#x2F;nginx&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#39;</span><br><span class="line">test ! -f &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#x2F;nginx&#39; \</span><br><span class="line">	|| mv &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#x2F;nginx&#39; \</span><br><span class="line">		&#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#x2F;nginx.old&#39;</span><br><span class="line">cp objs&#x2F;nginx &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#x2F;nginx&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;koi-win &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;koi-utf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;win-utf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;mime.types&#39; \</span><br><span class="line">	|| cp conf&#x2F;mime.types &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;mime.types &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;mime.types.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;fastcgi_params&#39; \</span><br><span class="line">	|| cp conf&#x2F;fastcgi_params &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;fastcgi_params \</span><br><span class="line">	&#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;fastcgi_params.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;fastcgi.conf&#39; \</span><br><span class="line">	|| cp conf&#x2F;fastcgi.conf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;fastcgi.conf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;fastcgi.conf.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;uwsgi_params&#39; \</span><br><span class="line">	|| cp conf&#x2F;uwsgi_params &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;uwsgi_params \</span><br><span class="line">	&#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;uwsgi_params.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;scgi_params&#39; \</span><br><span class="line">	|| cp conf&#x2F;scgi_params &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;scgi_params \</span><br><span class="line">	&#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;scgi_params.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;nginx.conf&#39; \</span><br><span class="line">	|| cp conf&#x2F;nginx.conf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;nginx.conf&#39;</span><br><span class="line">cp conf&#x2F;nginx.conf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;nginx.conf.default&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;html&#39; \</span><br><span class="line">	|| cp -R html &#39;&#x2F;opt&#x2F;nginx&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39;</span><br><span class="line">make[1]: 离开目录“&#x2F;opt&#x2F;nginx-1.16.0”</span><br></pre></td></tr></table></figure>
+
+<p>执行完之后，我们去–prefix指定的安装目录中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">[richey@192 nginx]$ tree</span><br><span class="line">.</span><br><span class="line">├── conf</span><br><span class="line">│   ├── fastcgi.conf</span><br><span class="line">│   ├── fastcgi.conf.default</span><br><span class="line">│   ├── fastcgi_params</span><br><span class="line">│   ├── fastcgi_params.default</span><br><span class="line">│   ├── koi-utf</span><br><span class="line">│   ├── koi-win</span><br><span class="line">│   ├── mime.types</span><br><span class="line">│   ├── mime.types.default</span><br><span class="line">│   ├── nginx.conf</span><br><span class="line">│   ├── nginx.conf.default</span><br><span class="line">│   ├── scgi_params</span><br><span class="line">│   ├── scgi_params.default</span><br><span class="line">│   ├── uwsgi_params</span><br><span class="line">│   ├── uwsgi_params.default</span><br><span class="line">│   └── win-utf</span><br><span class="line">├── html</span><br><span class="line">│   ├── 50x.html</span><br><span class="line">│   └── index.html</span><br><span class="line">├── logs</span><br><span class="line">└── sbin</span><br><span class="line">    └── nginx</span><br></pre></td></tr></table></figure>
+
+<p>这里最主要的nginx的二进制文件就在sbin目录下，决定nginx功能的配置文件在conf目录下</p>
+<p>以上就是nginx编译安装的全部步骤。</p>
 
           
         
@@ -1688,7 +2138,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Richey Liu">
@@ -1707,7 +2157,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/" itemprop="url">Nginx-2：Nginx安装</a></h1>
+                <a class="post-title-link" href="/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/" itemprop="url">Nginx-3：Nginx中的正则表达式</a></h1>
         
 
         <div class="post-meta">
@@ -1760,8 +2210,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/" itemprop="commentCount"></span>
+                <a href="/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1769,7 +2219,7 @@
 
           
           
-             <span id="/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/" class="leancloud_visitors" data-flag-title="Nginx-2：Nginx安装">
+             <span id="/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/" class="leancloud_visitors" data-flag-title="Nginx-3：Nginx中的正则表达式">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -1802,73 +2252,25 @@
       
         
           
-            <p>安装nginx有两种方式：</p>
-<ul>
-<li>编译</li>
-<li>使用操作系统商自带的工具比如Yarm、apt-get、yum 等直接安装Nginx。</li>
-</ul>
-<p>直接安装Nginx有个问题，无法安装第三方模块，安装第三方模块只能通过编译的方式安装。</p>
-<h1 id="下载Nginx"><a href="#下载Nginx" class="headerlink" title="下载Nginx"></a>下载Nginx</h1><p>进入官网 <a href="http://nginx.org/" target="_blank" rel="noopener">http://nginx.org/</a> 找到download，点击进入。</p>
-<p>nignx官方有两种版本：</p>
-<ul>
-<li>Mainline Version 主线版本</li>
-<li>Stable Version 稳定版本</li>
-</ul>
-<p>下载最新nginx stable版本</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget http:&#x2F;&#x2F;nginx.org&#x2F;download&#x2F;nginx-1.16.0.tar.gz</span><br><span class="line"></span><br><span class="line">tar -zxf nginx-1.16.0.tar.gz</span><br></pre></td></tr></table></figure>
+            <p>正则表达式可以让我们匹配的功能更加强大</p>
+<h1 id="元字符"><a href="#元字符" class="headerlink" title="元字符"></a>元字符</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">.   匹配除换行符之外的任意字符</span><br><span class="line">\w  匹配字母、数字、下划线或汉字</span><br><span class="line">\s  匹配任意的空白字符</span><br><span class="line">\d  匹配数字</span><br><span class="line">\b  匹配单词的开始或结束</span><br><span class="line">^   匹配字符串的开始</span><br><span class="line">$   匹配字符串的结束</span><br></pre></td></tr></table></figure>
 
-<h1 id="源码目录"><a href="#源码目录" class="headerlink" title="源码目录"></a>源码目录</h1><ul>
-<li><p>conf</p>
-<p>示例文件，方便配置的示例</p>
-</li>
-<li><p>configure</p>
-<p>configure脚本，用来生成中间文件，执行编译前的必备动作</p>
-</li>
-<li><p>contrib</p>
-<p>提供了一些工具，比如vim编辑nginx配置的高亮支持（将contrib/vim中的文件全部copy到~/.vim中即可）</p>
-</li>
-<li><p>html</p>
-<p>提供了两个标准的html文件，50x.html和默认nginx欢迎界面index.html</p>
-</li>
-<li><p>src</p>
-<p>nginx源码文件</p>
-</li>
-</ul>
-<h1 id="configure介绍"><a href="#configure介绍" class="headerlink" title="configure介绍"></a>configure介绍</h1><p>查看configure脚本支持哪些参数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;configure --help|more</span><br></pre></td></tr></table></figure>
+<h1 id="重复"><a href="#重复" class="headerlink" title="重复"></a>重复</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">*      重复0次或多次</span><br><span class="line">+      重复1次或多次</span><br><span class="line">？     重复0次或1次</span><br><span class="line">&#123;n&#125;    重复n次</span><br><span class="line">&#123;n,&#125;   重复n次或更多次</span><br><span class="line">&#123;n,m&#125;  重复n到m次</span><br></pre></td></tr></table></figure>
 
-<p>主要分为三大类：</p>
-<ul>
-<li><p>nginx执行中会去哪些目录下的文件作为它的辅助的一些文件</p>
-<p>比如–modules-path指定动态模块，通常我们只需要指定–prefix=PATH(安装目录)即可，其它的模块会在prefix指定的路径下建文件夹</p>
-</li>
-<li><p>第二类参数用来确定使用或者不使用哪些模块</p>
-<p>–with开头的参数表示的模块，默认不会被编译进nginx</p>
-<p>–without开头的模块，默认会被编译进nginx</p>
-</li>
-<li><p>第三类参数指定了nginx编译中的特殊参数</p>
-<p>比如–with-debug表示需要打印级别的日志</p>
-<p>编译nginx</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;configure --prefix&#x3D;&#x2F;opt&#x2F;nginx</span><br></pre></td></tr></table></figure>
+<h1 id="转义符号"><a href="#转义符号" class="headerlink" title="转义符号"></a>转义符号</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\: 取消元字符的特殊含义</span><br></pre></td></tr></table></figure>
 
-<p>执行完configure脚本后会生成一些中间文件，这些文夹放在objs文件下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── autoconf.err</span><br><span class="line">├── Makefile</span><br><span class="line">├── ngx_auto_config.h</span><br><span class="line">├── ngx_auto_headers.h</span><br><span class="line">├── ngx_modules.c</span><br><span class="line">└── src</span><br><span class="line">    ├── core</span><br><span class="line">    ├── event</span><br><span class="line">    │   └── modules</span><br><span class="line">    ├── http</span><br><span class="line">    │   ├── modules</span><br><span class="line">    │   │   └── perl</span><br><span class="line">    │   └── v2</span><br><span class="line">    ├── mail</span><br><span class="line">    ├── misc</span><br><span class="line">    ├── os</span><br><span class="line">    │   ├── unix</span><br><span class="line">    │   └── win32</span><br><span class="line">    └── stream</span><br></pre></td></tr></table></figure>
+<h1 id="分组与取值"><a href="#分组与取值" class="headerlink" title="分组与取值"></a>分组与取值</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">():用来通过$方式取表达式中的值，或者进行分组</span><br></pre></td></tr></table></figure>
 
-<p>这里ngx_modules.c文件指定了哪些模块会被编译进nginx</p>
-</li>
-</ul>
-<h1 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#执行make编译</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
+<h1 id="pcretest"><a href="#pcretest" class="headerlink" title="pcretest"></a>pcretest</h1><p>PCRE(Perl Compatible Regular Expressions)是一个Perl库，包括 perl 兼容的正则表达式库。我们可以通过pcretest工具来测试<br>我们写的正则表达式的可用性。</p>
+<p>我们安装pcre-tools后就可以使用pcretools了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo dnf install pcre-tools</span><br></pre></td></tr></table></figure>
 
-<p>我们可以看到执行过程中生成了大量的中间文件，执行结束最终在objs中生成了可执行的nginx二进制文件</p>
-<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>如果是升级安装，则把可执行的nginx二进制文件copy到安装文件即可。</p>
-<p>如果是首次安装，则继续执行make install 安装</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">[richey@192 nginx-1.16.0]$ make install</span><br><span class="line">make -f objs&#x2F;Makefile install</span><br><span class="line">make[1]: 进入目录“&#x2F;opt&#x2F;nginx-1.16.0”</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#39; || mkdir -p &#39;&#x2F;opt&#x2F;nginx&#39;</span><br><span class="line">mkdir: 无法创建目录 “&#x2F;opt&#x2F;nginx”: Permission denied</span><br><span class="line">make[1]: *** [objs&#x2F;Makefile:1206：install] 错误 1</span><br><span class="line">make[1]: 离开目录“&#x2F;opt&#x2F;nginx-1.16.0”</span><br><span class="line">make: *** [Makefile:11：install] 错误 2</span><br><span class="line">[richey@192 nginx-1.16.0]$ sudo make install</span><br><span class="line">[sudo] richey 的密码：</span><br><span class="line">make -f objs&#x2F;Makefile install</span><br><span class="line">make[1]: 进入目录“&#x2F;opt&#x2F;nginx-1.16.0”</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#39; || mkdir -p &#39;&#x2F;opt&#x2F;nginx&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#39;</span><br><span class="line">test ! -f &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#x2F;nginx&#39; \</span><br><span class="line">	|| mv &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#x2F;nginx&#39; \</span><br><span class="line">		&#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#x2F;nginx.old&#39;</span><br><span class="line">cp objs&#x2F;nginx &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#x2F;nginx&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;koi-win &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;koi-utf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;win-utf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;mime.types&#39; \</span><br><span class="line">	|| cp conf&#x2F;mime.types &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;mime.types &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;mime.types.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;fastcgi_params&#39; \</span><br><span class="line">	|| cp conf&#x2F;fastcgi_params &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;fastcgi_params \</span><br><span class="line">	&#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;fastcgi_params.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;fastcgi.conf&#39; \</span><br><span class="line">	|| cp conf&#x2F;fastcgi.conf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;fastcgi.conf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;fastcgi.conf.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;uwsgi_params&#39; \</span><br><span class="line">	|| cp conf&#x2F;uwsgi_params &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;uwsgi_params \</span><br><span class="line">	&#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;uwsgi_params.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;scgi_params&#39; \</span><br><span class="line">	|| cp conf&#x2F;scgi_params &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;scgi_params \</span><br><span class="line">	&#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;scgi_params.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;nginx.conf&#39; \</span><br><span class="line">	|| cp conf&#x2F;nginx.conf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;nginx.conf&#39;</span><br><span class="line">cp conf&#x2F;nginx.conf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;nginx.conf.default&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;html&#39; \</span><br><span class="line">	|| cp -R html &#39;&#x2F;opt&#x2F;nginx&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39;</span><br><span class="line">make[1]: 离开目录“&#x2F;opt&#x2F;nginx-1.16.0”</span><br></pre></td></tr></table></figure>
-
-<p>执行完之后，我们去–prefix指定的安装目录中</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">[richey@192 nginx]$ tree</span><br><span class="line">.</span><br><span class="line">├── conf</span><br><span class="line">│   ├── fastcgi.conf</span><br><span class="line">│   ├── fastcgi.conf.default</span><br><span class="line">│   ├── fastcgi_params</span><br><span class="line">│   ├── fastcgi_params.default</span><br><span class="line">│   ├── koi-utf</span><br><span class="line">│   ├── koi-win</span><br><span class="line">│   ├── mime.types</span><br><span class="line">│   ├── mime.types.default</span><br><span class="line">│   ├── nginx.conf</span><br><span class="line">│   ├── nginx.conf.default</span><br><span class="line">│   ├── scgi_params</span><br><span class="line">│   ├── scgi_params.default</span><br><span class="line">│   ├── uwsgi_params</span><br><span class="line">│   ├── uwsgi_params.default</span><br><span class="line">│   └── win-utf</span><br><span class="line">├── html</span><br><span class="line">│   ├── 50x.html</span><br><span class="line">│   └── index.html</span><br><span class="line">├── logs</span><br><span class="line">└── sbin</span><br><span class="line">    └── nginx</span><br></pre></td></tr></table></figure>
-
-<p>这里最主要的nginx的二进制文件就在sbin目录下，决定nginx功能的配置文件在conf目录下</p>
-<p>以上就是nginx编译安装的全部步骤。</p>
+<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><p>原始url： /web/assets/view/salary/month-8/payslip/basicsalary.jpg<br>转换后的url： /web/assets/view/cnb-salary/payslip/basicsalary/month/8.jpg<br>匹配原始url的正则表达式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;^\&#x2F;web\&#x2F;assets\&#x2F;view\&#x2F;salary\&#x2F;(\w+)-(\d&#123;1,2&#125;)\&#x2F;payslip\&#x2F;(\w+)\.(png|jpg|gif|jpeg|bmp)$&#x2F;</span><br><span class="line"></span><br><span class="line">rewrite ^&#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;(\w+)-(\d&#123;1,2&#125;)&#x2F;payslip&#x2F;(\w+).(png|jpg|gif|jpeg|bmp)$  &#x2F;web&#x2F;assets&#x2F;view&#x2F;cnb-salary&#x2F;payslip&#x2F;$3&#x2F;$1&#x2F;$2.$4 last;</span><br></pre></td></tr></table></figure>
+<p>我们通过pcretest进行测试</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[richey@192 ~]$ pcretest</span><br><span class="line">PCRE version 8.43 2019-02-23</span><br><span class="line"></span><br><span class="line">  re&gt; &#x2F;^\&#x2F;web\&#x2F;assets\&#x2F;view\&#x2F;salary\&#x2F;(\w+)-(\d&#123;1,2&#125;)\&#x2F;payslip\&#x2F;(\w+)\.(png|jpg|gif|jpeg|bmp)$&#x2F;</span><br><span class="line">data&gt; &#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;month-8&#x2F;payslip&#x2F;basicsalary.jpg</span><br><span class="line"> 0: &#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;month-8&#x2F;payslip&#x2F;basicsalary.jpg</span><br><span class="line"> 1: month</span><br><span class="line"> 2: 8</span><br><span class="line"> 3: basicsalary</span><br><span class="line"> 4: jpg</span><br></pre></td></tr></table></figure>
+<p>可以看到通过正则表达式（）匹配到的各个值，然后就可以通过$1,$2…的方式使用这些值，达到rewrite的目的。</p>
+<p>注意在nginx中使用正则表达式是不需要使用反斜杠转义的，这里是为了在pcretest中测试</p>
 
           
         
@@ -2143,201 +2545,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/20/Nginx-1%EF%BC%9A%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/20/Nginx-1%EF%BC%9A%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" itemprop="url">Nginx-1：基本概念</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-20T00:00:00+08:00">
-                2019-03-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/web/" itemprop="url" rel="index">
-                    <span itemprop="name">web</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/03/20/Nginx-1%EF%BC%9A%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/20/Nginx-1%EF%BC%9A%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/03/20/Nginx-1%EF%BC%9A%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" class="leancloud_visitors" data-flag-title="Nginx-1：基本概念">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="Nginx组成"><a href="#Nginx组成" class="headerlink" title="Nginx组成"></a>Nginx组成</h1><h2 id="Ngnix二进制可执行文件"><a href="#Ngnix二进制可执行文件" class="headerlink" title="Ngnix二进制可执行文件"></a>Ngnix二进制可执行文件</h2><p>由各模块源码编译出来的一个文件</p>
-<h2 id="Nginx配置文件"><a href="#Nginx配置文件" class="headerlink" title="Nginx配置文件"></a>Nginx配置文件</h2><p>控制Nginx的行为</p>
-<h2 id="access-log访问日志"><a href="#access-log访问日志" class="headerlink" title="access.log访问日志"></a>access.log访问日志</h2><p>记录每一条http请求信息，可以进行运营和运维分析</p>
-<h2 id="error-log错误日志"><a href="#error-log错误日志" class="headerlink" title="error.log错误日志"></a>error.log错误日志</h2><p>定位问题</p>
-<h1 id="默认安装位置"><a href="#默认安装位置" class="headerlink" title="默认安装位置"></a>默认安装位置</h1><pre><code>/usr/local/nginx</code></pre><h1 id="常用基本命令"><a href="#常用基本命令" class="headerlink" title="常用基本命令"></a>常用基本命令</h1><ul>
-<li><p>启动 nginx</p>
-<ul>
-<li>直接执行nginx二进制文件 /usr/local/nginx/sbin/nginx</li>
-<li>指定配置文件的启动方式 /usr/local/nginx/sbin/nginx -c /tmp/nginx.conf</li>
-<li>使用-p指定nginx的安装目录</li>
-<li>采用Systemd初始化系统的Linux系统：systemctl start nginx.service</li>
-<li>采用upstart初始化系统的Linux系统：initctl start nginx</li>
-<li>采用SYSVINIT初始化系统的Linux系统：service nginx start</li>
-</ul>
-</li>
-<li><p>关闭 ngixn</p>
-<p>  当nginx实例运行时，可以通过发送相应的信号来管理它：</p>
-<ul>
-<li><p>stop - 快速关闭<br>  二进制文件路径/nginx -s stop<br>  kill -s SIGTERM pid<br>  kill -s SIGINT pid</p>
-</li>
-<li><p>quit - 优雅关闭 (等待 worker 线程完成处理)<br>  二进制文件路径/nginx -s qeuit<br>  kill -s SIGQUIT <nginx master pid><br>  kill -s SIGQUIT <nginx worker pid>  如果只优雅的关闭一个worker进程</p>
-</li>
-<li><p>reload - 重载配置文件<br>  二进制文件路径/nginx -s reload<br>  kill -s SIGHUB <nginx master pid></p>
-</li>
-<li><p>reopen - 重新打开日志文件<br>  二进制文件路径/nginx -s reopen<br>  kill -s SIGUSR1 <nginx master pid></p>
-</li>
-</ul>
-</li>
-</ul>
-<h1 id="配置文件位置"><a href="#配置文件位置" class="headerlink" title="配置文件位置"></a>配置文件位置</h1><p>nginx 的配置文件，默认的位置包括：</p>
-<pre><code>/etc/nginx/nginx.conf,
-/usr/local/etc/nginx/nginx.conf
-/usr/local/nginx/conf/nginx.conf</code></pre><h1 id="处理请求"><a href="#处理请求" class="headerlink" title="处理请求"></a>处理请求</h1><p>在Nginx内部，你可以指定多个虚拟服务器，每个虚拟服务器用 server{} 上下文描述。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2392,7 +2599,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">101</span>
+                  <span class="site-state-item-count">102</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
