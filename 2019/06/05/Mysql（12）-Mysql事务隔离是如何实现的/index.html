@@ -89,14 +89,14 @@
 <meta property="og:url" content="http://10000hours.top/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/index.html">
 <meta property="og:site_name" content="Richey&#39;s Blog">
 <meta property="og:description" content="事务的启动时机。begin&#x2F;start transaction 命令并不是一个事务的起点，在执行到它们之后的第一个操作 InnoDB 表的语句，事务才真正启动。如果你想要马上启动一个事务，可以使用 start transaction with consistent snapshot 这个命令。 第一种启动方式，一致性视图是在第执行第一个快照读语句时创建的；第二种启动方式，一致性视图是在执行 sta">
-<meta property="og:image" content="http://10000hours.top/blog-pic-1254088127.picsh.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg">
+<meta property="og:image" content="http://blog-pic-1254088127.picsh.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg">
 <meta property="article:published_time" content="2019-06-04T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-07-25T07:51:55.340Z">
+<meta property="article:modified_time" content="2020-07-25T07:56:03.656Z">
 <meta property="article:author" content="Richey Liu">
 <meta property="article:tag" content="Mysql">
 <meta property="article:tag" content="事务">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://10000hours.top/blog-pic-1254088127.picsh.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg">
+<meta name="twitter:image" content="http://blog-pic-1254088127.picsh.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg">
 
 
 
@@ -411,7 +411,7 @@
 <p>InnoDB 里面每个事务有一个唯一的事务 ID，叫作 transaction id。它是在事务开始的时候向 InnoDB 的事务系统申请的，是按申请顺序严格递增的。</p>
 <p>而每行数据也都是有多个版本的。每次事务更新数据的时候，都会生成一个新的数据版本，并且把 transaction id 赋值给这个数据版本的事务 ID，记为 row trx_id。同时，旧的数据版本要保留，并且在新的数据版本中，能够有信息可以直接拿到它。</p>
 <p>也就是说，数据表中的一行记录，其实可能有多个版本 (row)，每个版本有自己的 row trx_id。</p>
-<p><img src="http:/blog-pic-1254088127.picsh.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg" alt="Mysql数据MVVC"></p>
+<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg" alt="Mysql数据MVVC"></p>
 <p>中的三个虚线箭头，就是 undo log；而 V1、V2、V3 并不是物理上真实存在的，而是每次需要的时候根据当前版本和 undo log 计算出来的。比如，需要 V2 的时候，就是通过 V4 依次执行 U3、U2 算出来。</p>
 <p>可重复读的定义：一个事务启动的时候，能够看到所有已经提交的事务结果。但是之后，这个事务执行期间，其他事务的更新对它不可见。</p>
 <p>因此，一个事务只需要在启动的时候声明说，“以我启动的时刻为准，如果一个数据版本是在我启动之前生成的，就认；如果是我启动以后才生成的，我就不认，我必须要找到它的上一个版本”。</p>
