@@ -479,7 +479,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 <p>2.Mysql数据库索引——必知必会</p>
 <p>3.Mysql数据库索引——给字符串加索引</p>
 <p>这里做一个总结，旨在对Mysql索引有一个整体的认识。</p>
-<p><img src="http://blog-pic-1254088127.cos.ap-shanghai.myqcloud.com/Mysql%E7%B4%A2%E5%BC%95.png?sign=q-sign-algorithm%3Dsha1%26q-ak%3DAKIDPxf4roJXYhzaVA2kLj6p2BGBmtu768W1%26q-sign-time%3D1586964042%3B1586967702%26q-key-time%3D1586964042%3B1586967702%26q-header-list%3Dhost%26q-url-param-list%3D%26q-signature%3Dcd014d6ac3c42c3ffc3a3edf3ab2ec9795c325fb&x-cos-security-token=6a1f21b48fa8e9cc475ea192586536e172fcd1db10001" alt="Mysql索引知识体系图"></p>
+<p><img src="http:/blog-pic-1254088127.picsh.myqcloud.com/Mysql%E7%B4%A2%E5%BC%95.png" alt="Mysql索引知识体系图"></p>
 <h1 id="Mysql索引总结"><a href="#Mysql索引总结" class="headerlink" title="Mysql索引总结"></a>Mysql索引总结</h1><h2 id="索引是什么"><a href="#索引是什么" class="headerlink" title="索引是什么"></a>索引是什么</h2><p>类似于目录，是用来提高查询效率的一种数据组织形式，Mysql中用索引组织数据。</p>
 <h2 id="Mysql索引的实现方式"><a href="#Mysql索引的实现方式" class="headerlink" title="Mysql索引的实现方式"></a>Mysql索引的实现方式</h2><p>Mysql索引是在存储引擎层实现的，InnoDB使用了B+树数据模型实现的索引，综合考虑了搜索效率和IO性能。</p>
 <p>每个索引在InnoDB里对应一棵树</p>
@@ -1678,7 +1678,7 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
     <title>适配器模式</title>
     <url>/2019/06/06/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/</url>
     <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p>
-<p><img src="http://blog-pic-1254088127.cos.ap-shanghai.myqcloud.com/spring%E9%85%8D%E7%BD%AE%E4%BD%BF%E7%94%A8%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8Fdemo.jpg?sign=q-sign-algorithm%3Dsha1%26q-ak%3DAKIDXqq06t5vKykkmYS4RVyUdv4qVMUzspuR%26q-sign-time%3D1587048720%3B1587052380%26q-key-time%3D1587048720%3B1587052380%26q-header-list%3Dhost%26q-url-param-list%3D%26q-signature%3D0aef3886622ce1d4088e519dc6dedb0eac5eab4d&x-cos-security-token=f8cb0d55796632de0f57d4f78910c80f3172c8b310001" alt="spring适配器模式demo"></p>
+<p><img src="http:/blog-pic-1254088127.picsh.myqcloud.com/spring%E9%85%8D%E7%BD%AE%E4%BD%BF%E7%94%A8%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8Fdemo.jpg" alt="spring适配器模式demo"></p>
 <h1 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h1><p>将一个类的接口，转换成客户期望的另一个接口。适配器让原本不兼容的接口可以合作无间。</p>
 <h1 id="对象适配器"><a href="#对象适配器" class="headerlink" title="对象适配器"></a>对象适配器</h1><ul>
 <li>采用组合模式</li>
@@ -1872,7 +1872,7 @@ public Object getCurrentUserToo(@AuthenticationPrincipal UserDetails userDetails
 <p>InnoDB 里面每个事务有一个唯一的事务 ID，叫作 transaction id。它是在事务开始的时候向 InnoDB 的事务系统申请的，是按申请顺序严格递增的。</p>
 <p>而每行数据也都是有多个版本的。每次事务更新数据的时候，都会生成一个新的数据版本，并且把 transaction id 赋值给这个数据版本的事务 ID，记为 row trx_id。同时，旧的数据版本要保留，并且在新的数据版本中，能够有信息可以直接拿到它。</p>
 <p>也就是说，数据表中的一行记录，其实可能有多个版本 (row)，每个版本有自己的 row trx_id。</p>
-<p><img src="http://blog-pic-1254088127.cos.ap-shanghai.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg?sign=q-sign-algorithm%3Dsha1%26q-ak%3DAKIDyTYbLG4mUJ84SNtqHkjzHrxydi2l12xN%26q-sign-time%3D1586963672%3B1586967332%26q-key-time%3D1586963672%3B1586967332%26q-header-list%3Dhost%26q-url-param-list%3D%26q-signature%3D507f015585dfe3a66deae7caae1270f63ee4e7cd&x-cos-security-token=f443764a28aa591ab8000504f69ebfb2abf31ba910001" alt="Mysql数据MVVC"></p>
+<p><img src="http:/blog-pic-1254088127.picsh.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg" alt="Mysql数据MVVC"></p>
 <p>中的三个虚线箭头，就是 undo log；而 V1、V2、V3 并不是物理上真实存在的，而是每次需要的时候根据当前版本和 undo log 计算出来的。比如，需要 V2 的时候，就是通过 V4 依次执行 U3、U2 算出来。</p>
 <p>可重复读的定义：一个事务启动的时候，能够看到所有已经提交的事务结果。但是之后，这个事务执行期间，其他事务的更新对它不可见。</p>
 <p>因此，一个事务只需要在启动的时候声明说，“以我启动的时刻为准，如果一个数据版本是在我启动之前生成的，就认；如果是我启动以后才生成的，我就不认，我必须要找到它的上一个版本”。</p>
@@ -3832,7 +3832,7 @@ OK
   <entry>
     <title>Mysql（7）-Mysql锁</title>
     <url>/2019/04/02/Mysql%EF%BC%887%EF%BC%89-Mysql%E9%94%81/</url>
-    <content><![CDATA[<p><img src="http://blog-pic-1254088127.cos.ap-shanghai.myqcloud.com/mysql%E9%94%81.jpg?sign=q-sign-algorithm%3Dsha1%26q-ak%3DAKIDKOfaja7nOa3KHWbFL05UkUNOoVTY2s26%26q-sign-time%3D1586879918%3B1586883578%26q-key-time%3D1586879918%3B1586883578%26q-header-list%3Dhost%26q-url-param-list%3D%26q-signature%3Dbe79272e06e1d4597db9824acbe78f9e6e6caeb8&x-cos-security-token=142759bae5a48d94881f336349f839399649d7f210001" alt="Mysql锁"></p>
+    <content><![CDATA[<p><img src="http:/blog-pic-1254088127.picsh.myqcloud.com/mysql%E9%94%81.jpg" alt="Mysql锁"></p>
 <p>数据库锁设计的初衷是处理并发问题。</p>
 <p>Mysql加锁范围分类</p>
 <h1 id="全局锁"><a href="#全局锁" class="headerlink" title="全局锁"></a>全局锁</h1><p>全局锁就是对整个数据库实例加锁。MySQL 提供了一个加全局读锁的方法，命令是 Flush tables with read lock (FTWRL)。</p>

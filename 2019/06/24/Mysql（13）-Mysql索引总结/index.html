@@ -89,14 +89,14 @@
 <meta property="og:url" content="http://10000hours.top/2019/06/24/Mysql%EF%BC%8813%EF%BC%89-Mysql%E7%B4%A2%E5%BC%95%E6%80%BB%E7%BB%93/index.html">
 <meta property="og:site_name" content="Richey&#39;s Blog">
 <meta property="og:description" content="回顾写了几篇关于Mysql索引的文章了： 1.Mysql数据库索引——数据结构 2.Mysql数据库索引——必知必会 3.Mysql数据库索引——给字符串加索引 这里做一个总结，旨在对Mysql索引有一个整体的认识。  Mysql索引总结索引是什么类似于目录，是用来提高查询效率的一种数据组织形式，Mysql中用索引组织数据。 Mysql索引的实现方式Mysql索引是在存储引擎层实现的，InnoDB">
-<meta property="og:image" content="http://blog-pic-1254088127.cos.ap-shanghai.myqcloud.com/Mysql%E7%B4%A2%E5%BC%95.png?sign=q-sign-algorithm%253Dsha1%2526q-ak%253DAKIDPxf4roJXYhzaVA2kLj6p2BGBmtu768W1%2526q-sign-time%253D1586964042%253B1586967702%2526q-key-time%253D1586964042%253B1586967702%2526q-header-list%253Dhost%2526q-url-param-list%253D%2526q-signature%253Dcd014d6ac3c42c3ffc3a3edf3ab2ec9795c325fb&x-cos-security-token=6a1f21b48fa8e9cc475ea192586536e172fcd1db10001">
+<meta property="og:image" content="http://10000hours.top/blog-pic-1254088127.picsh.myqcloud.com/Mysql%E7%B4%A2%E5%BC%95.png">
 <meta property="article:published_time" content="2019-06-23T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-04-15T15:25:01.776Z">
+<meta property="article:modified_time" content="2020-07-25T07:51:05.414Z">
 <meta property="article:author" content="Richey Liu">
 <meta property="article:tag" content="Mysql">
 <meta property="article:tag" content="索引">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://blog-pic-1254088127.cos.ap-shanghai.myqcloud.com/Mysql%E7%B4%A2%E5%BC%95.png?sign=q-sign-algorithm%253Dsha1%2526q-ak%253DAKIDPxf4roJXYhzaVA2kLj6p2BGBmtu768W1%2526q-sign-time%253D1586964042%253B1586967702%2526q-key-time%253D1586964042%253B1586967702%2526q-header-list%253Dhost%2526q-url-param-list%253D%2526q-signature%253Dcd014d6ac3c42c3ffc3a3edf3ab2ec9795c325fb&x-cos-security-token=6a1f21b48fa8e9cc475ea192586536e172fcd1db10001">
+<meta name="twitter:image" content="http://10000hours.top/blog-pic-1254088127.picsh.myqcloud.com/Mysql%E7%B4%A2%E5%BC%95.png">
 
 
 
@@ -408,7 +408,7 @@
 <p>2.Mysql数据库索引——必知必会</p>
 <p>3.Mysql数据库索引——给字符串加索引</p>
 <p>这里做一个总结，旨在对Mysql索引有一个整体的认识。</p>
-<p><img src="http://blog-pic-1254088127.cos.ap-shanghai.myqcloud.com/Mysql%E7%B4%A2%E5%BC%95.png?sign=q-sign-algorithm%3Dsha1%26q-ak%3DAKIDPxf4roJXYhzaVA2kLj6p2BGBmtu768W1%26q-sign-time%3D1586964042%3B1586967702%26q-key-time%3D1586964042%3B1586967702%26q-header-list%3Dhost%26q-url-param-list%3D%26q-signature%3Dcd014d6ac3c42c3ffc3a3edf3ab2ec9795c325fb&x-cos-security-token=6a1f21b48fa8e9cc475ea192586536e172fcd1db10001" alt="Mysql索引知识体系图"></p>
+<p><img src="http:/blog-pic-1254088127.picsh.myqcloud.com/Mysql%E7%B4%A2%E5%BC%95.png" alt="Mysql索引知识体系图"></p>
 <h1 id="Mysql索引总结"><a href="#Mysql索引总结" class="headerlink" title="Mysql索引总结"></a>Mysql索引总结</h1><h2 id="索引是什么"><a href="#索引是什么" class="headerlink" title="索引是什么"></a>索引是什么</h2><p>类似于目录，是用来提高查询效率的一种数据组织形式，Mysql中用索引组织数据。</p>
 <h2 id="Mysql索引的实现方式"><a href="#Mysql索引的实现方式" class="headerlink" title="Mysql索引的实现方式"></a>Mysql索引的实现方式</h2><p>Mysql索引是在存储引擎层实现的，InnoDB使用了B+树数据模型实现的索引，综合考虑了搜索效率和IO性能。</p>
 <p>每个索引在InnoDB里对应一棵树</p>
