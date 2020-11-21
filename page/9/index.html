@@ -288,6 +288,662 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/02/01/Docker%20%E5%91%BD%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/02/01/Docker%20%E5%91%BD%E4%BB%A4/" itemprop="url">Docker 命令</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-01T00:00:00+08:00">
+                2019-02-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%B9%E5%99%A8/" itemprop="url" rel="index">
+                    <span itemprop="name">容器</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/02/01/Docker%20%E5%91%BD%E4%BB%A4/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/02/01/Docker%20%E5%91%BD%E4%BB%A4/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/02/01/Docker%20%E5%91%BD%E4%BB%A4/" class="leancloud_visitors" data-flag-title="Docker 命令">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Docker基本命令"><a href="#Docker基本命令" class="headerlink" title="Docker基本命令"></a>Docker基本命令</h1><ul>
+<li><p>查看基本信息</p>
+<pre><code>docker info  </code></pre></li>
+</ul>
+<p>是经常用来查看运行状态及版本信息的命令，是整个Docker Daemon守护进程运行状况的缩影，包括容器个数、镜像个数、Daemon版本、使用的存储驱动等信息。</p>
+<ul>
+<li><p>获取容器的主机名</p>
+<pre><code>hostname(这个是linux的基本命令)</code></pre><p>  容器的主机名就是该容器的id，Docker会默认在/etc/hosts中为该容器的ip地址添加一条主机的配置项目</p>
+</li>
+<li><p>列出所有docker容器</p>
+<pre><code>docker ps 会列出所有正在运行的docker容器
+docker ps -a 会列出所有docker容器，包括未运行的</code></pre></li>
+</ul>
+<h1 id="docker-run-命令"><a href="#docker-run-命令" class="headerlink" title="docker run 命令"></a>docker run 命令</h1><p>docker run 命令提供了Docker容器的创建到启动的功能</p>
+<ol>
+<li><p>端口映射</p>
+<p> 可以通过-P或者-p参数指定端口映射</p>
+<ul>
+<li><p>-P Docker 会随机映射一个 49000~49900 的端口到内部容器开放的网络端口。</p>
+</li>
+<li><p>-p（小写）则可以指定要映射的IP和端口，但是在一个指定端口上只可以绑定一个容器。支持的格式有hostPort:containerPort、ip:hostPort:containerPort、 ip::containerPort。</p>
+<ul>
+<li><p>hostPort:containerPort（映射所有接口地址）<br>将本地的 5000 端口映射到容器的 5000 端口，可以执行如下命令：<br>$ sudo docker run -d -p 5000:5000 training/webapp python app.py 此时默认会绑定本地所有接口上的所有地址。        </p>
+</li>
+<li><p>ip:hostPort:containerPort （映射指定地址的指定端口）<br>指定映射使用一个特定地址，比如 localhost 地址 127.0.0.1<br>$ sudo docker run -d -p 127.0.0.1:5000:5000 training/webapp python app.py</p>
+</li>
+<li><p>ip::containerPort （映射指定地址的任意端口）<br>绑定 localhost 的任意端口到容器的 5000 端口，本地主机会自动分配一个端口。<br>sudo docker run -d -p 127.0.0.1::5000 training/webapp python app.py<br>还可以使用 udp 标记来指定 udp 端口<br>$ sudo docker run -d -p 127.0.0.1:5000:5000/udp training/webapp python app.py</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<ol start="2">
+<li><p>-i 标志保证容器的STDIN是开启的，即表示启动一个可交互的容器；</p>
+</li>
+<li><p>-t 表示使用pseudo-TTY,关联到容器的stdin和stdout，即为创造的容器分配一个伪tty终端；</p>
+</li>
+<li><p>-d 让容器在后台运行，不关联到当前终端的shell上</p>
+</li>
+</ol>
+<ol start="5">
+<li><p>–name容器命名</p>
+</li>
+<li><p>–restart 设置自动重启容器</p>
+<p> –restart=always</p>
+<p> –restart=on-failure:5 //当容器退出码为非0的时候重启，最多重启5次</p>
+</li>
+</ol>
+<h1 id="docker-start"><a href="#docker-start" class="headerlink" title="docker start"></a>docker start</h1><pre><code>启动已经停止运行的容</code></pre><h1 id="images相关命令"><a href="#images相关命令" class="headerlink" title="images相关命令"></a>images相关命令</h1><ol>
+<li><p>docker iamges</p>
+<p> 查看本机镜像列表</p>
+<p> 为了区分同一个仓库中的不同镜像，Docker提供了标签（tag）功能，每个镜像在被列出来时都带有一个标签。</p>
+</li>
+<li><p>拉取镜像</p>
+<ul>
+<li><p>格式</p>
+<p>  [域名/][用户名/]镜像名[:版本号]</p>
+<p>  当指定了域名就会从该域名下载，否则就会从Docker Hub进行下载；</p>
+<p>  镜像名是必填项，版本号默认是latest</p>
+<pre><code>sudo docker pull ubuntu:12.04</code></pre></li>
+</ul>
+</li>
+</ol>
+<ol start="3">
+<li><p>查找Docker Hub镜像</p>
+<p> docker search</p>
+</li>
+<li><p>构建及发布镜像</p>
+<p> 具体查看《Docker(5) - 镜像和仓库》</p>
+<p> 在push镜像之前要首先tag镜像</p>
+</li>
+<li><p>删除服务器中无用的docker镜像命令</p>
+<pre><code>docker images | grep \&lt;none\&gt; | tr -s &quot; &quot; | cut -d &apos; &apos; -f 3 | xargs docker rmi</code></pre></li>
+</ol>
+<h1 id="docker-日志相关"><a href="#docker-日志相关" class="headerlink" title="docker 日志相关"></a>docker 日志相关</h1><p>日志分两类，一类是 Docker 引擎日志；另一类是 容器日志。</p>
+<ul>
+<li><p>Docker 引擎日志</p>
+<p>  Docker 引擎日志 一般是交给了 Upstart(Ubuntu 14.04) 或者 systemd (CentOS 7, Ubuntu 16.04)。前者一般位于 /var/log/upstart/docker.log 下，后者一般通过 jounarlctl -u docker 来读取。不同系统的位置都不一样，可以参考：</p>
+</li>
+</ul>
+<pre><code>系统 | 日志位置</code></pre><p>—|—<br>Ubuntu(14.04)|     /var/log/upstart/docker.log<br>Ubuntu(16.04)|     journalctl -u docker.service<br>CentOS 7/RHEL 7/Fedora|     journalctl -u docker.service<br>CoreOS|     journalctl -u docker.service<br>OpenSuSE|     journalctl -u docker.service<br>OSX    | ~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/log/d‌​ocker.log<br>Debian|  GNU/Linux 7    /var/log/daemon.log<br>Debian|  GNU/Linux 8    journalctl -u docker.service<br>Boot2Docker|     /var/log/docker.log</p>
+<ul>
+<li><p>容器的日志</p>
+<p>  则可以通过 docker logs 命令来访问，而且可以像 tail -f 一样，使用 docker logs -f 来实时查看。如果使用 Docker Compose，则可以通过 docker-compose logs &lt;服务名&gt; 来查看。</p>
+<p>  如果深究其日志位置，每个容器的日志默认都会以 json-file 的格式存储于 /var/lib/docker/containers/&lt;容器id&gt;/&lt;容器id&gt;-json.log 下，不过并不建议去这里直接读取内容，因为 Docker 提供了更完善地日志收集方式 - Docker 日志收集驱动。</p>
+</li>
+</ul>
+<ul>
+<li><p>找出当前 Docker 守护进程的默认日志驱动程序，运行 docker info 命令并在输出中找 Logging Driver。</p>
+<pre><code>$ docker info | grep &apos;Logging Driver&apos;</code></pre></li>
+<li><p>查看某容器使用的日志驱动程序</p>
+<pre><code>docker inspect -f &apos;{{.HostConfig.LogConfig.Type}}&apos; container_name</code></pre></li>
+<li><p>docker logs 获取容器的日志</p>
+<p>  docker logs -f container-name</p>
+<p>  docker logs -f –tail 200 container-name</p>
+<p>  docker logs -ft container-name //带时间戳是</p>
+</li>
+<li><p>查看容器日志大小</p>
+<p>  假设容器目录为/var/lib/docker/containers，那么执行如下命令</p>
+<pre><code>cd /var/lib/docker/containers  #进入默认容器空间目录
+
+du -sh *            #统计文件大小
+
+2.4G  de92a5643f7ffb106f8abba21fc0f93996842917a52879153adc95a73312934a-json.log
+
+#以上这个代表容器de92a5643的日志大小为2.4G</code></pre></li>
+<li><p>–log-driver指定日志驱动</p>
+</li>
+</ul>
+<pre><code>驱动程序 | 描述
+---|---
+none   |    容器没有日志可用,docker logs 什么都不返回
+json-file |    日志格式化为 JSON。这是 Docker 默认的日志驱动程序。
+syslog|    将日志消息写入 syslog 工具。syslog 守护程序必须在主机上运s行。
+journald|    将日志消息写入 journald。journald 守护程序必须在主机上运行。
+gelf|    将日志消息写入 Graylog Extended Log Format (GELF) 终端，例如 Graylog 或 Logstash。
+fluentd|    将日志消息写入 fluentd（forward input）。fluentd 守护程序必须在主机上运行。
+awslogs|    将日志消息写入 Amazon CloudWatch Logs。
+splunk|    Writes log messages to splunk using the HTTP Event Collector.
+etwlogs|    将日志消息写为 Windows 的 Event Tracing 事件。仅在Windows平台上可用。
+gcplogs    |将日志消息写入 Google Cloud Platform (GCP) Logging。
+logentries|ss    将日志消息写入 Rapid7 Logentries。</code></pre><ul>
+<li><p>增加日志参数</p>
+<p>  docker run增加如下参数，限制生成的json.log单个文件大小和保留文件个数：</p>
+<pre><code>--log-opt max-size=10m --log-opt max-file=3</code></pre></li>
+</ul>
+<h1 id="容器相关命令"><a href="#容器相关命令" class="headerlink" title="容器相关命令"></a>容器相关命令</h1><ul>
+<li><p>docker top 查看容器内的进程</p>
+<p>  docker top contain_name</p>
+</li>
+<li><p>docker stats 查看容器统计信息</p>
+<p>  docker stats可以查看一个或多个容器的统计信息,包括CPU、内存、网络I/O及存储I/O的性能和指标。这对快速监控一台主机上的一组容器非常有用。</p>
+<pre><code>docker stats container_name1 container_name1</code></pre></li>
+<li><p>docker inspect 获得更多容器信息</p>
+<pre><code>docker inspect container_name</code></pre><p>  可以配合-f或者–format标志来选定查看结果</p>
+</li>
+</ul>
+<pre><code>    docker inspect --format=&apos;{{ .State.Running }}&apos; containner_name //查看容器的运行状态
+
+docker inspect --format=&apos;{{ .NetworkSettings.IPAddress }}&apos; containner_name //查看容器的运行状态</code></pre><ul>
+<li><p>Docker镜像、容器及容器的配置目录</p>
+<p>  /var/lib/docker</p>
+</li>
+<li><p>docker rm 删除容器</p>
+<pre><code>sudo docker rm &apos;sudo docker ps -a -q&apos; //删除所有容器</code></pre><p>  -a 表示列出所有容器</p>
+<p>  -q 表示只返回容器的id而不返回容器的其它信息</p>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/15/React%EF%BC%9A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/01/15/React%EF%BC%9A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" itemprop="url">React：最佳实践</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-15T00:00:00+08:00">
+                2019-01-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/01/15/React%EF%BC%9A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/15/React%EF%BC%9A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/01/15/React%EF%BC%9A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" class="leancloud_visitors" data-flag-title="React：最佳实践">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="零碎知识点"><a href="#零碎知识点" class="headerlink" title="零碎知识点"></a>零碎知识点</h1><p>在 React 中另一个不同点是你不能通过返回 false的方式阻止默认行为。你必须显式的使用 preventDefault.</p>
+<p>阻止组件渲染,可以让 render 方法直接返回 null，而不进行任何渲染。</p>
+<h1 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h1><p>Keys 帮助 React 识别哪些元素改变了，比如被添加或删除。因此你应当给数组中的每一个元素赋予一个确定的标识。</p>
+<p>键（Key）只是在兄弟节点之间必须唯一．</p>
+<h1 id="事件"><a href="#事件" class="headerlink" title="事件"></a>事件</h1><p>使用 React 时，你一般不需要使用 addEventListener 为已创建的 DOM 元素添加监听器。React恰恰与之相反，你仅需要在该元素初始渲染的时候添加一个监听器。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">class Toggle extends React.Component &#123;</span><br><span class="line">  constructor(props) &#123;</span><br><span class="line">    super(props);</span><br><span class="line">    this.state &#x3D; &#123;isToggleOn: true&#125;;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 为了在回调中使用 &#96;this&#96;，这个绑定是必不可少的</span><br><span class="line">    this.handleClick &#x3D; this.handleClick.bind(this);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  handleClick() &#123;</span><br><span class="line">    this.setState(state &#x3D;&gt; (&#123;</span><br><span class="line">      isToggleOn: !state.isToggleOn</span><br><span class="line">    &#125;));</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  render() &#123;</span><br><span class="line">    return (</span><br><span class="line">      &lt;button onClick&#x3D;&#123;this.handleClick&#125;&gt;</span><br><span class="line">        &#123;this.state.isToggleOn ? &#39;ON&#39; : &#39;OFF&#39;&#125;</span><br><span class="line">      &lt;&#x2F;button&gt;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ReactDOM.render(</span><br><span class="line">  &lt;Toggle &#x2F;&gt;,</span><br><span class="line">  document.getElementById(&#39;root&#39;)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">class LoggingButton extends React.Component &#123;</span><br><span class="line">  &#x2F;&#x2F; 这种语法确保 &#96;this&#96; 绑定在 &#96;handleClick&#96; 内。</span><br><span class="line">  &#x2F;&#x2F; 注意: 这是 *实验性* 语法。</span><br><span class="line">  handleClick &#x3D; () &#x3D;&gt; &#123;</span><br><span class="line">    console.log(&#39;this is:&#39;, this);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  render() &#123;</span><br><span class="line">    return (</span><br><span class="line">      &lt;button onClick&#x3D;&#123;this.handleClick&#125;&gt;</span><br><span class="line">        Click me</span><br><span class="line">      &lt;&#x2F;button&gt;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class LoggingButton extends React.Component &#123;</span><br><span class="line">  handleClick() &#123;</span><br><span class="line">    console.log(&#39;this is:&#39;, this);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  render() &#123;</span><br><span class="line">    &#x2F;&#x2F; 这种语法确保 &#96;this&#96; 绑定在 &#96;handleClick&#96; 内。</span><br><span class="line">    return (</span><br><span class="line">      &lt;button onClick&#x3D;&#123;(e) &#x3D;&gt; this.handleClick(e)&#125;&gt;</span><br><span class="line">        Click me</span><br><span class="line">      &lt;&#x2F;button&gt;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="向事件处理程序传递参数"><a href="#向事件处理程序传递参数" class="headerlink" title="向事件处理程序传递参数"></a>向事件处理程序传递参数</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;button onClick&#x3D;&#123;(e) &#x3D;&gt; this.deleteRow(id, e)&#125;&gt;Delete Row&lt;&#x2F;button&gt;</span><br><span class="line">&lt;button onClick&#x3D;&#123;this.deleteRow.bind(this, id)&#125;&gt;Delete Row&lt;&#x2F;button&gt;</span><br></pre></td></tr></table></figure>
+
+<h1 id="表单"><a href="#表单" class="headerlink" title="表单"></a>表单</h1>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/" itemprop="url">15、React：React 常用开发调试工具</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-15T00:00:00+08:00">
+                2019-01-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/" class="leancloud_visitors" data-flag-title="15、React：React 常用开发调试工具">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>主要介绍ESLint、Prettier、React DevTool、Redux DevTool</p>
+<h1 id="ESLink"><a href="#ESLink" class="headerlink" title="ESLink"></a>ESLink</h1><p>javascript语法检查和一致性保证的标准</p>
+<h1 id="Prettier"><a href="#Prettier" class="headerlink" title="Prettier"></a>Prettier</h1><p>facebook出的用于格式化代码的工具：</p>
+<h1 id="格式化代码"><a href="#格式化代码" class="headerlink" title="格式化代码"></a>格式化代码</h1><p>保证更容易写出风格一致的代码</p>
+<h1 id="React-DevTool"><a href="#React-DevTool" class="headerlink" title="React DevTool"></a>React DevTool</h1><p>用来调试React的chrome插件</p>
+<h1 id="Redux-DevTool"><a href="#Redux-DevTool" class="headerlink" title="Redux DevTool"></a>Redux DevTool</h1><p>用来调试Redux的chrome插件</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/14/14%E3%80%81React%EF%BC%9AReact%20Router/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1547,530 +2203,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/07/7%E3%80%81React%20%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/07/7%E3%80%81React%20%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2/" itemprop="url">7、React 打包部署</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-07T00:00:00+08:00">
-                2019-01-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
-                    <span itemprop="name">前端</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/01/07/7%E3%80%81React%20%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/07/7%E3%80%81React%20%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/01/07/7%E3%80%81React%20%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2/" class="leancloud_visitors" data-flag-title="7、React 打包部署">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="为什么需要打包？"><a href="#为什么需要打包？" class="headerlink" title="为什么需要打包？"></a>为什么需要打包？</h1><ol>
-<li>编译ES6语法特性，编译JSX</li>
-<li>整合资源，例如图片，Less/Sass</li>
-<li>优化代码体积</li>
-</ol>
-<h1 id="使用Webpack进行打包"><a href="#使用Webpack进行打包" class="headerlink" title="使用Webpack进行打包"></a>使用Webpack进行打包</h1><h1 id="打包注意事项"><a href="#打包注意事项" class="headerlink" title="打包注意事项"></a>打包注意事项</h1><ol>
-<li>设置nodejs环境为production</li>
-</ol>
-<ol start="2">
-<li>禁用开发时的专用代码，如logger</li>
-</ol>
-<ol start="3">
-<li><p>设置应用根路径</p>
-<p>修改package.json配置文件的”homepage”:””</p>
-</li>
-</ol>
-<h1 id="create-reacat-app-打包命令"><a href="#create-reacat-app-打包命令" class="headerlink" title="create-reacat-app 打包命令"></a>create-reacat-app 打包命令</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm run build</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/06/6%E3%80%81React-%E6%96%B0%E7%9A%84Contet%20API%E5%8F%8A%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/06/6%E3%80%81React-%E6%96%B0%E7%9A%84Contet%20API%E5%8F%8A%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/" itemprop="url">6、React-新的Contet API及使用场景</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-06T00:00:00+08:00">
-                2019-01-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
-                    <span itemprop="name">前端</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/01/06/6%E3%80%81React-%E6%96%B0%E7%9A%84Contet%20API%E5%8F%8A%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/06/6%E3%80%81React-%E6%96%B0%E7%9A%84Contet%20API%E5%8F%8A%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/01/06/6%E3%80%81React-%E6%96%B0%E7%9A%84Contet%20API%E5%8F%8A%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/" class="leancloud_visitors" data-flag-title="6、React-新的Contet API及使用场景">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="React-16-3新特性-Context-API"><a href="#React-16-3新特性-Context-API" class="headerlink" title="React 16.3新特性:Context API"></a>React 16.3新特性:Context API</h1><p>要解决的还是组件间通讯的问题，有些全局的状态，很多组件都会去使用，但是如果所有的属性都是一层层的传递下来，非常麻烦。</p>
-<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/react-context-api.png" alt="image"></p>
-<p><a href="https://github.com/liubaolin/evolutionary/blob/master/JS/react-cli-demo/src/LocaleSample/LocaleSample.js" target="_blank" rel="noopener">代码片段</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/05/5%E3%80%81React%E9%AB%98%E9%98%B6%E7%BB%84%E4%BB%B6(HOC)%E5%92%8C%E5%87%BD%E6%95%B0%E4%BD%9C%E4%B8%BA%E5%AD%90%E7%BB%84%E4%BB%B6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/05/5%E3%80%81React%E9%AB%98%E9%98%B6%E7%BB%84%E4%BB%B6(HOC)%E5%92%8C%E5%87%BD%E6%95%B0%E4%BD%9C%E4%B8%BA%E5%AD%90%E7%BB%84%E4%BB%B6/" itemprop="url">5、React高阶组件(HOC)和函数作为子组件</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-05T00:00:00+08:00">
-                2019-01-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
-                    <span itemprop="name">前端</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/01/05/5%E3%80%81React%E9%AB%98%E9%98%B6%E7%BB%84%E4%BB%B6(HOC)%E5%92%8C%E5%87%BD%E6%95%B0%E4%BD%9C%E4%B8%BA%E5%AD%90%E7%BB%84%E4%BB%B6/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/05/5%E3%80%81React%E9%AB%98%E9%98%B6%E7%BB%84%E4%BB%B6(HOC)%E5%92%8C%E5%87%BD%E6%95%B0%E4%BD%9C%E4%B8%BA%E5%AD%90%E7%BB%84%E4%BB%B6/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/01/05/5%E3%80%81React%E9%AB%98%E9%98%B6%E7%BB%84%E4%BB%B6(HOC)%E5%92%8C%E5%87%BD%E6%95%B0%E4%BD%9C%E4%B8%BA%E5%AD%90%E7%BB%84%E4%BB%B6/" class="leancloud_visitors" data-flag-title="5、React高阶组件(HOC)和函数作为子组件">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>组件复用的另外两种形式:</p>
-<ol>
-<li>高阶组件（HOC）</li>
-<li>函数作为子组件</li>
-</ol>
-<h1 id="高阶组件"><a href="#高阶组件" class="headerlink" title="高阶组件"></a>高阶组件</h1><p>高阶组件实际是对已有组件的一个封装,来返回一个新的组件.新的组件会包含一些应用逻辑,这些新的逻辑会产生新的状态,这些状态会传给新的组件.</p>
-<p>高阶组件一般不会有额外的UI展现,只是为它封装的组件提供额外的功能或者数据.</p>
-<p>高阶组件可以自己去获取外部资源.</p>
-<ul>
-<li>创建一个高阶组件</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const EnhancedComponent &#x3D; highterOrderComponent(WrappedComponent);</span><br></pre></td></tr></table></figure>
-
-<pre><code>高阶组件可以接受一个组件参数,并返回一个新的组件.</code></pre><h1 id="函数作为子组件"><a href="#函数作为子组件" class="headerlink" title="函数作为子组件"></a>函数作为子组件</h1><p>snippet:<br><a href="https://github.com/liubaolin/evolutionary/blob/master/JS/react-cli-demo/src/TabSelector/AdvanceTabSelector.js" target="_blank" rel="noopener">函数作为子组件</a></p>
-<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><ol>
-<li>高阶组件和函数子组件都是设计模式</li>
-<li>可以实现更多场景的组件复用</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2125,7 +2257,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">102</span>
+                  <span class="site-state-item-count">105</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2147,7 +2279,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-count">35</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

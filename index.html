@@ -288,6 +288,525 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2020/11/17/Kafka%E5%B8%B8%E7%94%A8%E6%A0%A1%E6%9C%AC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/11/17/Kafka%E5%B8%B8%E7%94%A8%E6%A0%A1%E6%9C%AC/" itemprop="url">Kafka常用校本</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-17T00:00:00+08:00">
+                2020-11-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/MQ/" itemprop="url" rel="index">
+                    <span itemprop="name">MQ</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/11/17/Kafka%E5%B8%B8%E7%94%A8%E6%A0%A1%E6%9C%AC/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/11/17/Kafka%E5%B8%B8%E7%94%A8%E6%A0%A1%E6%9C%AC/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2020/11/17/Kafka%E5%B8%B8%E7%94%A8%E6%A0%A1%E6%9C%AC/" class="leancloud_visitors" data-flag-title="Kafka常用校本">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="kafka-consumer-groups-sh"><a href="#kafka-consumer-groups-sh" class="headerlink" title="kafka-consumer-groups.sh"></a>kafka-consumer-groups.sh</h1><h2 id="查询kafka消息是否被消费"><a href="#查询kafka消息是否被消费" class="headerlink" title="查询kafka消息是否被消费"></a>查询kafka消息是否被消费</h2><p>要知道某条消息是否被消息,首先得知道是查被哪个消费组在消费; 比如 项目配置的kafka的group.id是 my-consumer-group ;<br>那么我们去看看 这个消费者组的消费情况</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin&#x2F;kafka-consumer-groups.sh --bootstrap-server xxx1:9092,xxx2:9092,xxx3:9092 --describe --group my-consumer-group</span><br></pre></td></tr></table></figure>
+
+<p>这样查询出来的结果就是 staff-consumer-group消费组消费了哪些Topic; 如果想过滤某个TOPIC;可以加上|grep TOPIC名称 过滤一下；</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin&#x2F;kafka-consumer-groups.sh --bootstrap-server xxx1:9092,xxx2:9092,xxx3:9092 --describe --group staff-consumer-group |grep TOPIC名称</span><br></pre></td></tr></table></figure>
+
+<h2 id="–members-此选项提供使用者组中所有活动成员的列表"><a href="#–members-此选项提供使用者组中所有活动成员的列表" class="headerlink" title="–members   此选项提供使用者组中所有活动成员的列表"></a>–members   此选项提供使用者组中所有活动成员的列表</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin&#x2F;kafka-consumer-groups.sh --bootstrap-server xxx1:9092,xxx2:9092,xxx3:9092 --describe --group my-consumer-group  --members</span><br></pre></td></tr></table></figure>
+
+<h2 id="–verbose-还展示分配给每个成员的分区"><a href="#–verbose-还展示分配给每个成员的分区" class="headerlink" title="–verbose  还展示分配给每个成员的分区"></a>–verbose  还展示分配给每个成员的分区</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin&#x2F;kafka-consumer-groups.sh --bootstrap-server xxx1:9092,xxx2:9092,xxx3:9092 --describe --group my-consumer-group  --members   --verbose</span><br></pre></td></tr></table></figure>
+
+<h2 id="–state-提供有用的组级别信息"><a href="#–state-提供有用的组级别信息" class="headerlink" title="–state  提供有用的组级别信息"></a>–state  提供有用的组级别信息</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin&#x2F;kafka-consumer-groups.sh --bootstrap-server xxx1:9092,xxx2:9092,xxx3:9092 --describe --group my-consumer-group  --state</span><br></pre></td></tr></table></figure>
+
+<h2 id="–delete-手动删除一个或多个消费者组"><a href="#–delete-手动删除一个或多个消费者组" class="headerlink" title="–delete   手动删除一个或多个消费者组"></a>–delete   手动删除一个或多个消费者组</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin&#x2F;kafka-consumer-groups.sh --bootstrap-server xxx1:9092,xxx2:9092,xxx3:9092  --delete  --group my-consumer-group1  --group my-consumer-group2</span><br></pre></td></tr></table></figure>
+
+<h2 id="–reset-offsets-重置消费者组的offset"><a href="#–reset-offsets-重置消费者组的offset" class="headerlink" title="–reset-offsets  重置消费者组的offset"></a>–reset-offsets  重置消费者组的offset</h2><blockquote>
+<p>如果使用是老的高级消费者并在zookeeper存储消费者组的元数据（即。offsets.storage=zookeeper），则通过–zookeeper，而不是bootstrap-server</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin&#x2F;kafka-consumer-groups.sh --zookeeper localhost:2181 --list</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2020/10/31/Linux%20expect%20spawn%E7%94%A8%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/10/31/Linux%20expect%20spawn%E7%94%A8%E6%B3%95/" itemprop="url">Linux expect spawn用法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-31T00:00:00+08:00">
+                2020-10-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/10/31/Linux%20expect%20spawn%E7%94%A8%E6%B3%95/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/10/31/Linux%20expect%20spawn%E7%94%A8%E6%B3%95/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2020/10/31/Linux%20expect%20spawn%E7%94%A8%E6%B3%95/" class="leancloud_visitors" data-flag-title="Linux expect spawn用法">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h1><p>通过脚本简化人机交互过程，比如登录远程服务器。</p>
+<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p>使用expect + 其内部命令 spawn 可以实现类似的自动化需求。</p>
+<ul>
+<li>安装expect</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo dnf install expect</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>案例1</li>
+</ul>
+<p>登录到远程服务器，并暂时获取root权限（sudo su）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#!&#x2F;usr&#x2F;bin&#x2F;expect</span><br><span class="line">set timeout 30</span><br><span class="line">spawn ssh ubuntu@192.168.1.131</span><br><span class="line">expect &quot;*password:&quot;</span><br><span class="line">send &quot;123456\r&quot;</span><br><span class="line">expect &quot;$*&quot;</span><br><span class="line">send &quot;sudo su\r&quot;</span><br><span class="line">expect &quot;*password*&quot;</span><br><span class="line">send &quot;123456\r&quot;</span><br><span class="line">expect &quot;*#&quot;</span><br><span class="line">interact</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2020/08/31/Linux%E5%BC%80%E5%90%AFssh%E7%AB%AF%E5%8F%A3%E6%9C%8D%E5%8A%A1%EF%BC%8822%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/08/31/Linux%E5%BC%80%E5%90%AFssh%E7%AB%AF%E5%8F%A3%E6%9C%8D%E5%8A%A1%EF%BC%8822%EF%BC%89/" itemprop="url">Linux开启ssh端口服务（22）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-31T00:00:00+08:00">
+                2020-08-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/08/31/Linux%E5%BC%80%E5%90%AFssh%E7%AB%AF%E5%8F%A3%E6%9C%8D%E5%8A%A1%EF%BC%8822%EF%BC%89/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/08/31/Linux%E5%BC%80%E5%90%AFssh%E7%AB%AF%E5%8F%A3%E6%9C%8D%E5%8A%A1%EF%BC%8822%EF%BC%89/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2020/08/31/Linux%E5%BC%80%E5%90%AFssh%E7%AB%AF%E5%8F%A3%E6%9C%8D%E5%8A%A1%EF%BC%8822%EF%BC%89/" class="leancloud_visitors" data-flag-title="Linux开启ssh端口服务（22）">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="OpenSSH"><a href="#OpenSSH" class="headerlink" title="OpenSSH"></a>OpenSSH</h1><p>OpenSSH是SSH(Secure SHell)协议的免费开源实现。SSH协议族可以用来进行远程控制。</p>
+<p>OpenSSH服务默认端口是22，默认配置路径是/etc/ssh/sshd_config</p>
+<h1 id="安装OpenSSH"><a href="#安装OpenSSH" class="headerlink" title="安装OpenSSH"></a>安装OpenSSH</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo dnf install ssh</span><br><span class="line">或</span><br><span class="line">apt-get install ssh</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2020/06/07/Mysql%EF%BC%8815%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AE%9E%E9%AA%8C/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1358,7 +1877,8 @@
 <li>查询</li>
 <li>更新</li>
 </ul>
-<h1 id="索引失效的场景"><a href="#索引失效的场景" class="headerlink" title="索引失效的场景"></a>索引失效的场景</h1><h1 id="Mysql-有哪几种日志，分别有什么作用"><a href="#Mysql-有哪几种日志，分别有什么作用" class="headerlink" title="Mysql 有哪几种日志，分别有什么作用"></a>Mysql 有哪几种日志，分别有什么作用</h1><h1 id="死锁产生的原因以及解决方式"><a href="#死锁产生的原因以及解决方式" class="headerlink" title="死锁产生的原因以及解决方式"></a>死锁产生的原因以及解决方式</h1>
+<h1 id="索引失效的场景"><a href="#索引失效的场景" class="headerlink" title="索引失效的场景"></a>索引失效的场景</h1><h1 id="Mysql-有哪几种日志，分别有什么作用"><a href="#Mysql-有哪几种日志，分别有什么作用" class="headerlink" title="Mysql 有哪几种日志，分别有什么作用"></a>Mysql 有哪几种日志，分别有什么作用</h1><h1 id="每次更新数据都写磁盘的话，io成本会很高，mysql是如何解决的这个问题"><a href="#每次更新数据都写磁盘的话，io成本会很高，mysql是如何解决的这个问题" class="headerlink" title="每次更新数据都写磁盘的话，io成本会很高，mysql是如何解决的这个问题"></a>每次更新数据都写磁盘的话，io成本会很高，mysql是如何解决的这个问题</h1><p>WAL</p>
+<h1 id="死锁产生的原因以及解决方式"><a href="#死锁产生的原因以及解决方式" class="headerlink" title="死锁产生的原因以及解决方式"></a>死锁产生的原因以及解决方式</h1>
           
         
       
@@ -1562,696 +2082,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/" itemprop="url">安装配置Kafka Broker</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-07T00:00:00+08:00">
-                2019-07-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/MQ/" itemprop="url" rel="index">
-                    <span itemprop="name">MQ</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/" class="leancloud_visitors" data-flag-title="安装配置Kafka Broker">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="安装Kafka-Broker"><a href="#安装Kafka-Broker" class="headerlink" title="安装Kafka Broker"></a>安装Kafka Broker</h1><p>需要先安装号java和Zookeeper</p>
-<p>从<a href="https://www.apache.org/dyn/closer.cgi?path=/kafka/" target="_blank" rel="noopener">https://www.apache.org/dyn/closer.cgi?path=/kafka/</a>下载最新版本kafka，这里下载的是kafka_2.12-2.2.0.tgz</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tar -zxf kafka_2.12-2.2.0.tgz</span><br><span class="line">mv kafka_2.12-2.2.0 &#x2F;usr&#x2F;local&#x2F;kafka</span><br><span class="line">mkdir &#x2F;tmp&#x2F;kafka-logs</span><br></pre></td></tr></table></figure>
-
-<h2 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-server-start.sh -daemon &#x2F;usr&#x2F;local&#x2F;kafka&#x2F;config&#x2F;server.properties</span><br></pre></td></tr></table></figure>
-
-<p>验证是否启动成功，比如创建一个测试主题，发布一些消息，然后读取它们。</p>
-<h2 id="0-90版本之后验证方式"><a href="#0-90版本之后验证方式" class="headerlink" title="0.90版本之后验证方式"></a>0.90版本之后验证方式</h2><p>创建测试主题：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic test2-12</span><br></pre></td></tr></table></figure>
-
-<p>查看主题：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --list --bootstrap-server localhost:9092</span><br><span class="line">test2-12</span><br></pre></td></tr></table></figure>
-
-<p>发送消息到测试主题：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafconsole-producer.sh --broker-list  localhost:9092 --topic test2-12</span><br><span class="line">&gt;this is a message</span><br><span class="line">&gt;this is another message</span><br></pre></td></tr></table></figure>
-
-<p>从测试主题读取消息</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test2-12 --from-beginning</span><br><span class="line">this is a message</span><br><span class="line">this is another message</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="0-90版本的验证方式"><a href="#0-90版本的验证方式" class="headerlink" title="0.90版本的验证方式"></a>0.90版本的验证方式</h2><p>创建并订阅主题：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test</span><br><span class="line"></span><br><span class="line"># &#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --zookeeper localhost:2181 --describe --topic &quot;test&quot;</span><br><span class="line">Topic:test	PartitionCount:1	ReplicationFactor:1	Configs:</span><br><span class="line">	Topic: test	Partition: 0	Leader: 0	Replicas: 0	Isr: 0</span><br></pre></td></tr></table></figure>
-
-<p>往测试主题上发布消息：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-console-producer.sh --broker-list  localhost:9092 --topic test</span><br><span class="line">&gt;Test Message 1</span><br><span class="line">&gt;Test Message 2</span><br><span class="line">ctrl + c</span><br></pre></td></tr></table></figure>
-
-<p>从测试主题上读取消息：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-console-consumer.sh --zookeeper localhost:2181 --topic test --from-beginning</span><br><span class="line">Test Message 1</span><br><span class="line">Test Message 2</span><br></pre></td></tr></table></figure>
-
-
-<h1 id="Broker配置"><a href="#Broker配置" class="headerlink" title="Broker配置"></a>Broker配置</h1><h1 id="主题的默认配置"><a href="#主题的默认配置" class="headerlink" title="主题的默认配置"></a>主题的默认配置</h1>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/07/05/vim%E5%91%BD%E4%BB%A4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/05/vim%E5%91%BD%E4%BB%A4/" itemprop="url">vim命令</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-05T00:00:00+08:00">
-                2019-07-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index">
-                    <span itemprop="name">工具</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/07/05/vim%E5%91%BD%E4%BB%A4/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/07/05/vim%E5%91%BD%E4%BB%A4/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/07/05/vim%E5%91%BD%E4%BB%A4/" class="leancloud_visitors" data-flag-title="vim命令">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <ul>
-<li>移动到当前行最后  shift+a</li>
-</ul>
-<ul>
-<li><p>整页翻页 ctrl-f ctrl-b</p>
-<p>  f就是forword b就是backward</p>
-</li>
-<li><p>翻半页 ctrl-d ctlr-u</p>
-<p>  d=down u=up</p>
-</li>
-<li><p>滚一行 ctrl-e ctrl-y</p>
-</li>
-<li><p>zz 让光标所杂的行居屏幕中央</p>
-</li>
-<li><p>zt 让光标所杂的行居屏幕最上一行 t=top</p>
-</li>
-<li><p>zb 让光标所杂的行居屏幕最下一行 b=bottom</p>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/07/05/%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%8F%90%E9%AB%98REST%E6%9C%8D%E5%8A%A1%E6%80%A7%E8%83%BD/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/05/%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%8F%90%E9%AB%98REST%E6%9C%8D%E5%8A%A1%E6%80%A7%E8%83%BD/" itemprop="url">使用多线程提高REST服务性能</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-05T00:00:00+08:00">
-                2019-07-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/07/05/%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%8F%90%E9%AB%98REST%E6%9C%8D%E5%8A%A1%E6%80%A7%E8%83%BD/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/07/05/%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%8F%90%E9%AB%98REST%E6%9C%8D%E5%8A%A1%E6%80%A7%E8%83%BD/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/07/05/%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%8F%90%E9%AB%98REST%E6%9C%8D%E5%8A%A1%E6%80%A7%E8%83%BD/" class="leancloud_visitors" data-flag-title="使用多线程提高REST服务性能">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="异步处理REST服务"><a href="#异步处理REST服务" class="headerlink" title="异步处理REST服务"></a>异步处理REST服务</h2><ul>
-<li>使用Callable处理异步Rest服务</li>
-<li>使用DefferredResult异步处理Rest服务</li>
-<li>异步处理配置</li>
-</ul>
-<h3 id="使用Callable处理异步Rest服务"><a href="#使用Callable处理异步Rest服务" class="headerlink" title="使用Callable处理异步Rest服务"></a>使用Callable处理异步Rest服务</h3><p>副线程是由主线程调起的，即副线程的代码是写在主线程里面的。</p>
-<p><img src="http://ogiythg18.bkt.clouddn.com/%E5%BC%82%E6%AD%A5%E5%A4%84%E7%90%86REST%E6%9C%8D%E5%8A%A1%20%28%E5%A4%9A%E5%BA%94%E7%94%A8%29.jpg" alt="image"></p>
-<pre><code>@GetMapping(&quot;/order/async&quot;)
-public Callable&lt;String&gt; ordeAsync() throws InterruptedException {
-    logger.info(&quot;主线程开始&quot;);
-    Callable&lt;String&gt; result =  () -&gt; {
-        logger.info(&quot;副线程开始&quot;);
-        Thread.sleep(2000);
-        logger.info(&quot;副线程结束&quot;);
-        return &quot;success&quot;;
-    };
-    logger.info(&quot;主线程结束&quot;);
-    return result;
-}</code></pre><p>对于调用方而言，该接口表现出来的还是一个同步的请求，即还是会过两秒多返回结果。这里异步的作用是提供服务方的吞吐能力。</p>
-<h3 id="使用DefferredResult处理异步Rest服务"><a href="#使用DefferredResult处理异步Rest服务" class="headerlink" title="使用DefferredResult处理异步Rest服务"></a>使用DefferredResult处理异步Rest服务</h3><p>使用Callable处理Rest服务有一个限制，请求只能在一个服务中处理，即副线程必须由主线程调起。但有时候我们的业务比较复杂，比如收到请求后会先放到消息队列中，由其它服务来处理请求。这样请求的过程就不是在一个应用中处理的，这时我们需要用DefferredResult来处理异步Rest服务。</p>
-<p><img src="http://ogiythg18.bkt.clouddn.com/%E5%BC%82%E6%AD%A5%E5%A4%84%E7%90%86REST%E6%9C%8D%E5%8A%A1%20.jpg" alt="多服务的异步处理"></p>
-<pre><code>@GetMapping(&quot;/order/async/deferred&quot;)
-public DeferredResult&lt;String&gt; ordeAsyncDeferred() throws InterruptedException {
-    logger.info(&quot;主线程开始&quot;);
-    String orderNumber = RandomStringUtils.randomNumeric(8);
-    mockQueue.setPlaceOrder(orderNumber);
-
-    DeferredResult&lt;String&gt; result = new DeferredResult&lt;&gt;();
-    deferredResultHolder.getMap().put(orderNumber, result);
-    logger.info(&quot;主线程结束&quot;);
-
-    return result;
-}</code></pre><p>模拟MQ服务：</p>
-<pre><code>@Component
-public class MockQueue {
-    private Logger logger = LoggerFactory.getLogger(getClass());
-
-    private String placeOrder;
-
-    private String completeOrder;
-
-    public String getPlaceOrder() {
-        return placeOrder;
-    }
-
-    public void setPlaceOrder(String placeOrder)  {
-        new Thread(()-&gt;{
-            logger.info(&quot;接到下单请求：&quot; + placeOrder);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            this.completeOrder = placeOrder;
-            logger.info(&quot;下单请求处理完毕:&quot; + placeOrder);
-        }).start();
-
-
-    }
-
-    public String getCompleteOrder() {
-        return completeOrder;
-    }
-
-    public void setCompleteOrder(String completeOrder) {
-        this.completeOrder = completeOrder;
-    }
-}</code></pre><p>模拟应用２：</p>
-<pre><code>@Component
-public class QueueListener implements ApplicationListener&lt;ContextRefreshedEvent&gt; {
-    private Logger logger = LoggerFactory.getLogger(getClass());
-
-
-    @Autowired
-    MockQueue mockQueue;
-
-    @Autowired
-    DeferredResultHolder deferredResultHolder;
-
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        new Thread(() -&gt; {
-            while (true) {
-                if (StringUtils.isNotBlank(mockQueue.getCompleteOrder())) {
-                    String orderNumber = mockQueue.getCompleteOrder();
-                    logger.info(&quot;返回订单处理结果：&quot; + orderNumber);
-                    deferredResultHolder.getMap().get(orderNumber).setResult(&quot;place order success&quot;);
-                    mockQueue.setCompleteOrder(null);
-                } else {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-        }).start();
-
-    }
-}</code></pre><p>DeferredResult上下文，持有DefferedResult</p>
-<pre><code>@Component
-public class QueueListener implements ApplicationListener&lt;ContextRefreshedEvent&gt; {
-    private Logger logger = LoggerFactory.getLogger(getClass());
-
-
-    @Autowired
-    MockQueue mockQueue;
-
-    @Autowired
-    DeferredResultHolder deferredResultHolder;
-
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        new Thread(() -&gt; {
-            while (true) {
-                if (StringUtils.isNotBlank(mockQueue.getCompleteOrder())) {
-                    String orderNumber = mockQueue.getCompleteOrder();
-                    logger.info(&quot;返回订单处理结果：&quot; + orderNumber);
-                    deferredResultHolder.getMap().get(orderNumber).setResult(&quot;place order success&quot;);
-                    mockQueue.setCompleteOrder(null);
-                } else {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-        }).start();
-
-    }
-}</code></pre><h3 id="异步处理配置"><a href="#异步处理配置" class="headerlink" title="异步处理配置"></a>异步处理配置</h3><p>使用异步处理REST请求，默认拦截器是拦截不到异步请求的，需要配置拦截器，以及超时时间和线程可重用的线程池。</p>
-<pre><code>@Configuration
-public class WebConfig extends WebMvcConfigurerAdapter {
-
-
-
-    /**
-     * 配置异步的支持
-     * @param configurer
-     */
-    @Override
-    public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
-        super.configureAsyncSupport(configurer);
-        //注册异步的拦截器()
-        configurer.registerCallableInterceptors();
-        configurer.registerDeferredResultInterceptors();
-        //默认超时时间
-        configurer.setDefaultTimeout(30000);
-        //设置可重用的线程池,默认会启用新的线程不会重用线程
-//        configurer.setTaskExecutor()
-    }
-
-}</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2306,7 +2136,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">102</span>
+                  <span class="site-state-item-count">105</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2328,7 +2158,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-count">35</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

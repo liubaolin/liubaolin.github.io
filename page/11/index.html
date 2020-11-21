@@ -288,6 +288,573 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2015/06/25/java%E6%97%A5%E5%BF%97%EF%BC%883%EF%BC%89-sl4j%E9%A9%B1%E5%8A%A8%E5%92%8C%E6%A1%A5%E6%8E%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2015/06/25/java%E6%97%A5%E5%BF%97%EF%BC%883%EF%BC%89-sl4j%E9%A9%B1%E5%8A%A8%E5%92%8C%E6%A1%A5%E6%8E%A5/" itemprop="url">java日志（3）-sl4j驱动和桥接</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-06-25T00:00:00+08:00">
+                2015-06-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2015/06/25/java%E6%97%A5%E5%BF%97%EF%BC%883%EF%BC%89-sl4j%E9%A9%B1%E5%8A%A8%E5%92%8C%E6%A1%A5%E6%8E%A5/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2015/06/25/java%E6%97%A5%E5%BF%97%EF%BC%883%EF%BC%89-sl4j%E9%A9%B1%E5%8A%A8%E5%92%8C%E6%A1%A5%E6%8E%A5/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2015/06/25/java%E6%97%A5%E5%BF%97%EF%BC%883%EF%BC%89-sl4j%E9%A9%B1%E5%8A%A8%E5%92%8C%E6%A1%A5%E6%8E%A5/" class="leancloud_visitors" data-flag-title="java日志（3）-sl4j驱动和桥接">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="组合模式"><a href="#组合模式" class="headerlink" title="组合模式"></a>组合模式</h1><h2 id="slf4j-log4j组合使用模式"><a href="#slf4j-log4j组合使用模式" class="headerlink" title="slf4j+log4j组合使用模式"></a>slf4j+log4j组合使用模式</h2><p>slf4j-api-1.5.11.jar –提供对外一致的API接口</p>
+<p>slf4j-log4j12-1.5.11.jar –slf4j对应log4j相应的“驱动”（把slf4j绑定log4j）</p>
+<p>log4j-1.2.15.jar</p>
+<p>log4j.properties(也可以是 log4j.xml)</p>
+<h2 id="JCL-Log4J组合使用模式（即commons-logging-log4j）"><a href="#JCL-Log4J组合使用模式（即commons-logging-log4j）" class="headerlink" title="JCL+Log4J组合使用模式（即commons-logging+log4j）"></a>JCL+Log4J组合使用模式（即commons-logging+log4j）</h2><p>commons-logging-1.1.jar</p>
+<p>log4j-1.2.15.jar</p>
+<p>log4j.properties</p>
+<h1 id="不同的获取logger的方式"><a href="#不同的获取logger的方式" class="headerlink" title="不同的获取logger的方式"></a>不同的获取logger的方式</h1><h2 id="log4j"><a href="#log4j" class="headerlink" title="log4j"></a>log4j</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.log4j.Logger;</span><br><span class="line"></span><br><span class="line">Logger logger= Logger.getLogger(xx<span class="class">.<span class="keyword">class</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="slf4j-log4j："><a href="#slf4j-log4j：" class="headerlink" title="slf4j+log4j："></a>slf4j+log4j：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.slf4j.Logger;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"></span><br><span class="line">Logger logger = LoggerFactory.getLogger(xx<span class="class">.<span class="keyword">class</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="jcl-log4j"><a href="#jcl-log4j" class="headerlink" title="jcl+log4j"></a>jcl+log4j</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.commons.logging.Log;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.logging.LogFactory;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Log log = LogFactory.getLog(xx<span class="class">.<span class="keyword">class</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>总的来说，slf4j与commons-logging只是一个日志门面，实际还是要依赖真正的日志库log4j，虽然slf4j和commons-loggins自带了日志库，但是毕竟log4j才是最强大的。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2015/06/21/java%E6%97%A5%E5%BF%97%EF%BC%881%EF%BC%89-%E7%BB%84%E4%BB%B6%E8%AF%A6%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2015/06/21/java%E6%97%A5%E5%BF%97%EF%BC%881%EF%BC%89-%E7%BB%84%E4%BB%B6%E8%AF%A6%E8%A7%A3/" itemprop="url">java日志（1）-组件详解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-06-21T00:00:00+08:00">
+                2015-06-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2015/06/21/java%E6%97%A5%E5%BF%97%EF%BC%881%EF%BC%89-%E7%BB%84%E4%BB%B6%E8%AF%A6%E8%A7%A3/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2015/06/21/java%E6%97%A5%E5%BF%97%EF%BC%881%EF%BC%89-%E7%BB%84%E4%BB%B6%E8%AF%A6%E8%A7%A3/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2015/06/21/java%E6%97%A5%E5%BF%97%EF%BC%881%EF%BC%89-%E7%BB%84%E4%BB%B6%E8%AF%A6%E8%A7%A3/" class="leancloud_visitors" data-flag-title="java日志（1）-组件详解">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="common-logging"><a href="#common-logging" class="headerlink" title="common-logging"></a>common-logging</h1><p>common-logging是apache提供的一个通用的日志接口。用户可以自由选择第三方的日志组件作为具体实现，像log4j，或者jdk自带的logging，common-logging会通过动态查找的机制，在程序运行时自动找出真正使用的日志库。当然，common-logging内部有一个Simple logger的简单实现，但是功能很弱。所以使用common-logging，通常都是配合着log4j来使用。</p>
+<p>使用它的好处就是，代码依赖是common-logging而非log4j， 避免了和具体的日志方案直接耦合，在有必要时，可以更改日志实现的第三方库。</p>
+<p>使用common-logging的常见代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.commons.logging.LogFactory;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> Log logger = LogFactory.getLog(<span class="keyword">this</span>.getClass());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>动态查找原理：Log 是一个接口声明。LogFactory 的内部会去装载具体的日志系统，并获得实现该Log 接口的实现类。LogFactory 内部装载日志系统的流程如下：</p>
+<ul>
+<li>首先，寻找org.apache.commons.logging.LogFactory 属性配置。</li>
+<li>否则，利用JDK1.3 开始提供的service 发现机制，会扫描classpah 下的META-INF/services/org.apache.commons.logging.LogFactory文件，若找到则装载里面的配置，使用里面的配置。</li>
+<li>否则，从Classpath 里寻找commons-logging.properties ，找到则根据里面的配置加载。</li>
+<li>否则，使用默认的配置：如果能找到Log4j 则默认使用log4j 实现，如果没有则使用JDK14Logger 实现，再没有则使用commons-logging 内部提供的SimpleLog 实现。</li>
+</ul>
+<p>从上述加载流程来看，只要引入了log4j 并在classpath 配置了log4j.xml/log4j.properties，则commons-logging 就会使log4j 使用正常，而代码里不需要依赖任何log4j 的代码。</p>
+<h1 id="slf4j"><a href="#slf4j" class="headerlink" title="slf4j"></a>slf4j</h1><p>slf4j全称为Simple Logging Facade for JAVA，java简单日志门面。类似于Apache Common-Logging，是对不同日志框架提供的一个门面封装，可以在部署的时候不修改任何配置即可接入一种日志实现方案。</p>
+<p>但是，他在编译时静态绑定真正的Log库。使用SLF4J时，如果你需要使用某一种日志实现，那么你必须选择正确的SLF4J的jar包的集合（各种桥接包）。</p>
+<p>使用slf4j的常见代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.slf4j.Logger; <span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> Log logger = LogFactory.getLog(<span class="keyword">this</span>.getClass());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>slf4j静态绑定原理：SLF4J 会在编译时会绑定import org.slf4j.impl.StaticLoggerBinder; 该类里面实现对具体日志方案的绑定接入。</p>
+<p>任何一种基于slf4j 的实现都要有一个这个类。如：org.slf4j.slf4j-log4j12-1.5.6: 提供对 log4j 的一种适配实现。</p>
+<p>注意：如果有任意两个实现slf4j 的包同时出现，那么就可能出现问题。</p>
+<h1 id="slf4j与commons-logging比较"><a href="#slf4j与commons-logging比较" class="headerlink" title="slf4j与commons-logging比较"></a>slf4j与commons-logging比较</h1><p>common-logging通过动态查找的机制，在程序运行时自动找出真正使用的日志库。由于它使用了ClassLoader寻找和载入底层的日志库， 导致了象OSGI这样的框架无法正常工作，因为OSGI的不同的插件使用自己的ClassLoader。 OSGI的这种机制保证了插件互相独立，然而却使Apache Common-Logging无法工作。</p>
+<p>slf4j在编译时静态绑定真正的Log库,因此可以在OSGI中使用。另外，SLF4J 支持参数化的log字符串，避免了之前为了减少字符串拼接的性能损耗而不得不写的if(logger.isDebugEnable())，</p>
+<p>现在你可以直接写：logger.debug(“current user is: {}”, user)。拼装消息被推迟到了它能够确定是不是要显示这条消息的时候，但是获取参数的代价并没有幸免。</p>
+<h1 id="Log4j"><a href="#Log4j" class="headerlink" title="Log4j"></a>Log4j</h1><p>Apache的一个开放源代码项目，通过使用Log4j，我们可以控制日志信息输送的目的地是控制台、文件、GUI组件、甚至是套接口服务 器、NT的事件记录器、UNIX Syslog守护进程等；</p>
+<p>用户也可以控制每一条日志的输出格式；</p>
+<p>通过定义每一条日志信息的级别，用户能够更加细致地控制日志的生成过程。</p>
+<p>这些可以通过一个配置文件来灵活地进行配置，而不需要修改程序代码。</p>
+<h1 id="LogBack"><a href="#LogBack" class="headerlink" title="LogBack"></a>LogBack</h1><p>Logback是由log4j创始人设计的又一个开源日记组件。logback当前分成三个模块：logback-core,logback- classic和logback-access。logback-core是其它两个模块的基础模块。logback-classic是log4j的一个 改良版本。此外logback-classic完整实现SLF4J API使你可以很方便地更换成其它日记系统如log4j或JDK14 Logging。logback-access访问模块与Servlet容器集成提供通过Http来访问日记的功能。</p>
+<h1 id="Log4j-与-LogBack-比较"><a href="#Log4j-与-LogBack-比较" class="headerlink" title="Log4j 与 LogBack 比较"></a>Log4j 与 LogBack 比较</h1><p>LogBack作为一个通用可靠、快速灵活的日志框架，将作为Log4j的替代和SLF4J组成新的日志系统的完整实现。LOGBack声称具有极佳的性能，“ 某些关键操作，比如判定是否记录一条日志语句的操作，其性能得到了显著的提高。这个操作在LogBack中需要3纳秒，而在Log4J中则需要30纳秒。 LogBack创建记录器（logger）的速度也更快：13微秒，而在Log4J中需要23微秒。更重要的是，它获取已存在的记录器只需94纳秒，而 Log4J需要2234纳秒，时间减少到了1/23。跟JUL相比的性能提高也是显著的”。 另外，LOGBack的所有文档是全面免费提供的，不象Log4J那样只提供部分免费文档而需要用户去购买付费文档。</p>
+<h1 id="slf4j与其他各种日志组件的桥接"><a href="#slf4j与其他各种日志组件的桥接" class="headerlink" title="slf4j与其他各种日志组件的桥接"></a>slf4j与其他各种日志组件的桥接</h1><p>应用代码中使用slf4j接口，接入具体实现的方法。</p>
+<p>应用代码中使用别的日志接口，转成slf4j的方法。</p>
+<h1 id="日志组件相关历史"><a href="#日志组件相关历史" class="headerlink" title="日志组件相关历史"></a>日志组件相关历史</h1><p>Java 界里有许多实现日志功能的工具，最早得到广泛使用的是 log4j，许多应用程序的日志部分都交给了 log4j，不过作为组件开发者，他们希望自己的组件不要紧紧依赖某一个工具，毕竟在同一个时候还有很多其他很多日志工具，假如一个应用程序用到了两个组件，恰好两个组件使用不同的日志工具，那么应用程序就会有两份日志输出了。</p>
+<p>为了解决这个问题，Apache Commons Logging （之前叫 Jakarta Commons Logging，JCL）粉墨登场，JCL 只提供 log 接口，具体的实现则在运行时动态寻找。这样一来组件开发者只需要针对 JCL 接口开发，而调用组件的应用程序则可以在运行时搭配自己喜好的日志实践工具。</p>
+<p>所以即使到现在你仍会看到很多程序应用 JCL + log4j 这种搭配，不过当程序规模越来越庞大时，JCL的动态绑定并不是总能成功，具体原因大家可以 Google 一下，这里就不再赘述了。解决方法之一就是在程序部署时静态绑定指定的日志工具，这就是 SLF4J 产生的原因。</p>
+<p>跟 JCL 一样，SLF4J 也是只提供 log 接口，具体的实现是在打包应用程序时所放入的绑定器（名字为 slf4j-XXX-version.jar）来决定，XXX 可以是 log4j12, jdk14, jcl, nop 等，他们实现了跟具体日志工具（比如 log4j）的绑定及代理工作。举个例子：如果一个程序希望用 log4j 日志工具，那么程序只需针对 slf4j-api 接口编程，然后在打包时再放入 slf4j-log4j12-version.jar 和 log4j.jar 就可以了。</p>
+<p>现在还有一个问题，假如你正在开发应用程序所调用的组件当中已经使用了 JCL 的，还有一些组建可能直接调用了 java.util.logging，这时你需要一个桥接器（名字为 XXX-over-slf4j.jar）把他们的日志输出重定向到 SLF4J，所谓的桥接器就是一个假的日志实现工具，比如当你把 jcl-over-slf4j.jar 放到 CLASS_PATH 时，即使某个组件原本是通过 JCL 输出日志的，现在却会被 jcl-over-slf4j “骗到”SLF4J 里，然后 SLF4J 又会根据绑定器把日志交给具体的日志实现工具。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2014/03/06/SERVLET02-Servlet%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2014/03/06/SERVLET02-Servlet%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/" itemprop="url">SERVLET02-Servlet生命周期</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2014-03-06T00:00:00+08:00">
+                2014-03-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java-web/" itemprop="url" rel="index">
+                    <span itemprop="name">java-web</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2014/03/06/SERVLET02-Servlet%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2014/03/06/SERVLET02-Servlet%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2014/03/06/SERVLET02-Servlet%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/" class="leancloud_visitors" data-flag-title="SERVLET02-Servlet生命周期">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="什么是Servlet生命周期？"><a href="#什么是Servlet生命周期？" class="headerlink" title="什么是Servlet生命周期？"></a>什么是Servlet生命周期？</h1><p>Servlet容器如何去创建Servlet对象，如何初始化，如何调用Sevlet对象的方法去处理请求以及如何销毁Servlet的整个过程。</p>
+<h2 id="实例化"><a href="#实例化" class="headerlink" title="实例化"></a>实例化</h2><ul>
+<li>什么是实例化<br>容器调用Servlet的构造器，创建一个Servlet对象。</li>
+<li>什么时候实例化<br>情况1：容器在收到请求后才创建Servlet对象；</li>
+</ul>
+<p>情况2：容器在启动的时候就创建Servlet对象；</p>
+<p>web应用描述文件web.xml中配置Servlet的加载方式</p>
+<p>它的值必须是一个整数，表示servlet应该被载入的顺序;<br>当值为0或者大于0时，表示容器在应用启动时就加载并初始化这个servlet;<br>当值小于0或者没有指定时，则表示容器在该servlet被选择时才会去加载;<br>正数的值越小，该servlet的优先级越高，应用启动时就越先加载;<br>当值相同时，容器就会自己选择顺序来加载。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">load-on-startup</span>&gt;</span>1<span class="tag">&lt;/<span class="name">load-on-startup</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>注意：Servlet在默认情况下，对每个Servlet，只会创建一个实例。</p>
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>什么是初始化？</p>
+<p>容器在创建好Servlet对象后会立即调用对象的init()方法；</p>
+<p>GenericServlet提供的init方法已经提供了init方法，一般情况下，我们不再需要写init方法了。 GenericServlet提供的init方法是这样实现的： 将容器提供的ServletConfig对象赋值给本地的ServletConfig，并且提供了getServletConfig方法用来获得ServletConfig对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> ServletConfig config;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> ServletConfig <span class="title">getServletConfig</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">　   <span class="keyword">return</span> <span class="keyword">this</span>.config;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(ServletConfig config)</span>　</span></span><br><span class="line"><span class="function"><span class="keyword">throws</span> ServletException</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">     <span class="keyword">this</span>.config = config;</span><br><span class="line">    init();　　</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//这里提供了init方法，方便我们在Servlet中重写，实现自己的初始化方法</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span></span></span><br><span class="line"><span class="function">     <span class="keyword">throws</span> ServletException</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Servlet的初始化参数</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">servlet</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>MyServlet<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">servlet-class</span>&gt;</span>com.richey88.servlet.MyServlet<span class="tag">&lt;/<span class="name">servlet-class</span>&gt;</span></span><br><span class="line"></span><br><span class="line">      <span class="comment">&lt;!-- 配置一些初始化参数,一个Servlet可以配置多个初始化参数</span></span><br><span class="line"><span class="comment">          init-param 是Servlet范围内的参数，只能在servlet中的init()方法中获得</span></span><br><span class="line"><span class="comment">          获取方式：String value = this.getInitParameter("key");</span></span><br><span class="line"><span class="comment">      --&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">init-param</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>message<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>welcome to myservlet<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">servlet</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="就绪"><a href="#就绪" class="headerlink" title="就绪"></a>就绪</h2><p>什么是就绪？</p>
+<p>Servlet容器在收到请求后会调用servlet的service方法来处理请求。</p>
+<p>HttpServlet中的service()方法是如何实现的？ 依据请求方式(get/post)分别调用doGet/doPost方法。 可以override Httpservlet提供的doGet和doPost方法，也可以直接override HttpServlet提供的service方法。</p>
+<h2 id="销毁"><a href="#销毁" class="headerlink" title="销毁"></a>销毁</h2><p>什么是销毁？</p>
+<p>Servlet容器根据自身的算法，会在不需要Servlet对象的时候调用该对象的destroy()方法，删除该对象。</p>
+<p>GenericServlet已经实现了destroy（）方法。</p>
+<p>该方法只会执行一次</p>
+<h1 id="Servlet生命周期相关的接口与类"><a href="#Servlet生命周期相关的接口与类" class="headerlink" title="Servlet生命周期相关的接口与类"></a>Servlet生命周期相关的接口与类</h1><h2 id="Servlet接口"><a href="#Servlet接口" class="headerlink" title="Servlet接口"></a>Servlet接口</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">init（ServletConfig config）</span><br><span class="line">service（ServletRequest request，ServletResponse response）</span><br></pre></td></tr></table></figure>
+
+<h2 id="GenericServlet抽象类"><a href="#GenericServlet抽象类" class="headerlink" title="GenericServlet抽象类"></a>GenericServlet抽象类</h2><p>实现了Servlet接口中的部分方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">init()</span><br><span class="line">destroy()</span><br><span class="line">getServletContext（）</span><br></pre></td></tr></table></figure>
+<h2 id="HttpServlet抽象类"><a href="#HttpServlet抽象类" class="headerlink" title="HttpServlet抽象类"></a>HttpServlet抽象类</h2><p>继承了 GenericServlet抽象类</p>
+<p>ServletRequest接口是HttpServletRequest接口的父接口。</p>
+<p>ServletResponse接口是HttpServletResponse接口的父接口。 destroy()</p>
+<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/servlet01.png" alt="Servlet 生命周期时序图"></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2014/03/04/SERVLET01-Servlet%E6%A6%82%E8%BF%B0%E5%8F%8A%E7%BC%96%E5%86%99/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -697,7 +1264,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">102</span>
+                  <span class="site-state-item-count">105</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -719,7 +1286,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-count">35</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

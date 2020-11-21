@@ -288,6 +288,844 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/12/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/12/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/" itemprop="url">观察者模式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-12T00:00:00+08:00">
+                2019-06-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index">
+                    <span itemprop="name">设计模式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/06/12/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/12/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/06/12/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/" class="leancloud_visitors" data-flag-title="观察者模式">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F.jpg" alt="观察者模式"></p>
+<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F%E7%B1%BB%E5%9B%BE.jpg" alt="观察者模式"></p>
+<h1 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h1><p>定义了一对多的关系，这样，当一方对象状态改变时，它的所有依赖都会收到通知，并自动更新。</p>
+<h1 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h1><p>Spring中的事件机制，是观察者模式思想的一种实现</p>
+<h2 id="Spring中观察者模式的四个角色"><a href="#Spring中观察者模式的四个角色" class="headerlink" title="Spring中观察者模式的四个角色"></a>Spring中观察者模式的四个角色</h2><ul>
+<li>事件（ApplicationEvent）</li>
+</ul>
+<p>ApplicationEvent 是所有事件对象的父类。ApplicationEvent 继承自 jdk 的 EventObject, 所有的事件都需要继承 ApplicationEvent, 并且通过source得到事件源。</p>
+<p>下列描述了Spring提供的内置事件：</p>
+<p>ContextRefreshedEvent：事件发布在 ApplicationContext 初始化或刷新时（例如：通过在 ConfigurableApplicationContext 接口使用refresh()方法）。这里,“初始化”意味着所有 bean 加载，post-processor bean 被检测到并且激活,单例预先实例化，ApplicationContext 对象可以使用了。只要上下文没有关闭,可以触发多次刷新, ApplicationContext 提供了一种可选择的支持这种“热”刷新。例如：XmlWebApplicationContext 支持热刷新,但 GenericApplicationContext 并非如此。具体是在 AbstractApplicationContext 的 finishRefresh() 方法中。</p>
+<p>ContextStartedEvent：事件发布在 ApplicationContext 开始使用 ConfigurableApplicationContext 接口 start() 方法。这里,“开始”意味着所有生命周期 bean 接收到一个明确的起始信号。通常,这个信号用于明确停止后重新启动,但它也可以用于启动组件没有被配置为自动运行（例如：组件还没有开始初始化）。</p>
+<p>ContextStoppedEvent：事件发布在 ApplicationContext 停止时通过使用 ConfigurableApplicationContext 接口上的 stop() 方法。在这里,“停止”意味着所有生命周期bean接收一个显式的停止信号。停止上下文可以通过重新调用start()方法。</p>
+<p>ContextClosedEvent：事件发布在 ApplicationContext 关闭时通过关闭 ConfigurableApplicationContext 接口()方法。这里,“封闭”意味着所有单例 bean 被摧毁。一个封闭的环境达到生命的终结。它不能刷新或重启。</p>
+<p>RequestHandledEvent：一个特定的web事件告诉所有能处理HTTP请求的bean 。这个事件是在请求完成后发布的。这个事件只适用于使用 Spring 的 DispatcherServlet 的web应用程序。</p>
+<ul>
+<li>事件监听（ApplicationListener）</li>
+</ul>
+<p>ApplicationListener 事件监听器，也就是观察者。继承自 jdk 的 EventListener，该类中只有一个方法 onApplicationEvent。当监听的事件发生后该方法会被执行。</p>
+<ul>
+<li>事件发布（ApplicationContext）</li>
+</ul>
+<p>ApplicationContext 是 Spring 中的核心容器，在事件监听中 ApplicationContext 可以作为事件的发布者，也就是事件源。因为 ApplicationContext 继承自 ApplicationEventPublisher。在 ApplicationEventPublisher 中定义了事件发布的方法 — publishEvent(Object event)</p>
+<ul>
+<li>事件管理（ApplicationEventMulticaster）</li>
+</ul>
+<p>ApplicationEventMulticaster 用于事件监听器的注册和事件的广播。监听器的注册就是通过它来实现的，它的作用是把 Applicationcontext 发布的 Event 广播给它的监听器列表。</p>
+<h2 id="Spring中实现观察者模式"><a href="#Spring中实现观察者模式" class="headerlink" title="Spring中实现观察者模式"></a>Spring中实现观察者模式</h2><ol>
+<li><p>自定义需要发布的事件类，需要继承 ApplicationEvent 类或 PayloadApplicationEvent (该类也仅仅是对 ApplicationEvent 的一层封装)</p>
+</li>
+<li><p>使用 @EventListener 来监听事件或者实现 ApplicationListener 接口。</p>
+</li>
+<li><p>使用 ApplicationEventPublisher 来发布自定义事件（@Autowired注入即可）</p>
+<p> @TransactionalEventListener 监听器：如果事件的发布不是在事务（@Transactional）范围内，则监听不到该事件，除非将 fallbackExecution 标志设置为 true（@TransactionalEventListener(fallbackExecution = true)）;如果在事务中，可以选择在事务的哪个阶段来监听事件，默认在事务提交后监听（@TransactionalEventListener(phase = TransactionPhase.AFTER_COMPLETION)）。</p>
+</li>
+</ol>
+<p>以上介绍的事件监听都是同步，如果需要开启异步支持的话：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableAsync</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AsyncEventConfiguration</span> <span class="keyword">implements</span> <span class="title">AsyncConfigurer</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Executor <span class="title">getAsyncExecutor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Executors.newCachedThreadPool();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h1><h2 id="事件（MyEvent-java"><a href="#事件（MyEvent-java" class="headerlink" title="事件（MyEvent.java)"></a>事件（MyEvent.java)</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyEvent</span> <span class="keyword">extends</span> <span class="title">ApplicationEvent</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyEvent</span><span class="params">(ApplicationContext source)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(source);</span><br><span class="line">        System.out.println(<span class="string">"MyEvent 构造器执行"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">echo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"模拟业务逻辑执行"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="事件监听（MyListenerA-java、MyListenerB-java）"><a href="#事件监听（MyListenerA-java、MyListenerB-java）" class="headerlink" title="事件监听（MyListenerA.java、MyListenerB.java）"></a>事件监听（MyListenerA.java、MyListenerB.java）</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyListenerA</span> <span class="keyword">implements</span> <span class="title">ApplicationListener</span>&lt;<span class="title">MyEvent</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onApplicationEvent</span><span class="params">(MyEvent myEvent)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"MyListenerA"</span>);</span><br><span class="line">        myEvent.echo();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyListenerB</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@EventListener</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onApplicationEvent</span><span class="params">(MyEvent myEvent)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"MyListenerB"</span>);</span><br><span class="line">        myEvent.echo();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="事件发布（MyPublisher-java）"><a href="#事件发布（MyPublisher-java）" class="headerlink" title="事件发布（MyPublisher.java）"></a>事件发布（MyPublisher.java）</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyPublisher</span> <span class="keyword">implements</span> <span class="title">ApplicationContextAware</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ApplicationContext applicationContext;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setApplicationContext</span><span class="params">(ApplicationContext applicationContext)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.applicationContext = applicationContext;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 发布事件</span></span><br><span class="line"><span class="comment">     * 监听该事件的监听者都可以获取消息</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> myEvent</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">publisherEvent</span><span class="params">(MyEvent myEvent)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"---开始发布 myEvent 事件---"</span>);</span><br><span class="line">        applicationContext.publishEvent(myEvent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="单元测试"><a href="#单元测试" class="headerlink" title="单元测试"></a>单元测试</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RunWith</span>(SpringRunner<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">SpringBootTest</span></span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">DesignPatternsApplicationTests</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MyPublisher myPublisher;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MyEvent myEvent;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">contextLoads</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        myPublisher.publisherEvent(myEvent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/12/SpringSecurity-Session%E7%AE%A1%E7%90%86%20(1)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/12/SpringSecurity-Session%E7%AE%A1%E7%90%86%20(1)/" itemprop="url">SpringSecurity-Session管理 (1)</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-12T00:00:00+08:00">
+                2019-06-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/06/12/SpringSecurity-Session%E7%AE%A1%E7%90%86%20(1)/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/12/SpringSecurity-Session%E7%AE%A1%E7%90%86%20(1)/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/06/12/SpringSecurity-Session%E7%AE%A1%E7%90%86%20(1)/" class="leancloud_visitors" data-flag-title="SpringSecurity-Session管理 (1)">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Session管理"><a href="#Session管理" class="headerlink" title="Session管理"></a>Session管理</h1><h2 id="内容概要"><a href="#内容概要" class="headerlink" title="内容概要"></a>内容概要</h2><ul>
+<li>Session超时处理</li>
+<li>Session并发控制</li>
+<li>集群Session管理</li>
+</ul>
+<h2 id="Session超时处理"><a href="#Session超时处理" class="headerlink" title="Session超时处理"></a>Session超时处理</h2><p>在Spring Boot中Session的超时时间非常简单,在配置文件中配置即可:</p>
+<pre><code>server.session.timeout=1000</code></pre><p>单位是秒,默认是30分钟,如果查看Spring Boot源代码的话,你会发现,实际生效的最短时间是1分钟:</p>
+<pre><code>TomcatEmbeddedServletContainerFactory#configureSession
+
+
+private void configureSession(Context context) {
+    long sessionTimeout = this.getSessionTimeoutInMinutes();
+    context.setSessionTimeout((int)sessionTimeout);
+    if (this.isPersistSession()) {
+        Manager manager = context.getManager();
+        if (manager == null) {
+            manager = new StandardManager();
+            context.setManager((Manager)manager);
+        }
+
+        this.configurePersistSession((Manager)manager);
+    } else {
+        context.addLifecycleListener(new TomcatEmbeddedServletContainerFactory.DisablePersistSessionListener(null));
+    }
+
+}
+
+private long getSessionTimeoutInMinutes() {
+    long sessionTimeout = (long)this.getSessionTimeout();
+    if (sessionTimeout &gt; 0L) {
+        //这里拿设置的值跟一分钟做了比较,取最大值
+        sessionTimeout = Math.max(TimeUnit.SECONDS.toMinutes(sessionTimeout), 1L);
+    }
+
+    return sessionTimeout;
+}</code></pre><ul>
+<li><p>当Session失效之后再刷新页面,我们要知道是因为Session失效,从而对应的做一些特殊的提示等操作:</p>
+<p>  在配置中配置失效后请求地址</p>
+<pre><code>.sessionManagement()
+                    .invalidSessionUrl(&quot;/session/invalid&quot;)
+                    .and()
+
+@GetMapping(&quot;/session/invalid&quot;)
+@ResponseStatus(code = HttpStatus.UNAUTHORIZED)
+public SimpleResult sessionInvalid() {
+    String message = &quot;session失效&quot;;
+    return new SimpleResult(message);
+}</code></pre><p>  将该地址设置为免校验</p>
+<pre><code>.antMatchers(&quot;/session/invalid&quot;)
+                .permitAll()</code></pre></li>
+</ul>
+<h2 id="Session并发控制"><a href="#Session并发控制" class="headerlink" title="Session并发控制"></a>Session并发控制</h2><ul>
+<li><p>一个用户同时只能在一台设备登录,第二个设备登录后,第一个失效,并记录</p>
+<pre><code>.sessionManagement()
+    .invalidSessionUrl(&quot;/session/invalid&quot;)
+    .maximumSessions(1)//最大登录数
+    .expiredSessionStrategy(new EvolutionaryExpiredSessionStrategy())
+    .and()
+    .and()
+
+/**
+ * @author richey
+ */
+public class EvolutionaryExpiredSessionStrategy implements SessionInformationExpiredStrategy{</code></pre></li>
+</ul>
+<pre><code>    @Override
+    public void onExpiredSessionDetected(SessionInformationExpiredEvent event) throws IOException, ServletException {
+        //这里可以记录并发登录造成Session失效的信息
+        event.getResponse().setContentType(&quot;application/json;charset=UTF-8&quot;);
+        event.getResponse().getWriter().write(&quot;并发登录!&quot;);
+    }
+}</code></pre><ul>
+<li><p>一个用户同时只能在一台设备登录,第二个设备不允许登录</p>
+<pre><code>.sessionManagement()
+    .invalidSessionUrl(&quot;/session/invalid&quot;)
+    .maximumSessions(1)//最大登录数
+    .maxSessionsPreventsLogin(true)//当Session的数量达到最大数量后,阻止后续的登录行为
+    .expiredSessionStrategy(new EvolutionaryExpiredSessionStrategy())
+    .and()
+    .and()</code></pre></li>
+</ul>
+<h2 id="集群Session管理"><a href="#集群Session管理" class="headerlink" title="集群Session管理"></a>集群Session管理</h2><ul>
+<li>使用redis的好处</li>
+</ul>
+<p>Session访问非常频繁<br>redis自带超时特性</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/11/Spring%20Security%EF%BC%8811%EF%BC%89%EF%BC%8DOAuth%E5%8D%8F%E8%AE%AE%E7%AE%80%E4%BB%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/11/Spring%20Security%EF%BC%8811%EF%BC%89%EF%BC%8DOAuth%E5%8D%8F%E8%AE%AE%E7%AE%80%E4%BB%8B/" itemprop="url">Spring Security（11）－OAuth协议简介</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-11T00:00:00+08:00">
+                2019-06-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/06/11/Spring%20Security%EF%BC%8811%EF%BC%89%EF%BC%8DOAuth%E5%8D%8F%E8%AE%AE%E7%AE%80%E4%BB%8B/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/11/Spring%20Security%EF%BC%8811%EF%BC%89%EF%BC%8DOAuth%E5%8D%8F%E8%AE%AE%E7%AE%80%E4%BB%8B/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/06/11/Spring%20Security%EF%BC%8811%EF%BC%89%EF%BC%8DOAuth%E5%8D%8F%E8%AE%AE%E7%AE%80%E4%BB%8B/" class="leancloud_visitors" data-flag-title="Spring Security（11）－OAuth协议简介">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>概览：</p>
+<ul>
+<li><p>OAuth协议要解决的问题</p>
+</li>
+<li><p>OAuth协议中的各种角色</p>
+</li>
+<li><p>OAuth协议运行流程</p>
+</li>
+</ul>
+<h2 id="OAuth协议要解决的问题"><a href="#OAuth协议要解决的问题" class="headerlink" title="OAuth协议要解决的问题"></a>OAuth协议要解决的问题</h2><p>OAuth协议主要是为了解决传统的授权（比如用户名密码授权）存在的问题：</p>
+<ol>
+<li>授权后应用可以访问所有数据（危险）</li>
+<li>用户只有修改密码才能收回授权</li>
+<li>密码泄露的可能性高</li>
+</ol>
+<h2 id="OAuth协议中的各种角色"><a href="#OAuth协议中的各种角色" class="headerlink" title="OAuth协议中的各种角色"></a>OAuth协议中的各种角色</h2><ol>
+<li><p>服务提供商（Provider)</p>
+<p> 提供令牌Token</p>
+<p> 在服务提供商中还存在了两个子角色：</p>
+<ul>
+<li>认证服务器（Authorization Server）,用于生成令牌</li>
+<li>资源服务器(Resource Server)，用户保存用户数据及验证令牌</li>
+</ul>
+</li>
+<li><p>资源所有者(Resource Owner)</p>
+<p> 资源所有者一般是用户自己</p>
+</li>
+<li><p>第三方应用(Client)</p>
+</li>
+</ol>
+<p><img src="http://ogiythg18.bkt.clouddn.com/OAuth%E5%8D%8F%E8%AE%AE%E4%B8%AD%E7%9A%84%E8%A7%92%E8%89%B2.png" alt="image"></p>
+<h2 id="OAuth协议运行流程"><a href="#OAuth协议运行流程" class="headerlink" title="OAuth协议运行流程"></a>OAuth协议运行流程</h2><p>知道了OAuth协议中的各种角色，下面我们来看下这些角色之间是怎么协作运行的。</p>
+<p><img src="http://ogiythg18.bkt.clouddn.com/OAuth%E5%8D%8F%E8%AE%AE%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B.png" alt="image"></p>
+<p>上面的流程中第二步：同意授权是关键，只有用户同意授权了之后，后面的流程才会继续下去，OAuth协议中支持了4种授权模式：</p>
+<ol>
+<li>授权码模式(authorization code)</li>
+<li>简化模式(implicit)</li>
+<li>密码模式(resource owner password credentials)</li>
+<li>客户端模式(client credentials)</li>
+</ol>
+<p>目前市场上服务提供商基本上都采用的是授权码模式来完成整个OAuth流程的，这种模式也是四种模式中年功能最完整，流程最严密的授权模式。下面我们说一下授权码模式的认证流程。</p>
+<p>授权码模式：</p>
+<p><img src="http://ogiythg18.bkt.clouddn.com/OAuth%E6%8E%88%E6%9D%83%E7%A0%81%E8%AE%A4%E8%AF%81.png" alt="image"></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/10/Spring%20Security%EF%BC%8810%EF%BC%89%EF%BC%8D%E7%9F%AD%E4%BF%A1%E7%99%BB%E5%BD%95%E5%BC%80%E5%8F%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/10/Spring%20Security%EF%BC%8810%EF%BC%89%EF%BC%8D%E7%9F%AD%E4%BF%A1%E7%99%BB%E5%BD%95%E5%BC%80%E5%8F%91/" itemprop="url">Spring Security（10）－短信登录开发</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-10T00:00:00+08:00">
+                2019-06-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/06/10/Spring%20Security%EF%BC%8810%EF%BC%89%EF%BC%8D%E7%9F%AD%E4%BF%A1%E7%99%BB%E5%BD%95%E5%BC%80%E5%8F%91/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/10/Spring%20Security%EF%BC%8810%EF%BC%89%EF%BC%8D%E7%9F%AD%E4%BF%A1%E7%99%BB%E5%BD%95%E5%BC%80%E5%8F%91/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/06/10/Spring%20Security%EF%BC%8810%EF%BC%89%EF%BC%8D%E7%9F%AD%E4%BF%A1%E7%99%BB%E5%BD%95%E5%BC%80%E5%8F%91/" class="leancloud_visitors" data-flag-title="Spring Security（10）－短信登录开发">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>Spring Security默认没有支持基于短信的认证方式，我们先回顾一下Spring Security开发基于表单的认流程：</p>
+<p><img src="http://ogiythg18.bkt.clouddn.com/Spring%20Security%E8%AE%A4%E8%AF%81%E8%BF%87%E7%A8%8B.png" alt="image"></p>
+<p>我们只需要仿照Spring Security的认证流程，添加短信登录认证相关的组件就可以了，如下：</p>
+<p><img src="http://ogiythg18.bkt.clouddn.com/%E7%9F%AD%E4%BF%A1%E7%99%BB%E5%BD%95.png" alt="image"></p>
+<p>我们需要自定义下面几个类：</p>
+<ul>
+<li>SmsCodeAuthenticationToken</li>
+<li>SmsCodeAuthenticationFilter</li>
+<li>SmsCodeAuthenticationProvider</li>
+</ul>
+<p>同时需要将我们自定义的filter和provider配置到Spring Security的过滤器链上</p>
+<pre><code>SmsCodeAuthenticationFilter smsCodeAuthenticationFilter = new SmsCodeAuthenticationFilter();
+smsCodeAuthenticationFilter.setAuthenticationManager(http.getSharedObject(AuthenticationManager.class));
+smsCodeAuthenticationFilter.setAuthenticationSuccessHandler(evolutionaryAuthenticationHandler);
+smsCodeAuthenticationFilter.setAuthenticationFailureHandler(evolutionaryAuthenticationFailureHandler);
+
+SmsCodeAuthenticationProvider smsCodeAuthenticationProvider = new SmsCodeAuthenticationProvider();
+smsCodeAuthenticationProvider.setUserDetailsService(userDetailsService);
+
+http.authenticationProvider(smsCodeAuthenticationProvider)
+        .addFilterAfter(smsCodeAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);</code></pre><p>流程就是这样，<a href="https://github.com/liubaolin/evolutionary/tree/master/evolutionary-security" target="_blank" rel="noopener">具体代码移步github项目</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/10/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -635,189 +1473,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/10/Spring%20Security%EF%BC%8810%EF%BC%89%EF%BC%8D%E7%9F%AD%E4%BF%A1%E7%99%BB%E5%BD%95%E5%BC%80%E5%8F%91/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/06/10/Spring%20Security%EF%BC%8810%EF%BC%89%EF%BC%8D%E7%9F%AD%E4%BF%A1%E7%99%BB%E5%BD%95%E5%BC%80%E5%8F%91/" itemprop="url">Spring Security（10）－短信登录开发</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-10T00:00:00+08:00">
-                2019-06-10
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/06/10/Spring%20Security%EF%BC%8810%EF%BC%89%EF%BC%8D%E7%9F%AD%E4%BF%A1%E7%99%BB%E5%BD%95%E5%BC%80%E5%8F%91/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/10/Spring%20Security%EF%BC%8810%EF%BC%89%EF%BC%8D%E7%9F%AD%E4%BF%A1%E7%99%BB%E5%BD%95%E5%BC%80%E5%8F%91/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/06/10/Spring%20Security%EF%BC%8810%EF%BC%89%EF%BC%8D%E7%9F%AD%E4%BF%A1%E7%99%BB%E5%BD%95%E5%BC%80%E5%8F%91/" class="leancloud_visitors" data-flag-title="Spring Security（10）－短信登录开发">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Spring Security默认没有支持基于短信的认证方式，我们先回顾一下Spring Security开发基于表单的认流程：</p>
-<p><img src="http://ogiythg18.bkt.clouddn.com/Spring%20Security%E8%AE%A4%E8%AF%81%E8%BF%87%E7%A8%8B.png" alt="image"></p>
-<p>我们只需要仿照Spring Security的认证流程，添加短信登录认证相关的组件就可以了，如下：</p>
-<p><img src="http://ogiythg18.bkt.clouddn.com/%E7%9F%AD%E4%BF%A1%E7%99%BB%E5%BD%95.png" alt="image"></p>
-<p>我们需要自定义下面几个类：</p>
-<ul>
-<li>SmsCodeAuthenticationToken</li>
-<li>SmsCodeAuthenticationFilter</li>
-<li>SmsCodeAuthenticationProvider</li>
-</ul>
-<p>同时需要将我们自定义的filter和provider配置到Spring Security的过滤器链上</p>
-<pre><code>SmsCodeAuthenticationFilter smsCodeAuthenticationFilter = new SmsCodeAuthenticationFilter();
-smsCodeAuthenticationFilter.setAuthenticationManager(http.getSharedObject(AuthenticationManager.class));
-smsCodeAuthenticationFilter.setAuthenticationSuccessHandler(evolutionaryAuthenticationHandler);
-smsCodeAuthenticationFilter.setAuthenticationFailureHandler(evolutionaryAuthenticationFailureHandler);
-
-SmsCodeAuthenticationProvider smsCodeAuthenticationProvider = new SmsCodeAuthenticationProvider();
-smsCodeAuthenticationProvider.setUserDetailsService(userDetailsService);
-
-http.authenticationProvider(smsCodeAuthenticationProvider)
-        .addFilterAfter(smsCodeAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);</code></pre><p>流程就是这样，<a href="https://github.com/liubaolin/evolutionary/tree/master/evolutionary-security" target="_blank" rel="noopener">具体代码移步github项目</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/09/Spring%20Security%EF%BC%889%EF%BC%89%EF%BC%8D%E9%AA%8C%E8%AF%81%E7%A0%81%E5%A4%84%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -936,173 +1591,6 @@ http.authenticationProvider(smsCodeAuthenticationProvider)
 <p><img src="http://ogiythg18.bkt.clouddn.com/%E9%AA%8C%E8%AF%81%E7%A0%81%E5%A4%84%E7%90%86%E5%99%A8%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84%E5%9B%BE.jpg" alt="验证码处理代码结构图"></p>
 <p>这里我们将验证码的处理抽象为一层，不仅用于处理短信验证码，也处理图片验证码。同时将验证码生成的逻辑单独抽象为一层，这体现了代码分层的思想。当业务变动的时候我们可以较为灵活的修改某一层的代码即可。</p>
 <p>代码就不多说了，感兴趣可移步<a href="https://github.com/liubaolin/evolutionary/tree/master/evolutionary-security" target="_blank" rel="noopener">github的项目地址</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/08/%E5%AE%9A%E4%BD%8D%E6%9F%90%E4%B8%AAjava%E8%BF%9B%E7%A8%8B%E7%9A%84pid/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/06/08/%E5%AE%9A%E4%BD%8D%E6%9F%90%E4%B8%AAjava%E8%BF%9B%E7%A8%8B%E7%9A%84pid/" itemprop="url">定位某个java进程的pid</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-08T00:00:00+08:00">
-                2019-06-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/06/08/%E5%AE%9A%E4%BD%8D%E6%9F%90%E4%B8%AAjava%E8%BF%9B%E7%A8%8B%E7%9A%84pid/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/08/%E5%AE%9A%E4%BD%8D%E6%9F%90%E4%B8%AAjava%E8%BF%9B%E7%A8%8B%E7%9A%84pid/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/06/08/%E5%AE%9A%E4%BD%8D%E6%9F%90%E4%B8%AAjava%E8%BF%9B%E7%A8%8B%E7%9A%84pid/" class="leancloud_visitors" data-flag-title="定位某个java进程的pid">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="使用-top-查看系统中消耗cpu比较多的进程PID"><a href="#使用-top-查看系统中消耗cpu比较多的进程PID" class="headerlink" title="使用 top 查看系统中消耗cpu比较多的进程PID"></a>使用 top 查看系统中消耗cpu比较多的进程PID</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">[richey@localhost ~]$ top |grep java</span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   2.7  11.3   5:49.83 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:49.87 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.7  11.3   5:49.92 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:49.96 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:50.00 java                                                                             </span><br><span class="line"> 7439 richey    20   0 7785472 346788  21388 S   0.3   2.1   0:06.05 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:50.04 java</span><br></pre></td></tr></table></figure>
-<h1 id="使用-ps-查看java相关进程的详细信息"><a href="#使用-ps-查看java相关进程的详细信息" class="headerlink" title="使用 ps 查看java相关进程的详细信息"></a>使用 ps 查看java相关进程的详细信息</h1><p>可以看出java进程JVM的详细配置</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[richey@localhost ~]$ ps -ef|grep java|grep 6274</span><br><span class="line"></span><br><span class="line">[richey@localhost ~]$ ps -ef|grep java|grep 6274</span><br><span class="line">richey    6274  6220 39 23:32 ?        00:05:52 /opt/idea-IU-172.4155.36/jre64/bin/java -Xbootclasspath/a:/opt/idea-IU-172.4155.36/lib/boot.jar -classpath /opt/idea-IU-172.4155.36/lib/bootstrap.jar:/opt/idea-IU-172.4155.36/lib/extensions.jar:/opt/idea-IU-172.4155.36/lib/util.jar:/opt/idea-IU-172.4155.36/lib/jdom.jar:/opt/idea-IU-172.4155.36/lib/log4j.jar:/opt/idea-IU-172.4155.36/lib/trove4j.jar:/opt/idea-IU-172.4155.36/lib/jna.jar:/opt/idea-IU-172.4155.36/jre64/lib/tools.jar -Xms2048m -Xmx6144m -XX:ReservedCodeCacheSize=240m -XX:+UseConcMarkSweepGC -XX:SoftRefLRUPolicyMSPerMB=50 -ea -Dsun.io.useCanonCaches=false -Djava.net.preferIPv4Stack=true -XX:+HeapDumpOnOutOfMemoryError -XX:-OmitStackTraceInFastThrow -Dawt.useSystemAAFontSettings=lcd -Dsun.java2d.renderer=sun.java2d.marlin.MarlinRenderingEngine -XX:ErrorFile=/home/richey/java_error_in_IDEA_%p.log -XX:HeapDumpPath=/home/richey/java_error_in_IDEA.hprof -Didea.paths.selector=IntelliJIdea2017.2 -Djb.vmOptionsFile=/opt/idea-IU-172.4155.36/bin/idea64.vmoptions -Didea.jre.check=true com.intellij.idea.Main</span><br></pre></td></tr></table></figure>
-
-<h1 id="使用-top-p-PID-H来查看当前进程中比较消耗cpu的线程"><a href="#使用-top-p-PID-H来查看当前进程中比较消耗cpu的线程" class="headerlink" title="使用 top -p PID -H来查看当前进程中比较消耗cpu的线程"></a>使用 top -p PID -H来查看当前进程中比较消耗cpu的线程</h1><p>拿到消耗cpu比较高的线程pid,先转换成16进制的，最后使用jstack pid|grep 16进制的线程id</p>
 
           
         
@@ -1480,6 +1968,173 @@ http.authenticationProvider(smsCodeAuthenticationProvider)
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/08/%E5%AE%9A%E4%BD%8D%E6%9F%90%E4%B8%AAjava%E8%BF%9B%E7%A8%8B%E7%9A%84pid/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/08/%E5%AE%9A%E4%BD%8D%E6%9F%90%E4%B8%AAjava%E8%BF%9B%E7%A8%8B%E7%9A%84pid/" itemprop="url">定位某个java进程的pid</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-08T00:00:00+08:00">
+                2019-06-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/06/08/%E5%AE%9A%E4%BD%8D%E6%9F%90%E4%B8%AAjava%E8%BF%9B%E7%A8%8B%E7%9A%84pid/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/08/%E5%AE%9A%E4%BD%8D%E6%9F%90%E4%B8%AAjava%E8%BF%9B%E7%A8%8B%E7%9A%84pid/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/06/08/%E5%AE%9A%E4%BD%8D%E6%9F%90%E4%B8%AAjava%E8%BF%9B%E7%A8%8B%E7%9A%84pid/" class="leancloud_visitors" data-flag-title="定位某个java进程的pid">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="使用-top-查看系统中消耗cpu比较多的进程PID"><a href="#使用-top-查看系统中消耗cpu比较多的进程PID" class="headerlink" title="使用 top 查看系统中消耗cpu比较多的进程PID"></a>使用 top 查看系统中消耗cpu比较多的进程PID</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">[richey@localhost ~]$ top |grep java</span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   2.7  11.3   5:49.83 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:49.87 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.7  11.3   5:49.92 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:49.96 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:50.00 java                                                                             </span><br><span class="line"> 7439 richey    20   0 7785472 346788  21388 S   0.3   2.1   0:06.05 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:50.04 java</span><br></pre></td></tr></table></figure>
+<h1 id="使用-ps-查看java相关进程的详细信息"><a href="#使用-ps-查看java相关进程的详细信息" class="headerlink" title="使用 ps 查看java相关进程的详细信息"></a>使用 ps 查看java相关进程的详细信息</h1><p>可以看出java进程JVM的详细配置</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[richey@localhost ~]$ ps -ef|grep java|grep 6274</span><br><span class="line"></span><br><span class="line">[richey@localhost ~]$ ps -ef|grep java|grep 6274</span><br><span class="line">richey    6274  6220 39 23:32 ?        00:05:52 /opt/idea-IU-172.4155.36/jre64/bin/java -Xbootclasspath/a:/opt/idea-IU-172.4155.36/lib/boot.jar -classpath /opt/idea-IU-172.4155.36/lib/bootstrap.jar:/opt/idea-IU-172.4155.36/lib/extensions.jar:/opt/idea-IU-172.4155.36/lib/util.jar:/opt/idea-IU-172.4155.36/lib/jdom.jar:/opt/idea-IU-172.4155.36/lib/log4j.jar:/opt/idea-IU-172.4155.36/lib/trove4j.jar:/opt/idea-IU-172.4155.36/lib/jna.jar:/opt/idea-IU-172.4155.36/jre64/lib/tools.jar -Xms2048m -Xmx6144m -XX:ReservedCodeCacheSize=240m -XX:+UseConcMarkSweepGC -XX:SoftRefLRUPolicyMSPerMB=50 -ea -Dsun.io.useCanonCaches=false -Djava.net.preferIPv4Stack=true -XX:+HeapDumpOnOutOfMemoryError -XX:-OmitStackTraceInFastThrow -Dawt.useSystemAAFontSettings=lcd -Dsun.java2d.renderer=sun.java2d.marlin.MarlinRenderingEngine -XX:ErrorFile=/home/richey/java_error_in_IDEA_%p.log -XX:HeapDumpPath=/home/richey/java_error_in_IDEA.hprof -Didea.paths.selector=IntelliJIdea2017.2 -Djb.vmOptionsFile=/opt/idea-IU-172.4155.36/bin/idea64.vmoptions -Didea.jre.check=true com.intellij.idea.Main</span><br></pre></td></tr></table></figure>
+
+<h1 id="使用-top-p-PID-H来查看当前进程中比较消耗cpu的线程"><a href="#使用-top-p-PID-H来查看当前进程中比较消耗cpu的线程" class="headerlink" title="使用 top -p PID -H来查看当前进程中比较消耗cpu的线程"></a>使用 top -p PID -H来查看当前进程中比较消耗cpu的线程</h1><p>拿到消耗cpu比较高的线程pid,先转换成16进制的，最后使用jstack pid|grep 16进制的线程id</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/07/Spring%20Security%EF%BC%887%EF%BC%89%EF%BC%8D%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81%E9%87%8D%E6%9E%84/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1730,885 +2385,6 @@ public class DemoImageCodeGenerator implements ValidateCodeGenerator {
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/06/Spring%20Security%EF%BC%886%EF%BC%89%EF%BC%8D%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/06/06/Spring%20Security%EF%BC%886%EF%BC%89%EF%BC%8D%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/" itemprop="url">Spring Security（6）－图片验证码</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-06T00:00:00+08:00">
-                2019-06-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/06/06/Spring%20Security%EF%BC%886%EF%BC%89%EF%BC%8D%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/06/Spring%20Security%EF%BC%886%EF%BC%89%EF%BC%8D%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/06/06/Spring%20Security%EF%BC%886%EF%BC%89%EF%BC%8D%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/" class="leancloud_visitors" data-flag-title="Spring Security（6）－图片验证码">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>概要：</p>
-<ul>
-<li>根据随机数生成图片</li>
-<li>将随机数存到Session中</li>
-<li>将生成的图片写到接口的响应中</li>
-</ul>
-<h2 id="1、配置google-kaptcha"><a href="#1、配置google-kaptcha" class="headerlink" title="1、配置google kaptcha"></a>1、配置google kaptcha</h2><p>这里我们用google kaptcha生成验证码：</p>
-<pre><code>&lt;dependency&gt;
-    &lt;groupId&gt;com.github.penggle&lt;/groupId&gt;
-    &lt;artifactId&gt;kaptcha&lt;/artifactId&gt;
-    &lt;version&gt;2.3.2&lt;/version&gt;
-&lt;/dependency&gt;
-
-
-@Configuration
-public class GoogleKaptchaConfig {
-
-    @Bean
-    public DefaultKaptcha getDefaultKaptcha() {
-        DefaultKaptcha defaultKaptcha = new DefaultKaptcha();
-        Properties properties = new Properties();
-        properties.setProperty(&quot;kaptcha.border&quot;, &quot;yes&quot;);
-        properties.setProperty(&quot;kaptcha.border.color&quot;, &quot;105,179,90&quot;);
-        properties.setProperty(&quot;kaptcha.textproducer.font.color&quot;, &quot;blue&quot;);
-        properties.setProperty(&quot;kaptcha.image.width&quot;, &quot;125&quot;);
-        properties.setProperty(&quot;kaptcha.image.height&quot;, &quot;45&quot;);
-        properties.setProperty(&quot;kaptcha.textproducer.font.size&quot;, &quot;45&quot;);
-        properties.setProperty(&quot;kaptcha.session.key&quot;, &quot;code&quot;);
-        properties.setProperty(&quot;kaptcha.textproducer.char.length&quot;, &quot;4&quot;);
-        properties.setProperty(&quot;kaptcha.textproducer.font.names&quot;, &quot;宋体,楷体,微软雅黑&quot;);
-        Config config = new Config(properties);
-        defaultKaptcha.setConfig(config);
-        return defaultKaptcha;
-    }
-
-}</code></pre><h2 id="2、生成验证码"><a href="#2、生成验证码" class="headerlink" title="2、生成验证码"></a>2、生成验证码</h2><p>生成验证码，并将验证码放到session中</p>
-<p>验证码类：</p>
-<pre><code>/**
- * @author richey
- * 验证码
- */
-public class ImageCode {
-
-    private BufferedImage image;
-
-    private String code;
-
-    /**
-     * 过期时间
-     */
-    private LocalDateTime expireTime;
-
-    public ImageCode() {
-    }
-
-    public ImageCode(BufferedImage image, String code, LocalDateTime expireTime) {
-        this.image = image;
-        this.code = code;
-        this.expireTime = expireTime;
-    }
-
-    /**
-     * @param image
-     * @param code
-     * @param expireIn 秒数，在x秒后过期
-     */
-    public ImageCode(BufferedImage image, String code, int expireIn) {
-        this.image = image;
-        this.code = code;
-        this.expireTime = LocalDateTime.now().plusSeconds(expireIn);
-    }
-
-
-    public BufferedImage getImage() {
-        return image;
-    }
-
-    public void setImage(BufferedImage image) {
-        this.image = image;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public LocalDateTime getExpireTime() {
-        return expireTime;
-    }
-
-    public void setExpireTime(LocalDateTime expireTime) {
-        this.expireTime = expireTime;
-    }
-
-    public boolean isExpired() {
-        return this.expireTime == null || this.expireTime.isBefore(LocalDateTime.now());
-    }
-}</code></pre><p>验证码校验异常类：</p>
-<pre><code>public class ValidateCodeException extends AuthenticationException {
-
-    public ValidateCodeException(String msg) {
-        super(msg);
-    }
-}</code></pre><p>验证码接口</p>
-<pre><code>@RestController
-public class ValidateCodeController {
-
-    public static final String SESSION_KEY = &quot;SESSION_KEY_IMAGE_CODE&quot;;
-
-    private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
-
-    @Autowired
-    private DefaultKaptcha captchaProducer = null;
-
-    @GetMapping(&quot;/code/image&quot;)
-    public void createCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ImageCode imageCode = createImageCode();
-        sessionStrategy.setAttribute(new ServletWebRequest(request), SESSION_KEY, imageCode);
-        ImageIO.write(imageCode.getImage(), &quot;JPEG&quot;, response.getOutputStream());
-    }
-
-    private ImageCode createImageCode() {
-        String code = captchaProducer.createText();
-        return new ImageCode(captchaProducer.createImage(code), code, 60);
-    }
-}</code></pre><h2 id="3、前台传递验证码"><a href="#3、前台传递验证码" class="headerlink" title="3、前台传递验证码"></a>3、前台传递验证码</h2><pre><code>&lt;td&gt;验证码&lt;/td&gt;
-&lt;td&gt;
-    &lt;input type=&quot;text&quot; name=&quot;imageCode&quot; id=&quot;imageCode&quot;/&gt;
-    &lt;img src=&quot;/code/image&quot;&gt;
-    &lt;a href=&quot;javascript:changeKaptcha()&quot;&gt;看不清，换一张&lt;/a&gt;
-&lt;/td&gt;</code></pre><h2 id="4、配置校验验证码的过滤器"><a href="#4、配置校验验证码的过滤器" class="headerlink" title="4、配置校验验证码的过滤器"></a>4、配置校验验证码的过滤器</h2><pre><code>public class ValidateCodeFilter extends OncePerRequestFilter {
-
-    @Autowired
-    private AuthenticationFailureHandler authenticationFailureHandler;
-
-    @Autowired
-    private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
-
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
-        if (StringUtils.equals(&quot;/authentication/form&quot;, request.getRequestURI()) &amp;&amp;
-                StringUtils.equalsIgnoreCase(request.getMethod(), &quot;post&quot;)) {
-            try {
-                validate(new ServletWebRequest(request));
-            } catch (ValidateCodeException e) {
-                authenticationFailureHandler.onAuthenticationFailure(request, response, e);
-                return;
-            }
-        }
-        filterChain.doFilter(request, response);
-    }
-
-    private void validate(ServletWebRequest request) throws ServletRequestBindingException {
-        ImageCode codeInSession = (ImageCode) sessionStrategy.getAttribute(request, ValidateCodeController.SESSION_KEY);
-        String codeInRequest = ServletRequestUtils.getStringParameter(request.getRequest(), &quot;imageCode&quot;);
-
-        if (StringUtils.isBlank(codeInRequest)) {
-            throw new ValidateCodeException(&quot;验证码的值不能为空&quot;);
-        }
-
-        if (codeInSession == null) {
-            throw new ValidateCodeException(&quot;验证码不存在&quot;);
-        }
-
-        if (codeInSession.isExpired()) {
-            sessionStrategy.removeAttribute(request, ValidateCodeController.SESSION_KEY);
-            throw new ValidateCodeException(&quot;验证码已过期&quot;);
-        }
-
-        if (!StringUtils.equalsIgnoreCase(codeInRequest, codeInSession.getCode())) {
-            throw new ValidateCodeException(&quot;验证码不匹配&quot;);
-        }
-
-        sessionStrategy.removeAttribute(request, ValidateCodeController.SESSION_KEY);
-    }
-
-
-    public AuthenticationFailureHandler getAuthenticationFailureHandler() {
-        return authenticationFailureHandler;
-    }
-
-    public void setAuthenticationFailureHandler(AuthenticationFailureHandler authenticationFailureHandler) {
-        this.authenticationFailureHandler = authenticationFailureHandler;
-    }
-}</code></pre><p>将验证码过滤器配置在UsernamePasswordAuthenticationFilter之前：</p>
-<pre><code>@Configuration
-public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
-
-    @Autowired
-    private SecurityProperties securityProperties;
-
-    @Autowired
-    private EvolutionaryAuthenticationSuccessHandler evolutionaryAuthenticationHandler;
-
-    @Autowired
-    private EvolutionaryAuthenticationFailureHandler evolutionaryAuthenticationFailureHandler;
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        ValidateCodeFilter validateCodeFilter = new ValidateCodeFilter();
-        validateCodeFilter.setAuthenticationFailureHandler(evolutionaryAuthenticationFailureHandler);
-
-        http.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class)
-                .formLogin()  //表单登录
-                .loginPage(&quot;/authentication/require&quot;) //如果需要身份认证则跳转到这里
-                .loginProcessingUrl(&quot;/authentication/form&quot;)//登录请求的url
-                .successHandler(evolutionaryAuthenticationHandler)
-                .failureHandler(evolutionaryAuthenticationFailureHandler)
-                .and()
-                .authorizeRequests()
-                .antMatchers(&quot;/authentication/require&quot;,
-                        securityProperties.getBrower().getLoginPage(),
-                        &quot;/code/image&quot;)
-                .permitAll()
-                .anyRequest()
-                .authenticated()
-                .and().csrf().disable();
-
-    }
-}</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/06/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/06/06/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/" itemprop="url">适配器模式</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-06T00:00:00+08:00">
-                2019-06-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index">
-                    <span itemprop="name">设计模式</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/06/06/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/06/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/06/06/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/" class="leancloud_visitors" data-flag-title="适配器模式">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p>
-<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/spring%E9%85%8D%E7%BD%AE%E4%BD%BF%E7%94%A8%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8Fdemo.jpg" alt="spring适配器模式demo"></p>
-<h1 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h1><p>将一个类的接口，转换成客户期望的另一个接口。适配器让原本不兼容的接口可以合作无间。</p>
-<h1 id="对象适配器"><a href="#对象适配器" class="headerlink" title="对象适配器"></a>对象适配器</h1><ul>
-<li>采用组合模式</li>
-<li>不仅可以适配某类，还可以适配该类的任何子类。</li>
-</ul>
-<h1 id="类适配器"><a href="#类适配器" class="headerlink" title="类适配器"></a>类适配器</h1><ul>
-<li>采用继承模式</li>
-<li>不需要重新实现整个被适配者，必要的时候可以覆盖被适配者的行为。</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/05/Spring%20Security%EF%BC%885%EF%BC%89%EF%BC%8D%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/06/05/Spring%20Security%EF%BC%885%EF%BC%89%EF%BC%8D%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3/" itemprop="url">Spring Security（5）－认证流程源码详解</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-05T00:00:00+08:00">
-                2019-06-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/06/05/Spring%20Security%EF%BC%885%EF%BC%89%EF%BC%8D%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/05/Spring%20Security%EF%BC%885%EF%BC%89%EF%BC%8D%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/06/05/Spring%20Security%EF%BC%885%EF%BC%89%EF%BC%8D%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3/" class="leancloud_visitors" data-flag-title="Spring Security（5）－认证流程源码详解">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>概要：</p>
-<ul>
-<li>认证处理流程说明</li>
-<li>认证结果如何在多个请求间共享</li>
-<li>获取认证用户信息</li>
-</ul>
-<h2 id="认证处理流程说明"><a href="#认证处理流程说明" class="headerlink" title="认证处理流程说明"></a>认证处理流程说明</h2><p><img src="http://ogiythg18.bkt.clouddn.com/Spring%20Security%E8%AE%A4%E8%AF%81%E8%BF%87%E7%A8%8B.png" alt="image"></p>
-<pre><code>public class UsernamePasswordAuthenticationFilter extends
-        AbstractAuthenticationProcessingFilter {
-
-        public Authentication attemptAuthentication(HttpServletRequest request,
-            HttpServletResponse response) throws AuthenticationException {
-        if (postOnly &amp;&amp; !request.getMethod().equals(&quot;POST&quot;)) {
-            throw new AuthenticationServiceException(
-                    &quot;Authentication method not supported: &quot; + request.getMethod());
-        }
-
-        String username = obtainUsername(request);
-        String password = obtainPassword(request);
-
-        if (username == null) {
-            username = &quot;&quot;;
-        }
-
-        if (password == null) {
-            password = &quot;&quot;;
-        }
-
-        username = username.trim();
-
-        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
-                username, password);
-
-        // Allow subclasses to set the &quot;details&quot; property
-        setDetails(request, authRequest);
-
-        return this.getAuthenticationManager().authenticate(authRequest);
-    }
-}</code></pre><p>表单登录通过UsernamePasswordAuthenticationFilter处理认证逻辑，可以这里拿到用户名和密码，并以此创建了一个UsernamePasswordAuthenticationToken对象</p>
-<pre><code>public UsernamePasswordAuthenticationToken(Object principal, Object credentials) {
-        super(null);
-        this.principal = principal;
-        this.credentials = credentials;
-        setAuthenticated(false);
-    }</code></pre><p>UsernamePasswordAuthenticationToken其实就是Authentication的实现类，用来表示用户的认证信息。这里先调用了父类的构造，但是传了一个null进去，我们看一下它的父类构造：</p>
-<pre><code>//父类构造的入参是权限集合
-public AbstractAuthenticationToken(Collection&lt;? extends GrantedAuthority&gt; authorities)</code></pre><p>显然这里还并为进行认证和授权所以传了一个空值进去，再看下面setAuthenticated(false);也是赋值说明当前是未认证的。所以这里只是初始化了一个Authenticatyion对象，并将请求中的一些信息放了进去。</p>
-<pre><code>setDetails(request, authRequest); //这里也是设置了一些请求信息到Authentication对象</code></pre><p>看最后一句：</p>
-<pre><code>this.getAuthenticationManager().authenticate(authRequest);</code></pre><p>这里先是取到了AuthenticationManager对象，该对象维护了许多的AuthenticationProvider，这些AuthenticationProvider分别用来认证不同类型的请求，比如表单认证，第三方认证等等。</p>
-<p>我们来看一下AuthenticationManager的authenticate方法：</p>
-<pre><code>public Authentication authenticate(Authentication authentication)
-            throws AuthenticationException {
-        Class&lt;? extends Authentication&gt; toTest = authentication.getClass();
-        AuthenticationException lastException = null;
-        Authentication result = null;
-        boolean debug = logger.isDebugEnabled();
-
-        for (AuthenticationProvider provider : getProviders()) {
-            if (!provider.supports(toTest)) {
-                continue;
-            }
-
-            result = provider.authenticate(authentication);
-
-                if (result != null) {
-                    copyDetails(authentication, result);
-                    break;
-                }
-
-            try {
-
-            }
-
-        }
-
-        ...
-    }</code></pre><p>可以看出这里遍历了所有的AuthenticationProvider，并找到对应的provider进行了认证：</p>
-<pre><code>result = provider.authenticate(authentication);</code></pre><p>看一下provider的authentication方法,这里我会只保留重要的几行代码：</p>
-<pre><code>public Authentication authenticate(Authentication authentication)
-        throws AuthenticationException {
-
-
-    // Determine username
-    String username = (authentication.getPrincipal() == null) ? &quot;NONE_PROVIDED&quot;
-            : authentication.getName();
-
-    boolean cacheWasUsed = true;
-    UserDetails user = this.userCache.getUserFromCache(username);
-
-    user = retrieveUser(username,
-                    (UsernamePasswordAuthenticationToken) authentication);
-    try {
-        preAuthenticationChecks.check(user);
-        additionalAuthenticationChecks(user,
-                (UsernamePasswordAuthenticationToken) authentication);
-    }
-
-
-    postAuthenticationChecks.check(user);
-
-
-    return createSuccessAuthentication(principalToReturn, authentication, user);
-}</code></pre><p>这里的retrieveUser方法根据用户名和包含了登录信息的Authentication对象处理得到了UserDetail对象：</p>
-<pre><code>protected final UserDetails retrieveUser(String username,
-        UsernamePasswordAuthenticationToken authentication)
-        throws AuthenticationException {
-    UserDetails loadedUser;
-
-    try {
-        loadedUser = this.getUserDetailsService().loadUserByUsername(username);
-    }
-
-    return loadedUser;
-}</code></pre><p>这里就调用了loadUserByUsername方法，该方法大家应该比较熟悉了，我们实现UserDetailsService接口并在该方法中认证并返回用户信息。</p>
-<p>经过retrieveUser方法返回的信息是进行了认证的用户信息，至于有没人认证通过就要看下面的三个方法的校验了</p>
-<pre><code>preAuthenticationChecks.check(user);
-additionalAuthenticationChecks(user,
-                (UsernamePasswordAuthenticationToken) authentication);
-postAuthenticationChecks.check(user);</code></pre><p>前置校验校验了用户是否冻结、是否删除、帐号是否过期<br>额外的校验校验了用户名密码；<br>后置校验检查密码是否过期；</p>
-<p>然后返回了一个认证过的Authentication信息。</p>
-<p>接下来调用了AbstractAuthenticationProcessingFilter.successfulAuthentication,这里大家也比较熟悉了，我们复写了改方法，用来处理登录成功后的逻辑。</p>
-<h2 id="认证结果如何在多个请求间共享"><a href="#认证结果如何在多个请求间共享" class="headerlink" title="认证结果如何在多个请求间共享"></a>认证结果如何在多个请求间共享</h2><p>在多个请求中共享我们首先想到的是放到了Session中，那么Spring Security是什么时候把什么东西放到了Session中呢？什么时候又从Sesion中读出来的？</p>
-<pre><code>protected void successfulAuthentication(HttpServletRequest request,
-        HttpServletResponse response, FilterChain chain, Authentication authResult)
-        throws IOException, ServletException {
-
-
-    SecurityContextHolder.getContext().setAuthentication(authResult);
-
-    rememberMeServices.loginSuccess(request, response, authResult);
-
-    // Fire event
-    if (this.eventPublisher != null) {
-        eventPublisher.publishEvent(new InteractiveAuthenticationSuccessEvent(
-                authResult, this.getClass()));
-    }
-
-    successHandler.onAuthenticationSuccess(request, response, authResult);
-}</code></pre><p>这里可以看出Spring Security在认证成功且调用我们自定义的认证成功处理组件之前执行了下面的代码：</p>
-<pre><code>SecurityContextHolder.getContext().setAuthentication(authResult);</code></pre><p>显然是将认证成的额那个Authentication对象放到了SecurityContext中，SecutityContext非常简单，就是包装了一个Authentication对象，并重写了equalts和hashCode方法。</p>
-<p>同时Spring Security用SecurityContextHolder（用ThreadLocal的封装的）保存了SecurityContext。</p>
-<p>那问题来了，这里只是把认证过的Authentication对象放到了SecurityContextHolder中，最多也就只能做到认证结果的单请求同线程共享，如果要多请求共享还是要放到session中，而且每个请求过来的时候都要从session中取一次，这么分析下来感觉用一个Filter处理上述的操作很合适。没错，Spring Security提供了这样一个过滤器，而且是其过滤器链上的第一个过滤器：SecurityContextPersistenceFilter。</p>
-<p><img src="http://ogiythg18.bkt.clouddn.com/Spring%20Security%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86.png" alt="image"></p>
-<p>该过滤器的作用就是当请求过来的时候，检查session中有没有SecurityContext，有的话放到SecurityContextHolder中，这样当前线程在任何地方都可以获取到SecurityContext信息；当请求返回的时候，会检查SecurityContextHolder中是否有SecurityContext信息，有的话就将其放到session中，这样就实现了认证信息在多个请求间的共享。</p>
-<h2 id="获取认证用户信息"><a href="#获取认证用户信息" class="headerlink" title="获取认证用户信息"></a>获取认证用户信息</h2><p>通过前面的分析，获取认证用户信息对我们来说已经不是事了，相信你也已经理解了。</p>
-<pre><code>@GetMapping(&quot;/me&quot;)
-public Object getCurrentUser(Authentication authentication) {
-    //return SecurityContextHolder.getContext().getAuthentication();
-    return authentication;
-}
-
-@GetMapping(&quot;/meToo&quot;)
-public Object getCurrentUserToo(@AuthenticationPrincipal UserDetails userDetails) {
-    return userDetails;
-}</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2663,7 +2439,7 @@ public Object getCurrentUserToo(@AuthenticationPrincipal UserDetails userDetails
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">102</span>
+                  <span class="site-state-item-count">105</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2685,7 +2461,7 @@ public Object getCurrentUserToo(@AuthenticationPrincipal UserDetails userDetails
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-count">35</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

@@ -288,6 +288,834 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/" itemprop="url">Mysql（8）-搞定Mysql字符集及校对规则</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-06T00:00:00+08:00">
+                2019-04-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/DB/" itemprop="url" rel="index">
+                    <span itemprop="name">DB</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/" class="leancloud_visitors" data-flag-title="Mysql（8）-搞定Mysql字符集及校对规则">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="MySQL的字符集（Character-Set"><a href="#MySQL的字符集（Character-Set" class="headerlink" title="MySQL的字符集（Character Set)"></a>MySQL的字符集（Character Set)</h1><p>关于字符集，之前转载了一篇文章讲的非常好——<a href="">关于字符编码，你所需要知道的（ASCII,Unicode,Utf-8,GB2312…）</a></p>
+<p>常见字符集：</p>
+<ul>
+<li>ASCII字符集：基于罗马字母表的一套字符集，它采用1个字节的低7位表示字符，高位始终为0。</li>
+<li>LATIN1字符集：相对于ASCII字符集做了扩展，仍然使用一个字节表示字符，但启用了高位，扩展了字符集的表示范围。</li>
+<li>GBK字符集：支持中文，字符有一字节编码和两字节编码方式。</li>
+<li>UTF8字符集：Unicode字符集的一种，是计算机科学领域里的一项业界标准，支持了所有国家的文字字符，utf8采用1-4个字节表示字符。</li>
+</ul>
+<h1 id="MySQL与字符集"><a href="#MySQL与字符集" class="headerlink" title="MySQL与字符集"></a>MySQL与字符集</h1><p>查看NySQL系统变量：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| Variable_name            | Value                      |</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| character_set_client     | utf8                       |</span><br><span class="line">| character_set_connection | utf8                       |</span><br><span class="line">| character_set_database   | latin1                     |</span><br><span class="line">| character_set_filesystem | binary                     |</span><br><span class="line">| character_set_results    | utf8                       |</span><br><span class="line">| character_set_server     | latin1                     |</span><br><span class="line">| character_set_system     | utf8                       |</span><br><span class="line">| character_sets_dir       | &#x2F;usr&#x2F;share&#x2F;mysql&#x2F;charsets&#x2F; |</span><br><span class="line">+--------------------------+----------------------------+</span><br></pre></td></tr></table></figure>
+<p>正确使用字符集</p>
+<table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>变量作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>character_set_client</td>
+<td>客户端来源数据使用的字符集</td>
+</tr>
+<tr>
+<td>character_set_connection</td>
+<td>连接层字符集</td>
+</tr>
+<tr>
+<td>character_set_database</td>
+<td>当前选中数据库的默认字符集</td>
+</tr>
+<tr>
+<td>character_set_results</td>
+<td>查询结果字符集</td>
+</tr>
+<tr>
+<td>character_set_server</td>
+<td>默认的内部操作字符集</td>
+</tr>
+<tr>
+<td>character_set_system</td>
+<td>数据元数据（字段名等）字符集</td>
+</tr>
+</tbody></table>
+<p>这些字符集参数的作用说明：</p>
+<ol>
+<li>设置库、表、列字符集<ul>
+<li>建库时，若未明确指定字符集，则采用character_set_server指定的字符集。</li>
+<li>建表时，若未明确指定字符集，则采用当前库所采用的字符集。</li>
+<li>新增时，修改表字段时，若未明确指定字符集，则采用当前表所采用的字符集。</li>
+</ul>
+</li>
+<li>更新查询涉及的字符集变量<ul>
+<li>更新流程字符集转换过程：character_set_client–&gt;character_set_connection–&gt;表字符集。</li>
+<li>查询流程字符集转换过程：表字符集–&gt;character_set_result</li>
+</ul>
+</li>
+<li>character_set_database<ul>
+<li>当前默认数据库的字符集，比如执行use xxx后，当前数据库变为xxx，若xxx的字符集为utf8，那么此变量值就变为utf8(供系统设置，无需人工设置)。</li>
+</ul>
+</li>
+</ol>
+<h1 id="MySQL客户端与字符集"><a href="#MySQL客户端与字符集" class="headerlink" title="MySQL客户端与字符集"></a>MySQL客户端与字符集</h1><p>1.对于输入来说：</p>
+<p>客户端使用的字符集必须通过character_set_client、character_set_connection体现出来：</p>
+<ul>
+<li>在客户端对数据进行编码（Linux：utf8、windows：gbk）</li>
+<li>MySQL接到SQL语句后(比如insert)，发现有字符，询问客户端通过什么方式对字符编码：客户端通过character_set_client参数告知MySQL客户端的编码方式(所以此参数需要正确反映客户端对应的编码)</li>
+<li>当MySQL发现客户端的client所传输的字符集与自己的connection不一样时，会将client的字符集转换为connection的字符集</li>
+<li>MySQL将转换后的编码存储到MySQL表的列上，在存储的时候再判断编码是否与内部存储字符集（按照优先级判断字符集类型）上的编码一致，如果不一致需要再次转换</li>
+</ul>
+<p>2.对于查询来说：</p>
+<p>客户端使用的字符集必须通过character_set_results来体现，服务器询问客户端字符集，通过character_set_results将结果转换为与客户端相同的字符集传递给客户端。(character_set_results默认等于character_set_client)</p>
+<h1 id="字符集常见处理操作"><a href="#字符集常见处理操作" class="headerlink" title="字符集常见处理操作"></a>字符集常见处理操作</h1><p>查看字符集编码设置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br></pre></td></tr></table></figure>
+
+<p>运行时设置字符集编码</p>
+<p>运行时修改（重启后会失效，如果想要重启后保持不变，需要写进配置文件里）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; set names &#39;utf8&#39;;</span><br><span class="line"></span><br><span class="line">相当于同时：</span><br><span class="line"></span><br><span class="line">set character_set_client &#x3D; utf8;</span><br><span class="line">set character_set_results &#x3D; utf8;</span><br><span class="line">set character_set_connection &#x3D; utf8;</span><br></pre></td></tr></table></figure>
+<p>修改数据库字符集</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; alter database database_name character set xxx;</span><br></pre></td></tr></table></figure>
+<p>只修改库的字符集，影响后续创建的表的默认定义；对于已创建的表的字符集不受影响。（一般在数据库实现字符集即可，表和列都默认采用数据库的字符集）</p>
+<p>修改表的字符集</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-- 只修改表的字符集，影响后续该表新增列的默认定义，已有列的字符集不受影响。</span><br><span class="line">mysql&gt; alter table table_name character set xxx；</span><br><span class="line"></span><br><span class="line">-- 同时修改表字符集和已有列字符集，并将已有数据进行字符集编码转换。</span><br><span class="line">mysql&gt; alter table table_name convert to character set xxx;</span><br></pre></td></tr></table></figure>
+<p>修改列的字符集</p>
+<p>格式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE table_name MODIFY</span><br><span class="line">column_name &#123;CHAR | VARCHAR | TEXT&#125; (column_length)</span><br><span class="line">    [CHARACTER SET charset_name]</span><br><span class="line">    [COLLATE collation_name]</span><br><span class="line">mysql&gt; alter table table_name modify col_name varchar(col_length) character set xxx;</span><br></pre></td></tr></table></figure>
+<p>启动服务时指定字符集</p>
+<p>可以在MySQL服务启动时，指定server字符集、字符序。如不指定，默认的字符序分别为latin1、latin1_swedish_ci</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1 \</span><br><span class="line">       --collation-server&#x3D;latin1_swedish_ci</span><br></pre></td></tr></table></figure>
+<p>单独指定server字符集，此时，server字符序为latin1的默认字符序latin1_swedish_ci。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1</span><br></pre></td></tr></table></figure>
+<p>配置文件指定字符集</p>
+<p>除了在命令行参数里指定，也可以在配置文件里指定，如下所示。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysql]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">collation-server &#x3D; utf8_unicode_ci</span><br><span class="line">init-connect&#x3D;&#39;SET NAMES utf8&#39;</span><br><span class="line">character-set-server &#x3D; utf8</span><br></pre></td></tr></table></figure>
+<p>字符集的正确实践<br>MySQL软件工具本身是没有字符集的，主要是因为工具所在的OS的字符集（Windows：gbk、Linux：utf8），所以字符集的正确实践非常重要：</p>
+<ol>
+<li>对于insert来说，character_set_client、character_set_connection相同，而且正确反映客户端使用的字符集</li>
+<li>对于select来说，character_set_results正确反映客户端字符集</li>
+<li>数据库字符集取决于我们要存储的字符类型</li>
+<li>字符集转换最多发生一次，这就要求character_set_client、character_set_connection相同</li>
+<li>所有的字符集转换都发生在数据库端</li>
+</ol>
+<p>综述：</p>
+<ol>
+<li>建立数据库的时候注意字符集（gbk、utf8）；</li>
+<li>连接数据库以后，无论是执行dml还是select，只要涉及到varchar、char列，就需要设置正确的字符集参数。</li>
+</ol>
+<h1 id="MySQL的校对规则"><a href="#MySQL的校对规则" class="headerlink" title="MySQL的校对规则"></a>MySQL的校对规则</h1><p>字符集是一套符号和对应的编号</p>
+<ol start="4">
+<li><p>查看数据库支持的所有字符集(charset)：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show character set;</span><br></pre></td></tr></table></figure>
+<p>校对规则(collation)是在字符集内用于字符比较和排序的一套规则，比如有的规则区分大小写，有的则无视。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create table t1(id int,name varchar(20)); -- t1建表没有指定校对规则</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    1 | A    |</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
+<p>查看数据库支持的校对规则</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show collation;</span><br></pre></td></tr></table></figure>
+<p>查看当前字符集和校对规则设置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; mysql&gt; show variables like &#39;collation_%&#39;;</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| Variable_name        | Value             |</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| collation_connection | utf8_general_ci   |</span><br><span class="line">| collation_database   | utf8_general_ci   |</span><br><span class="line">| collation_server     | latin1_swedish_ci |</span><br><span class="line">+----------------------+-------------------+</span><br></pre></td></tr></table></figure>
+<p>校对规则特征：</p>
+</li>
+<li><p>两个不同的字符集不能有相同的校对规则；</p>
+</li>
+<li><p>每个字符集有一个默认校对规则；</p>
+</li>
+<li><p>存在校对规则命名约定：以其相关的字符集名开始，中间包括一个语言名，并且以_ci（大小写不敏感）、_cs（大小写敏感）或_bin（二元）结束。<br>注意：</p>
+</li>
+</ol>
+<p>系统使用utf8字符集，若使用utf8_bin校对规则执行SQL查询时区分大小写，使用utf8_general_ci不区分大小写(默认的utf8字符集对应的校对规则是utf8_general_ci)。</p>
+<p>示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create table t2(id int,name varchar(20)) character set&#x3D;utf8 collate&#x3D;utf8_bin;</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line"></span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
+<p>相关连接</p>
+<p><a href="https://www.cnblogs.com/chyingp/p/mysql-character-set-collation.html" target="_blank" rel="noopener">再见乱码：5分钟读懂MySQL字符集设置</a></p>
+<p><a href="https://www.cnblogs.com/geaozhang/p/6724393.html" target="_blank" rel="noopener">MySQL字符集及校对规则的理解</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/04/06/maven%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/04/06/maven%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A/" itemprop="url">maven必知必会</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-06T00:00:00+08:00">
+                2019-04-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ci-cd/" itemprop="url" rel="index">
+                    <span itemprop="name">ci/cd</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/04/06/maven%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/04/06/maven%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/04/06/maven%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A/" class="leancloud_visitors" data-flag-title="maven必知必会">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="仓库"><a href="#仓库" class="headerlink" title="仓库"></a>仓库</h1><p>对于Maven来说，仓库只分为两类：本地仓库和远程仓库。当Maven需要根据坐标寻找构件的时候，它首先会查找本地仓库，如果本地仓库有此构件，则直接使用；</p>
+<p>如果本地仓库没有此构件或许需要查看此构件是否有更新版本Maven会去远程仓库查找，发现需要的构件后，会先下载到本地仓库再使用。如果本地仓库和远程仓库都没有找到需要的构件，则Maven会报错。</p>
+<iframe id="embed_dom" name="embed_dom" frameborder="0" style="display:block;width:525px; height:245px;" src="https://www.processon.com/embed/5ca8497de4b0ec8ff3663e7d"></iframe>
+
+<h1 id="远程仓库"><a href="#远程仓库" class="headerlink" title="远程仓库"></a>远程仓库</h1><h2 id="中央仓库"><a href="#中央仓库" class="headerlink" title="中央仓库"></a>中央仓库</h2><p>中央仓库是默认的远程仓库，Maven安装文件中自带的超级POM中自带了中央仓库的配置，所有的Maven项目都会继承Maven的这个超级POM.</p>
+<p>超级POM中的中央仓库配置：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repositories</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;<span class="name">repository</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span> central<span class="tag">&lt;/<span class="name">id</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span> Maven Repository Switchboard<span class="tag">&lt;/<span class="name">name</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">layout</span>&gt;</span> default<span class="tag">&lt;/<span class="name">layout</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span> http://repo1.maven.org/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">      <span class="comment">&lt;!-- 不从该仓库下载快照版本的构件 --&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">enabled</span>&gt;</span> false<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;/<span class="name">repository</span>&gt;</span>        </span><br><span class="line"><span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>覆盖中央仓库的默认地址</p>
+<p>在setting.xml里面配置：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">settings</span>&gt;</span>        </span><br><span class="line">…        </span><br><span class="line">  <span class="tag">&lt;<span class="name">mirrors</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">mirror</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span> maven-net-cn<span class="tag">&lt;/<span class="name">id</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">name</span>&gt;</span> Maven China Mirror<span class="tag">&lt;/<span class="name">name</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">url</span>&gt;</span> http://maven.net.cn/content/groups/public/<span class="tag">&lt;/<span class="name">url</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">mirrorOf</span>&gt;</span> central<span class="tag">&lt;/<span class="name">mirrorOf</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;/<span class="name">mirror</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;/<span class="name">mirrors</span>&gt;</span>        </span><br><span class="line">…        </span><br><span class="line"><span class="tag">&lt;/<span class="name">settings</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>central表示只为central仓库做镜像，如果想为所有的仓库做镜像可以将central改为： *</p>
+<h2 id="配置远程仓库"><a href="#配置远程仓库" class="headerlink" title="配置远程仓库"></a>配置远程仓库</h2><p>在repositories元素下，可以使用repository子元素声明一个或多个远程仓库。</p>
+<p>作用于当先项目</p>
+<p>添加如下配置到pom的第一层（xml），只作用于当前项目</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 可添加多个 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>jboss<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>JBoss Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 仓库地址 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://repository.jboss.com/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 是否下载该仓库的release类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">updatePolicy</span>&gt;</span>daily<span class="tag">&lt;/<span class="name">updatePolicy</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">checksumPolicy</span>&gt;</span>ignore<span class="tag">&lt;/<span class="name">checksumPolicy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 是否下载该仓库的snapshots类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">           <span class="comment">&lt;!-- Maven从远程仓库检查的频率，默认是daily --&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">updatePolicy</span>&gt;</span>daily<span class="tag">&lt;/<span class="name">updatePolicy</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">checksumPolicy</span>&gt;</span>ignore<span class="tag">&lt;/<span class="name">checksumPolicy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="snapshots和releases元素的子元素："><a href="#snapshots和releases元素的子元素：" class="headerlink" title="snapshots和releases元素的子元素："></a>snapshots和releases元素的子元素：</h2><ul>
+<li><p>updatePolicy</p>
+<p>Maven从远程仓库检查的频率，默认是daily，表示Maven每天检查一次。其它可用的值包括：never——从不检查更新；<br>always——每次构建都检查更新；X——每隔X分钟检查一次（X为任意整数）。</p>
+</li>
+<li><p>checksumPolicy<br>用来配置Mavne校验和文件的策略。当部署构件到仓库时会同时部署校验和文件。下载构件时Maven会验证校验和文件。如果验证失败，怎么办？<br>当checksumPolicy的值为默认的warn时，Maven会在执行构建时输出警告信息，其它可能的值包括：fail——验证不通过时，让构建失败；ignore——使<br>Maven完全忽略验证错误。</p>
+</li>
+<li><p>作用于全局</p>
+<p>在settings文件中添加配置，添加profiles后，mirrors可以省略</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">profiles</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">profile</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>besttop_nexus<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 激活此profile --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">activation</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">activeByDefault</span>&gt;</span>true<span class="tag">&lt;/<span class="name">activeByDefault</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">activation</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--all requests to nexus via the mirror --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 可添加多个 --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">id</span>&gt;</span>jboss<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">name</span>&gt;</span>JBoss Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 仓库地址 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://repository.jboss.com/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 是否下载该仓库的release类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 是否下载该仓库的snapshots类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">profile</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">profiles</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="远程仓库的认证"><a href="#远程仓库的认证" class="headerlink" title="远程仓库的认证"></a>远程仓库的认证</h2><p>大部分远程仓库无需认证就可以访问，但有时候出于安全方面的考虑，我们需要提供认证信息才能访问一些仓库。比如组织内部的私有仓库。</p>
+</li>
+</ul>
+<p>仓库信息可以配置子啊POM中，但是认证信息必须配置在setting.xml文件中。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">servers</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">server</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span>my-proj<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">username</span>&gt;</span>admin<span class="tag">&lt;/<span class="name">username</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">password</span>&gt;</span>pwd<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">server</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">servers</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>注意：</p>
+<p>这里的关键是id，这里的id必须要与POM中需要认证的repository元素的id完全一致。换句话说，正是这个id将认证信息与仓库联系在一起。</p>
+<p>部署至远程仓库<br>私服的一大作用就是部署第三方构件，包括组织内部生成的构件及一些无法从外部仓库直接获取的构件。<br>无论是日常开发中生成的构件，还是正式版本发布的构件，都需要部署到仓库中，供其它团队成员使用。</p>
+<p>配置distributionManagement元素：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">distributionManagement</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 发布版本的构件仓库 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">repository</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">uniqueVersion</span>&gt;</span>false<span class="tag">&lt;/<span class="name">uniqueVersion</span>&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- id是仓库的唯一标识 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>corp1<span class="tag">&lt;/<span class="name">id</span>&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- name是为了方便人阅读 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>Corporate Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- 表示该仓库的地址 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span>scp://repo/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">layout</span>&gt;</span>default<span class="tag">&lt;/<span class="name">layout</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;/<span class="name">repository</span>&gt;</span>  </span><br><span class="line">  <span class="comment">&lt;!-- 快照版本的构件仓库 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">snapshotRepository</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">uniqueVersion</span>&gt;</span>true<span class="tag">&lt;/<span class="name">uniqueVersion</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>propSnap<span class="tag">&lt;/<span class="name">id</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>Propellors Snapshots<span class="tag">&lt;/<span class="name">name</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span>sftp://propellers.net/maven<span class="tag">&lt;/<span class="name">url</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;/<span class="name">snapshotRepository</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;/<span class="name">distributionManagement</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>Maven的快照版本，在发布的过程中会自动打上时间戳，有了时间戳，Maven就能找到相同快照版本的最新文件。<br>当我们下载某一个版本的快照时，Maven会从远程仓库检查该构件是否有更新，有的话会先下载更新到本地仓库。<br>注意Maven并不会每次都去检查，默认会每天检查一次（根据updatePolicy配置），我们可以使用-U命令，让Maven强制更新，比如：mvn clean install -U.</p>
+<p>其它Maven配置详解</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">settings</span> <span class="attr">xmlns</span>=<span class="string">"http://maven.apache.org/POM/4.0.0"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://maven.apache.org/POM/4.0.0</span></span></span><br><span class="line"><span class="tag"><span class="string">                               http://maven.apache.org/xsd/settings-1.0.0.xsd"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">localRepository</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">interactiveMode</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">usePluginRegistry</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">offline</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">pluginGroups</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">servers</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">mirrors</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">proxies</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">profiles</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">activeProfiles</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">settings</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>localRepository</p>
+<p>表示本地库的保存位置，也就是maven2主要的jar保存位置，默认在${user.dir}/.m2/repository，如果需要另外设置，就换成其他的路径。</p>
+</li>
+<li><p>offline</p>
+<p>设置为true后，不会每次编译，都去查找远程中心库。当然前提是你已经下载了必须的依赖包。实际开发过程中迭代频繁的情况下，构件经常变动，不建议设置为true。</p>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/04/06/Redis02-%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/04/06/Redis02-%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/" itemprop="url">Redis02-命令速查</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-06T00:00:00+08:00">
+                2019-04-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/DB/" itemprop="url" rel="index">
+                    <span itemprop="name">DB</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/04/06/Redis02-%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/04/06/Redis02-%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/04/06/Redis02-%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/" class="leancloud_visitors" data-flag-title="Redis02-命令速查">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="过期时间"><a href="#过期时间" class="headerlink" title="过期时间"></a>过期时间</h1><pre><code>127.0.0.1:6379&gt; SET expirecode foo
+OK
+127.0.0.1:6379&gt; TTL expirecode
+(integer) -1
+127.0.0.1:6379&gt; EXPIRE expirecode 60
+(integer) 1
+127.0.0.1:6379&gt; ttl expirecode
+(integer) 54
+127.0.0.1:6379&gt; set expirecode boo # set修改后,过期时间失效
+OK
+127.0.0.1:6379&gt; ttl expirecode
+(integer) -1</code></pre><h1 id="redis客户端连接"><a href="#redis客户端连接" class="headerlink" title="redis客户端连接"></a>redis客户端连接</h1><pre><code>./redis-cli    (本地)
+./redis-cli -h [host] -p [port] -a [password] (远程服务器)</code></pre><h1 id="Redis常用命令"><a href="#Redis常用命令" class="headerlink" title="Redis常用命令"></a>Redis常用命令</h1><ol>
+<li><p>连接操作命令</p>
+<pre><code>quit：关闭连接（connection）
+
+auth：简单密码认证
+
+help cmd： 查看cmd帮助，例如：help quit</code></pre></li>
+<li><p>持久化</p>
+<pre><code>save：将数据同步保存到磁盘
+
+bgsave：将数据异步保存到磁盘
+
+lastsave：返回上次成功将数据保存到磁盘的Unix时戳
+
+shutdown：将数据同步保存到磁盘，然后关闭服务</code></pre></li>
+<li><p>远程服务控制</p>
+<pre><code>info：提供服务器的信息和统计
+
+monitor：实时转储收到的请求
+
+slaveof：改变复制策略设置
+
+config：在运行时配置Redis服务器</code></pre></li>
+<li><p>对key操作的命令</p>
+<pre><code>exists(key)：确认一个key是否存在
+
+del(key)：删除一个key
+
+type(key)：返回值的类型
+
+keys(pattern)：返回满足给定pattern的所有key
+
+randomkey：随机返回key空间的一个
+
+keyrename(oldname, newname)：重命名key
+
+dbsize：返回当前数据库中key的数目
+
+expire：设定一个key的活动时间（s）
+
+ttl：获得一个key的活动时间
+
+select(index)：按索引查询
+
+move(key, dbindex)：移动当前数据库中的key到dbindex数据库
+
+flushdb：删除当前选择数据库中的所有key
+
+flushall：删除所有数据库中的所有key</code></pre></li>
+<li><p>String</p>
+<pre><code>set(key, value)：给数据库中名称为key的string赋予值value
+
+get(key)：返回数据库中名称为key的string的value
+
+getset(key, value)：给名称为key的string赋予上一次的value
+
+mget(key1, key2,…, key N)：返回库中多个string的value
+
+setnx(key, value)：添加string，名称为key，值为value
+
+setex(key, time, value)：向库中添加string，设定过期时间time
+
+mset(key N, value N)：批量设置多个string的值
+
+msetnx(key N, value N)：如果所有名称为key i的string都不存在
+
+incr(key)：名称为key的string增1操作
+
+incrby(key, integer)：名称为key的string增加integer
+
+decr(key)：名称为key的string减1操作
+
+decrby(key, integer)：名称为key的string减少integer
+
+append(key, value)：名称为key的string的值附加value
+
+substr(key, start, end)：返回名称为key的string的value的子串</code></pre></li>
+<li><p>List</p>
+<pre><code>rpush(key, value)：在名称为key的list尾添加一个值为value的元素
+
+lpush(key, value)：在名称为key的list头添加一个值为value的 元素
+
+llen(key)：返回名称为key的list的长度
+
+lrange(key, start, end)：返回名称为key的list中start至end之间的元素
+
+ltrim(key, start, end)：截取名称为key的list
+
+lindex(key, index)：返回名称为key的list中index位置的元素
+
+lset(key, index, value)：给名称为key的list中index位置的元素赋值
+
+lrem(key, count, value)：删除count个key的list中值为value的元素
+
+lpop(key)：返回并删除名称为key的list中的首元素
+
+rpop(key)：返回并删除名称为key的list中的尾元素
+
+blpop(key1, key2,… key N, timeout)：lpop命令的block版本。
+
+brpop(key1, key2,… key N, timeout)：rpop的block版本。
+
+rpoplpush(srckey, dstkey)：返回并删除名称为srckey的list的尾元素，并将该元素添加到名称为dstkey的list的头部</code></pre></li>
+<li><p>Set</p>
+<pre><code>sadd(key, member)：向名称为key的set中添加元素member
+
+srem(key, member) ：删除名称为key的set中的元素member
+
+spop(key) ：随机返回并删除名称为key的set中一个元素
+
+smove(srckey, dstkey, member) ：移到集合元素
+
+scard(key) ：返回名称为key的set的基数
+
+sismember(key, member) ：member是否是名称为key的set的元素
+
+sinter(key1, key2,…key N) ：求交集
+
+sinterstore(dstkey, (keys)) ：求交集并将交集保存到dstkey的集合
+
+sunion(key1, (keys)) ：求并集
+
+sunionstore(dstkey, (keys)) ：求并集并将并集保存到dstkey的集合
+
+sdiff(key1, (keys)) ：求差集
+
+sdiffstore(dstkey, (keys)) ：求差集并将差集保存到dstkey的集合
+
+smembers(key) ：返回名称为key的set的所有元素
+
+srandmember(key) ：随机返回名称为key的set的一个元素</code></pre></li>
+<li><p>Hash</p>
+<pre><code>hset(key, field, value)：向名称为key的hash中添加元素field
+
+hget(key, field)：返回名称为key的hash中field对应的value
+
+hmget(key, (fields))：返回名称为key的hash中field i对应的value
+
+hmset(key, (fields))：向名称为key的hash中添加元素field
+
+hincrby(key, field, integer)：将名称为key的hash中field的value增加integer
+
+hexists(key, field)：名称为key的hash中是否存在键为field的域
+
+hdel(key, field)：删除名称为key的hash中键为field的域
+
+hlen(key)：返回名称为key的hash中元素个数
+
+hkeys(key)：返回名称为key的hash中所有键
+
+hvals(key)：返回名称为key的hash中所有键对应的value
+
+hgetall(key)：返回名称为key的hash中所有的键（field）及其对应的value</code></pre></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/04/05/Redis01-%E5%85%A5%E9%97%A8%E5%8F%8A%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -900,6 +1728,179 @@ OK
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/" itemprop="url">Mysql（5）-数据库索引（必知必会）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-28T00:00:00+08:00">
+                2019-03-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/DB/" itemprop="url" rel="index">
+                    <span itemprop="name">DB</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/" class="leancloud_visitors" data-flag-title="Mysql（5）-数据库索引（必知必会）">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h2><p>二级索引已经“覆盖了”我们的查询需求，不需要再回表查整行记录，我们称为覆盖索引。</p>
+<p>覆盖索引可以减少树的搜索次数，显著提升查询性能，所以使用覆盖索引是一个常用的性能优化手段。</p>
+<h2 id="最左前缀原则"><a href="#最左前缀原则" class="headerlink" title="最左前缀原则"></a>最左前缀原则</h2><p>索引项是按照索引定义里面出现的字段顺序排序的。正因为如此根据最左前缀，我们找到第一条数据位置，然后遍历到最后一条匹配到最左前缀的就可以了（因为按照顺序相同最左前缀的都排在一块）。</p>
+<p>不只是索引的全部定义，只要满足最左前缀，就可以利用索引来加速检索。这个最左前缀可以是联合索引的最左 N 个字段，也可以是字符串索引的最左 M 个字符。</p>
+<h3 id="在建立联合索引的时候，如何安排索引内的字段顺序。"><a href="#在建立联合索引的时候，如何安排索引内的字段顺序。" class="headerlink" title="在建立联合索引的时候，如何安排索引内的字段顺序。"></a>在建立联合索引的时候，如何安排索引内的字段顺序。</h3><p>第一原则是，如果通过调整顺序，可以少维护一个索引，那么这个顺序往往就是需要优先考虑采用的。提高索引的复用能力，比如根据最左前缀原则，当已经有了 (a,b)这个联合索引后，一般就不需要单独在 a 上建立索引了。</p>
+<p>第二原则，考虑的是空间。</p>
+<p>如果a，b要建联合索引，且单查a或b的时候都要走索引，那么就要再a或b上再加一个索引，此时就要考虑空间。比如a字段b字段更占空间那就建一个（a，b）的联合索引和一个b的索引。</p>
+<h2 id="索引下推"><a href="#索引下推" class="headerlink" title="索引下推"></a>索引下推</h2><p>MySQL 5.6引入的索引下推优化（index condition pushdown)，可以在索引遍历过程中，对索引中包含的字段先做判断，直接过滤掉不满足条件的记录，减少回表次数。</p>
+<h2 id="重建索引"><a href="#重建索引" class="headerlink" title="重建索引"></a>重建索引</h2><p>索引可能因为删除，或者页分裂等原因，导致数据页有空洞，重建索引的过程会创建一个新的索引，把数据按顺序插入，这样页面的利用率最高，也就是索引更紧凑、更省空间。</p>
+<h3 id="重建二级索引索引"><a href="#重建二级索引索引" class="headerlink" title="重建二级索引索引"></a>重建二级索引索引</h3><p>alter table T drop index k;<br>alter table T add index(k);</p>
+<h3 id="重建主键索引："><a href="#重建主键索引：" class="headerlink" title="重建主键索引："></a>重建主键索引：</h3><p>alter table T engine=InnoDB</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/28/Mysql%EF%BC%886%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1054,179 +2055,6 @@ OK
 <li>该索引是唯一索引</li>
 </ol>
 <p>就是典型的 KV 场景。由于没有其他索引，所以也就不用考虑其他索引的叶子节点大小的问题。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/" itemprop="url">Mysql（5）-数据库索引（必知必会）</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-28T00:00:00+08:00">
-                2019-03-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/DB/" itemprop="url" rel="index">
-                    <span itemprop="name">DB</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/" class="leancloud_visitors" data-flag-title="Mysql（5）-数据库索引（必知必会）">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h2><p>二级索引已经“覆盖了”我们的查询需求，不需要再回表查整行记录，我们称为覆盖索引。</p>
-<p>覆盖索引可以减少树的搜索次数，显著提升查询性能，所以使用覆盖索引是一个常用的性能优化手段。</p>
-<h2 id="最左前缀原则"><a href="#最左前缀原则" class="headerlink" title="最左前缀原则"></a>最左前缀原则</h2><p>索引项是按照索引定义里面出现的字段顺序排序的。正因为如此根据最左前缀，我们找到第一条数据位置，然后遍历到最后一条匹配到最左前缀的就可以了（因为按照顺序相同最左前缀的都排在一块）。</p>
-<p>不只是索引的全部定义，只要满足最左前缀，就可以利用索引来加速检索。这个最左前缀可以是联合索引的最左 N 个字段，也可以是字符串索引的最左 M 个字符。</p>
-<h3 id="在建立联合索引的时候，如何安排索引内的字段顺序。"><a href="#在建立联合索引的时候，如何安排索引内的字段顺序。" class="headerlink" title="在建立联合索引的时候，如何安排索引内的字段顺序。"></a>在建立联合索引的时候，如何安排索引内的字段顺序。</h3><p>第一原则是，如果通过调整顺序，可以少维护一个索引，那么这个顺序往往就是需要优先考虑采用的。提高索引的复用能力，比如根据最左前缀原则，当已经有了 (a,b)这个联合索引后，一般就不需要单独在 a 上建立索引了。</p>
-<p>第二原则，考虑的是空间。</p>
-<p>如果a，b要建联合索引，且单查a或b的时候都要走索引，那么就要再a或b上再加一个索引，此时就要考虑空间。比如a字段b字段更占空间那就建一个（a，b）的联合索引和一个b的索引。</p>
-<h2 id="索引下推"><a href="#索引下推" class="headerlink" title="索引下推"></a>索引下推</h2><p>MySQL 5.6引入的索引下推优化（index condition pushdown)，可以在索引遍历过程中，对索引中包含的字段先做判断，直接过滤掉不满足条件的记录，减少回表次数。</p>
-<h2 id="重建索引"><a href="#重建索引" class="headerlink" title="重建索引"></a>重建索引</h2><p>索引可能因为删除，或者页分裂等原因，导致数据页有空洞，重建索引的过程会创建一个新的索引，把数据按顺序插入，这样页面的利用率最高，也就是索引更紧凑、更省空间。</p>
-<h3 id="重建二级索引索引"><a href="#重建二级索引索引" class="headerlink" title="重建二级索引索引"></a>重建二级索引索引</h3><p>alter table T drop index k;<br>alter table T add index(k);</p>
-<h3 id="重建主键索引："><a href="#重建主键索引：" class="headerlink" title="重建主键索引："></a>重建主键索引：</h3><p>alter table T engine=InnoDB</p>
 
           
         
@@ -1497,7 +2325,7 @@ OK
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/26/Mysql%EF%BC%883%EF%BC%89-redo%E6%97%A5%E6%9C%9F%E5%92%8Cbinlog%E6%97%A5%E5%BF%97/">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/26/Mysql%EF%BC%883%EF%BC%89-redo%E6%97%A5%E5%BF%97%E5%92%8Cbinlog%E6%97%A5%E5%BF%97/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Richey Liu">
@@ -1516,7 +2344,7 @@ OK
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/03/26/Mysql%EF%BC%883%EF%BC%89-redo%E6%97%A5%E6%9C%9F%E5%92%8Cbinlog%E6%97%A5%E5%BF%97/" itemprop="url">Mysql（3）-redo日期和binlog日志</a></h1>
+                <a class="post-title-link" href="/2019/03/26/Mysql%EF%BC%883%EF%BC%89-redo%E6%97%A5%E5%BF%97%E5%92%8Cbinlog%E6%97%A5%E5%BF%97/" itemprop="url">Mysql（3）-redo日志和binlog日志</a></h1>
         
 
         <div class="post-meta">
@@ -1569,8 +2397,8 @@ OK
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2019/03/26/Mysql%EF%BC%883%EF%BC%89-redo%E6%97%A5%E6%9C%9F%E5%92%8Cbinlog%E6%97%A5%E5%BF%97/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/26/Mysql%EF%BC%883%EF%BC%89-redo%E6%97%A5%E6%9C%9F%E5%92%8Cbinlog%E6%97%A5%E5%BF%97/" itemprop="commentCount"></span>
+                <a href="/2019/03/26/Mysql%EF%BC%883%EF%BC%89-redo%E6%97%A5%E5%BF%97%E5%92%8Cbinlog%E6%97%A5%E5%BF%97/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/26/Mysql%EF%BC%883%EF%BC%89-redo%E6%97%A5%E5%BF%97%E5%92%8Cbinlog%E6%97%A5%E5%BF%97/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1578,7 +2406,7 @@ OK
 
           
           
-             <span id="/2019/03/26/Mysql%EF%BC%883%EF%BC%89-redo%E6%97%A5%E6%9C%9F%E5%92%8Cbinlog%E6%97%A5%E5%BF%97/" class="leancloud_visitors" data-flag-title="Mysql（3）-redo日期和binlog日志">
+             <span id="/2019/03/26/Mysql%EF%BC%883%EF%BC%89-redo%E6%97%A5%E5%BF%97%E5%92%8Cbinlog%E6%97%A5%E5%BF%97/" class="leancloud_visitors" data-flag-title="Mysql（3）-redo日志和binlog日志">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -1651,445 +2479,19 @@ OK
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>redo log 用于保证 crash-safe 能力。</p>
 <p>innodb_flush_log_at_trx_commit 这个参数设置成 1 的时候，表示每次事务的 redo log 都直接持久化到磁盘。这个参数我建议你设置成 1，这样可以保证 MySQL 异常重启之后数据不丢失。</p>
 <p>sync_binlog 这个参数设置成 1 的时候，表示每次事务的 binlog 都持久化到磁盘。这个参数我也建议你设置成 1，这样可以保证 MySQL 异常重启之后 binlog 不丢失。</p>
-<h2 id="思考问题："><a href="#思考问题：" class="headerlink" title="思考问题："></a>思考问题：</h2><p>为了保持两份日志逻辑的一致性，是怎么做到的？</p>
-<p>怎样将数据库恢复到一周前某一秒的状态？</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/" itemprop="url">Nginx-2：Nginx安装</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-25T00:00:00+08:00">
-                2019-03-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/web/" itemprop="url" rel="index">
-                    <span itemprop="name">web</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/" class="leancloud_visitors" data-flag-title="Nginx-2：Nginx安装">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>安装nginx有两种方式：</p>
+<h2 id="思考问题："><a href="#思考问题：" class="headerlink" title="思考问题："></a>思考问题：</h2><h3 id="为了保持两份日志逻辑的一致性，是怎么做到的？"><a href="#为了保持两份日志逻辑的一致性，是怎么做到的？" class="headerlink" title="为了保持两份日志逻辑的一致性，是怎么做到的？"></a>为了保持两份日志逻辑的一致性，是怎么做到的？</h3><p>通过两阶段提交：</p>
+<ol>
+<li>redo log 第一阶段写入</li>
+<li>binlog写入</li>
+<li>redo log第二阶段写入</li>
+</ol>
+<p>如果在redo log第二阶段写入时，mysql dowwn了，那么重启的的时候会检查binlog日志是否写入，写入了话，redo log会认为事务提交进行第二阶段写入，否则回滚。</p>
+<p>这里有几个个概念要弄清楚：</p>
 <ul>
-<li>编译</li>
-<li>使用操作系统商自带的工具比如Yarm、apt-get、yum 等直接安装Nginx。</li>
+<li>binlog是归档日志，属于server层日志，mysql并没有通过binlog去实现crash-safe的能力,它存在的意义是，我们可以通过binlog日志实现恢复数据库到某一刻的能力（取决于全库备份时间，和binlog日志保存的天数）。</li>
+<li>InnoDB引擎的 的crash-safe能力 是通过redo log保证的，两阶段提交就是为了在提供cresh-safe的同时，保证binlog和redo log的一致性。binglog日志是可以单独关掉的，并不会影响innodb引擎的crash-safe能力</li>
 </ul>
-<p>直接安装Nginx有个问题，无法安装第三方模块，安装第三方模块只能通过编译的方式安装。</p>
-<h1 id="下载Nginx"><a href="#下载Nginx" class="headerlink" title="下载Nginx"></a>下载Nginx</h1><p>进入官网 <a href="http://nginx.org/" target="_blank" rel="noopener">http://nginx.org/</a> 找到download，点击进入。</p>
-<p>nignx官方有两种版本：</p>
-<ul>
-<li>Mainline Version 主线版本</li>
-<li>Stable Version 稳定版本</li>
-</ul>
-<p>下载最新nginx stable版本</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget http:&#x2F;&#x2F;nginx.org&#x2F;download&#x2F;nginx-1.16.0.tar.gz</span><br><span class="line"></span><br><span class="line">tar -zxf nginx-1.16.0.tar.gz</span><br></pre></td></tr></table></figure>
-
-<h1 id="源码目录"><a href="#源码目录" class="headerlink" title="源码目录"></a>源码目录</h1><ul>
-<li><p>conf</p>
-<p>示例文件，方便配置的示例</p>
-</li>
-<li><p>configure</p>
-<p>configure脚本，用来生成中间文件，执行编译前的必备动作</p>
-</li>
-<li><p>contrib</p>
-<p>提供了一些工具，比如vim编辑nginx配置的高亮支持（将contrib/vim中的文件全部copy到~/.vim中即可）</p>
-</li>
-<li><p>html</p>
-<p>提供了两个标准的html文件，50x.html和默认nginx欢迎界面index.html</p>
-</li>
-<li><p>src</p>
-<p>nginx源码文件</p>
-</li>
-</ul>
-<h1 id="configure介绍"><a href="#configure介绍" class="headerlink" title="configure介绍"></a>configure介绍</h1><p>查看configure脚本支持哪些参数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;configure --help|more</span><br></pre></td></tr></table></figure>
-
-<p>主要分为三大类：</p>
-<ul>
-<li><p>nginx执行中会去哪些目录下的文件作为它的辅助的一些文件</p>
-<p>比如–modules-path指定动态模块，通常我们只需要指定–prefix=PATH(安装目录)即可，其它的模块会在prefix指定的路径下建文件夹</p>
-</li>
-<li><p>第二类参数用来确定使用或者不使用哪些模块</p>
-<p>–with开头的参数表示的模块，默认不会被编译进nginx</p>
-<p>–without开头的模块，默认会被编译进nginx</p>
-</li>
-<li><p>第三类参数指定了nginx编译中的特殊参数</p>
-<p>比如–with-debug表示需要打印级别的日志</p>
-<p>编译nginx</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;configure --prefix&#x3D;&#x2F;opt&#x2F;nginx</span><br></pre></td></tr></table></figure>
-
-<p>执行完configure脚本后会生成一些中间文件，这些文夹放在objs文件下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── autoconf.err</span><br><span class="line">├── Makefile</span><br><span class="line">├── ngx_auto_config.h</span><br><span class="line">├── ngx_auto_headers.h</span><br><span class="line">├── ngx_modules.c</span><br><span class="line">└── src</span><br><span class="line">    ├── core</span><br><span class="line">    ├── event</span><br><span class="line">    │   └── modules</span><br><span class="line">    ├── http</span><br><span class="line">    │   ├── modules</span><br><span class="line">    │   │   └── perl</span><br><span class="line">    │   └── v2</span><br><span class="line">    ├── mail</span><br><span class="line">    ├── misc</span><br><span class="line">    ├── os</span><br><span class="line">    │   ├── unix</span><br><span class="line">    │   └── win32</span><br><span class="line">    └── stream</span><br></pre></td></tr></table></figure>
-
-<p>这里ngx_modules.c文件指定了哪些模块会被编译进nginx</p>
-</li>
-</ul>
-<h1 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#执行make编译</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
-
-<p>我们可以看到执行过程中生成了大量的中间文件，执行结束最终在objs中生成了可执行的nginx二进制文件</p>
-<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>如果是升级安装，则把可执行的nginx二进制文件copy到安装文件即可。</p>
-<p>如果是首次安装，则继续执行make install 安装</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">[richey@192 nginx-1.16.0]$ make install</span><br><span class="line">make -f objs&#x2F;Makefile install</span><br><span class="line">make[1]: 进入目录“&#x2F;opt&#x2F;nginx-1.16.0”</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#39; || mkdir -p &#39;&#x2F;opt&#x2F;nginx&#39;</span><br><span class="line">mkdir: 无法创建目录 “&#x2F;opt&#x2F;nginx”: Permission denied</span><br><span class="line">make[1]: *** [objs&#x2F;Makefile:1206：install] 错误 1</span><br><span class="line">make[1]: 离开目录“&#x2F;opt&#x2F;nginx-1.16.0”</span><br><span class="line">make: *** [Makefile:11：install] 错误 2</span><br><span class="line">[richey@192 nginx-1.16.0]$ sudo make install</span><br><span class="line">[sudo] richey 的密码：</span><br><span class="line">make -f objs&#x2F;Makefile install</span><br><span class="line">make[1]: 进入目录“&#x2F;opt&#x2F;nginx-1.16.0”</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#39; || mkdir -p &#39;&#x2F;opt&#x2F;nginx&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#39;</span><br><span class="line">test ! -f &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#x2F;nginx&#39; \</span><br><span class="line">	|| mv &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#x2F;nginx&#39; \</span><br><span class="line">		&#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#x2F;nginx.old&#39;</span><br><span class="line">cp objs&#x2F;nginx &#39;&#x2F;opt&#x2F;nginx&#x2F;sbin&#x2F;nginx&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;koi-win &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;koi-utf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;win-utf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;mime.types&#39; \</span><br><span class="line">	|| cp conf&#x2F;mime.types &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;mime.types &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;mime.types.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;fastcgi_params&#39; \</span><br><span class="line">	|| cp conf&#x2F;fastcgi_params &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;fastcgi_params \</span><br><span class="line">	&#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;fastcgi_params.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;fastcgi.conf&#39; \</span><br><span class="line">	|| cp conf&#x2F;fastcgi.conf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;fastcgi.conf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;fastcgi.conf.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;uwsgi_params&#39; \</span><br><span class="line">	|| cp conf&#x2F;uwsgi_params &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;uwsgi_params \</span><br><span class="line">	&#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;uwsgi_params.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;scgi_params&#39; \</span><br><span class="line">	|| cp conf&#x2F;scgi_params &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#39;</span><br><span class="line">cp conf&#x2F;scgi_params \</span><br><span class="line">	&#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;scgi_params.default&#39;</span><br><span class="line">test -f &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;nginx.conf&#39; \</span><br><span class="line">	|| cp conf&#x2F;nginx.conf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;nginx.conf&#39;</span><br><span class="line">cp conf&#x2F;nginx.conf &#39;&#x2F;opt&#x2F;nginx&#x2F;conf&#x2F;nginx.conf.default&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;html&#39; \</span><br><span class="line">	|| cp -R html &#39;&#x2F;opt&#x2F;nginx&#39;</span><br><span class="line">test -d &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39; \</span><br><span class="line">	|| mkdir -p &#39;&#x2F;opt&#x2F;nginx&#x2F;logs&#39;</span><br><span class="line">make[1]: 离开目录“&#x2F;opt&#x2F;nginx-1.16.0”</span><br></pre></td></tr></table></figure>
-
-<p>执行完之后，我们去–prefix指定的安装目录中</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">[richey@192 nginx]$ tree</span><br><span class="line">.</span><br><span class="line">├── conf</span><br><span class="line">│   ├── fastcgi.conf</span><br><span class="line">│   ├── fastcgi.conf.default</span><br><span class="line">│   ├── fastcgi_params</span><br><span class="line">│   ├── fastcgi_params.default</span><br><span class="line">│   ├── koi-utf</span><br><span class="line">│   ├── koi-win</span><br><span class="line">│   ├── mime.types</span><br><span class="line">│   ├── mime.types.default</span><br><span class="line">│   ├── nginx.conf</span><br><span class="line">│   ├── nginx.conf.default</span><br><span class="line">│   ├── scgi_params</span><br><span class="line">│   ├── scgi_params.default</span><br><span class="line">│   ├── uwsgi_params</span><br><span class="line">│   ├── uwsgi_params.default</span><br><span class="line">│   └── win-utf</span><br><span class="line">├── html</span><br><span class="line">│   ├── 50x.html</span><br><span class="line">│   └── index.html</span><br><span class="line">├── logs</span><br><span class="line">└── sbin</span><br><span class="line">    └── nginx</span><br></pre></td></tr></table></figure>
-
-<p>这里最主要的nginx的二进制文件就在sbin目录下，决定nginx功能的配置文件在conf目录下</p>
-<p>以上就是nginx编译安装的全部步骤。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/" itemprop="url">Mysql（2）-基本架构</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-25T00:00:00+08:00">
-                2019-03-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/DB/" itemprop="url" rel="index">
-                    <span itemprop="name">DB</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/" class="leancloud_visitors" data-flag-title="Mysql（2）-基本架构">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Mysql基本架构是什么样子的（简述Mysql基本架构）"><a href="#Mysql基本架构是什么样子的（简述Mysql基本架构）" class="headerlink" title="Mysql基本架构是什么样子的（简述Mysql基本架构）"></a>Mysql基本架构是什么样子的（简述Mysql基本架构）</h2><p>Mysql由服务层（Service层）和存储引擎层构成。</p>
-<ul>
-<li><p>Service层涵盖Mysql的大多数核心功能，及所有的内置函数</p>
-<p>包含连接器、查询缓存、分析器、优化器、执行器；</p>
-<p>所有跨存储引擎的功能都在这一层实现；</p>
-</li>
-<li><p>存储引擎层，负责数据的存储和提取</p>
-<p>采用插件式设计，支持InnoDB、MYISAM、Memory等多个存储引擎；</p>
-<p>建表时，如果不制定引擎类型，会默认使用InnoDB</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#指定存储引擎</span><br><span class="line">create table foo（id int primary key,name var(10) not null）engine&#x3D;InnoDB;</span><br></pre></td></tr></table></figure>
-<p>不同的存储引擎共用一个service层</p>
-</li>
-</ul>
-<h2 id="Mysql由哪些组件组成-各个组件的作用是什么"><a href="#Mysql由哪些组件组成-各个组件的作用是什么" class="headerlink" title="Mysql由哪些组件组成,各个组件的作用是什么"></a>Mysql由哪些组件组成,各个组件的作用是什么</h2><h3 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h3><p>  负责跟客户端建立连接，获取权限，维持和管理连接；</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#mysql客户端工具连接</span><br><span class="line">mysql -h$ip -P$port -u$user -p</span><br></pre></td></tr></table></figure>
-
-<p>  客户端同服务端建立连接，在完成TCP握手后，连接器就开始认证身份，需要我们提供用户名密码；</p>
-<p>  认证通过后，连接器会到权限表里查出所有你拥有的权限，之后这个连接里的所有权限判断，都将依赖于此时读到的权限。也就是说连接成功后权限就不会改变了，如果修改了权限，需要重新连接。</p>
-<p>  关于连接的一些参数：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">show processlist; --查看所有链接状态</span><br><span class="line"></span><br><span class="line">-- 查看mysql參數</span><br><span class="line">show variables like &quot;%timeout%&quot;；</span><br><span class="line">-- wait_timeout：设置非交互连接（就是指那些连接池方式、非客户端方式连接的）的超时时间，默认是28800，就是8小时，超过这个时间，mysql服务器会主动切断那些已经连接的，但是状态是sleep的连接。</span><br><span class="line"></span><br><span class="line">-- interactive_timeout:交互链接超时时间;</span><br><span class="line"></span><br><span class="line">-- connection_timeout：“连接过程中”的等待时间</span><br></pre></td></tr></table></figure>
-
-<p>  建立连接的过程通常是比较复杂的，所以建议你在使用中要尽量减少建立连接的动作，也就是尽量使用长连接。</p>
-<p>  MySQL 在执行过程中临时使用的内存是管理在连接对象里面的。这些资源会在连接断开的时候才释放。所以如果长连接累积下来，可能导致内存占用太大，被系统强行杀掉（OOM），从现象看就是 MySQL 异常重启了。</p>
-<pre><code>解决：
-定期断开长连接。使用一段时间，或者程序里面判断执行过一个占用内存的大查询后，断开连接，之后要查询再重连。
-
-如果你用的是 MySQL 5.7 或更新版本，可以在每次执行一个比较大的操作后，通过执行 mysql_reset_connection 来重新初始化连接资源。这个过程不需要重连和重新做权限验证，但是会将连接恢复到刚刚创建完时的状态。</code></pre><h3 id="查询缓存"><a href="#查询缓存" class="headerlink" title="查询缓存"></a>查询缓存</h3><p>  键值对的形式，key是查询语句，valve是结果；</p>
-<p>  查询缓存的失效非常频繁，只要有对一个表的更新，这个表上所有的查询缓存都会被清空。</p>
-<p>  可以将参数 query_cache_type 设置成 DEMAND，这样对于默认的 SQL 语句都不使用查询缓存。</p>
-<p>  MySQL 8.0版本直接将查询缓存的整块功能删掉了，也就是说 8.0 开始彻底没有这个功能了。</p>
-<p>  如果命中查询缓存，会在查询缓存返回结果的时候，做权限验证。</p>
-<p>  关于查询缓存的一些参数：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">query_catche_size&#x3D;0; -- 最好设置为1024的倍数，参考值32M</span><br><span class="line">query_catch_type&#x3D;0; -- 0禁用 1缓存所有查询 2只缓存通过SQL_CACHE指定需要缓存的查询</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="分析器"><a href="#分析器" class="headerlink" title="分析器"></a>分析器</h3><p>  词法分析；</p>
-<pre><code>读取表定义，识别关键字及表和列信息等</code></pre><p>  语法分析；</p>
-<pre><code>ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &apos;elect * from t where ID=1&apos; at line 1</code></pre><h3 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h3><p>  查询会在优化器之前调用 precheck 验证权限；</p>
-<p>  选择索引，决定表的连接顺序。</p>
-<h3 id="执行器"><a href="#执行器" class="headerlink" title="执行器"></a>执行器</h3><p>  权限检查；</p>
-<p>  开表；</p>
-<p>  重复调用表定义的引擎接口，直到表的最后一行，拿到所有满足条件的接口，组成结果集返回给客户端；</p>
-<h2 id="Mysql权限是怎么控制的？"><a href="#Mysql权限是怎么控制的？" class="headerlink" title="Mysql权限是怎么控制的？"></a>Mysql权限是怎么控制的？</h2><p>  客户端通过认证后，会去权限表读取权限，此后所有的权限判断都基于此时读取的权限。除非重新连接，否则不会改变。</p>
-<p>  命中缓存后，返回结果前会校验权限；</p>
-<p>  优化器之前会调用precheck权限验证；</p>
-<p>  执行器开表前会进行权限验证。</p>
+<h3 id="怎样将数据库恢复到一周前某一秒的状态？"><a href="#怎样将数据库恢复到一周前某一秒的状态？" class="headerlink" title="怎样将数据库恢复到一周前某一秒的状态？"></a>怎样将数据库恢复到一周前某一秒的状态？</h3><p>使用全量备份的库，配合binlog回放到要恢复的时间点。</p>
 
           
         
@@ -2306,245 +2708,6 @@ OK
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/23/%E5%85%B3%E4%BA%8E%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81%EF%BC%8C%E4%BD%A0%E6%89%80%E9%9C%80%E8%A6%81%E7%9F%A5%E9%81%93%E7%9A%84%EF%BC%88ASCII-Unicode-Utf-8-GB2312%E2%80%A6%EF%BC%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/23/%E5%85%B3%E4%BA%8E%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81%EF%BC%8C%E4%BD%A0%E6%89%80%E9%9C%80%E8%A6%81%E7%9F%A5%E9%81%93%E7%9A%84%EF%BC%88ASCII-Unicode-Utf-8-GB2312%E2%80%A6%EF%BC%89/" itemprop="url">关于字符编码，你所需要知道的（ASCII,Unicode,Utf-8,GB2312…）</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-23T00:00:00+08:00">
-                2019-03-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">计算机基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/03/23/%E5%85%B3%E4%BA%8E%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81%EF%BC%8C%E4%BD%A0%E6%89%80%E9%9C%80%E8%A6%81%E7%9F%A5%E9%81%93%E7%9A%84%EF%BC%88ASCII-Unicode-Utf-8-GB2312%E2%80%A6%EF%BC%89/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/23/%E5%85%B3%E4%BA%8E%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81%EF%BC%8C%E4%BD%A0%E6%89%80%E9%9C%80%E8%A6%81%E7%9F%A5%E9%81%93%E7%9A%84%EF%BC%88ASCII-Unicode-Utf-8-GB2312%E2%80%A6%EF%BC%89/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/03/23/%E5%85%B3%E4%BA%8E%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81%EF%BC%8C%E4%BD%A0%E6%89%80%E9%9C%80%E8%A6%81%E7%9F%A5%E9%81%93%E7%9A%84%EF%BC%88ASCII-Unicode-Utf-8-GB2312%E2%80%A6%EF%BC%89/" class="leancloud_visitors" data-flag-title="关于字符编码，你所需要知道的（ASCII,Unicode,Utf-8,GB2312…）">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="本文转自http-www-imkevinyang-com"><a href="#本文转自http-www-imkevinyang-com" class="headerlink" title="本文转自http://www.imkevinyang.com"></a>本文转自<a href="http://www.imkevinyang.com" target="_blank" rel="noopener">http://www.imkevinyang.com</a></h2><p>字符编码的问题看似很小，经常被技术人员忽视，但是很容易导致一些莫名其妙的问题。这里总结了一下字符编码的一些普及性的知识，希望对大家有所帮助。</p>
-<p>还是得从ASCII码说起</p>
-<p>说到字符编码，不得不说ASCII码的简史。计算机一开始发明的时候是用来解决数字计算的问题，后来人们发现，计算机还可以做更多的事，例如文本处理。但由于计算机只识“数”，因此人们必须告诉计算机哪个数字来代表哪个特定字符，例如65代表字母‘A’，66代表字母‘B’，以此类推。但是计算机之间字符-数字的对应关系必须得一致，否则就会造成同一段数字在不同计算机上显示出来的字符不一样。因此美国国家标准协会ANSI制定了一个标准，规定了常用字符的集合以及每个字符对应的编号，这就是ASCII字符集（Character Set），也称ASCII码。</p>
-<p>当时的计算机普遍使用8比特字节作为最小的存储和处理单元，加之当时用到的字符也很少，26个大小写英文字母还有数字再加上其他常用符号，也不到100个，因此使用7个比特位就可以高效的存储和处理ASCII码，剩下最高位1比特被用作一些通讯系统的奇偶校验。</p>
-<p>注意，字节代表系统能够处理的最小单位，不一定是8比特。只是现代计算机的事实标准就是用8比特来代表一个字节。在很多技术规格文献中，为了避免产生歧义，更倾向于使用8位组（Octet）而不是字节（Byte）这个术语来强调8个比特的二进制流。下文中为了便于理解，我会延用大家熟悉的“字节”这个概念。</p>
-<p>ASCII字符集由95个可打印字符（0x20-0x7E）和33个控制字符（0x00-0x19，0x7F）组成。可打印字符用于显示在输出设备上，例如荧屏或者打印纸上，控制字符用于向计算机发出一些特殊指令，例如0x07会让计算机发出哔的一声，0x00通常用于指示字符串的结束，0x0D和0x0A用于指示打印机的打印针头退到行首（回车）并移到下一行（换行）。</p>
-<p>那时候的字符编解码系统非常简单，就是简单的查表过程。例如将字符序列编码为二进制流写入存储设备，只需要在ASCII字符集中依次找到字符对应的字节，然后直接将该字节写入存储设备即可。解码二进制流的过程也是类似。</p>
-<p>OEM字符集的衍生</p>
-<p>当计算机开始发展起来的时候，人们逐渐发现，ASCII字符集里那可怜的128个字符已经不能再满足他们的需求了。人们就在想，一个字节能够表示的数字（编号）有256个，而ASCII字符只用到了0x00~0x7F，也就是占用了前128个，后面128个数字不用白不用，因此很多人打起了后面这128个数字的主意。可是问题在于，很多人同时有这样的想法，但是大家对于0x80-0xFF这后面的128个数字分别对应什么样的字符，却有各自的想法。这就导致了当时销往世界各地的机器上出现了大量各式各样的OEM字符集。</p>
-<p>下面这张表是IBM-PC机推出的其中一个OEM字符集，字符集的前128个字符和ASCII字符集的基本一致（为什么说基本一致呢，是因为前32个控制字符在某些情况下会被IBM-PC机当作可打印字符解释），后面128个字符空间加入了一些欧洲国家用到的重音字符，以及一些用于画线条画的字符。</p>
-<p>事实上，大部分OEM字符集是兼容ASCII字符集的，也就是说，大家对于0x00<del>0x7F这个范围的解释基本是相同的，而对于后半部分0x80</del>0xFF的解释却不一定相同。甚至有时候同样的字符在不同OEM字符集中对应的字节也是不同的。</p>
-<p>不同的OEM字符集导致人们无法跨机器交流各种文档。例如职员甲发了一封简历résumés给职员乙，结果职员乙看到的却是r</p>
-<p>sum</p>
-<p>s，因为é字符在职员甲机器上的OEM字符集中对应的字节是0x82，而在职员乙的机器上，由于使用的OEM字符集不同，对0x82字节解码后得到的字符却是</p>
-<p>。</p>
-<p>多字节字符集（MBCS）和中文字符集</p>
-<p>上面我们提到的字符集都是基于单字节编码，也就是说，一个字节翻译成一个字符。这对于拉丁语系国家来说可能没有什么问题，因为他们通过扩展第8个比特，就可以得到256个字符了，足够用了。但是对于亚洲国家来说，256个字符是远远不够用的。因此这些国家的人为了用上电脑，又要保持和ASCII字符集的兼容，就发明了多字节编码方式，相应的字符集就称为多字节字符集。例如中国使用的就是双字节字符集编码（DBCS，Double Byte Character Set）。</p>
-<p>对于单字节字符集来说，代码页中只需要有一张码表即可，上面记录着256个数字代表的字符。程序只需要做简单的查表操作就可以完成编解码的过程。</p>
-<p>代码页是字符集编码的具体实现，你可以把他理解为一张“字符-字节”映射表，通过查表实现“字符-字节”的翻译。下面会有更详细的描述。</p>
-<p>而对于多字节字符集，代码页中通常会有很多码表。那么程序怎么知道该使用哪张码表去解码二进制流呢？答案是，根据第一个字节来选择不同的码表进行解析。</p>
-<p>例如目前最常用的中文字符集GB2312，涵盖了所有简体字符以及一部分其他字符；GBK（K代表扩展的意思）则在GB2312的基础上加入了对繁体字符等其他非简体字符（GB18030字符集不是双字节字符集，我们在讲Unicode的时候会提到）。这两个字符集的字符都是使用1-2个字节来表示。Windows系统采用936代码页来实现对GBK字符集的编解码。在解析字节流的时候，如果遇到字节的最高位是0的话，那么就使用936代码页中的第1张码表进行解码，这就和单字节字符集的编解码方式一致了。</p>
-<p>当字节的高位是1的时候，确切的说，当第一个字节位于0x81–0xFE之间时，根据第一个字节不同找到代码页中的相应的码表，例如当第一个字节是0x81，那么对应936中的下面这张码表：</p>
-<p>（关于936代码页中完整的码表信息，参见MSDN：<a href="http://msdn.microsoft.com/en-us/library/cc194913%28v=MSDN.10%29.aspx.）" target="_blank" rel="noopener">http://msdn.microsoft.com/en-us/library/cc194913%28v=MSDN.10%29.aspx.）</a></p>
-<p>按照936代码页的码表，当程序遇到连续字节流0x81 0x40的时候，就会解码为“丂”字符。</p>
-<p>ANSI标准、国家标准、ISO标准</p>
-<p>不同ASCII衍生字符集的出现，让文档交流变得非常困难，因此各种组织都陆续进行了标准化流程。例如美国ANSI组织制定了ANSI标准字符编码（注意，我们现在通常说到ANSI编码，通常指的是平台的默认编码，例如英文操作系统中是ISO-8859-1，中文系统是GBK），ISO组织制定的各种ISO标准字符编码，还有各国也会制定一些国家标准字符集，例如中国的GBK，GB2312和GB18030。</p>
-<p>操作系统在发布的时候，通常会往机器里预装这些标准的字符集还有平台专用的字符集，这样只要你的文档是使用标准字符集编写的，通用性就比较高了。例如你用GB2312字符集编写的文档，在中国大陆内的任何机器上都能正确显示。同时，我们也可以在一台机器上阅读多个国家不同语言的文档了，前提是本机必须安装该文档使用的字符集。</p>
-<p>Unicode的出现</p>
-<p>虽然通过使用不同字符集，我们可以在一台机器上查阅不同语言的文档，但是我们仍然无法解决一个问题：在一份文档中显示所有字符。为了解决这个问题，我们需要一个全人类达成共识的巨大的字符集，这就是Unicode字符集。</p>
-<p>Unicode字符集概述</p>
-<p>Unicode字符集涵盖了目前人类使用的所有字符，并为每个字符进行统一编号，分配唯一的字符码（Code Point）。Unicode字符集将所有字符按照使用上的频繁度划分为17个层面（Plane），每个层面上有216=65536个字符码空间。</p>
-<p>其中第0个层面BMP，基本涵盖了当今世界用到的所有字符。其他的层面要么是用来表示一些远古时期的文字，要么是留作扩展。我们平常用到的Unicode字符，一般都是位于BMP层面上的。目前Unicode字符集中尚有大量字符空间未使用。</p>
-<p>编码系统的变化</p>
-<p>在Unicode出现之前，所有的字符集都是和具体编码方案绑定在一起的，都是直接将字符和最终字节流绑定死了，例如ASCII编码系统规定使用7比特来编码ASCII字符集；GB2312以及GBK字符集，限定了使用最多2个字节来编码所有字符，并且规定了字节序。这样的编码系统通常用简单的查表，也就是通过代码页就可以直接将字符映射为存储设备上的字节流了。例如下面这个例子：</p>
-<p>这种方式的缺点在于，字符和字节流之间耦合得太紧密了，从而限定了字符集的扩展能力。假设以后火星人入住地球了，要往现有字符集中加入火星文就变得很难甚至不可能了，而且很容易破坏现有的编码规则。</p>
-<p>因此Unicode在设计上考虑到了这一点，将字符集和字符编码方案分离开。</p>
-<p>也就是说，虽然每个字符在Unicode字符集中都能找到唯一确定的编号（字符码，又称Unicode码），但是决定最终字节流的却是具体的字符编码。例如同样是对Unicode字符“A”进行编码，UTF-8字符编码得到的字节流是0x41，而UTF-16（大端模式）得到的是0x00 0x41。</p>
-<p>常见的Unicode编码</p>
-<p>UCS-2/UTF-16</p>
-<p>如果要我们来实现Unicode字符集中BMP字符的编码方案，我们会怎么实现？由于BMP层面上有216=65536个字符码，因此我们只需要两个字节就可以完全表示这所有的字符了。</p>
-<p>举个例子，“中”的Unicode字符码是0x4E2D(01001110 00101101)，那么我们可以编码为01001110 00101101（大端）或者00101101 01001110 （小端）。</p>
-<p>UCS-2和UTF-16对于BMP层面的字符均是使用2个字节来表示，并且编码得到的结果完全一致。不同之处在于，UCS-2最初设计的时候只考虑到BMP字符，因此使用固定2个字节长度，也就是说，他无法表示Unicode其他层面上的字符，而UTF-16为了解除这个限制，支持Unicode全字符集的编解码，采用了变长编码，最少使用2个字节，如果要编码BMP以外的字符，则需要4个字节结对，这里就不讨论那么远，有兴趣可以参考维基百科：UTF-16/UCS-2。</p>
-<p>Windows从NT时代开始就采用了UTF-16编码，很多流行的编程平台，例如.Net，Java，Qt还有Mac下的Cocoa等都是使用UTF-16作为基础的字符编码。例如代码中的字符串，在内存中相应的字节流就是用UTF-16编码过的。</p>
-<p>UTF-8</p>
-<p>UTF-8应该是目前应用最广泛的一种Unicode编码方案。由于UCS-2/UTF-16对于ASCII字符使用两个字节进行编码，存储和处理效率相对低下，并且由于ASCII字符经过UTF-16编码后得到的两个字节，高字节始终是0x00，很多C语言的函数都将此字节视为字符串末尾从而导致无法正确解析文本。因此一开始推出的时候遭到很多西方国家的抵触，大大影响了Unicode的推行。后来聪明的人们发明了UTF-8编码，解决了这个问题。</p>
-<p>UTF-8编码方案采用1-4个字节来编码字符，方法其实也非常简单。</p>
-<p>（上图中的x代表Unicode码的低8位，y代表高8位）</p>
-<p>对于ASCII字符的编码使用单字节，和ASCII编码一摸一样，这样所有原先使用ASCII编解码的文档就可以直接转到UTF-8编码了。对于其他字符，则使用2-4个字节来表示，其中，首字节前置1的数目代表正确解析所需要的字节数，剩余字节的高2位始终是10。例如首字节是1110yyyy，前置有3个1，说明正确解析总共需要3个字节，需要和后面2个以10开头的字节结合才能正确解析得到字符。</p>
-<p>关于UTF-8的更多信息，参考维基百科：UTF-8。</p>
-<p>GB18030</p>
-<p>任何能够将Unicode字符映射为字节流的编码都属于Unicode编码。中国的GB18030编码，覆盖了Unicode所有的字符，因此也算是一种Unicode编码。只不过他的编码方式并不像UTF-8或者UTF-16一样，将Unicode字符的编号通过一定的规则进行转换，而只能通过查表的手段进行编码。</p>
-<p>关于GB18030的更多信息，参考：GB18030。</p>
-<p>Unicode相关的常见问题</p>
-<p>Unicode是两个字节吗？</p>
-<p>Unicode只是定义了一个庞大的、全球通用的字符集，并为每个字符规定了唯一确定的编号，具体存储为什么样的字节流，取决于字符编码方案。推荐的Unicode编码是UTF-16和UTF-8。</p>
-<p>带签名的UTF-8指的是什么意思？</p>
-<p>带签名指的是字节流以BOM标记开始。很多软件会“智能”的探测当前字节流使用的字符编码，这种探测过程出于效率考虑，通常会提取字节流前面若干个字节，看看是否符合某些常见字符编码的编码规则。由于UTF-8和ASCII编码对于纯英文的编码是一样的，无法区分开来，因此通过在字节流最前面添加BOM标记可以告诉软件，当前使用的是Unicode编码，判别成功率就十分准确了。但是需要注意，不是所有软件或者程序都能正确处理BOM标记，例如PHP就不会检测BOM标记，直接把它当普通字节流解析了。因此如果你的PHP文件是采用带BOM标记的UTF-8进行编码的，那么有可能会出现问题。</p>
-<p>Unicode编码和以前的字符集编码有什么区别？</p>
-<p>早期字符编码、字符集和代码页等概念都是表达同一个意思。例如GB2312字符集、GB2312编码，936代码页，实际上说的是同个东西。但是对于Unicode则不同，Unicode字符集只是定义了字符的集合和唯一编号，Unicode编码，则是对UTF-8、UCS-2/UTF-16等具体编码方案的统称而已，并不是具体的编码方案。所以当需要用到字符编码的时候，你可以写gb2312，codepage936，utf-8，utf-16，但请不要写unicode（看过别人在网页的meta标签里头写charset=unicode，有感而发）。</p>
-<p>乱码问题</p>
-<p>乱码指的是程序显示出来的字符文本无法用任何语言去解读。一般情况下会包含大量</p>
-<p>或者?。乱码问题是所有计算机用户或多或少会遇到的问题。造成乱码的原因就是因为使用了错误的字符编码去解码字节流，因此当我们在思考任何跟文本显示有关的问题时，请时刻保持清醒：当前使用的字符编码是什么。只有这样，我们才能正确分析和处理乱码问题。</p>
-<p>例如最常见的网页乱码问题。如果你是网站技术人员，遇到这样的问题，需要检查以下原因：<br>服务器返回的响应头Content-Type没有指明字符编码<br>网页内是否使用META HTTP-EQUIV标签指定了字符编码<br>网页文件本身存储时使用的字符编码和网页声明的字符编码是否一致</p>
-<p>注意，网页解析的过程如果使用的字符编码不正确，还可能会导致脚本或者样式表出错。具体细节可以参考我以前写过的文章：文档字符集导致的脚本错误和Asp.Net页面的编码问题。</p>
-<p>不久前看到某技术论坛有人反馈，WinForm程序使用Clipboard类的GetData方法去访问剪切板中的HTML内容时会出现乱码的问题，我估计也是由于WinForm在获取HTML文本的时候没有用对正确的字符编码导致的。Windows剪贴板只支持UTF-8编码，也就是说你传入的文本都会被UTF-8编解码。这样一来，只要两个程序都是调用Windows剪切板API编程的话，那么复制粘贴的过程中不会出现乱码。除非一方在获取到剪贴板数据之后使用了错误的字符编码进行解码，才会得到乱码（我做了简单的WinForm剪切板编程实验，发现GetData使用的是系统默认编码，而不是UTF-8编码）。</p>
-<p>关于乱码中出现?或者?，这里需要额外提一下，当程序使用特定字符编码解析字节流的时候，一旦遇到无法解析的字节流时，就会用</p>
-<p>或者?来替代。因此，一旦你最终解析得到的文本包含这样的字符，而你又无法得到原始字节流的时候，说明正确的信息已经彻底丢失了，尝试任何字符编码都无法从这样的字符文本中还原出正确的信息来。</p>
-<p>必要的术语解释</p>
-<p>字符集（Character Set），字面上的理解就是字符的集合，例如ASCII字符集，定义了128个字符；GB2312定义了7445个字符。而计算机系统中提到的字符集准确来说，指的是已编号的字符的有序集合（不一定是连续）。</p>
-<p>字符码（Code Point）指的就是字符集中每个字符的数字编号。例如ASCII字符集用0-127这连续的128个数字分别表示128个字符；GBK字符集使用区位码的方式为每个字符编号，首先定义一个94X94的矩阵，行称为“区”，列称为“位”，然后将所有国标汉字放入矩阵当中，这样每个汉字就可以用唯一的“区位”码来标识了。例如“中”字被放到54区第48位，因此字符码就是5448。而Unicode中将字符集按照一定的类别划分到0~16这17个层面（Planes）中，每个层面中拥有216=65536个字符码，因此Unicode总共拥有的字符码，也即是Unicode的字符空间总共有17*65536=1114112。</p>
-<p>编码的过程是将字符转换成字节流。</p>
-<p>解码的过程是将字节流解析为字符。</p>
-<p>字符编码（Character Encoding）是将字符集中的字符码映射为字节流的一种具体实现方案。例如ASCII字符编码规定使用单字节中低位的7个比特去编码所有的字符。例如‘A’的编号是65，用单字节表示就是0x41，因此写入存储设备的时候就是b’01000001’。GBK编码则是将区位码（GBK的字符码）中的区码和位码的分别加上0xA0（160）的偏移（之所以要加上这样的偏移，主要是为了和ASCII码兼容），例如刚刚提到的“中”字，区位码是5448，十六进制是0x3630，区码和位码分别加上0xA0的偏移之后就得到0xD6D0，这就是“中”字的GBK编码结果。</p>
-<p>代码页（Code Page）一种字符编码具体形式。早期字符相对少，因此通常会使用类似表格的形式将字符直接映射为字节流，然后通过查表的方式来实现字符的编解码。现代操作系统沿用了这种方式。例如Windows使用936代码页、Mac系统使用EUC-CN代码页实现GBK字符集的编码，名字虽然不一样，但对于同一汉字的编码肯定是一样的。</p>
-<p>大小端的说法源自《格列佛游记》。我们知道，鸡蛋通常一端大一端小，小人国的人们对于剥蛋壳时应从哪一端开始剥起有着不一样的看法。同样，计算机界对于传输多字节字（由多个字节来共同表示一个数据类型）时，是先传高位字节（大端）还是先传低位字节（小端）也有着不一样的看法，这就是计算机里头大小端模式的由来了。无论是写文件还是网络传输，实际上都是往流设备进行写操作的过程，而且这个写操作是从流的低地址向高地址开始写（这很符合人的习惯），对于多字节字来说，如果先写入高位字节，则称作大端模式。反之则称作小端模式。也就是说，大端模式下，字节序和流设备的地址顺序是相反的，而小端模式则是相同的。一般网络协议都采用大端模式进行传输，windows操作系统采用Utf-16小端模式。</p>
-<p>——Kevin Yang</p>
-<p>参考链接：<br>The Absolute Minimum Every Software Developer Absolutely, Positively Must Know About Unicode and Character Sets (No Excuses!)<br><a href="http://developers.sun.com/dev/gadc/technicalpublications/articles/gb18030.html" target="_blank" rel="noopener">http://developers.sun.com/dev/gadc/technicalpublications/articles/gb18030.html</a><br><a href="http://en.wikipedia.org/wiki/Universal_Character_Set" target="_blank" rel="noopener">http://en.wikipedia.org/wiki/Universal_Character_Set</a><br><a href="http://en.wikipedia.org/wiki/Code_page" target="_blank" rel="noopener">http://en.wikipedia.org/wiki/Code_page</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2599,7 +2762,7 @@ OK
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">102</span>
+                  <span class="site-state-item-count">105</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2621,7 +2784,7 @@ OK
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-count">35</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
