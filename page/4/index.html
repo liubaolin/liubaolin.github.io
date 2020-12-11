@@ -851,197 +851,6 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/" itemprop="url">Mysql（12）-Mysql事务隔离是如何实现的</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-05T00:00:00+08:00">
-                2019-06-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/DB/" itemprop="url" rel="index">
-                    <span itemprop="name">DB</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/" class="leancloud_visitors" data-flag-title="Mysql（12）-Mysql事务隔离是如何实现的">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="事务的启动时机。"><a href="#事务的启动时机。" class="headerlink" title="事务的启动时机。"></a>事务的启动时机。</h1><p>begin/start transaction 命令并不是一个事务的起点，在执行到它们之后的第一个操作 InnoDB 表的语句，事务才真正启动。如果你想要马上启动一个事务，可以使用 start transaction with consistent snapshot 这个命令。</p>
-<p>第一种启动方式，一致性视图是在第执行第一个快照读语句时创建的；<br>第二种启动方式，一致性视图是在执行 start transaction with consistent snapshot 时创建的。</p>
-<h1 id="在-MySQL-里，有两个“视图”的概念"><a href="#在-MySQL-里，有两个“视图”的概念" class="headerlink" title="在 MySQL 里，有两个“视图”的概念"></a>在 MySQL 里，有两个“视图”的概念</h1><p>一个是 view。它是一个用查询语句定义的虚拟表，在调用的时候执行查询语句并生成结果。创建视图的语法是 create view … ，而它的查询方法与表一样。</p>
-<p>另一个是 InnoDB 在实现 MVCC 时用到的一致性读视图，即 consistent read view，用于支持 RC（Read Committed，读提交）和 RR（Repeatable Read，可重复读）隔离级别的实现。</p>
-<h1 id="“快照”在-MVCC-里是怎么工作的？"><a href="#“快照”在-MVCC-里是怎么工作的？" class="headerlink" title="“快照”在 MVCC 里是怎么工作的？"></a>“快照”在 MVCC 里是怎么工作的？</h1><p>在可重复读隔离级别下，事务在启动的时候就“拍了个快照”。注意，这个快照是基于整库的。</p>
-<p>InnoDB 里面每个事务有一个唯一的事务 ID，叫作 transaction id。它是在事务开始的时候向 InnoDB 的事务系统申请的，是按申请顺序严格递增的。</p>
-<p>而每行数据也都是有多个版本的。每次事务更新数据的时候，都会生成一个新的数据版本，并且把 transaction id 赋值给这个数据版本的事务 ID，记为 row trx_id。同时，旧的数据版本要保留，并且在新的数据版本中，能够有信息可以直接拿到它。</p>
-<p>也就是说，数据表中的一行记录，其实可能有多个版本 (row)，每个版本有自己的 row trx_id。</p>
-<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg" alt="Mysql数据MVVC"></p>
-<p>中的三个虚线箭头，就是 undo log；而 V1、V2、V3 并不是物理上真实存在的，而是每次需要的时候根据当前版本和 undo log 计算出来的。比如，需要 V2 的时候，就是通过 V4 依次执行 U3、U2 算出来。</p>
-<p>可重复读的定义：一个事务启动的时候，能够看到所有已经提交的事务结果。但是之后，这个事务执行期间，其他事务的更新对它不可见。</p>
-<p>因此，一个事务只需要在启动的时候声明说，“以我启动的时刻为准，如果一个数据版本是在我启动之前生成的，就认；如果是我启动以后才生成的，我就不认，我必须要找到它的上一个版本”。</p>
-<p>一个数据版本，对于一个事务视图来说，除了自己的更新总是可见以外，有三种情况：</p>
-<ol>
-<li>版本未提交，不可见；</li>
-<li>版本已提交，但是是在视图创建后提交的，不可见；</li>
-<li>版本已提交，而且是在视图创建前提交的，可见。</li>
-</ol>
-<p>更新数据都是先读后写的，而这个读，只能读当前的值，称为“当前读”（current read）。</p>
-<p>这里我们提到了一个概念，叫作当前读。其实，除了 update 语句外，select 语句如果加锁，也是当前读。</p>
-<h1 id="事务的可重复读的能力是怎么实现的？"><a href="#事务的可重复读的能力是怎么实现的？" class="headerlink" title="事务的可重复读的能力是怎么实现的？"></a>事务的可重复读的能力是怎么实现的？</h1><p>可重复读的核心就是一致性读（consistent read）；而事务更新数据的时候，只能用当前读。如果当前的记录的行锁被其他事务占用的话，就需要进入锁等待。</p>
-<h1 id="读提交的逻辑和可重复读的区别"><a href="#读提交的逻辑和可重复读的区别" class="headerlink" title="读提交的逻辑和可重复读的区别"></a>读提交的逻辑和可重复读的区别</h1><p>在可重复读隔离级别下，只需要在事务开始的时候创建一致性视图，之后事务里的其他查询都共用这个一致性视图；</p>
-<p>在读提交隔离级别下，每一个语句执行前都会重新算出一个新的视图。</p>
-<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>InnoDB 的行数据有多个版本，每个数据版本有自己的 row trx_id，每个事务或者语句有自己的一致性视图。普通查询语句是一致性读，一致性读会根据 row trx_id 和一致性视图确定数据版本的可见性。</p>
-<ul>
-<li>对于可重复读，查询只承认在事务启动前就已经提交完成的数据；</li>
-<li>对于读提交，查询只承认在语句启动前就已经提交完成的数据；</li>
-<li>而当前读，总是读取已经提交完成的最新版本。</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/05/Spring%20Security%EF%BC%885%EF%BC%89%EF%BC%8D%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1358,6 +1167,197 @@ public Object getCurrentUserToo(@AuthenticationPrincipal UserDetails userDetails
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/" itemprop="url">Mysql（12）-Mysql事务隔离是如何实现的</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-05T00:00:00+08:00">
+                2019-06-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/DB/" itemprop="url" rel="index">
+                    <span itemprop="name">DB</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/" class="leancloud_visitors" data-flag-title="Mysql（12）-Mysql事务隔离是如何实现的">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="事务的启动时机。"><a href="#事务的启动时机。" class="headerlink" title="事务的启动时机。"></a>事务的启动时机。</h1><p>begin/start transaction 命令并不是一个事务的起点，在执行到它们之后的第一个操作 InnoDB 表的语句，事务才真正启动。如果你想要马上启动一个事务，可以使用 start transaction with consistent snapshot 这个命令。</p>
+<p>第一种启动方式，一致性视图是在第执行第一个快照读语句时创建的；<br>第二种启动方式，一致性视图是在执行 start transaction with consistent snapshot 时创建的。</p>
+<h1 id="在-MySQL-里，有两个“视图”的概念"><a href="#在-MySQL-里，有两个“视图”的概念" class="headerlink" title="在 MySQL 里，有两个“视图”的概念"></a>在 MySQL 里，有两个“视图”的概念</h1><p>一个是 view。它是一个用查询语句定义的虚拟表，在调用的时候执行查询语句并生成结果。创建视图的语法是 create view … ，而它的查询方法与表一样。</p>
+<p>另一个是 InnoDB 在实现 MVCC 时用到的一致性读视图，即 consistent read view，用于支持 RC（Read Committed，读提交）和 RR（Repeatable Read，可重复读）隔离级别的实现。</p>
+<h1 id="“快照”在-MVCC-里是怎么工作的？"><a href="#“快照”在-MVCC-里是怎么工作的？" class="headerlink" title="“快照”在 MVCC 里是怎么工作的？"></a>“快照”在 MVCC 里是怎么工作的？</h1><p>在可重复读隔离级别下，事务在启动的时候就“拍了个快照”。注意，这个快照是基于整库的。</p>
+<p>InnoDB 里面每个事务有一个唯一的事务 ID，叫作 transaction id。它是在事务开始的时候向 InnoDB 的事务系统申请的，是按申请顺序严格递增的。</p>
+<p>而每行数据也都是有多个版本的。每次事务更新数据的时候，都会生成一个新的数据版本，并且把 transaction id 赋值给这个数据版本的事务 ID，记为 row trx_id。同时，旧的数据版本要保留，并且在新的数据版本中，能够有信息可以直接拿到它。</p>
+<p>也就是说，数据表中的一行记录，其实可能有多个版本 (row)，每个版本有自己的 row trx_id。</p>
+<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg" alt="Mysql数据MVVC"></p>
+<p>中的三个虚线箭头，就是 undo log；而 V1、V2、V3 并不是物理上真实存在的，而是每次需要的时候根据当前版本和 undo log 计算出来的。比如，需要 V2 的时候，就是通过 V4 依次执行 U3、U2 算出来。</p>
+<p>可重复读的定义：一个事务启动的时候，能够看到所有已经提交的事务结果。但是之后，这个事务执行期间，其他事务的更新对它不可见。</p>
+<p>因此，一个事务只需要在启动的时候声明说，“以我启动的时刻为准，如果一个数据版本是在我启动之前生成的，就认；如果是我启动以后才生成的，我就不认，我必须要找到它的上一个版本”。</p>
+<p>一个数据版本，对于一个事务视图来说，除了自己的更新总是可见以外，有三种情况：</p>
+<ol>
+<li>版本未提交，不可见；</li>
+<li>版本已提交，但是是在视图创建后提交的，不可见；</li>
+<li>版本已提交，而且是在视图创建前提交的，可见。</li>
+</ol>
+<p>更新数据都是先读后写的，而这个读，只能读当前的值，称为“当前读”（current read）。</p>
+<p>这里我们提到了一个概念，叫作当前读。其实，除了 update 语句外，select 语句如果加锁，也是当前读。</p>
+<h1 id="事务的可重复读的能力是怎么实现的？"><a href="#事务的可重复读的能力是怎么实现的？" class="headerlink" title="事务的可重复读的能力是怎么实现的？"></a>事务的可重复读的能力是怎么实现的？</h1><p>可重复读的核心就是一致性读（consistent read）；而事务更新数据的时候，只能用当前读。如果当前的记录的行锁被其他事务占用的话，就需要进入锁等待。</p>
+<h1 id="读提交的逻辑和可重复读的区别"><a href="#读提交的逻辑和可重复读的区别" class="headerlink" title="读提交的逻辑和可重复读的区别"></a>读提交的逻辑和可重复读的区别</h1><p>在可重复读隔离级别下，只需要在事务开始的时候创建一致性视图，之后事务里的其他查询都共用这个一致性视图；</p>
+<p>在读提交隔离级别下，每一个语句执行前都会重新算出一个新的视图。</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>InnoDB 的行数据有多个版本，每个数据版本有自己的 row trx_id，每个事务或者语句有自己的一致性视图。普通查询语句是一致性读，一致性读会根据 row trx_id 和一致性视图确定数据版本的可见性。</p>
+<ul>
+<li>对于可重复读，查询只承认在事务启动前就已经提交完成的数据；</li>
+<li>对于读提交，查询只承认在语句启动前就已经提交完成的数据；</li>
+<li>而当前读，总是读取已经提交完成的最新版本。</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/04/Spring%20Security%EF%BC%884%EF%BC%89%EF%BC%8D%E4%B8%AA%E6%80%A7%E5%8C%96%E7%94%A8%E6%88%B7%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%EF%BC%88%E4%BA%8C%EF%BC%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1579,194 +1579,6 @@ public class EvolutionaryAuthenticationFailureHandler extends SimpleUrlAuthentic
 
     }
 }</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/" itemprop="url">Mysql（11）-有意思的Mysql问题</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-03T00:00:00+08:00">
-                2019-06-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/DB/" itemprop="url" rel="index">
-                    <span itemprop="name">DB</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/" class="leancloud_visitors" data-flag-title="Mysql（11）-有意思的Mysql问题">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <ol>
-<li>当备库用–single-transaciton做逻辑备份的时候,如果主库的binlog传来一个DDL语句会怎样？</li>
-</ol>
-<p>备份操作是一个过程，DDL从主库传过来时，备份过程可能处于不同的阶段，所以DDL对备份的影响也不同。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Q1:SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;</span><br><span class="line">Q2:START TRANSACTION  WITH CONSISTENT SNAPSHOT；</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br><span class="line">Q3:SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 1 *&#x2F;</span><br><span class="line">Q4:show create table &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 2 *&#x2F;</span><br><span class="line">Q5:SELECT * FROM &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 3 *&#x2F;</span><br><span class="line">Q6:ROLLBACK TO SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 4 *&#x2F;</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br></pre></td></tr></table></figure>
-<p>在备份开始的时候，为了确保 RR（可重复读）隔离级别，再设置一次 RR 隔离级别 (Q1);</p>
-<p>启动事务，这里用 WITH CONSISTENT SNAPSHOT 确保这个语句执行完就可以得到一个一致性视图（Q2)；</p>
-<p>设置一个保存点，这个很重要（Q3）；</p>
-<p>show create 是为了拿到表结构 (Q4)，然后正式导数据 （Q5），回滚到 SAVEPOINT sp，在这里的作用是释放 t1 的 MDL 锁 （Q6）。当然这部分属于“超纲”，上文正文里面都没提到。</p>
-<p>答案如下：</p>
-<ul>
-<li><p>如果在 Q4 语句执行之前到达，现象：没有影响，备份拿到的是 DDL 后的表结构。</p>
-</li>
-<li><p>如果在“时刻 2”到达，则表结构被改过，Q5 执行的时候，报 Table definition has changed, please retry transaction，现象：mysqldump 终止；</p>
-</li>
-<li><p>如果在“时刻 2”和“时刻 3”之间到达，mysqldump 占着 t1 的 MDL 读锁，binlog 被阻塞，现象：主从延迟，直到 Q6 执行完成。</p>
-</li>
-<li><p>从“时刻 4”开始，mysqldump 释放了 MDL 读锁，现象：没有影响，备份拿到的是 DDL 前的表结构。</p>
-</li>
-</ul>
-<p>总结就是在拿到表结构之前到达，没影响；在拿到表结构之后，备份数据之前到，会报错；在备份后到达，主从延迟</p>
-<ol start="2">
-<li>Mysql选错索引的一个案例分析<br>//todo 待分析</li>
-</ol>
-<p>在生产上遇见了一个非常经典的Mysql选错索引的问题，简述如下：有一张日志表，id是自增主键，假设还有一个字段是code，code字段也有索引；</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE IF NOT EXISTS &#96;log_test&#96;(</span><br><span class="line">  &#96;id&#96; INT  AUTO_INCREMENT,</span><br><span class="line">  &#96;key&#96; VARCHAR(100) NOT NULL,</span><br><span class="line">  PRIMARY KEY (&#96;id&#96;),</span><br><span class="line">  index idx_key(&#96;key&#96;)</span><br><span class="line">)ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_unicode_ci;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">delimiter ;;</span><br><span class="line">create procedure idata()</span><br><span class="line">begin</span><br><span class="line">  declare i int;</span><br><span class="line">  set i&#x3D;1;</span><br><span class="line">  while(i&lt;&#x3D;100000)do</span><br><span class="line">    insert into log_test values(i, i);</span><br><span class="line">    set i&#x3D;i+1;</span><br><span class="line">  end while;</span><br><span class="line">end;;</span><br><span class="line">delimiter ;</span><br><span class="line">call idata();</span><br></pre></td></tr></table></figure>
-
           
         
       
@@ -2081,6 +1893,194 @@ public class BrowerProperties {
 
 evolutionary.security.brower.loginPage = /demo-signIn.html
 evolutionary.security.brower.loginInType=REDIRECT</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/" itemprop="url">Mysql（11）-有意思的Mysql问题</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-03T00:00:00+08:00">
+                2019-06-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/DB/" itemprop="url" rel="index">
+                    <span itemprop="name">DB</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/" class="leancloud_visitors" data-flag-title="Mysql（11）-有意思的Mysql问题">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <ol>
+<li>当备库用–single-transaciton做逻辑备份的时候,如果主库的binlog传来一个DDL语句会怎样？</li>
+</ol>
+<p>备份操作是一个过程，DDL从主库传过来时，备份过程可能处于不同的阶段，所以DDL对备份的影响也不同。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Q1:SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;</span><br><span class="line">Q2:START TRANSACTION  WITH CONSISTENT SNAPSHOT；</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br><span class="line">Q3:SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 1 *&#x2F;</span><br><span class="line">Q4:show create table &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 2 *&#x2F;</span><br><span class="line">Q5:SELECT * FROM &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 3 *&#x2F;</span><br><span class="line">Q6:ROLLBACK TO SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 4 *&#x2F;</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br></pre></td></tr></table></figure>
+<p>在备份开始的时候，为了确保 RR（可重复读）隔离级别，再设置一次 RR 隔离级别 (Q1);</p>
+<p>启动事务，这里用 WITH CONSISTENT SNAPSHOT 确保这个语句执行完就可以得到一个一致性视图（Q2)；</p>
+<p>设置一个保存点，这个很重要（Q3）；</p>
+<p>show create 是为了拿到表结构 (Q4)，然后正式导数据 （Q5），回滚到 SAVEPOINT sp，在这里的作用是释放 t1 的 MDL 锁 （Q6）。当然这部分属于“超纲”，上文正文里面都没提到。</p>
+<p>答案如下：</p>
+<ul>
+<li><p>如果在 Q4 语句执行之前到达，现象：没有影响，备份拿到的是 DDL 后的表结构。</p>
+</li>
+<li><p>如果在“时刻 2”到达，则表结构被改过，Q5 执行的时候，报 Table definition has changed, please retry transaction，现象：mysqldump 终止；</p>
+</li>
+<li><p>如果在“时刻 2”和“时刻 3”之间到达，mysqldump 占着 t1 的 MDL 读锁，binlog 被阻塞，现象：主从延迟，直到 Q6 执行完成。</p>
+</li>
+<li><p>从“时刻 4”开始，mysqldump 释放了 MDL 读锁，现象：没有影响，备份拿到的是 DDL 前的表结构。</p>
+</li>
+</ul>
+<p>总结就是在拿到表结构之前到达，没影响；在拿到表结构之后，备份数据之前到，会报错；在备份后到达，主从延迟</p>
+<ol start="2">
+<li>Mysql选错索引的一个案例分析<br>//todo 待分析</li>
+</ol>
+<p>在生产上遇见了一个非常经典的Mysql选错索引的问题，简述如下：有一张日志表，id是自增主键，假设还有一个字段是code，code字段也有索引；</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE IF NOT EXISTS &#96;log_test&#96;(</span><br><span class="line">  &#96;id&#96; INT  AUTO_INCREMENT,</span><br><span class="line">  &#96;key&#96; VARCHAR(100) NOT NULL,</span><br><span class="line">  PRIMARY KEY (&#96;id&#96;),</span><br><span class="line">  index idx_key(&#96;key&#96;)</span><br><span class="line">)ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_unicode_ci;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">delimiter ;;</span><br><span class="line">create procedure idata()</span><br><span class="line">begin</span><br><span class="line">  declare i int;</span><br><span class="line">  set i&#x3D;1;</span><br><span class="line">  while(i&lt;&#x3D;100000)do</span><br><span class="line">    insert into log_test values(i, i);</span><br><span class="line">    set i&#x3D;i+1;</span><br><span class="line">  end while;</span><br><span class="line">end;;</span><br><span class="line">delimiter ;</span><br><span class="line">call idata();</span><br></pre></td></tr></table></figure>
+
           
         
       
@@ -2861,7 +2861,7 @@ mysqldump -h localhost -uroot -p --no-data --no-create-info --routines --all-dat
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>

@@ -83,14 +83,14 @@
 
 
 
-<meta name="description" content="命令和对象许多文本命令都由一个操作符和一个命令组成，例如删除操作符d，配合动作命令w 组成dw，即删除当前位置至下一个单词起始位置. 简单的命令列表：  w 当前位置至下一个单词的开始，不包含第一个字符 e 当前位置只单词末尾，包含最后一个字符 $ 当前位置至行末尾  在动作面前输入数字，可以使命令执行多次 2w 移动两个单词，至第三个单词的开始处 3e 光标移动到第三个单词的末尾 0　光标移动到">
+<meta name="description" content="vim本身提供了入门级教程，通过命令vimtutor就可以查看。 1vimtutor     命令和对象许多文本命令都由一个操作符和一个命令组成，例如删除操作符d，配合动作命令w 组成dw，即删除当前位置至下一个单词起始位置. 简单的命令列表：  w 当前位置至下一个单词的开始，不包含第一个字符 e 当前位置只单词末尾，包含最后一个字符 $ 当前位置至行末尾  在动作面前输入数字，可以使命令执行多">
 <meta property="og:type" content="article">
 <meta property="og:title" content="vim命令">
 <meta property="og:url" content="http://10000hours.top/2019/07/05/vim%E5%91%BD%E4%BB%A4/index.html">
 <meta property="og:site_name" content="Richey&#39;s Blog">
-<meta property="og:description" content="命令和对象许多文本命令都由一个操作符和一个命令组成，例如删除操作符d，配合动作命令w 组成dw，即删除当前位置至下一个单词起始位置. 简单的命令列表：  w 当前位置至下一个单词的开始，不包含第一个字符 e 当前位置只单词末尾，包含最后一个字符 $ 当前位置至行末尾  在动作面前输入数字，可以使命令执行多次 2w 移动两个单词，至第三个单词的开始处 3e 光标移动到第三个单词的末尾 0　光标移动到">
+<meta property="og:description" content="vim本身提供了入门级教程，通过命令vimtutor就可以查看。 1vimtutor     命令和对象许多文本命令都由一个操作符和一个命令组成，例如删除操作符d，配合动作命令w 组成dw，即删除当前位置至下一个单词起始位置. 简单的命令列表：  w 当前位置至下一个单词的开始，不包含第一个字符 e 当前位置只单词末尾，包含最后一个字符 $ 当前位置至行末尾  在动作面前输入数字，可以使命令执行多">
 <meta property="article:published_time" content="2019-07-04T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-10-31T06:55:45.571Z">
+<meta property="article:modified_time" content="2020-12-11T16:34:34.340Z">
 <meta property="article:author" content="Richey Liu">
 <meta property="article:tag" content="vim">
 <meta name="twitter:card" content="summary">
@@ -400,7 +400,13 @@
       
 
       
-        <h1 id="命令和对象"><a href="#命令和对象" class="headerlink" title="命令和对象"></a>命令和对象</h1><p>许多文本命令都由一个操作符和一个命令组成，例如删除操作符d，配合动作命令w 组成dw，即删除当前位置至下一个单词起始位置.</p>
+        <p>vim本身提供了入门级教程，通过命令vimtutor就可以查看。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vimtutor</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h1 id="命令和对象"><a href="#命令和对象" class="headerlink" title="命令和对象"></a>命令和对象</h1><p>许多文本命令都由一个操作符和一个命令组成，例如删除操作符d，配合动作命令w 组成dw，即删除当前位置至下一个单词起始位置.</p>
 <p>简单的命令列表：</p>
 <ul>
 <li>w 当前位置至下一个单词的开始，不包含第一个字符</li>
@@ -435,14 +441,49 @@
 </li>
 <li><p>滚一行 ctrl-e ctrl-y</p>
 </li>
-<li><p>zz 让光标所杂的行居屏幕中央</p>
+<li><p>zz 让光标所在的行居屏幕中央</p>
 </li>
 <li><p>zt 让光标所杂的行居屏幕最上一行 t=top</p>
 </li>
 <li><p>zb 让光标所杂的行居屏幕最下一行 b=bottom</p>
 </li>
 </ul>
-
+<h1 id="置入类"><a href="#置入类" class="headerlink" title="置入类"></a>置入类</h1><ul>
+<li>p 输入p将最后一次删除的内容置入光标之后</li>
+</ul>
+<h1 id="替换类"><a href="#替换类" class="headerlink" title="替换类"></a>替换类</h1><ul>
+<li>r 输入r和一个字符替换光标所在位置的字符</li>
+</ul>
+<h1 id="更改类"><a href="#更改类" class="headerlink" title="更改类"></a>更改类</h1><ul>
+<li>c [number] motion 同删除命令一样的用法</li>
+<li>ce 要改变文本直到一个单词的末尾，请输入 ce</li>
+<li>cw 要改变文本直到下一个单词的开始，请输入cw </li>
+<li>c$ 改变当前至行尾</li>
+</ul>
+<h1 id="定位及文件状态"><a href="#定位及文件状态" class="headerlink" title="定位及文件状态"></a>定位及文件状态</h1><ul>
+<li>ctrl + g 显示当前编辑文件名，及当前光标位置</li>
+<li>大写G跳到文件最后一行</li>
+<li>gg跳到文件首行</li>
+<li>行号 + 大写G 跳到指定行</li>
+</ul>
+<h1 id="搜索类命令"><a href="#搜索类命令" class="headerlink" title="搜索类命令"></a>搜索类命令</h1><ul>
+<li>输入 / 加上一个字符串可以用以在当前文件中查找该字符串</li>
+<li>下一个n</li>
+<li>上一个N</li>
+<li>如果您想逆向查找字符串，请使用 ? 代替 / 进行</li>
+</ul>
+<h1 id="配对括号的查找"><a href="#配对括号的查找" class="headerlink" title="配对括号的查找"></a>配对括号的查找</h1><ul>
+<li>输入 % 可以查找配对的括号 )、]、}</li>
+</ul>
+<h1 id="替换命令"><a href="#替换命令" class="headerlink" title="替换命令"></a>替换命令</h1><ul>
+<li>输入 :s/old/new/g 可以替换 old 为 new</li>
+<li>输入 :s/thee/the &lt;回车&gt; 。请注意该命令只改变光标所在行的第一个匹配串</li>
+<li>输入 :s/old/new/g 则是替换全行的匹配串，该行中所有的 “old” 都会被改变 </li>
+<li>输入 :#,#s/old/new/g    #,# 代表的是替换操作的若干行中首尾两行的行号。</li>
+<li>输入 :%s/old/new/g    替换整个文件中的每个匹配串。</li>
+<li>输入 :%s/old/new/gc   找到整个文件中的每个匹配串，并且对每个匹配串提示是否进行替换。</li>
+</ul>
+<h1 id="可视模式"><a href="#可视模式" class="headerlink" title="可视模式"></a>可视模式</h1>
       
     </div>
     
@@ -632,7 +673,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -699,7 +740,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#命令和对象"><span class="nav-number">1.</span> <span class="nav-text">命令和对象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#在动作面前输入数字，可以使命令执行多次"><span class="nav-number">2.</span> <span class="nav-text">在动作面前输入数字，可以使命令执行多次</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#删除类"><span class="nav-number">3.</span> <span class="nav-text">删除类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#撤销类"><span class="nav-number">4.</span> <span class="nav-text">撤销类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#查看类"><span class="nav-number">5.</span> <span class="nav-text">查看类</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#命令和对象"><span class="nav-number">1.</span> <span class="nav-text">命令和对象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#在动作面前输入数字，可以使命令执行多次"><span class="nav-number">2.</span> <span class="nav-text">在动作面前输入数字，可以使命令执行多次</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#删除类"><span class="nav-number">3.</span> <span class="nav-text">删除类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#撤销类"><span class="nav-number">4.</span> <span class="nav-text">撤销类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#查看类"><span class="nav-number">5.</span> <span class="nav-text">查看类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#置入类"><span class="nav-number">6.</span> <span class="nav-text">置入类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#替换类"><span class="nav-number">7.</span> <span class="nav-text">替换类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#更改类"><span class="nav-number">8.</span> <span class="nav-text">更改类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#定位及文件状态"><span class="nav-number">9.</span> <span class="nav-text">定位及文件状态</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#搜索类命令"><span class="nav-number">10.</span> <span class="nav-text">搜索类命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配对括号的查找"><span class="nav-number">11.</span> <span class="nav-text">配对括号的查找</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#替换命令"><span class="nav-number">12.</span> <span class="nav-text">替换命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#可视模式"><span class="nav-number">13.</span> <span class="nav-text">可视模式</span></a></li></ol></div>
             
 
           </div>

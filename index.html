@@ -1926,7 +1926,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Richey Liu">
@@ -1945,7 +1945,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/" itemprop="url">安装zookeeper</a></h1>
+                <a class="post-title-link" href="/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/" itemprop="url">安装配置Kafka Broker</a></h1>
         
 
         <div class="post-meta">
@@ -1980,8 +1980,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9E%B6%E6%9E%84/" itemprop="url" rel="index">
-                    <span itemprop="name">架构</span>
+                  <a href="/categories/MQ/" itemprop="url" rel="index">
+                    <span itemprop="name">MQ</span>
                   </a>
                 </span>
 
@@ -1998,8 +1998,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/" itemprop="commentCount"></span>
+                <a href="/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -2007,7 +2007,7 @@
 
           
           
-             <span id="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/" class="leancloud_visitors" data-flag-title="安装zookeeper">
+             <span id="/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/" class="leancloud_visitors" data-flag-title="安装配置Kafka Broker">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -2040,14 +2040,37 @@
       
         
           
-            <h1 id="安装zookeeper"><a href="#安装zookeeper" class="headerlink" title="安装zookeeper"></a>安装zookeeper</h1><h2 id="单机服务"><a href="#单机服务" class="headerlink" title="单机服务"></a>单机服务</h2><p>从apache.org下载zookeeper,这里下载的是zookeeper-3.4.14.tar</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#tar -zxf zookeeper-3.4.14.tar.gz</span><br><span class="line">#mv zookeeper-3.4.14 &#x2F;usr&#x2F;local&#x2F;zookeeper</span><br><span class="line">#cat &gt; &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;conf&#x2F;zoo.cfg &lt;&lt; EOF</span><br><span class="line">&gt; tickTime&#x3D;2000</span><br><span class="line">&gt; dataDir&#x3D;&#x2F;var&#x2F;lib&#x2F;zookeeper</span><br><span class="line">&gt; clientPort&#x3D;2181</span><br><span class="line">&gt; EOF</span><br><span class="line">#&#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh start</span><br><span class="line">ZooKeeper JMX enabled by default</span><br><span class="line">Using config: &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;..&#x2F;conf&#x2F;zoo.cfg</span><br><span class="line">Starting zookeeper ... STARTED</span><br><span class="line">#</span><br></pre></td></tr></table></figure>
+            <h1 id="安装Kafka-Broker"><a href="#安装Kafka-Broker" class="headerlink" title="安装Kafka Broker"></a>安装Kafka Broker</h1><p>需要先安装号java和Zookeeper</p>
+<p>从<a href="https://www.apache.org/dyn/closer.cgi?path=/kafka/" target="_blank" rel="noopener">https://www.apache.org/dyn/closer.cgi?path=/kafka/</a>下载最新版本kafka，这里下载的是kafka_2.12-2.2.0.tgz</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tar -zxf kafka_2.12-2.2.0.tgz</span><br><span class="line">mv kafka_2.12-2.2.0 &#x2F;usr&#x2F;local&#x2F;kafka</span><br><span class="line">mkdir &#x2F;tmp&#x2F;kafka-logs</span><br></pre></td></tr></table></figure>
 
-<p>现在可以连接到zookeeper端口上，通过发送四字命令srvr来验证zookeeper是否安装正确。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#telnet localhost 2181</span><br><span class="line">Trying ::1...</span><br><span class="line">Connected to localhost.</span><br><span class="line">Escape character is &#39;^]&#39;.</span><br><span class="line">srvr</span><br><span class="line">Zookeeper version: 3.4.14-4c25d480e66aadd371de8bd2fd8da255ac140bcf, built on 03&#x2F;06&#x2F;2019 16:18 GMT</span><br><span class="line">Latency min&#x2F;avg&#x2F;max: 0&#x2F;0&#x2F;0</span><br><span class="line">Received: 1</span><br><span class="line">Sent: 0</span><br><span class="line">Connections: 1</span><br><span class="line">Outstanding: 0</span><br><span class="line">Zxid: 0x0</span><br><span class="line">Mode: standalone</span><br><span class="line">Node count: 4</span><br><span class="line">Connection closed by foreign host.</span><br></pre></td></tr></table></figure>
+<h2 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-server-start.sh -daemon &#x2F;usr&#x2F;local&#x2F;kafka&#x2F;config&#x2F;server.properties</span><br></pre></td></tr></table></figure>
 
-<h2 id="Zookeeper群组"><a href="#Zookeeper群组" class="headerlink" title="Zookeeper群组"></a>Zookeeper群组</h2><p>Zookeeper集群被称为Zookeeper群组，Zookeeper使用的是一致性协议，所以每个群组里应该包含奇数个节点。因为只有群组里的大多数节点处于可用状态，zookeeper才能处理外部请求。</p>
+<p>验证是否启动成功，比如创建一个测试主题，发布一些消息，然后读取它们。</p>
+<h2 id="0-90版本之后验证方式"><a href="#0-90版本之后验证方式" class="headerlink" title="0.90版本之后验证方式"></a>0.90版本之后验证方式</h2><p>创建测试主题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic test2-12</span><br></pre></td></tr></table></figure>
 
+<p>查看主题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --list --bootstrap-server localhost:9092</span><br><span class="line">test2-12</span><br></pre></td></tr></table></figure>
+
+<p>发送消息到测试主题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafconsole-producer.sh --broker-list  localhost:9092 --topic test2-12</span><br><span class="line">&gt;this is a message</span><br><span class="line">&gt;this is another message</span><br></pre></td></tr></table></figure>
+
+<p>从测试主题读取消息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test2-12 --from-beginning</span><br><span class="line">this is a message</span><br><span class="line">this is another message</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="0-90版本的验证方式"><a href="#0-90版本的验证方式" class="headerlink" title="0.90版本的验证方式"></a>0.90版本的验证方式</h2><p>创建并订阅主题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test</span><br><span class="line"></span><br><span class="line"># &#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --zookeeper localhost:2181 --describe --topic &quot;test&quot;</span><br><span class="line">Topic:test	PartitionCount:1	ReplicationFactor:1	Configs:</span><br><span class="line">	Topic: test	Partition: 0	Leader: 0	Replicas: 0	Isr: 0</span><br></pre></td></tr></table></figure>
+
+<p>往测试主题上发布消息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-console-producer.sh --broker-list  localhost:9092 --topic test</span><br><span class="line">&gt;Test Message 1</span><br><span class="line">&gt;Test Message 2</span><br><span class="line">ctrl + c</span><br></pre></td></tr></table></figure>
+
+<p>从测试主题上读取消息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-console-consumer.sh --zookeeper localhost:2181 --topic test --from-beginning</span><br><span class="line">Test Message 1</span><br><span class="line">Test Message 2</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="Broker配置"><a href="#Broker配置" class="headerlink" title="Broker配置"></a>Broker配置</h1><h1 id="主题的默认配置"><a href="#主题的默认配置" class="headerlink" title="主题的默认配置"></a>主题的默认配置</h1>
           
         
       
@@ -2147,7 +2170,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
