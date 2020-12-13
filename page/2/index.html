@@ -288,6 +288,198 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/" itemprop="url">安装配置Kafka Broker</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-07T00:00:00+08:00">
+                2019-07-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/MQ/" itemprop="url" rel="index">
+                    <span itemprop="name">MQ</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/" class="leancloud_visitors" data-flag-title="安装配置Kafka Broker">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="安装Kafka-Broker"><a href="#安装Kafka-Broker" class="headerlink" title="安装Kafka Broker"></a>安装Kafka Broker</h1><p>需要先安装号java和Zookeeper</p>
+<p>从<a href="https://www.apache.org/dyn/closer.cgi?path=/kafka/" target="_blank" rel="noopener">https://www.apache.org/dyn/closer.cgi?path=/kafka/</a>下载最新版本kafka，这里下载的是kafka_2.12-2.2.0.tgz</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tar -zxf kafka_2.12-2.2.0.tgz</span><br><span class="line">mv kafka_2.12-2.2.0 &#x2F;usr&#x2F;local&#x2F;kafka</span><br><span class="line">mkdir &#x2F;tmp&#x2F;kafka-logs</span><br></pre></td></tr></table></figure>
+
+<h2 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-server-start.sh -daemon &#x2F;usr&#x2F;local&#x2F;kafka&#x2F;config&#x2F;server.properties</span><br></pre></td></tr></table></figure>
+
+<p>验证是否启动成功，比如创建一个测试主题，发布一些消息，然后读取它们。</p>
+<h2 id="0-90版本之后验证方式"><a href="#0-90版本之后验证方式" class="headerlink" title="0.90版本之后验证方式"></a>0.90版本之后验证方式</h2><p>创建测试主题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic test2-12</span><br></pre></td></tr></table></figure>
+
+<p>查看主题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --list --bootstrap-server localhost:9092</span><br><span class="line">test2-12</span><br></pre></td></tr></table></figure>
+
+<p>发送消息到测试主题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafconsole-producer.sh --broker-list  localhost:9092 --topic test2-12</span><br><span class="line">&gt;this is a message</span><br><span class="line">&gt;this is another message</span><br></pre></td></tr></table></figure>
+
+<p>从测试主题读取消息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test2-12 --from-beginning</span><br><span class="line">this is a message</span><br><span class="line">this is another message</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="0-90版本的验证方式"><a href="#0-90版本的验证方式" class="headerlink" title="0.90版本的验证方式"></a>0.90版本的验证方式</h2><p>创建并订阅主题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test</span><br><span class="line"></span><br><span class="line"># &#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --zookeeper localhost:2181 --describe --topic &quot;test&quot;</span><br><span class="line">Topic:test	PartitionCount:1	ReplicationFactor:1	Configs:</span><br><span class="line">	Topic: test	Partition: 0	Leader: 0	Replicas: 0	Isr: 0</span><br></pre></td></tr></table></figure>
+
+<p>往测试主题上发布消息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-console-producer.sh --broker-list  localhost:9092 --topic test</span><br><span class="line">&gt;Test Message 1</span><br><span class="line">&gt;Test Message 2</span><br><span class="line">ctrl + c</span><br></pre></td></tr></table></figure>
+
+<p>从测试主题上读取消息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-console-consumer.sh --zookeeper localhost:2181 --topic test --from-beginning</span><br><span class="line">Test Message 1</span><br><span class="line">Test Message 2</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="Broker配置"><a href="#Broker配置" class="headerlink" title="Broker配置"></a>Broker配置</h1><h1 id="主题的默认配置"><a href="#主题的默认配置" class="headerlink" title="主题的默认配置"></a>主题的默认配置</h1>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2258,216 +2450,6 @@ addFilterBefore((Filter)this.postProcess(filter), AbstractPreAuthenticatedProces
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/13/SpringSecurity-Session%E7%AE%A1%E7%90%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/06/13/SpringSecurity-Session%E7%AE%A1%E7%90%86/" itemprop="url">SpringSecurity-Session管理</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-13T00:00:00+08:00">
-                2019-06-13
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/06/13/SpringSecurity-Session%E7%AE%A1%E7%90%86/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/13/SpringSecurity-Session%E7%AE%A1%E7%90%86/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/06/13/SpringSecurity-Session%E7%AE%A1%E7%90%86/" class="leancloud_visitors" data-flag-title="SpringSecurity-Session管理">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="Sesison超时"><a href="#Sesison超时" class="headerlink" title="Sesison超时"></a>Sesison超时</h1><ul>
-<li><p>Spring boot设置sesison超时时间</p>
-<pre><code>spring.session.timeout = 10; // 单位是s,默认是30分钟</code></pre><p>从源码可以看出最短超时时间是1分钟,如下:</p>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">    TomcatEmbeddedServletContainerFactory#configureSession()</span><br><span class="line"></span><br><span class="line">    private long getSessionTimeoutInMinutes() &#123;</span><br><span class="line">long sessionTimeout &#x3D; getSessionTimeout();</span><br><span class="line">if (sessionTimeout &gt; 0) &#123;</span><br><span class="line">	sessionTimeout &#x3D; Math.max(TimeUnit.SECONDS.toMinutes(sessionTimeout), 1L);</span><br><span class="line">&#125;</span><br><span class="line">return sessionTimeout;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>Session失效后的程序处理</p>
-<p>  设置Sesison失效后的跳转路径</p>
-<pre><code>.sessionManagement()
-  .invalidSessionUrl(&quot;/session/invalid&quot;) //Session失效后跳转的地址
-  .and()</code></pre><p>  提供session失效跳转的接口</p>
-<pre><code>@GetMapping(&quot;/session/invalid&quot;)
-@ResponseStatus(code = HttpStatus.UNAUTHORIZED)
-public SimpleResult sessionInvalid() {
-  String message = &quot;session失效&quot;;
-  return new SimpleResult(message);
-}</code></pre></li>
-</ul>
-<h1 id="Session并发控制"><a href="#Session并发控制" class="headerlink" title="Session并发控制"></a>Session并发控制</h1><ul>
-<li><p>一个帐号同时只允许一个用户登录,后面登录用户踢掉前面用户</p>
-<pre><code>.maximumSessions(1)
-.and()</code></pre><p>对于后面session过期(后面的用户挤掉之前的用户)事件的处理策略:</p>
-<pre><code>.expiredSessionStrategy(SessionInformationExpiredStrategy)</code></pre><p>下面写一个session超时策略的实现</p>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * @author richey</span><br><span class="line"> *</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class AbstractSessionStrategy &#123;</span><br><span class="line"></span><br><span class="line">	private final Logger logger &#x3D; LoggerFactory.getLogger(getClass());</span><br><span class="line">	&#x2F;**</span><br><span class="line">	 * 跳转的url</span><br><span class="line">	 *&#x2F;</span><br><span class="line">	private String destinationUrl;</span><br><span class="line">	&#x2F;**</span><br><span class="line">	 * 系统配置信息</span><br><span class="line">	 *&#x2F;</span><br><span class="line">	private SecurityProperties securityPropertie;</span><br><span class="line">	&#x2F;**</span><br><span class="line">	 * 重定向策略</span><br><span class="line">	 *&#x2F;</span><br><span class="line">	private RedirectStrategy redirectStrategy &#x3D; new DefaultRedirectStrategy();</span><br><span class="line">	&#x2F;**</span><br><span class="line">	 * 跳转前是否创建新的session</span><br><span class="line">	 *&#x2F;</span><br><span class="line">	private boolean createNewSession &#x3D; true;</span><br><span class="line"></span><br><span class="line">	private ObjectMapper objectMapper &#x3D; new ObjectMapper();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	public AbstractSessionStrategy(SecurityProperties securityPropertie) &#123;</span><br><span class="line">		String invalidSessionUrl &#x3D; securityPropertie.getBrower().getSession().getSessionInvalidUrl();</span><br><span class="line">		Assert.isTrue(UrlUtils.isValidRedirectUrl(invalidSessionUrl), &quot;url must start with &#39;&#x2F;&#39; or with &#39;http(s)&#39;&quot;);</span><br><span class="line">		Assert.isTrue(StringUtils.endsWithIgnoreCase(invalidSessionUrl, &quot;.html&quot;), &quot;url must end with &#39;.html&#39;&quot;);</span><br><span class="line">		this.destinationUrl &#x3D; invalidSessionUrl;</span><br><span class="line">		this.securityPropertie &#x3D; securityPropertie;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	protected void onSessionInvalid(HttpServletRequest request, HttpServletResponse response) throws IOException &#123;</span><br><span class="line"></span><br><span class="line">		logger.info(&quot;session失效&quot;);</span><br><span class="line"></span><br><span class="line">		if (createNewSession) &#123;</span><br><span class="line">			request.getSession();</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		String sourceUrl &#x3D; request.getRequestURI();</span><br><span class="line">		String targetUrl;</span><br><span class="line"></span><br><span class="line">		if (StringUtils.endsWithIgnoreCase(sourceUrl, &quot;.html&quot;)) &#123;</span><br><span class="line">			if(StringUtils.equals(sourceUrl, securityPropertie.getBrower().getLoginPage())</span><br><span class="line">					|| StringUtils.equals(sourceUrl, securityPropertie.getBrower().getSignOutUrl()))&#123;</span><br><span class="line">				targetUrl &#x3D; sourceUrl;</span><br><span class="line">			&#125;else&#123;</span><br><span class="line">				targetUrl &#x3D; destinationUrl;</span><br><span class="line">			&#125;</span><br><span class="line">			logger.info(&quot;跳转到:&quot;+targetUrl);</span><br><span class="line">			redirectStrategy.sendRedirect(request, response, targetUrl);</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			Object result &#x3D; buildResponseContent(request);</span><br><span class="line">			response.setStatus(HttpStatus.UNAUTHORIZED.value());</span><br><span class="line">			response.setContentType(&quot;application&#x2F;json;charset&#x3D;UTF-8&quot;);</span><br><span class="line">			response.getWriter().write(objectMapper.writeValueAsString(result));</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;**</span><br><span class="line">	 * @param request</span><br><span class="line">	 * @return</span><br><span class="line">	 *&#x2F;</span><br><span class="line">	protected Object buildResponseContent(HttpServletRequest request) &#123;</span><br><span class="line">		String message &#x3D; &quot;session已失效&quot;;</span><br><span class="line">		if (isConcurrency()) &#123;</span><br><span class="line">			message &#x3D; message + &quot;，有可能是并发登录导致的&quot;;</span><br><span class="line">		&#125;</span><br><span class="line">		return new SimpleResult(message);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;**</span><br><span class="line">	 * session失效是否是并发导致的</span><br><span class="line">	 *</span><br><span class="line">	 * @return</span><br><span class="line">	 *&#x2F;</span><br><span class="line">	protected boolean isConcurrency() &#123;</span><br><span class="line">		return false;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;**</span><br><span class="line">	 * Determines whether a new session should be created before redirecting (to</span><br><span class="line">	 * avoid possible looping issues where the same session ID is sent with the</span><br><span class="line">	 * redirected request). Alternatively, ensure that the configured URL does</span><br><span class="line">	 * not pass through the &#123;@code SessionManagementFilter&#125;.</span><br><span class="line">	 *</span><br><span class="line">	 * @param createNewSession</span><br><span class="line">	 *            defaults to &#123;@code true&#125;.</span><br><span class="line">	 *&#x2F;</span><br><span class="line">	public void setCreateNewSession(boolean createNewSession) &#123;</span><br><span class="line">		this.createNewSession &#x3D; createNewSession;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author richey</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class EvolutionaryExpiredSessionStrategy extends AbstractSessionStrategy implements SessionInformationExpiredStrategy&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    public EvolutionaryExpiredSessionStrategy(SecurityProperties securityPropertie) &#123;</span><br><span class="line">        super(securityPropertie);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void onExpiredSessionDetected(SessionInformationExpiredEvent event) throws IOException, ServletException &#123;</span><br><span class="line">        onSessionInvalid(event.getRequest(), event.getResponse());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>一个帐号同时只允许一个用户登录,后面登录用户不允许登录</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.maximumSessions(1)</span><br><span class="line">.maxSessionsPreventsLogin(true) &#x2F;&#x2F;session达到最大数量后,不允许后面的用户登录</span><br><span class="line">.and()</span><br></pre></td></tr></table></figure>
-
-
-<h1 id="集群Session管理"><a href="#集群Session管理" class="headerlink" title="集群Session管理"></a>集群Session管理</h1><ul>
-<li><p>spring-session,将session信息单独存储</p>
-<p>依赖</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.session&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-session&lt;&#x2F;artifactId&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure>
-<p>Spring-session支持的存储类型</p>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">REDIS,</span><br><span class="line">MONGO,</span><br><span class="line">JDBC,</span><br><span class="line">HAZELCAST,</span><br><span class="line">HASH_MAP,</span><br><span class="line">NONE;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>指定spring-session的存储类型</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">spring.session.store-type&#x3D;REDIS</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2522,7 +2504,7 @@ public SimpleResult sessionInvalid() {
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">105</span>
+                  <span class="site-state-item-count">106</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2544,7 +2526,7 @@ public SimpleResult sessionInvalid() {
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-count">34</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

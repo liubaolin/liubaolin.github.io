@@ -288,6 +288,179 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/08/8%E3%80%81React%EF%BC%9ARedux%E7%AE%80%E4%BB%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/01/08/8%E3%80%81React%EF%BC%9ARedux%E7%AE%80%E4%BB%8B/" itemprop="url">8、React：Redux简介</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-08T00:00:00+08:00">
+                2019-01-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/01/08/8%E3%80%81React%EF%BC%9ARedux%E7%AE%80%E4%BB%8B/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/08/8%E3%80%81React%EF%BC%9ARedux%E7%AE%80%E4%BB%8B/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/01/08/8%E3%80%81React%EF%BC%9ARedux%E7%AE%80%E4%BB%8B/" class="leancloud_visitors" data-flag-title="8、React：Redux简介">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>Redux是一个js的状态管理框架，Redux中提供了’react-redux’组件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import &#123;connect&#125; from &#39;react-redux&#39;;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Redux核心概念"><a href="#Redux核心概念" class="headerlink" title="Redux核心概念"></a>Redux核心概念</h1><p>Redux全局只有唯一的一个Store，这个Store负责提供整个应用程序所有的状态；</p>
+<p>Redux数据是一个tree的结构；</p>
+<p>Redux让组件通信更加容易；</p>
+<p>  <img src="http://blog-pic-1254088127.picsh.myqcloud.com/redux-communication.png" alt="Redux组件通信"></p>
+<h1 id="Redux特性"><a href="#Redux特性" class="headerlink" title="Redux特性"></a>Redux特性</h1><h2 id="Single-Source-of-Truth"><a href="#Single-Source-of-Truth" class="headerlink" title="Single Source of Truth"></a>Single Source of Truth</h2><p>  传统MVC和视图和数据模型<br>  <img src="http://blog-pic-1254088127.picsh.myqcloud.com/mvc-view-module.png" alt="mvc-view-module"></p>
+<p>  Redux视图数据模型<br>  <img src="http://blog-pic-1254088127.picsh.myqcloud.com/redux-view-module.png" alt="redux-view-module"></p>
+<h2 id="可预测性"><a href="#可预测性" class="headerlink" title="可预测性"></a>可预测性</h2><p>产生新的状态肯定是由一个action触发的：state + action = new state</p>
+<h2 id="纯函数更新Store"><a href="#纯函数更新Store" class="headerlink" title="纯函数更新Store"></a>纯函数更新Store</h2><p>纯函数的输出结果完全取决于输入参数，函数的内部不依赖任何的外部数据和外部资源。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/07/7%E3%80%81React%20%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1921,175 +2094,6 @@ sublime-style-column-selection</code></pre>
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2015/06/26/java%E6%97%A5%E5%BF%97%EF%BC%882%EF%BC%89-%E6%97%A5%E5%BF%97%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%BC%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2015/06/26/java%E6%97%A5%E5%BF%97%EF%BC%882%EF%BC%89-%E6%97%A5%E5%BF%97%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%BC%8F/" itemprop="url">java日志（2）-日志使用模式</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-06-26T00:00:00+08:00">
-                2015-06-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">Java 基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2015/06/26/java%E6%97%A5%E5%BF%97%EF%BC%882%EF%BC%89-%E6%97%A5%E5%BF%97%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%BC%8F/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2015/06/26/java%E6%97%A5%E5%BF%97%EF%BC%882%EF%BC%89-%E6%97%A5%E5%BF%97%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%BC%8F/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2015/06/26/java%E6%97%A5%E5%BF%97%EF%BC%882%EF%BC%89-%E6%97%A5%E5%BF%97%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%BC%8F/" class="leancloud_visitors" data-flag-title="java日志（2）-日志使用模式">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="驱动"><a href="#驱动" class="headerlink" title="驱动"></a>驱动</h1><p>log4j是一个日志系统。</p>
-<p>slf4j是一个日志系统的封装，对外提供统一的API使用slf4j需要下载： slf4j-api-x.x.x.jar（它提供对外一致的API接口，其本身不提供日志实现）。 假设我们选择log4j作为我们的日志实现，需要下载： log4j-x.x.x.jar 如果想把slf4j绑定log4j，则需要下载slf4j对log4j的相应驱动： slf4j-log4j12-x.x.x.jar （这样就可以使用slf4j提供的API，用log4j实现打日志了）。 所谓驱动，就是实现了slf4j的一些接口，用你喜欢的日志系统打日志。 slf4j还支持好多日志系统，并提供了相应的“驱动”包 例如：</p>
-<p>slf4j-jdk14-x.x.x.jar是为java.util.logging提供的驱动</p>
-<p>slf4j-simple-x.x.x.jar直接绑定System.err</p>
-<p>lf4j-jcl-x.x.x.jar是为commons-logging提供的驱动</p>
-<p>logback-classic-x.x.x.jar是为logback提供的驱动</p>
-<h1 id="桥接"><a href="#桥接" class="headerlink" title="桥接"></a>桥接</h1><p>如果你引入了一个第三方jar包或者你之前的工程（本身就是使用的第三方jar包）使用了commons-logging打日志。还有一些组建可能直接调用了 java.util.logging，你想换成slf4j，你不需要更改代码，你需要使用桥接,你可以引入jcl-over-slf4j.jar，同时去掉commons-logging.jar包，这样之前打的日志会自动切换到你的slf4j中来了。 同样还有log4j-over-slf4j.jar and jul-to-slf4j.jar等用于使用其它日志系统的应用自动切换到slf4j统一打日志。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2144,7 +2148,7 @@ sublime-style-column-selection</code></pre>
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">105</span>
+                  <span class="site-state-item-count">106</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2166,7 +2170,7 @@ sublime-style-column-selection</code></pre>
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-count">34</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

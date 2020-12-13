@@ -288,6 +288,225 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/05/29/Mysql%EF%BC%8810%EF%BC%89-Mysql%E5%A4%87%E4%BB%BD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/05/29/Mysql%EF%BC%8810%EF%BC%89-Mysql%E5%A4%87%E4%BB%BD/" itemprop="url">Mysql（10）-Mysql备份</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-29T00:00:00+08:00">
+                2019-05-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/DB/" itemprop="url" rel="index">
+                    <span itemprop="name">DB</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/05/29/Mysql%EF%BC%8810%EF%BC%89-Mysql%E5%A4%87%E4%BB%BD/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/29/Mysql%EF%BC%8810%EF%BC%89-Mysql%E5%A4%87%E4%BB%BD/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/05/29/Mysql%EF%BC%8810%EF%BC%89-Mysql%E5%A4%87%E4%BB%BD/" class="leancloud_visitors" data-flag-title="Mysql（10）-Mysql备份">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="确定数据库大小"><a href="#确定数据库大小" class="headerlink" title="确定数据库大小"></a>确定数据库大小</h1><pre><code>SELECT
+    ROUND(SUM(data_length + index_length) / 1024 / 1024) AS total_mb,
+    ROUND(SUM(data_length) / 1024 / 1024) AS data_mb,
+    ROUND(SUM(index_length) / 1024 / 1024) AS index_mb
+FROM
+    INFORMATION_SCHEMA.tables;</code></pre><p>执行mysqldump所得的备份文件的大小与数据库大小相同，但是为了安全起见，保存备份的磁盘空间要有10%到15%的冗余。</p>
+<p>确认mysql实例所使用的存储引擎，及表信息：</p>
+<pre><code>SELECT table_schema,engine,COUNT(*) AS tables from  information_schema.TABLES
+WHERE table_schema NOT IN(&apos;INFORMATION_SCHEMA&apos;,&apos;PERFORMANCE_SCHEMA&apos;)
+GROUP BY table_schema,engine
+ORDER BY 3 DESC;</code></pre><p>组合查询</p>
+<pre><code>SELECT
+    table_schema,
+    engine,
+    ROUND(SUM(data_length + index_length) / 1024 / 1024) AS total_mb,
+    ROUND(SUM(data_length) / 1024 / 1024) AS data_mb,
+    ROUND(SUM(index_length) / 1024 / 1024) AS index_mb,
+    COUNT(*) AS tables
+FROM
+    INFORMATION_SCHEMA.tables
+GROUP BY
+    table_schema,
+    engine
+ORDER BY
+    3 DESC;</code></pre><h1 id="SQL导出备份"><a href="#SQL导出备份" class="headerlink" title="SQL导出备份"></a>SQL导出备份</h1><h2 id="最简单的备份方式："><a href="#最简单的备份方式：" class="headerlink" title="最简单的备份方式："></a>最简单的备份方式：</h2><pre><code>$time mysqldump -uroot -p --all-databases &gt; backup.sql
+$echo $0
+$ls -lh backup.sql</code></pre><p>第一句，对所有的库进行备份；<br>第二句，确认第一个命令执行结束，若是非0结果，说明备份过程发生了问题。如果有错误发生，就会显示在屏幕中；<br>第三句，显示备份文件的大小；</p>
+<h2 id="将备份数据转移到安全位置"><a href="#将备份数据转移到安全位置" class="headerlink" title="将备份数据转移到安全位置"></a>将备份数据转移到安全位置</h2><pre><code>$ time gzip backup.sql
+$ time scp backup.sql.gz another-server:backup-dir</code></pre><h2 id="备份选项"><a href="#备份选项" class="headerlink" title="备份选项"></a>备份选项</h2><p>所选择的锁策略，决定了在执行备份期间应用程序是否可以对数据库进行写操作。</p>
+<pre><code>--lock-tables</code></pre><p>锁表，默认是关闭的，当备份MyISAM引擎时，–lock-tables对于数据一致性是非常必要的。但是一次也只能锁一个模式的表，<br>换言之，在备份过程中操作数据库，还是可能会产生不一致的数据。</p>
+<pre><code>--lock-all-tables</code></pre><p>锁所有的表</p>
+<pre><code>--single-transaction</code></pre><p>为一个事务中的所有表，创建一个版本一致的快照。仅能用在InnoDB或者MVCC的引擎中。使用这一选项时，将自动关闭–lock-tables。</p>
+<pre><code>--routines</code></pre><p>如果数据库中包含存储过程或函数，则–routine是必须的</p>
+<pre><code>--master-data</code></pre><p>时间点恢复</p>
+<pre><code>--all-databases
+--database  指定特定数据库
+--tables  指定特定表
+--ignore-table  排除表</code></pre><p>指定导出相关的信息</p>
+<pre><code>--skip-quote-names</code></pre><p>去掉导出文件对象名两端的单引号（`）</p>
+<pre><code>--hex-blob</code></pre><p>当数据库包含二进制文件时，–hex-blob将提供最大的兼容性</p>
+<pre><code>--no-data</code></pre><p>不导出数据，只导表结构</p>
+<pre><code>--no-create-info</code></pre><p>不导建表语句，配置–routines 只导出函数和存储过程</p>
+<pre><code>mysqldump -h localhost -uroot -p --no-data --all-databases &gt; backup-schema.sql
+
+mysqldump -h localhost -uroot -p --no-data --no-create-info --routines --all-databases &gt; backup-routines.sql</code></pre><h1 id="文件系统备份"><a href="#文件系统备份" class="headerlink" title="文件系统备份"></a>文件系统备份</h1><p>需要关闭MYSQL实例，对文件系统上的文件进行物理复制。</p>
+<p>MYSQL配置变量定义了各种文件的位置，要仔细检查这些文件的位置，并将其包含在要备份的文件列表中。my.cnf中并不会包含所有的变量，mysql对未定义的变量使用预先设定的默认值。所以最好在myslq实例运行时，获取这些变量的值。</p>
+<ul>
+<li>datadir MYSQL数据目录</li>
+<li>innodb_data_home_dir InnoDB Data数据目录</li>
+<li>innodb_data_file_path 单独的InnoDB数据文件，它可能包含特定的不同目录</li>
+<li>log-bin 二进制文件目录</li>
+<li>log-bin-index 二进制日志索引文件</li>
+<li>relay-log 中继日志文件</li>
+<li>relay-log-index 中继日志索引文件</li>
+<li>mysql的配置文件my.conf</li>
+</ul>
+<h1 id="表抽取"><a href="#表抽取" class="headerlink" title="表抽取"></a>表抽取</h1><pre><code>mysqldump -h localhost -uroot -p --no-create-info --tab=. --fields-terminated-by=, --fields-optionally-enclosed-by=\&quot; book-management tb_books;</code></pre><p>或</p>
+<pre><code>select * from tb_books into outfile &apos;/tmp/books.cvs&apos;  fields terminated by &apos;,&apos; optionally enclosed by &apos;&quot;&apos;;</code></pre><h1 id="文件系统快照"><a href="#文件系统快照" class="headerlink" title="文件系统快照"></a>文件系统快照</h1><h1 id="备份的时间节点"><a href="#备份的时间节点" class="headerlink" title="备份的时间节点"></a>备份的时间节点</h1>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/05/25/Spring%20MVC%E8%AF%B7%E6%B1%82%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2353,190 +2572,6 @@ public class SpringBootDemoApplication {
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/05/01/Mysql%EF%BC%889%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%E2%80%94%E2%80%94%E7%BB%99%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8A%A0%E7%B4%A2%E5%BC%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/05/01/Mysql%EF%BC%889%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%E2%80%94%E2%80%94%E7%BB%99%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8A%A0%E7%B4%A2%E5%BC%95/" itemprop="url">Mysql（9）-数据库索引——给字符串加索引</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-01T00:00:00+08:00">
-                2019-05-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/DB/" itemprop="url" rel="index">
-                    <span itemprop="name">DB</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/05/01/Mysql%EF%BC%889%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%E2%80%94%E2%80%94%E7%BB%99%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8A%A0%E7%B4%A2%E5%BC%95/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/01/Mysql%EF%BC%889%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%E2%80%94%E2%80%94%E7%BB%99%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8A%A0%E7%B4%A2%E5%BC%95/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/05/01/Mysql%EF%BC%889%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%E2%80%94%E2%80%94%E7%BB%99%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8A%A0%E7%B4%A2%E5%BC%95/" class="leancloud_visitors" data-flag-title="Mysql（9）-数据库索引——给字符串加索引">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="索引长度限制"><a href="#索引长度限制" class="headerlink" title="索引长度限制"></a>索引长度限制</h1><p>默认情况下，InnoDB 引擎单一字段索引的长度最大为 767 字节</p>
-<blockquote>
-<p>If innodb_large_prefix is enabled (the default in 5.7.7 ), the index key prefix limit is 3072 bytes for InnoDB tables that use DYNAMIC or COMPRESSED row format. If innodb_large_prefix is disabled(the default in 5.7.6), the index key prefix limit is 767 bytes for tables of any row format.</p>
-</blockquote>
-<blockquote>
-<p>MySQL assumes 3 bytes per utf8 character. 255 characters is the maximum index size you can specify per column, because 256x3=768, which breaks the 767 byte limit. If you don’t specify index size, MySQL chooses the maximum size (i.e. 255 per column)</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; CREATE TABLE &#96;foo&#96; (  </span><br><span class="line">    -&gt;       &#96;a&#96; varchar(255) DEFAULT NULL,  </span><br><span class="line">    -&gt;       &#96;b&#96; varchar(255) DEFAULT NULL,  </span><br><span class="line">    -&gt;       &#96;c&#96; varchar(255) DEFAULT NULL,  </span><br><span class="line">    -&gt;       &#96;d&#96; varchar(255) DEFAULT NULL,  </span><br><span class="line">    -&gt;       &#96;e&#96; varchar(255) DEFAULT NULL,  </span><br><span class="line">    -&gt;        KEY &#96;a-b-c-d&#96; (&#96;a&#96;,&#96;b&#96;,&#96;c&#96;,&#96;d&#96;,&#96;e&#96;)  </span><br><span class="line">    -&gt; ) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8;</span><br><span class="line"></span><br><span class="line">ERROR 1071 (42000): Specified key was too long; max key length is 3072 bytes</span><br></pre></td></tr></table></figure>
-<h1 id="为什么3072"><a href="#为什么3072" class="headerlink" title="为什么3072"></a>为什么3072</h1><p>我们知道InnoDB一个page的默认大小是16k。由于是Btree组织，要求叶子节点上一个page至少要包含两条记录（否则就退化链表了）。</p>
-<p>所以一个记录最多不能超过8k。</p>
-<p>又由于InnoDB的聚簇索引结构，一个二级索引要包含主键索引，因此每个单个索引不能超过4k （极端情况，pk和某个二级索引都达到这个限制）。</p>
-<p>由于需要预留和辅助空间，扣掉后不能超过3500，取个“整数”就是(1024*3)。</p>
-<h1 id="单列索引限制"><a href="#单列索引限制" class="headerlink" title="单列索引限制"></a>单列索引限制</h1><p>上面有提到单列索引限制767，起因是256×3-1。这个3是字符最大占用空间（utf8）。但是在5.5以后，开始支持4个字节的uutf8。255×4&gt;767, 于是增加了一个参数叫做 innodb_large_prefix。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show variables like &#39;innodb_large_prefix&#39;;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>innodb_large_prefix is enabled by default in MySQL 5.7. This change coincides with the default value change for innodb_file_format, which is set to Barracuda by default in MySQL 5.7. Together, these default value changes allow larger index key prefixes to be created when using DYNAMIC or COMPRESSED row format. If either option is set to a non-default value, index key prefixes larger than 767 bytes are silently truncated.</p>
-</blockquote>
-<p>innodb_large_prefix is deprecated and will be removed in a future release. innodb_large_prefix was introduced to disable large index key prefixes for compatibility with earlier versions of InnoDB that do not support large index key prefixes.</p>
-<h1 id="前缀索引"><a href="#前缀索引" class="headerlink" title="前缀索引"></a>前缀索引</h1><p>使用了前缀索引，就用不上覆盖索引对查询性能的优化了。</p>
-<p>前缀索引无法进行排序优化</p>
-<h1 id="哈希索引"><a href="#哈希索引" class="headerlink" title="哈希索引"></a>哈希索引</h1><p>只支持等值查询，不支持范围查询；</p>
-<p>无法进行排序优化；</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2591,7 +2626,7 @@ public class SpringBootDemoApplication {
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">105</span>
+                  <span class="site-state-item-count">106</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2613,7 +2648,7 @@ public class SpringBootDemoApplication {
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-count">34</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

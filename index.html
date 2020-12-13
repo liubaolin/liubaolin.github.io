@@ -288,6 +288,195 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2020/12/13/Kafka%E9%AB%98%E5%8F%AF%E7%94%A8%E9%85%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/12/13/Kafka%E9%AB%98%E5%8F%AF%E7%94%A8%E9%85%8D%E7%BD%AE/" itemprop="url">Kafka高可用配置</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-13T00:00:00+08:00">
+                2020-12-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/MQ/" itemprop="url" rel="index">
+                    <span itemprop="name">MQ</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/12/13/Kafka%E9%AB%98%E5%8F%AF%E7%94%A8%E9%85%8D%E7%BD%AE/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/12/13/Kafka%E9%AB%98%E5%8F%AF%E7%94%A8%E9%85%8D%E7%BD%AE/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2020/12/13/Kafka%E9%AB%98%E5%8F%AF%E7%94%A8%E9%85%8D%E7%BD%AE/" class="leancloud_visitors" data-flag-title="Kafka高可用配置">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="producer端配置"><a href="#producer端配置" class="headerlink" title="producer端配置"></a>producer端配置</h1><ul>
+<li>使用带有回调通知的 send 方法<br>不要使用 producer.send(msg)，而要使用 producer.send(msg, callback)。</li>
+<li>设置 acks = all。设置成 all，表明所有副本 Broker 都要接收到消息，该消息才算是“已提交”。</li>
+</ul>
+<p>“所有副本”指的是ISR中的所有副本。ISR 中的副本都是与 Leader 同步的副本，相反，不在 ISR 中的追随者副本就被认为是与 Leader 不同步的。ISR列表里跟Leader保持同步的那些Follower都要把消息同步过去，才能认为这条消息是写入成功了。Leader副本天然在ISR中。</p>
+<p> Producer端认为消息已经成功提交的条件是：ISR中所有副本都已经保存了该消息，但producer并没有指定ISR中需要几个副本。这就是min.insync.replicas参数的作用。</p>
+<p> 只有acks=-1(同all)时，min.insync.replicas参宿才有意义。</p>
+<ul>
+<li>设置 retries 为一个较大的值。</li>
+</ul>
+<p>对应前面提到的 Producer 自动重试。当出现网络的瞬时抖动时，消息发送可能会失败，此时配置了 retries &gt; 0 的 Producer 能够自动重试消息发送，避免消息丢失。</p>
+<h1 id="broker端参数"><a href="#broker端参数" class="headerlink" title="broker端参数"></a>broker端参数</h1><ul>
+<li>设置 unclean.leader.election.enable = false。</li>
+</ul>
+<p>如果一个 Broker 落后原先的 Leader 太多，那么它一旦成为新的 Leader，必然会造成消息的丢失。故一般都要将该参数设置成 false，即不允许这种情况的发生。</p>
+<ul>
+<li>设置 replication.factor &gt;= 3。</li>
+</ul>
+<p>最好将消息多保存几份，毕竟目前防止消息丢失的主要机制就是冗余。</p>
+<ul>
+<li>设置 min.insync.replicas &gt; 1。</li>
+</ul>
+<p>控制的是消息至少要被写入到多少个副本才算是“已提交”。设置成大于 1 可以提升消息持久性。在实际环境中不要使用默认值 1。<br>只有当acks=all时该参数才有意义</p>
+<p>确保 replication.factor &gt; min.insync.replicas。如果两者相等，那么只要有一个副本挂机，整个分区就无法正常工作了。我们不仅要改善消息的持久性，防止数据丢失，还要在不降低可用性的基础上完成。推荐设置成 replication.factor = min.insync.replicas + 1。</p>
+<h1 id="Cosumer端参数"><a href="#Cosumer端参数" class="headerlink" title="Cosumer端参数"></a>Cosumer端参数</h1><ul>
+<li>enable.auto.commit，最好把它设置成 false<br>采用手动提交位移的方式。这对于单 Consumer 多线程处理的场景而言是至关重要的。</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2020/11/17/Kafka%E5%B8%B8%E7%94%A8%E6%A0%A1%E6%9C%AC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -420,6 +609,22 @@
 <p>如果使用是老的高级消费者并在zookeeper存储消费者组的元数据（即。offsets.storage=zookeeper），则通过–zookeeper，而不是bootstrap-server</p>
 </blockquote>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin&#x2F;kafka-consumer-groups.sh --zookeeper localhost:2181 --list</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="kafka-topics-sh"><a href="#kafka-topics-sh" class="headerlink" title="kafka-topics.sh"></a>kafka-topics.sh</h1><p>使用kafka-topics.sh工具 可以执行主题的大部分操作（配置变更部份被移动至kafka-config.sh工具中）</p>
+<h2 id="创建主题"><a href="#创建主题" class="headerlink" title="创建主题"></a>创建主题</h2><p>在集群中创建一个主题需要3个必填参数：主题名字、复制系数、分区数量</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kafka-topics.sh --zookeeper &lt;zookeeper connect&gt; --create --topic &lt;string&gt; --replication-factor &lt;integer&gt; --partitions &lt;integer&gt; --if-not-exists</span><br></pre></td></tr></table></figure>
+
+<h2 id="增加分区"><a href="#增加分区" class="headerlink" title="增加分区"></a>增加分区</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kafka-topics.sh --zookeeper &lt;zookeeper connect&gt; --alter --topic &lt;string&gt; --partitions &lt;integer&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="减少分区数量"><a href="#减少分区数量" class="headerlink" title="减少分区数量"></a>减少分区数量</h2><p>无法减少分区数量。因为如果删除了分区，分区里的数据也会一并被删除。也无法将这些分区的数据分配给其它分区。<br>如果一定要减少分区数量，就只能删除整个主题，然后重新创建。</p>
+<h2 id="删除主题"><a href="#删除主题" class="headerlink" title="删除主题"></a>删除主题</h2><ul>
+<li>broker的delete.topic.enable参数必须被设置成true,否则删除主题的请求会被忽略。</li>
+<li>删除主题会丢失主题里的所有数据，这是一个不可逆的操作。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kafka-topics.sh --zookeeper  &lt;zookeeper connect&gt; --delete --topic &lt;string&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="列出集群里的所有主题"><a href="#列出集群里的所有主题" class="headerlink" title="列出集群里的所有主题"></a>列出集群里的所有主题</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kafka-topics.sh --zookeeper   &lt;zookeeper connect&gt; --list</span><br></pre></td></tr></table></figure>
+<h2 id="列出主题的详细信息"><a href="#列出主题的详细信息" class="headerlink" title="列出主题的详细信息"></a>列出主题的详细信息</h2><p>薪资包含主题分区数量、主题的覆盖配置、以及每个分区的副本清单</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kafka-topics.sh --zookeeper   &lt;zookeeper connect&gt; --describe </span><br><span class="line"># 加上--topic就可以列出指定主题的详细信息</span><br></pre></td></tr></table></figure>
 
           
         
@@ -1913,198 +2118,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/" itemprop="url">安装配置Kafka Broker</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-07T00:00:00+08:00">
-                2019-07-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/MQ/" itemprop="url" rel="index">
-                    <span itemprop="name">MQ</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/" class="leancloud_visitors" data-flag-title="安装配置Kafka Broker">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="安装Kafka-Broker"><a href="#安装Kafka-Broker" class="headerlink" title="安装Kafka Broker"></a>安装Kafka Broker</h1><p>需要先安装号java和Zookeeper</p>
-<p>从<a href="https://www.apache.org/dyn/closer.cgi?path=/kafka/" target="_blank" rel="noopener">https://www.apache.org/dyn/closer.cgi?path=/kafka/</a>下载最新版本kafka，这里下载的是kafka_2.12-2.2.0.tgz</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tar -zxf kafka_2.12-2.2.0.tgz</span><br><span class="line">mv kafka_2.12-2.2.0 &#x2F;usr&#x2F;local&#x2F;kafka</span><br><span class="line">mkdir &#x2F;tmp&#x2F;kafka-logs</span><br></pre></td></tr></table></figure>
-
-<h2 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-server-start.sh -daemon &#x2F;usr&#x2F;local&#x2F;kafka&#x2F;config&#x2F;server.properties</span><br></pre></td></tr></table></figure>
-
-<p>验证是否启动成功，比如创建一个测试主题，发布一些消息，然后读取它们。</p>
-<h2 id="0-90版本之后验证方式"><a href="#0-90版本之后验证方式" class="headerlink" title="0.90版本之后验证方式"></a>0.90版本之后验证方式</h2><p>创建测试主题：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic test2-12</span><br></pre></td></tr></table></figure>
-
-<p>查看主题：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --list --bootstrap-server localhost:9092</span><br><span class="line">test2-12</span><br></pre></td></tr></table></figure>
-
-<p>发送消息到测试主题：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafconsole-producer.sh --broker-list  localhost:9092 --topic test2-12</span><br><span class="line">&gt;this is a message</span><br><span class="line">&gt;this is another message</span><br></pre></td></tr></table></figure>
-
-<p>从测试主题读取消息</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test2-12 --from-beginning</span><br><span class="line">this is a message</span><br><span class="line">this is another message</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="0-90版本的验证方式"><a href="#0-90版本的验证方式" class="headerlink" title="0.90版本的验证方式"></a>0.90版本的验证方式</h2><p>创建并订阅主题：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test</span><br><span class="line"></span><br><span class="line"># &#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --zookeeper localhost:2181 --describe --topic &quot;test&quot;</span><br><span class="line">Topic:test	PartitionCount:1	ReplicationFactor:1	Configs:</span><br><span class="line">	Topic: test	Partition: 0	Leader: 0	Replicas: 0	Isr: 0</span><br></pre></td></tr></table></figure>
-
-<p>往测试主题上发布消息：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-console-producer.sh --broker-list  localhost:9092 --topic test</span><br><span class="line">&gt;Test Message 1</span><br><span class="line">&gt;Test Message 2</span><br><span class="line">ctrl + c</span><br></pre></td></tr></table></figure>
-
-<p>从测试主题上读取消息：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#&#x2F;usr&#x2F;local&#x2F;kafka&#x2F;bin&#x2F;kafka-console-consumer.sh --zookeeper localhost:2181 --topic test --from-beginning</span><br><span class="line">Test Message 1</span><br><span class="line">Test Message 2</span><br></pre></td></tr></table></figure>
-
-
-<h1 id="Broker配置"><a href="#Broker配置" class="headerlink" title="Broker配置"></a>Broker配置</h1><h1 id="主题的默认配置"><a href="#主题的默认配置" class="headerlink" title="主题的默认配置"></a>主题的默认配置</h1>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2159,7 +2172,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">105</span>
+                  <span class="site-state-item-count">106</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2181,7 +2194,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-count">34</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
