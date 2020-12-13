@@ -562,9 +562,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 <h1 id="置入类"><a href="#置入类" class="headerlink" title="置入类"></a>置入类</h1><ul>
 <li>p 输入p将最后一次删除的内容置入光标之后</li>
 </ul>
-<h1 id="替换类"><a href="#替换类" class="headerlink" title="替换类"></a>替换类</h1><ul>
-<li>r 输入r和一个字符替换光标所在位置的字符</li>
-</ul>
 <h1 id="更改类"><a href="#更改类" class="headerlink" title="更改类"></a>更改类</h1><ul>
 <li>c [number] motion 同删除命令一样的用法</li>
 <li>ce 要改变文本直到一个单词的末尾，请输入 ce</li>
@@ -576,6 +573,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 <li>大写G跳到文件最后一行</li>
 <li>gg跳到文件首行</li>
 <li>行号 + 大写G 跳到指定行</li>
+<li>显示行号 :set number</li>
+<li>不显示行号 :set number</li>
 </ul>
 <h1 id="搜索类命令"><a href="#搜索类命令" class="headerlink" title="搜索类命令"></a>搜索类命令</h1><ul>
 <li>输入 / 加上一个字符串可以用以在当前文件中查找该字符串</li>
@@ -587,14 +586,58 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 <li>输入 % 可以查找配对的括号 )、]、}</li>
 </ul>
 <h1 id="替换命令"><a href="#替换命令" class="headerlink" title="替换命令"></a>替换命令</h1><ul>
-<li>输入 :s/old/new/g 可以替换 old 为 new</li>
-<li>输入 :s/thee/the &lt;回车&gt; 。请注意该命令只改变光标所在行的第一个匹配串</li>
-<li>输入 :s/old/new/g 则是替换全行的匹配串，该行中所有的 “old” 都会被改变 </li>
-<li>输入 :#,#s/old/new/g    #,# 代表的是替换操作的若干行中首尾两行的行号。</li>
-<li>输入 :%s/old/new/g    替换整个文件中的每个匹配串。</li>
-<li>输入 :%s/old/new/gc   找到整个文件中的每个匹配串，并且对每个匹配串提示是否进行替换。</li>
+<li><p>r 输入r和一个字符替换光标所在位置的字符</p>
+</li>
+<li><p>R 输入R可连续替换多个字符</p>
+</li>
+<li><p>输入 :s/old/new/g 可以替换 old 为 new</p>
+</li>
+<li><p>输入 :s/thee/the &lt;回车&gt; 。请注意该命令只改变光标所在行的第一个匹配串</p>
+</li>
+<li><p>输入 :s/old/new/g 则是替换全行的匹配串，该行中所有的 “old” 都会被改变 </p>
+</li>
+<li><p>输入 :#,#s/old/new/g    #,# 代表的是替换操作的若干行中首尾两行的行号。</p>
+</li>
+<li><p>输入 :%s/old/new/g    替换整个文件中的每个匹配串。</p>
+</li>
+<li><p>输入 :%s/old/new/gc   找到整个文件中的每个匹配串，并且对每个匹配串提示是否进行替换。</p>
+</li>
 </ul>
-<h1 id="可视模式"><a href="#可视模式" class="headerlink" title="可视模式"></a>可视模式</h1>]]></content>
+<h1 id="vim内执行外部命令"><a href="#vim内执行外部命令" class="headerlink" title="vim内执行外部命令"></a>vim内执行外部命令</h1><ul>
+<li>:!+shell命令即可</li>
+</ul>
+<h1 id="保存文件"><a href="#保存文件" class="headerlink" title="保存文件"></a>保存文件</h1><ul>
+<li>:w FILENAME 将文件以FILENAME为名称保存 </li>
+<li>按v进行可视模式，移动光标选择要保存的内容，再按:w FILENAME 即可把选择的内容保存到名称为FILENAME的文件中</li>
+</ul>
+<h1 id="可视模式"><a href="#可视模式" class="headerlink" title="可视模式"></a>可视模式</h1><ul>
+<li>按v键，进入字符可视模式，移动光标可进行选择</li>
+<li>按V键，进入行可视模式,移动光标可进行选择</li>
+<li>按Ctrl+v键，进入行可视模式,移动光标可进行选择</li>
+<li>选择后，可以输入一个操作符对选中的文本进行操作，比如d 删除</li>
+<li>u或U，字母大小写切换</li>
+<li>d删除选中字符，D删除整行</li>
+<li>y复制文本，p粘贴文本</li>
+<li>还可以把 y 当作操作符来使用；例如 yw 可以用来复制一个单词</li>
+</ul>
+<h1 id="提取和合并文件"><a href="#提取和合并文件" class="headerlink" title="提取和合并文件"></a>提取和合并文件</h1><ul>
+<li>:r FILENAME 要向当前文件中插入另外的文件的内容</li>
+</ul>
+<h1 id="打开类命令"><a href="#打开类命令" class="headerlink" title="打开类命令"></a>打开类命令</h1><ul>
+<li>输入 o 将在光标的下方打开新的一行并进入插入模式</li>
+<li>输入 O 将在光标的上方打开新的一行并进入插入模式</li>
+</ul>
+<h1 id="设置类命令的选项"><a href="#设置类命令的选项" class="headerlink" title="设置类命令的选项"></a>设置类命令的选项</h1><ul>
+<li>要查找单词 ignore 可在正常模式下输入 /ignore &lt;回车&gt;, 要重复查找该词，可以重复按 n 键</li>
+<li>然后设置 ic 选项(Ignore Case，忽略大小写)，请输入： :set ic</li>
+<li>要禁用忽略大小写，请输入： :set noic</li>
+<li>设置 hlsearch 和 incsearch 这两个选项，请输入： :set hls is</li>
+<li>要移除匹配项的高亮显示，请输入：  :nohlsearch<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#39;ic&#39; &#39;ignorecase&#39;       查找时忽略字母大小写</span><br><span class="line">&#39;is&#39; &#39;incsearch&#39;        查找短语时显示部分匹配</span><br><span class="line">&#39;hls&#39; &#39;hlsearch&#39;        高亮显示所有的匹配短语</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+]]></content>
       <categories>
         <category>工具</category>
       </categories>
