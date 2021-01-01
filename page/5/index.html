@@ -162,7 +162,7 @@
       </a>
     </div>
       
-        <p class="site-subtitle">面朝大海，春暖花开</p>
+        <p class="site-subtitle">吾生也有涯，而知也无涯。以有涯随无涯，殆已。</p>
       
   </div>
 
@@ -274,6 +274,204 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/01/Spring%20Security%EF%BC%88%EF%BC%91%EF%BC%89%EF%BC%8D%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/01/Spring%20Security%EF%BC%88%EF%BC%91%EF%BC%89%EF%BC%8D%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/" itemprop="url">Spring Security（１）－基本原理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-01T00:00:00+08:00">
+                2019-06-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/06/01/Spring%20Security%EF%BC%88%EF%BC%91%EF%BC%89%EF%BC%8D%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/01/Spring%20Security%EF%BC%88%EF%BC%91%EF%BC%89%EF%BC%8D%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/06/01/Spring%20Security%EF%BC%88%EF%BC%91%EF%BC%89%EF%BC%8D%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/" class="leancloud_visitors" data-flag-title="Spring Security（１）－基本原理">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="快速入门"><a href="#快速入门" class="headerlink" title="快速入门"></a>快速入门</h2><p>引入Spring-security包</p>
+<pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;top.evolutionary.security&lt;/groupId&gt;
+    &lt;artifactId&gt;evolutionary-security-core&lt;/artifactId&gt;
+    &lt;version&gt;${evolutionary.security.version}&lt;/version&gt;
+&lt;/dependency&gt;</code></pre><p>在Spring-boot中如果classPath下有spring security的jar包，那么Spring boot 会自动的做一些默认的配置，默认是开启的，我们可以修改配置文件来关掉。</p>
+<pre><code>#security.basic.enabled=false</code></pre><p>引入Spring security包后，如果我们什么也不做，这时通过浏览器访问服务时，会弹出http Basic的认证框让我们进行身份验证。用户名是默认的”user”,密码会在Spring boot服务启动的时候在控制台打印出来”Using default security password:…..“。所以当我们什么也不做的时候Spring security会把所有的后台服务都保护起来。</p>
+<h3 id="覆盖Spring-security默认认证方式"><a href="#覆盖Spring-security默认认证方式" class="headerlink" title="覆盖Spring security默认认证方式"></a>覆盖Spring security默认认证方式</h3><pre><code>/**
+ * @author richey
+ */
+
+@Configuration
+public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
+
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+
+        //http.httpBasic();  http Basic的认证方式
+        //使用表单认证，所有请求都需要身份认证后才能访问
+        http.formLogin()
+                .and()
+                .authorizeRequests()
+                .anyRequest()
+                .authenticated();
+
+    }
+}</code></pre><h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><p><img src="http://ogiythg18.bkt.clouddn.com/Spring%20Security%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86.png" alt="image"></p>
+<ul>
+<li>Spring security最核心的就是过滤器链，其实就是一组过滤器，所有服务的请求都会经过这些过滤器，同样返回也会从这些过滤器中过。Spring security提供的所有的功能都是建立在过滤器链上的。</li>
+<li>Spring boot会在服务启动的时候把这些过滤器都配置进去。</li>
+<li>最核心的是用来认证用户身份的那些过滤器（图中绿色块表示），每个过滤器负责处理一种认证方式。这些过滤器检查当前的请求中是否有当前过滤器所需要的信息，如果有则会拿这些信息进行验证登录，如果没有则交给下一个过滤器认证。只要其中任何一个过滤器成功完成了用户登录后，则会在当前请求上做一个标记，表示认证成功。注意，该类型的过滤器是可以在程序中配置是否生效的。</li>
+<li>请求最终会到FilterSecurityInterceptor过滤器（图中橙色块），该过滤器决定了请求最终是否有权限访问。依据的就是代码中的配置，如果没有权限则会根据原因抛出不同的异常。</li>
+<li>在FilterSecurityInterceptor过滤器前面会有一个ExceptionTranslactionFilter（图中蓝色块）,这个过滤器就是用来处理当请求没有通过FilterSecurityInterceptor过滤器时抛出的异常，它会根据抛出来的异常以及程序中的配置来进行相应的处理。比如这里抛出的是未登录的异常，而我们在程序中配置的登录方式是表单登录，则这里就会引导用户去登录。</li>
+</ul>
+<p>Spring security的基本原理就是这样的，很好理解，我们可以在上面提到的这几个Filter里面分别打上断点，发一个请求看一下，每一步是不是按照我们说的走的，这里就不演示了。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -2377,201 +2575,6 @@ public class SpringBootDemoApplication {
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/05/10/Spring%20Boot(1)-%E7%AE%80%E4%BB%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/05/10/Spring%20Boot(1)-%E7%AE%80%E4%BB%8B/" itemprop="url">Spring Boot(1)-简介</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-10T00:00:00+08:00">
-                2019-05-10
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/05/10/Spring%20Boot(1)-%E7%AE%80%E4%BB%8B/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/10/Spring%20Boot(1)-%E7%AE%80%E4%BB%8B/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/05/10/Spring%20Boot(1)-%E7%AE%80%E4%BB%8B/" class="leancloud_visitors" data-flag-title="Spring Boot(1)-简介">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <blockquote>
-<p>Spring Boot makes it easy to create stand-alone, production-grade Spring based Applications that you can “just run”…Most Spring Boot applications need very little Spring configuration.</p>
-</blockquote>
-<p>Spring Boot(英文中是“引导”的意思)，是用来简化Spring应用的搭建到开发的过程。应用开箱即用，只要通过 “just run”（可能是 java -jar 或 tomcat 或 maven插件run 或 shell脚本），就可以启动项目。二者，Spring Boot 只要很少的Spring配置文件（例如那些xml，property）。 因为“习惯优先于配置”的原则，使得Spring Boot在快速开发应用和微服务架构实践中得到广泛应用。   Javaer装好JDK环境和Maven工具就可以开始学习Boot了~</p>
-<h3 id="Spring-Boot-概要"><a href="#Spring-Boot-概要" class="headerlink" title="Spring Boot 概要"></a>Spring Boot 概要</h3><ul>
-<li><p>自动配置</p>
-<p>  针对Spring应用程序常见的功能，Spring能自动提供相关配置</p>
-</li>
-<li><p>起步依赖</p>
-<p>  告诉Spring Boot需要什么样的功能，他就能引入需要的库</p>
-</li>
-<li><p>命令行界面</p>
-</li>
-</ul>
-<ul>
-<li>Actuator</li>
-</ul>
-<h4 id="1-自动配置"><a href="#1-自动配置" class="headerlink" title="1. 自动配置"></a>1. 自动配置</h4><p>如果在Classpath里发现JdbcTemplate，那么Spring Boot就会自动配置一个JdbcTemplate的Bean，我们无需操心这种Bean的配置，Spring Boot会做好准备，随时都可以将其注入到我们的Bean中。</p>
-<h4 id="2-起步依赖"><a href="#2-起步依赖" class="headerlink" title="2. 起步依赖"></a>2. 起步依赖</h4><p>起步依赖其实就是特殊的Maven依赖或Gradle依赖，利用了传递依赖解析，把常用的库聚合在一起，组成了几个为特定功能而定制的依赖。</p>
-<p>我们无需关注这些库的版本，Spring Boot起步依赖引入的库版本都是经过测试的，它们之间不会出现不兼容的情况。</p>
-<p>例：Spring Boot的web起步依赖</p>
-<pre><code>org.springframework.boot:spring-boot-starter-web</code></pre><h4 id="3-命令行界面"><a href="#3-命令行界面" class="headerlink" title="3. 命令行界面"></a>3. 命令行界面</h4><p>不常用。</p>
-<h4 id="4-Actuator"><a href="#4-Actuator" class="headerlink" title="4. Actuator"></a>4. Actuator</h4><p>Actuator提供了在运行使检测应用程序内部情况的能力。，包括以下细节：</p>
-<ul>
-<li>Spring应用程序里配置的Bean</li>
-<li>Spring Boot的自动配置做的决策</li>
-<li>应用程序里线程的当前状态</li>
-<li>应用程序最近处理过的HTTP请求的追踪情况</li>
-<li>各种和内存用量、垃圾回收、Web请求以及数据源用量相关的指标</li>
-</ul>
-<h3 id="Spring-Boot的几点说明"><a href="#Spring-Boot的几点说明" class="headerlink" title="Spring Boot的几点说明"></a>Spring Boot的几点说明</h3><h4 id="1-Spring-Boot不是应用服务器"><a href="#1-Spring-Boot不是应用服务器" class="headerlink" title="1. Spring Boot不是应用服务器"></a>1. Spring Boot不是应用服务器</h4><p>Spring Boot 可以把Ｗｅｂ应用程序变为可自执行的JAR文件，不用部署到传统web服务器中，就可以在命令行中执运行，这是因为Spring boot 内嵌了一个Servlet容器（Tomcat/Jetty或Undertow)，而不是Spring Boot实现的。</p>
-<h4 id="2-类似的Spring-也没有实现JPA或JMS"><a href="#2-类似的Spring-也没有实现JPA或JMS" class="headerlink" title="2. 类似的Spring 也没有实现JPA或JMS"></a>2. 类似的Spring 也没有实现JPA或JMS</h4><h4 id="3-Spring-Boot本质上就是Spring"><a href="#3-Spring-Boot本质上就是Spring" class="headerlink" title="3. Spring Boot本质上就是Spring"></a>3. Spring Boot本质上就是Spring</h4><hr>
-<p><a href="http://www.spring4all.com/article/266" target="_blank" rel="noopener">Spring Boot 自述</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2626,7 +2629,7 @@ public class SpringBootDemoApplication {
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">106</span>
+                  <span class="site-state-item-count">107</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2637,7 +2640,7 @@ public class SpringBootDemoApplication {
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-count">19</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2648,7 +2651,7 @@ public class SpringBootDemoApplication {
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-count">35</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -2708,7 +2711,7 @@ public class SpringBootDemoApplication {
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2020</span>
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

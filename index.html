@@ -162,7 +162,7 @@
       </a>
     </div>
       
-        <p class="site-subtitle">面朝大海，春暖花开</p>
+        <p class="site-subtitle">吾生也有涯，而知也无涯。以有涯随无涯，殆已。</p>
       
   </div>
 
@@ -274,6 +274,188 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2021/01/01/CAP%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/01/01/CAP%E5%8E%9F%E7%90%86/" itemprop="url">CAP原理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-01T00:00:00+08:00">
+                2021-01-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" itemprop="url" rel="index">
+                    <span itemprop="name">基础理论</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2021/01/01/CAP%E5%8E%9F%E7%90%86/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2021/01/01/CAP%E5%8E%9F%E7%90%86/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2021/01/01/CAP%E5%8E%9F%E7%90%86/" class="leancloud_visitors" data-flag-title="CAP原理">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="CAP定理"><a href="#CAP定理" class="headerlink" title="CAP定理"></a>CAP定理</h1><p><a href="https://en.wikipedia.org/wiki/CAP_theorem" target="_blank" rel="noopener">CAP定理</a></p>
+<p><img src="http://assets.processon.com/chart_image/5c755040e4b0f9fba693aa8f.png" alt="cap定理"></p>
+<p>分布式系统早已成为主流开发架构模式，当今中大型系统开发绕不开分布式.</p>
+<p>相对于单点系统，分布式简单理解就是由多个节点一起组成的系统，由单点变成多点。节点之间的状态如何同步，成为了分布式系统首先要面对的问题，这也是分布式系统最大的难点。</p>
+<p>CAP定理就是这方面的基本定理，自然而然的也是最基础最关键的理论。</p>
+<blockquote>
+<p>CAP原则又称CAP定理，指的是在一个分布式系统中，一致性（Consistency）、可用性（Availability）、分区容错性（Partition tolerance）。CAP 原则指的是，这三个要素最多只能同时实现两点，不可能三者兼顾。 ——百度百科</p>
+</blockquote>
+<ul>
+<li>一致性（C）：在分布式系统中的所有数据备份，在同一时刻是否同样的值。（要做到一致性，节点间的通讯必须是正常的,且在节点没有同步好数据之前，需要锁定写操作和读操作。但是这不符合可用性）</li>
+<li>可用性（A）：每次请求都能获得一个(非错误)响应，但不保证返回的是最新写入的数据。</li>
+<li>分区容忍性（P）：尽管任意数量的消息被节点间的网络丢失（或延迟），系统仍继续运行。</li>
+</ul>
+<p>CAP原则的精髓就是要么AP，要么CP，要么AC，但是不存在CAP。要注意的是，CAP里的一致性与数据库ACID中的一致性，是截然不同的。</p>
+<ul>
+<li>CA (consistency + availability)，这样的系统关注一致性和可用性，它需要非常严格的全体一致的协议，比如“两阶段提交”（2PC）。</li>
+<li>CP (consistency + partition tolerance)，这样的系统关注一致性和分区容忍性。它关注的是系统里大多数人的一致性协议，比如：Paxos 算法（Quorum 类的算法）。</li>
+<li>AP (availability + partition tolerance)，这样的系统关心可用性和分区容忍性。</li>
+</ul>
+<h1 id="参考连接"><a href="#参考连接" class="headerlink" title="参考连接"></a>参考连接</h1><p><a href="http://www.ruanyifeng.com/blog/2018/07/cap.html" target="_blank" rel="noopener">CAP 定理的含义</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -1948,177 +2130,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/12/01/Mysql%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/12/01/Mysql%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/" itemprop="url">Mysql常见问题总结</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-01T00:00:00+08:00">
-                2019-12-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/DB/" itemprop="url" rel="index">
-                    <span itemprop="name">DB</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/12/01/Mysql%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/12/01/Mysql%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/12/01/Mysql%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/" class="leancloud_visitors" data-flag-title="Mysql常见问题总结">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="Mysql基本架构"><a href="#Mysql基本架构" class="headerlink" title="Mysql基本架构"></a>Mysql基本架构</h1><h1 id="Mysql中一条update语句是如何执行的"><a href="#Mysql中一条update语句是如何执行的" class="headerlink" title="Mysql中一条update语句是如何执行的"></a>Mysql中一条update语句是如何执行的</h1><h1 id="Mysql索引的实现方式，为什么这么实现"><a href="#Mysql索引的实现方式，为什么这么实现" class="headerlink" title="Mysql索引的实现方式，为什么这么实现"></a>Mysql索引的实现方式，为什么这么实现</h1><ul>
-<li>Mysql索引是在存储引擎层实现的，InnoDB使用了B+树数据模型实现的索引，综合考虑了搜索效率和IO性能。</li>
-<li>每个索引在InnoDB里对应一棵树</li>
-</ul>
-<h1 id="Mysql中有哪几种索引"><a href="#Mysql中有哪几种索引" class="headerlink" title="Mysql中有哪几种索引"></a>Mysql中有哪几种索引</h1><h1 id="什么时候使用联合索引？"><a href="#什么时候使用联合索引？" class="headerlink" title="什么时候使用联合索引？"></a>什么时候使用联合索引？</h1><h1 id="普通索引和唯一索引的区别"><a href="#普通索引和唯一索引的区别" class="headerlink" title="普通索引和唯一索引的区别"></a>普通索引和唯一索引的区别</h1><ul>
-<li>查询</li>
-<li>更新</li>
-</ul>
-<h1 id="索引失效的场景"><a href="#索引失效的场景" class="headerlink" title="索引失效的场景"></a>索引失效的场景</h1><h1 id="Mysql-有哪几种日志，分别有什么作用"><a href="#Mysql-有哪几种日志，分别有什么作用" class="headerlink" title="Mysql 有哪几种日志，分别有什么作用"></a>Mysql 有哪几种日志，分别有什么作用</h1><h1 id="每次更新数据都写磁盘的话，io成本会很高，mysql是如何解决的这个问题"><a href="#每次更新数据都写磁盘的话，io成本会很高，mysql是如何解决的这个问题" class="headerlink" title="每次更新数据都写磁盘的话，io成本会很高，mysql是如何解决的这个问题"></a>每次更新数据都写磁盘的话，io成本会很高，mysql是如何解决的这个问题</h1><p>WAL</p>
-<h1 id="死锁产生的原因以及解决方式"><a href="#死锁产生的原因以及解决方式" class="headerlink" title="死锁产生的原因以及解决方式"></a>死锁产生的原因以及解决方式</h1>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2173,7 +2184,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">106</span>
+                  <span class="site-state-item-count">107</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2184,7 +2195,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-count">19</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2195,7 +2206,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-count">35</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -2255,7 +2266,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2020</span>
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

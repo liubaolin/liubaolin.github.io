@@ -2,11 +2,11 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>Richey&#39;s Blog</title>
   
-  <subtitle>面朝大海，春暖花开</subtitle>
+  <subtitle>吾生也有涯，而知也无涯。以有涯随无涯，殆已。</subtitle>
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://10000hours.top/"/>
-  <updated>2020-12-13T13:32:06.588Z</updated>
+  <updated>2021-01-01T07:50:39.373Z</updated>
   <id>http://10000hours.top/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>CAP原理</title>
+    <link href="http://10000hours.top/2021/01/01/CAP%E5%8E%9F%E7%90%86/"/>
+    <id>http://10000hours.top/2021/01/01/CAP%E5%8E%9F%E7%90%86/</id>
+    <published>2020-12-31T16:00:00.000Z</published>
+    <updated>2021-01-01T07:50:39.373Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="CAP定理"><a href="#CAP定理" class="headerlink" title="CAP定理"></a>CAP定理</h1><p><a href="https://en.wikipedia.org/wiki/CAP_theorem" target="_blank" rel="noopener">CAP定理</a></p><p><img src="http://assets.processon.com/chart_image/5c755040e4b0f9fba693aa8f.png" alt="cap定理"></p><p>分布式系统早已成为主流开发架构模式，当今中大型系统开发绕不开分布式.</p><p>相对于单点系统，分布式简单理解就是由多个节点一起组成的系统，由单点变成多点。节点之间的状态如何同步，成为了分布式系统首先要面对的问题，这也是分布式系统最大的难点。</p><p>CAP定理就是这方面的基本定理，自然而然的也是最基础最关键的理论。</p><blockquote><p>CAP原则又称CAP定理，指的是在一个分布式系统中，一致性（Consistency）、可用性（Availability）、分区容错性（Partition tolerance）。CAP 原则指的是，这三个要素最多只能同时实现两点，不可能三者兼顾。 ——百度百科</p></blockquote><ul><li>一致性（C）：在分布式系统中的所有数据备份，在同一时刻是否同样的值。（要做到一致性，节点间的通讯必须是正常的,且在节点没有同步好数据之前，需要锁定写操作和读操作。但是这不符合可用性）</li><li>可用性（A）：每次请求都能获得一个(非错误)响应，但不保证返回的是最新写入的数据。</li><li>分区容忍性（P）：尽管任意数量的消息被节点间的网络丢失（或延迟），系统仍继续运行。</li></ul><p>CAP原则的精髓就是要么AP，要么CP，要么AC，但是不存在CAP。要注意的是，CAP里的一致性与数据库ACID中的一致性，是截然不同的。</p><ul><li>CA (consistency + availability)，这样的系统关注一致性和可用性，它需要非常严格的全体一致的协议，比如“两阶段提交”（2PC）。</li><li>CP (consistency + partition tolerance)，这样的系统关注一致性和分区容忍性。它关注的是系统里大多数人的一致性协议，比如：Paxos 算法（Quorum 类的算法）。</li><li>AP (availability + partition tolerance)，这样的系统关心可用性和分区容忍性。</li></ul><h1 id="参考连接"><a href="#参考连接" class="headerlink" title="参考连接"></a>参考连接</h1><p><a href="http://www.ruanyifeng.com/blog/2018/07/cap.html" target="_blank" rel="noopener">CAP 定理的含义</a></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;CAP定理&quot;&gt;&lt;a href=&quot;#CAP定理&quot; class=&quot;headerlink&quot; title=&quot;CAP定理&quot;&gt;&lt;/a&gt;CAP定理&lt;/h1&gt;&lt;p&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/CAP_theorem&quot; target
+      
+    
+    </summary>
+    
+    
+      <category term="基础理论" scheme="http://10000hours.top/categories/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/"/>
+    
+    
+      <category term="CAP" scheme="http://10000hours.top/tags/CAP/"/>
+    
+  </entry>
   
   <entry>
     <title>Kafka高可用配置</title>
@@ -532,32 +558,6 @@
     
     
       <category term="Spring-Social" scheme="http://10000hours.top/tags/Spring-Social/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>SpringSecurity-退出登录</title>
-    <link href="http://10000hours.top/2019/06/14/SpringSecurity-%E9%80%80%E5%87%BA%E7%99%BB%E5%BD%95/"/>
-    <id>http://10000hours.top/2019/06/14/SpringSecurity-%E9%80%80%E5%87%BA%E7%99%BB%E5%BD%95/</id>
-    <published>2019-06-13T16:00:00.000Z</published>
-    <updated>2020-03-21T15:35:33.284Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="Spring-Security默认的退出处理逻辑"><a href="#Spring-Security默认的退出处理逻辑" class="headerlink" title="Spring Security默认的退出处理逻辑"></a>Spring Security默认的退出处理逻辑</h1><ol><li>是当前session失效</li><li>清除与当前用户相关的remember-me记录</li><li>清空当前的SecurityContext</li><li>重定向到登录页</li></ol><h1 id="与退出登录相关的配置"><a href="#与退出登录相关的配置" class="headerlink" title="与退出登录相关的配置"></a>与退出登录相关的配置</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">.logout()</span><br><span class="line">    .logoutUrl(&quot;logout&quot;)</span><br><span class="line">&#x2F;&#x2F;  .logoutSuccessUrl(&quot;&#x2F;evolutionary-logout.html&quot;)</span><br><span class="line">    .logoutSuccessHandler(logoutSuccessHandler)</span><br><span class="line">    .deleteCookies(&quot;JSESSIONID&quot;)</span><br><span class="line">    .and()</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * 默认的退出成功处理器，如果设置了evolutionary.security.browser.signOutUrl，则跳到配置的地址上，</span><br><span class="line"> * 如果没配置，则返回json格式的响应。</span><br><span class="line"> *</span><br><span class="line"> * @author richey</span><br><span class="line"> *</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class EvolutionaryLogoutSuccessHandler implements LogoutSuccessHandler &#123;</span><br><span class="line"></span><br><span class="line">private Logger logger &#x3D; LoggerFactory.getLogger(getClass());</span><br><span class="line"></span><br><span class="line">public EvolutionaryLogoutSuccessHandler(String signOutSuccessUrl) &#123;</span><br><span class="line">this.signOutSuccessUrl &#x3D; signOutSuccessUrl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private String signOutSuccessUrl;</span><br><span class="line"></span><br><span class="line">private ObjectMapper objectMapper &#x3D; new ObjectMapper();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@Override</span><br><span class="line">public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)</span><br><span class="line">throws IOException, ServletException &#123;</span><br><span class="line"></span><br><span class="line">logger.info(&quot;退出成功&quot;);</span><br><span class="line"></span><br><span class="line">if (StringUtils.isBlank(signOutSuccessUrl)) &#123;</span><br><span class="line">response.setContentType(&quot;application&#x2F;json;charset&#x3D;UTF-8&quot;);</span><br><span class="line">response.getWriter().write(objectMapper.writeValueAsString(new SimpleResult(&quot;退出成功&quot;)));</span><br><span class="line">&#125; else &#123;</span><br><span class="line">response.sendRedirect(signOutSuccessUrl);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h1 id=&quot;Spring-Security默认的退出处理逻辑&quot;&gt;&lt;a href=&quot;#Spring-Security默认的退出处理逻辑&quot; class=&quot;headerlink&quot; title=&quot;Spring Security默认的退出处理逻辑&quot;&gt;&lt;/a&gt;Spring Securit
-      
-    
-    </summary>
-    
-    
-      <category term="Spring" scheme="http://10000hours.top/categories/Spring/"/>
-    
-    
-      <category term="Spring-Security" scheme="http://10000hours.top/tags/Spring-Security/"/>
     
   </entry>
   
