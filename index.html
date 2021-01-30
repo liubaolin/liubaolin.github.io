@@ -288,6 +288,246 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2021/01/30/python%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/01/30/python%E5%9F%BA%E7%A1%80/" itemprop="url">python基础</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-30T00:00:00+08:00">
+                2021-01-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Phthon/" itemprop="url" rel="index">
+                    <span itemprop="name">Phthon</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2021/01/30/python%E5%9F%BA%E7%A1%80/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2021/01/30/python%E5%9F%BA%E7%A1%80/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2021/01/30/python%E5%9F%BA%E7%A1%80/" class="leancloud_visitors" data-flag-title="python基础">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="数据类型和数据结构"><a href="#数据类型和数据结构" class="headerlink" title="数据类型和数据结构"></a>数据类型和数据结构</h1><h2 id="基础数据类型"><a href="#基础数据类型" class="headerlink" title="基础数据类型"></a>基础数据类型</h2><ol>
+<li>整数 int 123</li>
+<li>浮点数 float 1.234</li>
+<li>字符串 str “Python”</li>
+<li>布尔值 bool True False<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; type(123)</span><br><span class="line">&lt;class &#39;int&#39;&gt;</span><br><span class="line">&gt;&gt;&gt; type(&quot;Phthon&quot;)</span><br><span class="line">&lt;class &#39;str&#39;&gt;</span><br><span class="line">&gt;&gt;&gt; type(1.234)</span><br><span class="line">&lt;class &#39;float&#39;&gt;</span><br><span class="line">&gt;&gt;&gt; type(True)</span><br><span class="line">&lt;class &#39;bool&#39;&gt;</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>类型转换</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>int(<span class="string">'123'</span>)</span><br><span class="line"><span class="number">123</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>str(<span class="number">123</span>)</span><br><span class="line"><span class="string">'123'</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>bool(<span class="number">123</span>)</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>bool(<span class="number">0</span>)</span><br><span class="line"><span class="literal">False</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>demo</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 计算薪资</span><br><span class="line"># 工作天数</span><br><span class="line">workday &#x3D; 21.75;</span><br><span class="line"># 日薪</span><br><span class="line">dailyPay &#x3D; 288;</span><br><span class="line"># 奖金</span><br><span class="line">bonus &#x3D; 566;</span><br><span class="line">total &#x3D; workday * dailyPay + bonus;</span><br><span class="line">print(total);</span><br></pre></td></tr></table></figure>
+
+<h2 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h2><h2 id="序列"><a href="#序列" class="headerlink" title="序列"></a>序列</h2><p>序列有两个特性</p>
+<ol>
+<li>成员是有序的</li>
+<li>可以通过下标访问一个或几个成员</li>
+</ol>
+<ul>
+<li>字符串、列表、元组都属于序列</li>
+</ul>
+<ol>
+<li>字符串 “春夏秋冬”</li>
+<li>列表 [1,”春”,2,”秋”]</li>
+<li>元组 (“春”,”夏”,”秋”,”冬”)  元组中存放不可变更的内容,没有增加删除等功能</li>
+</ol>
+<ul>
+<li>序列基本操作</li>
+</ul>
+<ol>
+<li>[not] in 成员关系</li>
+<li><ul>
+<li>连接 </li>
+</ul>
+</li>
+<li><ul>
+<li>重复</li>
+</ul>
+</li>
+<li>: 切片 </li>
+</ol>
+<ul>
+<li>demo<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"># 数据结构相关</span><br><span class="line"># 四季</span><br><span class="line">seasons &#x3D; [&quot;春&quot;, &quot;夏&quot;, &quot;秋&quot;, &quot;冬&quot;];</span><br><span class="line"></span><br><span class="line"># ---------------------切片操作</span><br><span class="line"># 第一季</span><br><span class="line">print(seasons[0])</span><br><span class="line"># 第一季和第三季</span><br><span class="line">print(seasons[0:2])</span><br><span class="line"># 倒数第一季</span><br><span class="line">print(seasons[-1])</span><br><span class="line"></span><br><span class="line"># ---------------------连接操作</span><br><span class="line">print(seasons + seasons)</span><br><span class="line">print(seasons + [1,2,3])</span><br><span class="line"></span><br><span class="line"># ---------------------重复操作</span><br><span class="line">print(seasons * 2)</span><br><span class="line"># ---------------------关系操作</span><br><span class="line">print(&quot;春&quot; in seasons)</span><br><span class="line">print(&quot;春&quot; not in seasons)</span><br><span class="line"></span><br><span class="line"># 结果</span><br><span class="line">春</span><br><span class="line">[&#39;春&#39;, &#39;夏&#39;]</span><br><span class="line">冬</span><br><span class="line">[&#39;春&#39;, &#39;夏&#39;, &#39;秋&#39;, &#39;冬&#39;, &#39;春&#39;, &#39;夏&#39;, &#39;秋&#39;, &#39;冬&#39;]</span><br><span class="line">[&#39;春&#39;, &#39;夏&#39;, &#39;秋&#39;, &#39;冬&#39;, 1, 2, 3]</span><br><span class="line">[&#39;春&#39;, &#39;夏&#39;, &#39;秋&#39;, &#39;冬&#39;, &#39;春&#39;, &#39;夏&#39;, &#39;秋&#39;, &#39;冬&#39;]</span><br><span class="line">True</span><br><span class="line">False</span><br></pre></td></tr></table></figure></li>
+<li>元组demo 计算某一天属于哪个季节</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"># 计算某一天属于哪个季节</span><br><span class="line"></span><br><span class="line"># 计算某一天属于哪个季节</span><br><span class="line"></span><br><span class="line">seasons &#x3D; (&quot;春&quot;,&quot;夏&quot;,&quot;秋&quot;,&quot;冬&quot;)</span><br><span class="line"></span><br><span class="line"># 季节的第一天</span><br><span class="line">seasonsFirstDays &#x3D; ((1,1),(4,1),(7,1),(10,1))</span><br><span class="line"></span><br><span class="line">(month,day) &#x3D; (2,11)</span><br><span class="line">#(month,day) &#x3D; list(map(int,input(&quot;请输入月和日，用空格隔开&quot;).split()))</span><br><span class="line">print((month,day))</span><br><span class="line">filterSeasonFirstDay &#x3D; filter(lambda x : x &lt;&#x3D; (month,day),seasonsFirstDays)</span><br><span class="line">filterSeasonFirstDayLen  &#x3D; len(list(filterSeasonFirstDay))</span><br><span class="line">seasonIndex &#x3D; filterSeasonFirstDayLen % 4 -1</span><br><span class="line">print(seasonIndex)</span><br><span class="line">print(seasons[seasonIndex])</span><br><span class="line"></span><br><span class="line">[(1, 1)]</span><br><span class="line">-1</span><br><span class="line">冬</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>列表demo </li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 列表的操作，区别于元组，列表可以添加和删除</span><br><span class="line"></span><br><span class="line">bonusItem &#x3D; [&quot;全勤奖&quot;,&quot;绩效奖&quot;]</span><br><span class="line"></span><br><span class="line">bonusItem.append(&quot;项目奖&quot;)</span><br><span class="line">print(bonusItem)</span><br><span class="line">bonusItem.remove(&quot;绩效奖&quot;)</span><br><span class="line">print(bonusItem)</span><br><span class="line"></span><br><span class="line">[&#39;全勤奖&#39;, &#39;绩效奖&#39;, &#39;项目奖&#39;]</span><br><span class="line">[&#39;全勤奖&#39;, &#39;项目奖&#39;]</span><br></pre></td></tr></table></figure>
+<h2 id="字典-key-value"><a href="#字典-key-value" class="headerlink" title="字典(key-value)"></a>字典(key-value)</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;basesalary&quot;:&quot;4000&quot;,&quot;bonux&quot;:&quot;1888&quot;&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>demo <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"># 字典类型的使用</span><br><span class="line"></span><br><span class="line">dic1 &#x3D; &#123;&#125;</span><br><span class="line">print(type(dic1))</span><br><span class="line"></span><br><span class="line">dic2 &#x3D; &#123;&#39;basesalary&#39;:4000,&#39;bonus&#39;:1888&#125;</span><br><span class="line">dic2[&#39;postwage&#39;] &#x3D; 800</span><br><span class="line">print(dic2)</span><br><span class="line"></span><br><span class="line">&lt;class &#39;dict&#39;&gt;</span><br><span class="line">&#123;&#39;basesalary&#39;: 4000, &#39;bonus&#39;: 1888, &#39;postwage&#39;: 800&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 计算1到10所有偶数的平方</span><br><span class="line">list1 &#x3D; []</span><br><span class="line">for i in range(1,11):</span><br><span class="line">    if(i % 2 &#x3D;&#x3D; 0):</span><br><span class="line">        list1.append(i * i)</span><br><span class="line"></span><br><span class="line">print(list1)</span><br><span class="line"></span><br><span class="line"># 列表推导式语法</span><br><span class="line">list2 &#x3D; [i * i for i in range(1,11) if i % 2 &#x3D;&#x3D; 0]</span><br><span class="line">print(list2)</span><br><span class="line"></span><br><span class="line">upNumber &#x3D; (&quot;壹&quot;,&quot;贰&quot;,&quot;叁&quot;,&quot;肆&quot;,&quot;伍&quot;,&quot;陆&quot;,&quot;柒&quot;,&quot;捌&quot;,&quot;玖&quot;,&quot;拾&quot;)</span><br><span class="line">dic1 &#x3D; &#123;&#125;</span><br><span class="line">for i in upNumber:</span><br><span class="line">    dic1[i] &#x3D; 0;</span><br><span class="line">print(dic1)</span><br><span class="line"># 字典推导式语法</span><br><span class="line">dic2 &#x3D; &#123;i:0 for i in upNumber&#125;</span><br><span class="line">print(dic2)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[4, 16, 36, 64, 100]</span><br><span class="line">[4, 16, 36, 64, 100]</span><br><span class="line">&#123;&#39;壹&#39;: 0, &#39;贰&#39;: 0, &#39;叁&#39;: 0, &#39;肆&#39;: 0, &#39;伍&#39;: 0, &#39;陆&#39;: 0, &#39;柒&#39;: 0, &#39;捌&#39;: 0, &#39;玖&#39;: 0, &#39;拾&#39;: 0&#125;</span><br><span class="line">&#123;&#39;壹&#39;: 0, &#39;贰&#39;: 0, &#39;叁&#39;: 0, &#39;肆&#39;: 0, &#39;伍&#39;: 0, &#39;陆&#39;: 0, &#39;柒&#39;: 0, &#39;捌&#39;: 0, &#39;玖&#39;: 0, &#39;拾&#39;: 0&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h1 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h1><ol>
+<li>if</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">if 表达式:</span><br><span class="line">   代码块</span><br><span class="line">elif 表达式:</span><br><span class="line">   代码块</span><br><span class="line">else :</span><br><span class="line">  代码块</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>for</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">for 迭代变量 in 可迭代对象:</span><br><span class="line">    代码块</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>while</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">while 表达式:</span><br><span class="line">      代码块</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>demo <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">upNumber &#x3D; (&quot;壹&quot;,&quot;贰&quot;,&quot;叁&quot;,&quot;肆&quot;,&quot;伍&quot;,&quot;陆&quot;,&quot;柒&quot;,&quot;捌&quot;,&quot;玖&quot;,&quot;拾&quot;)</span><br><span class="line">for num in range(10):</span><br><span class="line">    print(&quot;%s 的大写方式是:%s&quot; %(num,upNumber[(num - 1) % 10]))</span><br><span class="line"></span><br><span class="line">for idx in upNumber:</span><br><span class="line">    print(idx)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2021/01/01/CAP%E5%8E%9F%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1195,6 +1435,168 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2020/08/21/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/08/21/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/" itemprop="url">分布式锁</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-21T00:00:00+08:00">
+                2020-08-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/08/21/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/08/21/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2020/08/21/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/" class="leancloud_visitors" data-flag-title="分布式锁">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2020/06/07/Mysql%EF%BC%8815%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AE%9E%E9%AA%8C/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1754,382 +2156,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2020/03/01/jvm%E5%B7%A5%E5%85%B7-%E5%A0%86-jmap/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/03/01/jvm%E5%B7%A5%E5%85%B7-%E5%A0%86-jmap/" itemprop="url">jvm工具-堆-jmap</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-01T00:00:00+08:00">
-                2020-03-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JVM/" itemprop="url" rel="index">
-                    <span itemprop="name">JVM</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2020/03/01/jvm%E5%B7%A5%E5%85%B7-%E5%A0%86-jmap/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2020/03/01/jvm%E5%B7%A5%E5%85%B7-%E5%A0%86-jmap/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2020/03/01/jvm%E5%B7%A5%E5%85%B7-%E5%A0%86-jmap/" class="leancloud_visitors" data-flag-title="jvm工具-堆-jmap">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="将-JAVA-HOME-bin添加到当前环境变量"><a href="#将-JAVA-HOME-bin添加到当前环境变量" class="headerlink" title="将$JAVA_HOME/bin添加到当前环境变量"></a>将$JAVA_HOME/bin添加到当前环境变量</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">PATH=<span class="variable">$PATH</span>:<span class="variable">$JAVA_HOME</span>/bin</span></span><br><span class="line"><span class="meta">#</span><span class="bash">env  查看环境变量</span></span><br></pre></td></tr></table></figure>
-
-<h1 id="什么时候使用"><a href="#什么时候使用" class="headerlink" title="什么时候使用"></a>什么时候使用</h1><p>当服务发生GC问题时，一般会使用jmap工具进行分析.</p>
-<h1 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h1><ul>
-<li>查看堆各个对象的数量、大小</li>
-<li>dump堆里的对象信息,然后可以使用MAT等工具分析</li>
-<li>查看堆的配置情况和GC算法</li>
-<li>查看堆永久代信息</li>
-</ul>
-<h1 id="jmap命令"><a href="#jmap命令" class="headerlink" title="jmap命令"></a>jmap命令</h1><h2 id="jmap-histo-live-less"><a href="#jmap-histo-live-less" class="headerlink" title="jmap -histo[:live]  |less"></a>jmap -histo[:live] <pid> |less</h2><p>-histo：打印当前java堆中各个对象的数量、大小，添加了live，只会打印活跃的对象。</p>
-<p>这个命令执行，JVM会先触发gc，然后再统计信息。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">查看对象数最多的对象，并按降序排序输出：</span><br><span class="line">jmap -histo &lt;pid&gt;|grep alibaba|sort -k <span class="number">2</span> -g -r|less</span><br><span class="line"></span><br><span class="line">查看占用内存最多的最象，并按降序排序输出：</span><br><span class="line">jmap -histo &lt;pid&gt;|grep alibaba|sort -k <span class="number">3</span> -g -r|less</span><br></pre></td></tr></table></figure>
-
-<h2 id="jmap-dump-live-format-b-file"><a href="#jmap-dump-live-format-b-file" class="headerlink" title="jmap -dump:[live,]format=b,file= "></a>jmap -dump:[live,]format=b,file=<filename> <pid></h2><p>-dump：把java堆中的对象dump到本地文件，然后使用MAT进行分析。如果添加了live，只会dump活跃的对象。</p>
-<p>这个命令执行，JVM会将整个heap的信息dump写入到一个文件，heap如果比较大的话，就会导致这个过程比较耗时，并且执行的过程中为了保证dump的信息是可靠的，所以会暂停应用。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">使用hprof二进制形式,输出jvm的heap内容到文件</span><br><span class="line">[richey<span class="meta">@localhost</span> ~]$ jmap -dump:live,format=b,file=jmap.hprof <span class="number">6274</span></span><br><span class="line">Dumping heap to /home/richey/jmap.hprof ...</span><br><span class="line">Heap dump file created</span><br></pre></td></tr></table></figure>
-
-<h2 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h2><h2 id="让JVM在遇到OOM-OutOfMemoryError-时生成Dump文件"><a href="#让JVM在遇到OOM-OutOfMemoryError-时生成Dump文件" class="headerlink" title="让JVM在遇到OOM(OutOfMemoryError)时生成Dump文件"></a>让JVM在遇到OOM(OutOfMemoryError)时生成Dump文件</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/path/to/heap/dump</span><br></pre></td></tr></table></figure>
-
-
-<blockquote>
-<p>Error attaching to process: sun.jvm.hotspot.debugger.DebuggerException: Can’t attach to the process<br>在ubuntu中第一次使用jmap会报错：Error attaching to process: sun.jvm.hotspot.debugger.DebuggerException: Can’t attach to the process，这是oracla文档中提到的一个bug:<a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7050524,解决方式如下：" target="_blank" rel="noopener">http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7050524,解决方式如下：</a></p>
-</blockquote>
-<blockquote>
-<p>echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope 该方法在下次重启前有效。</p>
-</blockquote>
-<blockquote>
-<p>永久有效方法 sudo vi /etc/sysctl.d/10-ptrace.conf 编辑下面这行: kernel.yama.ptrace_scope = 1 修改为: kernel.yama.ptrace_scope = 0 重启系统，使修改生效。</p>
-</blockquote>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2020/02/01/Java4%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/02/01/Java4%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/" itemprop="url">Java4种引用类型</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-01T00:00:00+08:00">
-                2020-02-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JVM/" itemprop="url" rel="index">
-                    <span itemprop="name">JVM</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2020/02/01/Java4%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2020/02/01/Java4%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2020/02/01/Java4%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/" class="leancloud_visitors" data-flag-title="Java4种引用类型">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Java的“引用”决定了对象的存活.</p>
-<p>JDK1.2之后，java提供了4中引用类型：</p>
-<ul>
-<li><p>强引用</p>
-<p>创建对象时默认声明的就是强引用，只要强引用和还在，垃圾收集器不会回收掉被引用的对象。</p>
-</li>
-</ul>
-<ul>
-<li><p>软引用</p>
-<p>用来描述一些有用，但非必须的对象。系统在内存溢出之前（内存不足的时候）会对软引用关联的对象进行回收。</p>
-<p>主要应用于缓存实现，内存不足的时候释放缓存。</p>
-</li>
-</ul>
-<ul>
-<li><p>弱引用</p>
-<p>被弱引用关联的对象只能存活到下一次GC之前。弱引用完全不会影响对象的生命周期。</p>
-<p>索引想使用某些对象，又不想影响其本身的生命周期的时候可以使用。</p>
-</li>
-<li><p>虚引用（幽灵引用、幻影引用）</p>
-<p>最弱的一种引用关系。无法通过虚引用来获取一个对象实例，没有单独使用的意义。</p>
-<p>设置虚引用关联的唯一目的就是能在这个对象被GC会收到一个系统消息。</p>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2184,7 +2210,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">107</span>
+                  <span class="site-state-item-count">110</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2195,7 +2221,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2206,7 +2232,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-count">38</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

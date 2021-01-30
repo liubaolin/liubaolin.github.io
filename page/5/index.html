@@ -288,6 +288,772 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/" itemprop="url">Mysql（11）-有意思的Mysql问题</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-03T00:00:00+08:00">
+                2019-06-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/DB/" itemprop="url" rel="index">
+                    <span itemprop="name">DB</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/" class="leancloud_visitors" data-flag-title="Mysql（11）-有意思的Mysql问题">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <ol>
+<li>当备库用–single-transaciton做逻辑备份的时候,如果主库的binlog传来一个DDL语句会怎样？</li>
+</ol>
+<p>备份操作是一个过程，DDL从主库传过来时，备份过程可能处于不同的阶段，所以DDL对备份的影响也不同。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Q1:SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;</span><br><span class="line">Q2:START TRANSACTION  WITH CONSISTENT SNAPSHOT；</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br><span class="line">Q3:SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 1 *&#x2F;</span><br><span class="line">Q4:show create table &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 2 *&#x2F;</span><br><span class="line">Q5:SELECT * FROM &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 3 *&#x2F;</span><br><span class="line">Q6:ROLLBACK TO SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 4 *&#x2F;</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br></pre></td></tr></table></figure>
+<p>在备份开始的时候，为了确保 RR（可重复读）隔离级别，再设置一次 RR 隔离级别 (Q1);</p>
+<p>启动事务，这里用 WITH CONSISTENT SNAPSHOT 确保这个语句执行完就可以得到一个一致性视图（Q2)；</p>
+<p>设置一个保存点，这个很重要（Q3）；</p>
+<p>show create 是为了拿到表结构 (Q4)，然后正式导数据 （Q5），回滚到 SAVEPOINT sp，在这里的作用是释放 t1 的 MDL 锁 （Q6）。当然这部分属于“超纲”，上文正文里面都没提到。</p>
+<p>答案如下：</p>
+<ul>
+<li><p>如果在 Q4 语句执行之前到达，现象：没有影响，备份拿到的是 DDL 后的表结构。</p>
+</li>
+<li><p>如果在“时刻 2”到达，则表结构被改过，Q5 执行的时候，报 Table definition has changed, please retry transaction，现象：mysqldump 终止；</p>
+</li>
+<li><p>如果在“时刻 2”和“时刻 3”之间到达，mysqldump 占着 t1 的 MDL 读锁，binlog 被阻塞，现象：主从延迟，直到 Q6 执行完成。</p>
+</li>
+<li><p>从“时刻 4”开始，mysqldump 释放了 MDL 读锁，现象：没有影响，备份拿到的是 DDL 前的表结构。</p>
+</li>
+</ul>
+<p>总结就是在拿到表结构之前到达，没影响；在拿到表结构之后，备份数据之前到，会报错；在备份后到达，主从延迟</p>
+<ol start="2">
+<li>Mysql选错索引的一个案例分析<br>//todo 待分析</li>
+</ol>
+<p>在生产上遇见了一个非常经典的Mysql选错索引的问题，简述如下：有一张日志表，id是自增主键，假设还有一个字段是code，code字段也有索引；</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE IF NOT EXISTS &#96;log_test&#96;(</span><br><span class="line">  &#96;id&#96; INT  AUTO_INCREMENT,</span><br><span class="line">  &#96;key&#96; VARCHAR(100) NOT NULL,</span><br><span class="line">  PRIMARY KEY (&#96;id&#96;),</span><br><span class="line">  index idx_key(&#96;key&#96;)</span><br><span class="line">)ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_unicode_ci;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">delimiter ;;</span><br><span class="line">create procedure idata()</span><br><span class="line">begin</span><br><span class="line">  declare i int;</span><br><span class="line">  set i&#x3D;1;</span><br><span class="line">  while(i&lt;&#x3D;100000)do</span><br><span class="line">    insert into log_test values(i, i);</span><br><span class="line">    set i&#x3D;i+1;</span><br><span class="line">  end while;</span><br><span class="line">end;;</span><br><span class="line">delimiter ;</span><br><span class="line">call idata();</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/03/Spring%20Security%EF%BC%883%EF%BC%89%EF%BC%8D%E4%B8%AA%E6%80%A7%E5%8C%96%E7%94%A8%E6%88%B7%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%EF%BC%88%E4%B8%80%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/03/Spring%20Security%EF%BC%883%EF%BC%89%EF%BC%8D%E4%B8%AA%E6%80%A7%E5%8C%96%E7%94%A8%E6%88%B7%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%EF%BC%88%E4%B8%80%EF%BC%89/" itemprop="url">Spring Security（3）－个性化用户认证流程（一）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-03T00:00:00+08:00">
+                2019-06-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/06/03/Spring%20Security%EF%BC%883%EF%BC%89%EF%BC%8D%E4%B8%AA%E6%80%A7%E5%8C%96%E7%94%A8%E6%88%B7%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%EF%BC%88%E4%B8%80%EF%BC%89/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/03/Spring%20Security%EF%BC%883%EF%BC%89%EF%BC%8D%E4%B8%AA%E6%80%A7%E5%8C%96%E7%94%A8%E6%88%B7%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%EF%BC%88%E4%B8%80%EF%BC%89/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/06/03/Spring%20Security%EF%BC%883%EF%BC%89%EF%BC%8D%E4%B8%AA%E6%80%A7%E5%8C%96%E7%94%A8%E6%88%B7%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%EF%BC%88%E4%B8%80%EF%BC%89/" class="leancloud_visitors" data-flag-title="Spring Security（3）－个性化用户认证流程（一）">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>概要：</p>
+<ul>
+<li>自定义登录页面</li>
+<li>登录成功处理</li>
+<li>登录失败处理</li>
+</ul>
+<h2 id="自定义登录页面"><a href="#自定义登录页面" class="headerlink" title="自定义登录页面"></a>自定义登录页面</h2><pre><code>@Configuration
+public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
+
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        //        http.httpBasic();  http Basic的认证方式
+        http.formLogin()  //表单登录
+                .loginPage(&quot;/evolutionary-loginIn.html&quot;) //指定登录页面所在的url
+                .loginProcessingUrl(&quot;/authentication/form&quot;) //登录请求的url
+                .and()
+                .authorizeRequests()
+                .antMatchers(&quot;/evolutionary-loginIn.html&quot;, securityProperties.getBrower().getLoginPage())
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+                .and().csrf().disable();
+
+    }
+}</code></pre><p>evolutionary-loginIn.html页面：</p>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;title&gt;登录&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h2&gt;标准登录页面&lt;/h2&gt;
+&lt;h3&gt;表单登录&lt;/h3&gt;
+&lt;form action=&quot;/authentication/form&quot; method=&quot;post&quot;&gt;
+    &lt;table&gt;
+        &lt;tr&gt;
+            &lt;td&gt;用户名：&lt;/td&gt;
+            &lt;td&gt;&lt;input type=&quot;text&quot; name=&quot;username&quot;/&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;密码：&lt;/td&gt;
+            &lt;td&gt;&lt;input type=&quot;password&quot; name=&quot;password&quot;&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td colspan=&quot;2&quot;&gt;
+                &lt;button type=&quot;submit&quot;&gt;登录&lt;/button&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/table&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre><h3 id="优化处理"><a href="#优化处理" class="headerlink" title="优化处理"></a>优化处理</h3><ul>
+<li><p>目前我们的请求如果没有权限会直接跳转登录页面，但是我们希望如果是restFul请求返回的是json数据，如果是html结尾的请求可以跳转到登录页。</p>
+</li>
+<li><p>让开发者自定义用户登录页面，如果没有找到用户自定义的页面再用我们提供的登录页面。</p>
+</li>
+</ul>
+<p><img src="http://ogiythg18.bkt.clouddn.com/%E5%A4%84%E7%90%86%E4%B8%8D%E5%90%8C%E7%B1%BB%E5%9E%8B%E7%9A%84%E8%AF%B7%E6%B1%82.jpg" alt="image"></p>
+<p>之前当需要认证时，Spring Security会根据我们的配置跳转到登录页面：</p>
+<pre><code>http.formLogin()
+    .loginPage(&quot;/evolutionary-loginIn.html&quot;)//跳转到登录页面</code></pre><p>现在我们要自定义一个Controller，并修改配置当需要认证的时候跳转到该Controller上。</p>
+<p>修改配置：</p>
+<pre><code>@Override
+protected void configure(HttpSecurity http) throws Exception {
+    http.formLogin()  //表单登录
+            //.loginPage(&quot;/evolutionary-loginIn.html&quot;)
+            .loginPage(&quot;/authentication/require&quot;) //如果需要身份认证则跳转到这里
+            .and()
+            .authorizeRequests()
+            .antMatchers(&quot;/authentication/require&quot;,securityProperties.getBrower().getLoginPage())//不校验我们配置的登录页面
+            .permitAll()
+            .anyRequest()
+            .authenticated()
+            .and().csrf().disable();
+
+}</code></pre><p>提供自定义Controller：</p>
+<pre><code>@RestController
+public class BrowerSecurityController {
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
+    private RequestCache requestCache = new HttpSessionRequestCache();
+
+    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+
+    @Autowired
+    private SecurityProperties securityProperties;
+
+    @RequestMapping(&quot;/authentication/require&quot;)
+    @ResponseStatus(code = HttpStatus.UNAUTHORIZED)
+    public SimpleResult requireAuthentication(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        SavedRequest savedRequest = requestCache.getRequest(request, response);
+        if (savedRequest != null) {
+            String targetUrl =  savedRequest.getRedirectUrl();
+            logger.info(&quot;引发跳转的请求是：&quot; + targetUrl);
+            if (StringUtils.endsWithIgnoreCase(targetUrl, &quot;.html&quot;)) {
+                redirectStrategy.sendRedirect(request, response, securityProperties.getBrower().getLoginPage());
+            }
+        }
+        return new SimpleResult(&quot;访问的服务需要登录页面，请引导用户到登录页&quot;);
+    }
+
+}</code></pre><p>做完上面的操作，我们就可以针对不同的请求类型作出不同的响应了。你可能注意了，上面我们用了securityProperties.getBrower().getLoginPage()。这就是我们为方便配置不同的登录页面提供的配置类。</p>
+<pre><code>@Configuration
+@EnableConfigurationProperties(SecurityProperties.class)
+public class SecurityCoreConfig {
+
+
+}
+
+@ConfigurationProperties(prefix = &quot;evolutionary.security&quot;)
+public class SecurityProperties {
+
+    private BrowerProperties brower = new BrowerProperties();
+
+    public BrowerProperties getBrower() {
+        return brower;
+    }
+
+    public void setBrower(BrowerProperties brower) {
+        this.brower = brower;
+    }
+}
+
+
+public class BrowerProperties {
+
+    private String loginPage = &quot;/evolutionary-loginIn.html&quot;;//默认跳转
+
+    private LoginInType loginInType = LoginInType.JSON;
+
+    public String getLoginPage() {
+        return loginPage;
+    }
+
+    public void setLoginPage(String loginPage) {
+        this.loginPage = loginPage;
+    }
+
+    public LoginInType getLoginInType() {
+        return loginInType;
+    }
+
+    public void setLoginInType(LoginInType loginInType) {
+        this.loginInType = loginInType;
+    }
+}
+
+
+evolutionary.security.brower.loginPage = /demo-signIn.html
+evolutionary.security.brower.loginInType=REDIRECT</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/02/Spring%20Security%EF%BC%882%EF%BC%89%EF%BC%8D%E8%87%AA%E5%AE%9A%E4%B9%89%E7%94%A8%E6%88%B7%E8%AE%A4%E8%AF%81%E9%80%BB%E8%BE%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/02/Spring%20Security%EF%BC%882%EF%BC%89%EF%BC%8D%E8%87%AA%E5%AE%9A%E4%B9%89%E7%94%A8%E6%88%B7%E8%AE%A4%E8%AF%81%E9%80%BB%E8%BE%91/" itemprop="url">Spring Security（2）－自定义用户认证逻辑</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-02T00:00:00+08:00">
+                2019-06-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/06/02/Spring%20Security%EF%BC%882%EF%BC%89%EF%BC%8D%E8%87%AA%E5%AE%9A%E4%B9%89%E7%94%A8%E6%88%B7%E8%AE%A4%E8%AF%81%E9%80%BB%E8%BE%91/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/02/Spring%20Security%EF%BC%882%EF%BC%89%EF%BC%8D%E8%87%AA%E5%AE%9A%E4%B9%89%E7%94%A8%E6%88%B7%E8%AE%A4%E8%AF%81%E9%80%BB%E8%BE%91/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/06/02/Spring%20Security%EF%BC%882%EF%BC%89%EF%BC%8D%E8%87%AA%E5%AE%9A%E4%B9%89%E7%94%A8%E6%88%B7%E8%AE%A4%E8%AF%81%E9%80%BB%E8%BE%91/" class="leancloud_visitors" data-flag-title="Spring Security（2）－自定义用户认证逻辑">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在上一篇基本原理中，我们引入了Spring security依赖包，并定义了认证方式为表单认证。但是认证的用户名和密码都用的是默认的，本文我们将继续讲用户自定义认证逻辑，主要包括下面几点：</p>
+<ul>
+<li>处理用户信息获取逻辑（比如从数据库读取用户信息）</li>
+<li>处理用户校验逻辑（获取用户信息后如何验证）</li>
+<li>处理密码加解密</li>
+</ul>
+<h2 id="处理用户信息获取逻辑"><a href="#处理用户信息获取逻辑" class="headerlink" title="处理用户信息获取逻辑"></a>处理用户信息获取逻辑</h2><p>UserDetailsService就是用来处理用户信息获取逻辑的接口，我们通过实现该接口在loadUserByUsername方法的实现中获取用户信息，并将其传递给Spring Security。如下我们假设密码“123456”就是我们从数据库获取到的信息。</p>
+<pre><code>@Component
+public class MyUserDetailService implements UserDetailsService {
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        logger.info(&quot;登录用户名：&quot; + username);
+
+        return new User(username, &quot;123456&quot;, AuthorityUtils.commaSeparatedStringToAuthorityList(&quot;admin&quot;));
+
+    }
+}</code></pre><p>现在就可以用任意用户名和密码：“123456”登录系统了。</p>
+<h2 id="处理用户校验逻辑"><a href="#处理用户校验逻辑" class="headerlink" title="处理用户校验逻辑"></a>处理用户校验逻辑</h2><p>获取到用户信息后，就需要进行信息校验，用户校验逻辑的处理可大致分为两部分，一部分是密码是否匹配，另一部分就是其它信息的校验。从Spring Security的校验返回结果UserDetail中我们可以看到都有哪些信息是可以校验的。</p>
+<pre><code>public interface UserDetails extends Serializable {
+
+
+    Collection&lt;? extends GrantedAuthority&gt; getAuthorities();
+
+    String getPassword();
+
+    String getUsername();
+
+    boolean isAccountNonExpired();
+
+    boolean isAccountNonLocked();
+
+    boolean isCredentialsNonExpired();
+
+    boolean isEnabled();
+}</code></pre><p>UserDetail是Spring提供的用户信息的接口，我们可以自定义用户类并实现该接口，或者使用Spring Security提供的User类（已经实现了UserDetail接口）。</p>
+<p>可以看到该接口需要提供权限、用户名、密码、帐号是否过期、帐号是否被锁定、密码是否过期、帐号是否被删除。这些信息都需要我们根据业务逻辑自己提供，并通过标准的接口UserDetail提供给Spring Security就可以了。</p>
+<pre><code>@Component
+public class MyUserDetailService implements UserDetailsService {
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        logger.info(&quot;登录用户名：&quot; + username);
+        String password = &quot;123456&quot;
+        logger.info(&quot;数据库密码是:&quot; + password);
+        return new User(username,
+                password ,
+                true,
+                true,
+                true,
+                true,
+                AuthorityUtils.commaSeparatedStringToAuthorityList(&quot;admi)
+        );
+    }
+}</code></pre><h2 id="处理密码加解密"><a href="#处理密码加解密" class="headerlink" title="处理密码加解密"></a>处理密码加解密</h2><p>通常我们的密码是不会以明文的方式存到数据库里的，Spring Security提供了org.springframework.security.crypto.password.PasswordEncoder接口来处理密码的加密和匹配操作。</p>
+<pre><code>public interface PasswordEncoder {
+    //加密
+    String encode(CharSequence rawPassword);
+    //匹配
+    boolean matches(CharSequence rawPassword, String encodedPassword);
+}</code></pre><p>我们可以自己实现passwordEncoder来提供我们自己的加解密算法。这里我们配置一个Spring Security提供的passwordEncoder实现类。</p>
+<pre><code>@Configuration
+public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+
+}</code></pre><p>配置了passwordEncoder后我们再登录spring Securiyt就会加密我们的登录密码跟（从数据库）获取到的密码进行校验。</p>
+<pre><code>@Component
+public class MyUserDetailService implements UserDetailsService {
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        logger.info(&quot;登录用户名：&quot; + username);
+        //这里模拟数据库读出来的密码
+        String password = passwordEncoder.encode(&quot;123456&quot;);
+        logger.info(&quot;数据库密码是:&quot; + password);
+        return new User(username,
+                password ,
+                true,
+                true,
+                true,
+                true,
+                AuthorityUtils.commaSeparatedStringToAuthorityList(&quot;admin&quot;)
+        );
+    }
+}</code></pre><p>值得注意的一点是通过passwordEncoder加密生成的密码每次都是不一样的，因为在生成的时候它会随机生成盐并混到要加密的串里去。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/01/Spring%20Security%EF%BC%88%EF%BC%91%EF%BC%89%EF%BC%8D%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1963,618 +2729,6 @@ spring.datasource.password=root</code></pre><p>在自动配置DataSource Bean的
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/05/14/Spring%20Boot(4)-%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE%E4%BB%8B%E7%BB%8D/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/05/14/Spring%20Boot(4)-%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE%E4%BB%8B%E7%BB%8D/" itemprop="url">Spring Boot(4)-属性配置介绍</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-14T00:00:00+08:00">
-                2019-05-14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/05/14/Spring%20Boot(4)-%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE%E4%BB%8B%E7%BB%8D/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/14/Spring%20Boot(4)-%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE%E4%BB%8B%E7%BB%8D/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/05/14/Spring%20Boot(4)-%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE%E4%BB%8B%E7%BB%8D/" class="leancloud_visitors" data-flag-title="Spring Boot(4)-属性配置介绍">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="一、自动配置"><a href="#一、自动配置" class="headerlink" title="一、自动配置"></a>一、自动配置</h3><p>在使用Spring Boot之前，我们自己整合Spring应用时需要进行繁琐的xml配置，Spring Boot通过起步依赖和自动配置，使我们只需要引入起步依赖的相关模块就可以了，其中各个模块有自己的默认配置，我们只要在application.properties中完成一些属性的配置就可以了。比如数据库连接、日志相关配置等。</p>
-<p>Spring Boot 不单单从 application.properties获取配置，所以我们可以在程序中多种设置配置属性。按照以下列表的优先级排列：</p>
-<ol>
-<li>命令行参数</li>
-<li>java:comp/env 里的 JNDI 属性</li>
-<li>JVM 系统属性</li>
-<li>操作系统环境变量</li>
-<li>RandomValuePropertySource 属性类生成的 random.* 属性</li>
-<li>应用以外的 application.properties（或 yml）文件</li>
-<li>打包在应用内的 application.properties（或 yml）文件</li>
-<li>在应用 @Configuration 配置类中，用 @PropertySource 注解声明的属性文件</li>
-<li>SpringApplication.setDefaultProperties 声明的默认属性</li>
-</ol>
-<h3 id="二、自定义属性"><a href="#二、自定义属性" class="headerlink" title="二、自定义属性"></a>二、自定义属性</h3><p>除了各个模块默认的配置，我们在程序开发的过程中可能还需要一些自定义的配置，本篇我们学习一下自定义配置。</p>
-<h5 id="1-定义自己使用的属性"><a href="#1-定义自己使用的属性" class="headerlink" title="1. 定义自己使用的属性"></a>1. 定义自己使用的属性</h5><p>直接在application.properties文件中定义即可，比如</p>
-<pre><code>top.richpeople.blog.author=&apos;richey&apos;
-top.richpeople.blog.age=18</code></pre><p>然后在程序中通过@Value(“${top.richpeople.blog.author}”)注解来加载对应的配置属性</p>
-<pre><code>@Component
-public class MyProperties {
-
-    @Value(&quot;${top.richpeople.blog.author}&quot;)
-    private String name ;
-
-    @Value(&quot;${top.richpeople.blog.age}&quot;)
-    private int age;
-
-}</code></pre><h5 id="2-参数间的引用"><a href="#2-参数间的引用" class="headerlink" title="2. 参数间的引用"></a>2. 参数间的引用</h5><pre><code>top.richpeople.blog.desc=${top.richpeople.blog.author}的年龄是${top.richpeople.blog.age}</code></pre><h5 id="3-使用随机数"><a href="#3-使用随机数" class="headerlink" title="3. 使用随机数"></a>3. 使用随机数</h5><p>Spring Boot的属性配置文件中可以通过${random}来产生int值、long值或者string字符串，来支持属性的随机值.</p>
-<pre><code># 使用随机数
-# 随机字符串
-top.richpeople.blog.value=${random.value}
-# 随机int
-top.richpeople.blog.number=${random.int}
-# 随机long
-top.richpeople.blog.bignumber=${random.long}
-# 20以内的随机数
-top.richpeople.blog.limit10=${random.int(10)}
-# 10-20的随机数
-top.richpeople.blog.between=${random.int[10,20]}</code></pre><h5 id="4-命令行中设置属性值"><a href="#4-命令行中设置属性值" class="headerlink" title="4. 命令行中设置属性值"></a>4. 命令行中设置属性值</h5><p>例如：</p>
-<pre><code>java -jar xxx.jar --server.port=8080</code></pre><p>在命令行中连续两个减号–就是对application.properties中的属性进行赋值的标识。</p>
-<p>通过命令行修改属性值是不完全的，所以Spring Boot 提供了屏蔽命令号访问属性值的设置：</p>
-<pre><code>SpringApplication.setAddCommandLineProperties(false)。</code></pre><h5 id="5-多环境配置"><a href="#5-多环境配置" class="headerlink" title="5. 多环境配置"></a>5. 多环境配置</h5><p>通常我们的程序会部署到不同的环境，比如：开发、测试、生产等。其中每个环境的数据库地址、服务器端口等等配置都可能会不同。对于多环境的配置，我们通常会配置多份不同环境的配置文件，再通过打包命令指定需要打包的内容之后进行区分打包。</p>
-<p>Spring Boot多环境配置文件名需要满足application-{profile}.proferties的格式，其中{profile}对应环境的标识，比如：</p>
-<ul>
-<li>application-dev.properties:开发环境</li>
-<li>application-test.properties:测试环境</li>
-<li>application-prod.properties:生产环境</li>
-</ul>
-<p>至于哪个具体的配置文件会被加载，需要在application.properties文件中通过spring.profiles.active属性来设置，其值对应{profile}值，如：</p>
-<pre><code>spring.profiles.active=test</code></pre><p>也可以在打包时通过设置-Dspring.profiles.active=prod 去指定相应的配置:</p>
-<pre><code>mvn package
-java -jar -Dspring.profiles.active=prod springboot-properties-0.0.1-SNAPSHOT.jar</code></pre><p>总结：</p>
-<ul>
-<li>application.properties中配置通用内容，并设置spring.profiles.active=dev，以开发环境为默认配置</li>
-<li>application-{profile}.properties中配置各个环境不同的内容</li>
-<li>通过命令行方式去激活不同环境的配置</li>
-<li>常用样板配置在Spring Boot官方文档给出：<a href="https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html" target="_blank" rel="noopener">https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html</a></li>
-</ul>
-<h3 id="三、自定义配置文件"><a href="#三、自定义配置文件" class="headerlink" title="三、自定义配置文件"></a>三、自定义配置文件</h3><p>如果想从我们自定义的配置文件中读配置怎么办呢？Spring Boot同样做了很好的支持。</p>
-<p>例如我们新建了一个配置文件：evolutionary.properties</p>
-<pre><code>top.evolutionary.blog.title=SpringBoot自定义配置
-
-
-
-@Component
-@PropertySource(&quot;classpath:evolutionary.properties&quot;)
-@ConfigurationProperties(prefix = &quot;top&quot;)
-public class EvolutionaryProperties {
-
-    @Value(&quot;${top.evolutionary.blog.title}&quot;)
-    private String title;
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-}</code></pre><p>springboot1.5版本以下@ConfigurationProperties有两个属性locations（指定配置文件的所在位置），    prefix（指定配置文件中键名称的前缀）。但是1.5版本及以上的版本取消了locations属性，为了指定配置文件的位置，使用@PropertySource(value = “自定义配置文件路径”)指定文件所在位置。</p>
-<hr>
-<p>感谢资料</p>
-<p><a href="http://www.spring4all.com/article/267" target="_blank" rel="noopener">http://www.spring4all.com/article/267</a></p>
-<p>《Spring Boot实战》，丁雪峰译</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/05/12/Spring%20Boot(3)-%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/05/12/Spring%20Boot(3)-%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" itemprop="url">Spring Boot(3)-快速入门</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-12T00:00:00+08:00">
-                2019-05-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/05/12/Spring%20Boot(3)-%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/12/Spring%20Boot(3)-%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/05/12/Spring%20Boot(3)-%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" class="leancloud_visitors" data-flag-title="Spring Boot(3)-快速入门">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>先看一下上一篇我们通过Spring initializr快速构建的Spring Boot项目结构。</p>
-<p><img src="http://ogiythg18.bkt.clouddn.com/spring-boot-project-structure.png" alt="image"></p>
-<ul>
-<li><p>application.properties:用于配置应用程序和Spring Boot的属性</p>
-</li>
-<li><p>SpringBootDemoApplication.java</p>
-<p>起配置和启动引导的作用。首先，这时Spring的主要配置类。虽然Spring Boot的自动配置免除了很多Spring配置，但我们还是需要进行少量的配置以启动自动配置。</p>
-<p>@SpringBootApplication用于开启组件扫描和自动配置，实际上是将三个有用的注解组合在了一起：</p>
-<ul>
-<li>Spring的@Configuration</li>
-<li>Spring的@ConponentScan</li>
-<li>Spring Boot的@EnableAutoConfiguration，就是这一行配置开启了Spring Boot自动配置的魔力。</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li>SpringApplication.run:负责启动引打敖应用程序，这里的main方法，让我们可以在命令行中把应用程序当成一个可执行的jar来运行。</li>
-</ul>
-<pre><code>@SpringBootApplication
-public class SpringBootDemoApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(SpringBootDemoApplication.class, args);
-    }
-}</code></pre><hr>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/05/11/Spring%20Boot(2)-Intellij%E4%BD%BF%E7%94%A8Spring%20Initializr%E5%BF%AB%E9%80%9F%E6%9E%84%E5%BB%BA%E5%B7%A5%E7%A8%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/05/11/Spring%20Boot(2)-Intellij%E4%BD%BF%E7%94%A8Spring%20Initializr%E5%BF%AB%E9%80%9F%E6%9E%84%E5%BB%BA%E5%B7%A5%E7%A8%8B/" itemprop="url">Spring Boot(2)-Intellij使用Spring Initializr快速构建工程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-11T00:00:00+08:00">
-                2019-05-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/05/11/Spring%20Boot(2)-Intellij%E4%BD%BF%E7%94%A8Spring%20Initializr%E5%BF%AB%E9%80%9F%E6%9E%84%E5%BB%BA%E5%B7%A5%E7%A8%8B/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/11/Spring%20Boot(2)-Intellij%E4%BD%BF%E7%94%A8Spring%20Initializr%E5%BF%AB%E9%80%9F%E6%9E%84%E5%BB%BA%E5%B7%A5%E7%A8%8B/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/05/11/Spring%20Boot(2)-Intellij%E4%BD%BF%E7%94%A8Spring%20Initializr%E5%BF%AB%E9%80%9F%E6%9E%84%E5%BB%BA%E5%B7%A5%E7%A8%8B/" class="leancloud_visitors" data-flag-title="Spring Boot(2)-Intellij使用Spring Initializr快速构建工程">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="使用Intellij中的Spring-Initializr来快速构建"><a href="#使用Intellij中的Spring-Initializr来快速构建" class="headerlink" title="使用Intellij中的Spring Initializr来快速构建"></a>使用Intellij中的Spring Initializr来快速构建</h3><p>在Intellig中使用Spring Initialzr来构建Spring Boot项目非常简单，基本只需要一只点下一步就可以了。</p>
-<ul>
-<li>菜单栏中选择File=&gt;New=&gt;Project..。其中Initial Service Url指向的地址就是Spring官方提供的Spring Initializr工具地址。</li>
-</ul>
-<p><img src="http://ogiythg18.bkt.clouddn.com/intellig-spring-initializr1.png" alt="Initializr"></p>
-<ul>
-<li>Next,在这里我们可以编辑我们想要创建的工程信息。其中，Type可以改变我们要构建的工程类型，比如：Maven、Gradle；Language可以选择：Java、Groovy、Kotlin。</li>
-</ul>
-<p><img src="http://ogiythg18.bkt.clouddn.com/intellig-spring-boot2.png" alt="Initializr"></p>
-<ul>
-<li>Next，进入选择Spring Boot版本和依赖管理的窗口。在这里值的我们关注的是，它不仅包含了Spring Boot Starter POMs中的各个依赖，还包含了Spring Cloud的各种依赖。</li>
-</ul>
-<p><img src="http://ogiythg18.bkt.clouddn.com/intelliij-spring-initializr3.png" alt="Initializr"></p>
-<ul>
-<li>Next,最后是工程物理存储的一些细节，最后Finesh就完成工程的构建了。</li>
-</ul>
-<hr>
-<p><a href="http://www.spring4all.com/article/247" target="_blank" rel="noopener">参考自Spring4all</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2629,7 +2783,7 @@ public class SpringBootDemoApplication {
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">107</span>
+                  <span class="site-state-item-count">110</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2640,7 +2794,7 @@ public class SpringBootDemoApplication {
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2651,7 +2805,7 @@ public class SpringBootDemoApplication {
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-count">38</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

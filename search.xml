@@ -1,6 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>python基础</title>
+    <url>/2021/01/30/python%E5%9F%BA%E7%A1%80/</url>
+    <content><![CDATA[<h1 id="数据类型和数据结构"><a href="#数据类型和数据结构" class="headerlink" title="数据类型和数据结构"></a>数据类型和数据结构</h1><h2 id="基础数据类型"><a href="#基础数据类型" class="headerlink" title="基础数据类型"></a>基础数据类型</h2><ol>
+<li>整数 int 123</li>
+<li>浮点数 float 1.234</li>
+<li>字符串 str “Python”</li>
+<li>布尔值 bool True False<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; type(123)</span><br><span class="line">&lt;class &#39;int&#39;&gt;</span><br><span class="line">&gt;&gt;&gt; type(&quot;Phthon&quot;)</span><br><span class="line">&lt;class &#39;str&#39;&gt;</span><br><span class="line">&gt;&gt;&gt; type(1.234)</span><br><span class="line">&lt;class &#39;float&#39;&gt;</span><br><span class="line">&gt;&gt;&gt; type(True)</span><br><span class="line">&lt;class &#39;bool&#39;&gt;</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>类型转换</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>int(<span class="string">'123'</span>)</span><br><span class="line"><span class="number">123</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>str(<span class="number">123</span>)</span><br><span class="line"><span class="string">'123'</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>bool(<span class="number">123</span>)</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>bool(<span class="number">0</span>)</span><br><span class="line"><span class="literal">False</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>demo</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 计算薪资</span><br><span class="line"># 工作天数</span><br><span class="line">workday &#x3D; 21.75;</span><br><span class="line"># 日薪</span><br><span class="line">dailyPay &#x3D; 288;</span><br><span class="line"># 奖金</span><br><span class="line">bonus &#x3D; 566;</span><br><span class="line">total &#x3D; workday * dailyPay + bonus;</span><br><span class="line">print(total);</span><br></pre></td></tr></table></figure>
+
+<h2 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h2><h2 id="序列"><a href="#序列" class="headerlink" title="序列"></a>序列</h2><p>序列有两个特性</p>
+<ol>
+<li>成员是有序的</li>
+<li>可以通过下标访问一个或几个成员</li>
+</ol>
+<ul>
+<li>字符串、列表、元组都属于序列</li>
+</ul>
+<ol>
+<li>字符串 “春夏秋冬”</li>
+<li>列表 [1,”春”,2,”秋”]</li>
+<li>元组 (“春”,”夏”,”秋”,”冬”)  元组中存放不可变更的内容,没有增加删除等功能</li>
+</ol>
+<ul>
+<li>序列基本操作</li>
+</ul>
+<ol>
+<li>[not] in 成员关系</li>
+<li><ul>
+<li>连接 </li>
+</ul>
+</li>
+<li><ul>
+<li>重复</li>
+</ul>
+</li>
+<li>: 切片 </li>
+</ol>
+<ul>
+<li>demo<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 数据结构相关</span><br><span class="line"># 四季</span><br><span class="line">seasons &#x3D; [&quot;春&quot;, &quot;夏&quot;, &quot;秋&quot;, &quot;冬&quot;];</span><br><span class="line"></span><br><span class="line"># ---------------------切片操作</span><br><span class="line"># 第一季</span><br><span class="line">print(seasons[0])</span><br><span class="line"># 第一季和第三季</span><br><span class="line">print(seasons[0:2])</span><br><span class="line"># 倒数第一季</span><br><span class="line">print(seasons[-1])</span><br><span class="line"></span><br><span class="line"># ---------------------连接操作</span><br><span class="line">print(seasons + seasons)</span><br><span class="line">print(seasons + [1,2,3])</span><br><span class="line"></span><br><span class="line"># ---------------------重复操作</span><br><span class="line">print(seasons * 2)</span><br><span class="line"># ---------------------关系操作</span><br><span class="line">print(&quot;春&quot; in seasons)</span><br><span class="line">print(&quot;春&quot; not in seasons)</span><br><span class="line"></span><br><span class="line"># 结果</span><br><span class="line">春</span><br><span class="line">[&#39;春&#39;, &#39;夏&#39;]</span><br><span class="line">冬</span><br><span class="line">[&#39;春&#39;, &#39;夏&#39;, &#39;秋&#39;, &#39;冬&#39;, &#39;春&#39;, &#39;夏&#39;, &#39;秋&#39;, &#39;冬&#39;]</span><br><span class="line">[&#39;春&#39;, &#39;夏&#39;, &#39;秋&#39;, &#39;冬&#39;, 1, 2, 3]</span><br><span class="line">[&#39;春&#39;, &#39;夏&#39;, &#39;秋&#39;, &#39;冬&#39;, &#39;春&#39;, &#39;夏&#39;, &#39;秋&#39;, &#39;冬&#39;]</span><br><span class="line">True</span><br><span class="line">False</span><br></pre></td></tr></table></figure></li>
+<li>元组demo 计算某一天属于哪个季节</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 计算某一天属于哪个季节</span><br><span class="line"></span><br><span class="line"># 计算某一天属于哪个季节</span><br><span class="line"></span><br><span class="line">seasons &#x3D; (&quot;春&quot;,&quot;夏&quot;,&quot;秋&quot;,&quot;冬&quot;)</span><br><span class="line"></span><br><span class="line"># 季节的第一天</span><br><span class="line">seasonsFirstDays &#x3D; ((1,1),(4,1),(7,1),(10,1))</span><br><span class="line"></span><br><span class="line">(month,day) &#x3D; (2,11)</span><br><span class="line">#(month,day) &#x3D; list(map(int,input(&quot;请输入月和日，用空格隔开&quot;).split()))</span><br><span class="line">print((month,day))</span><br><span class="line">filterSeasonFirstDay &#x3D; filter(lambda x : x &lt;&#x3D; (month,day),seasonsFirstDays)</span><br><span class="line">filterSeasonFirstDayLen  &#x3D; len(list(filterSeasonFirstDay))</span><br><span class="line">seasonIndex &#x3D; filterSeasonFirstDayLen % 4 -1</span><br><span class="line">print(seasonIndex)</span><br><span class="line">print(seasons[seasonIndex])</span><br><span class="line"></span><br><span class="line">[(1, 1)]</span><br><span class="line">-1</span><br><span class="line">冬</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>列表demo </li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 列表的操作，区别于元组，列表可以添加和删除</span><br><span class="line"></span><br><span class="line">bonusItem &#x3D; [&quot;全勤奖&quot;,&quot;绩效奖&quot;]</span><br><span class="line"></span><br><span class="line">bonusItem.append(&quot;项目奖&quot;)</span><br><span class="line">print(bonusItem)</span><br><span class="line">bonusItem.remove(&quot;绩效奖&quot;)</span><br><span class="line">print(bonusItem)</span><br><span class="line"></span><br><span class="line">[&#39;全勤奖&#39;, &#39;绩效奖&#39;, &#39;项目奖&#39;]</span><br><span class="line">[&#39;全勤奖&#39;, &#39;项目奖&#39;]</span><br></pre></td></tr></table></figure>
+<h2 id="字典-key-value"><a href="#字典-key-value" class="headerlink" title="字典(key-value)"></a>字典(key-value)</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;&quot;basesalary&quot;:&quot;4000&quot;,&quot;bonux&quot;:&quot;1888&quot;&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>demo <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 字典类型的使用</span><br><span class="line"></span><br><span class="line">dic1 &#x3D; &#123;&#125;</span><br><span class="line">print(type(dic1))</span><br><span class="line"></span><br><span class="line">dic2 &#x3D; &#123;&#39;basesalary&#39;:4000,&#39;bonus&#39;:1888&#125;</span><br><span class="line">dic2[&#39;postwage&#39;] &#x3D; 800</span><br><span class="line">print(dic2)</span><br><span class="line"></span><br><span class="line">&lt;class &#39;dict&#39;&gt;</span><br><span class="line">&#123;&#39;basesalary&#39;: 4000, &#39;bonus&#39;: 1888, &#39;postwage&#39;: 800&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 计算1到10所有偶数的平方</span><br><span class="line">list1 &#x3D; []</span><br><span class="line">for i in range(1,11):</span><br><span class="line">    if(i % 2 &#x3D;&#x3D; 0):</span><br><span class="line">        list1.append(i * i)</span><br><span class="line"></span><br><span class="line">print(list1)</span><br><span class="line"></span><br><span class="line"># 列表推导式语法</span><br><span class="line">list2 &#x3D; [i * i for i in range(1,11) if i % 2 &#x3D;&#x3D; 0]</span><br><span class="line">print(list2)</span><br><span class="line"></span><br><span class="line">upNumber &#x3D; (&quot;壹&quot;,&quot;贰&quot;,&quot;叁&quot;,&quot;肆&quot;,&quot;伍&quot;,&quot;陆&quot;,&quot;柒&quot;,&quot;捌&quot;,&quot;玖&quot;,&quot;拾&quot;)</span><br><span class="line">dic1 &#x3D; &#123;&#125;</span><br><span class="line">for i in upNumber:</span><br><span class="line">    dic1[i] &#x3D; 0;</span><br><span class="line">print(dic1)</span><br><span class="line"># 字典推导式语法</span><br><span class="line">dic2 &#x3D; &#123;i:0 for i in upNumber&#125;</span><br><span class="line">print(dic2)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[4, 16, 36, 64, 100]</span><br><span class="line">[4, 16, 36, 64, 100]</span><br><span class="line">&#123;&#39;壹&#39;: 0, &#39;贰&#39;: 0, &#39;叁&#39;: 0, &#39;肆&#39;: 0, &#39;伍&#39;: 0, &#39;陆&#39;: 0, &#39;柒&#39;: 0, &#39;捌&#39;: 0, &#39;玖&#39;: 0, &#39;拾&#39;: 0&#125;</span><br><span class="line">&#123;&#39;壹&#39;: 0, &#39;贰&#39;: 0, &#39;叁&#39;: 0, &#39;肆&#39;: 0, &#39;伍&#39;: 0, &#39;陆&#39;: 0, &#39;柒&#39;: 0, &#39;捌&#39;: 0, &#39;玖&#39;: 0, &#39;拾&#39;: 0&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h1 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h1><ol>
+<li>if</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if 表达式:</span><br><span class="line">   代码块</span><br><span class="line">elif 表达式:</span><br><span class="line">   代码块</span><br><span class="line">else :</span><br><span class="line">  代码块</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>for</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">for 迭代变量 in 可迭代对象:</span><br><span class="line">    代码块</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>while</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">while 表达式:</span><br><span class="line">      代码块</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>demo <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">upNumber &#x3D; (&quot;壹&quot;,&quot;贰&quot;,&quot;叁&quot;,&quot;肆&quot;,&quot;伍&quot;,&quot;陆&quot;,&quot;柒&quot;,&quot;捌&quot;,&quot;玖&quot;,&quot;拾&quot;)</span><br><span class="line">for num in range(10):</span><br><span class="line">    print(&quot;%s 的大写方式是:%s&quot; %(num,upNumber[(num - 1) % 10]))</span><br><span class="line"></span><br><span class="line">for idx in upNumber:</span><br><span class="line">    print(idx)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Phthon</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>CAP原理</title>
     <url>/2021/01/01/CAP%E5%8E%9F%E7%90%86/</url>
     <content><![CDATA[<h1 id="CAP定理"><a href="#CAP定理" class="headerlink" title="CAP定理"></a>CAP定理</h1><p><a href="https://en.wikipedia.org/wiki/CAP_theorem" target="_blank" rel="noopener">CAP定理</a></p>
@@ -150,6 +239,17 @@
       </categories>
       <tags>
         <tag>ssh</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>分布式锁</title>
+    <url>/2020/08/21/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>分布式系统</category>
+      </categories>
+      <tags>
+        <tag>分布式锁</tag>
       </tags>
   </entry>
   <entry>
@@ -350,6 +450,17 @@
       </tags>
   </entry>
   <entry>
+    <title>springboot-validation统一异常处理</title>
+    <url>/2020/01/01/springboot-validation%E7%BB%9F%E4%B8%80%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>异常处理</category>
+      </categories>
+      <tags>
+        <tag>springboot</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Mysql常见问题总结</title>
     <url>/2019/12/01/Mysql%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<h1 id="Mysql基本架构"><a href="#Mysql基本架构" class="headerlink" title="Mysql基本架构"></a>Mysql基本架构</h1><h1 id="Mysql中一条update语句是如何执行的"><a href="#Mysql中一条update语句是如何执行的" class="headerlink" title="Mysql中一条update语句是如何执行的"></a>Mysql中一条update语句是如何执行的</h1><h1 id="Mysql索引的实现方式，为什么这么实现"><a href="#Mysql索引的实现方式，为什么这么实现" class="headerlink" title="Mysql索引的实现方式，为什么这么实现"></a>Mysql索引的实现方式，为什么这么实现</h1><ul>
@@ -367,6 +478,24 @@
       </categories>
       <tags>
         <tag>Mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>安装zookeeper</title>
+    <url>/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/</url>
+    <content><![CDATA[<h1 id="安装zookeeper"><a href="#安装zookeeper" class="headerlink" title="安装zookeeper"></a>安装zookeeper</h1><h2 id="单机服务"><a href="#单机服务" class="headerlink" title="单机服务"></a>单机服务</h2><p>从apache.org下载zookeeper,这里下载的是zookeeper-3.4.14.tar</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#tar -zxf zookeeper-3.4.14.tar.gz</span><br><span class="line">#mv zookeeper-3.4.14 &#x2F;usr&#x2F;local&#x2F;zookeeper</span><br><span class="line">#cat &gt; &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;conf&#x2F;zoo.cfg &lt;&lt; EOF</span><br><span class="line">&gt; tickTime&#x3D;2000</span><br><span class="line">&gt; dataDir&#x3D;&#x2F;var&#x2F;lib&#x2F;zookeeper</span><br><span class="line">&gt; clientPort&#x3D;2181</span><br><span class="line">&gt; EOF</span><br><span class="line">#&#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh start</span><br><span class="line">ZooKeeper JMX enabled by default</span><br><span class="line">Using config: &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;..&#x2F;conf&#x2F;zoo.cfg</span><br><span class="line">Starting zookeeper ... STARTED</span><br><span class="line">#</span><br></pre></td></tr></table></figure>
+
+<p>现在可以连接到zookeeper端口上，通过发送四字命令srvr来验证zookeeper是否安装正确。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#telnet localhost 2181</span><br><span class="line">Trying ::1...</span><br><span class="line">Connected to localhost.</span><br><span class="line">Escape character is &#39;^]&#39;.</span><br><span class="line">srvr</span><br><span class="line">Zookeeper version: 3.4.14-4c25d480e66aadd371de8bd2fd8da255ac140bcf, built on 03&#x2F;06&#x2F;2019 16:18 GMT</span><br><span class="line">Latency min&#x2F;avg&#x2F;max: 0&#x2F;0&#x2F;0</span><br><span class="line">Received: 1</span><br><span class="line">Sent: 0</span><br><span class="line">Connections: 1</span><br><span class="line">Outstanding: 0</span><br><span class="line">Zxid: 0x0</span><br><span class="line">Mode: standalone</span><br><span class="line">Node count: 4</span><br><span class="line">Connection closed by foreign host.</span><br></pre></td></tr></table></figure>
+
+<h2 id="Zookeeper群组"><a href="#Zookeeper群组" class="headerlink" title="Zookeeper群组"></a>Zookeeper群组</h2><p>Zookeeper集群被称为Zookeeper群组，Zookeeper使用的是一致性协议，所以每个群组里应该包含奇数个节点。因为只有群组里的大多数节点处于可用状态，zookeeper才能处理外部请求。</p>
+]]></content>
+      <categories>
+        <category>架构</category>
+      </categories>
+      <tags>
+        <tag>zookeeper</tag>
       </tags>
   </entry>
   <entry>
@@ -408,24 +537,6 @@
       </categories>
       <tags>
         <tag>kafka</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>安装zookeeper</title>
-    <url>/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/</url>
-    <content><![CDATA[<h1 id="安装zookeeper"><a href="#安装zookeeper" class="headerlink" title="安装zookeeper"></a>安装zookeeper</h1><h2 id="单机服务"><a href="#单机服务" class="headerlink" title="单机服务"></a>单机服务</h2><p>从apache.org下载zookeeper,这里下载的是zookeeper-3.4.14.tar</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#tar -zxf zookeeper-3.4.14.tar.gz</span><br><span class="line">#mv zookeeper-3.4.14 &#x2F;usr&#x2F;local&#x2F;zookeeper</span><br><span class="line">#cat &gt; &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;conf&#x2F;zoo.cfg &lt;&lt; EOF</span><br><span class="line">&gt; tickTime&#x3D;2000</span><br><span class="line">&gt; dataDir&#x3D;&#x2F;var&#x2F;lib&#x2F;zookeeper</span><br><span class="line">&gt; clientPort&#x3D;2181</span><br><span class="line">&gt; EOF</span><br><span class="line">#&#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh start</span><br><span class="line">ZooKeeper JMX enabled by default</span><br><span class="line">Using config: &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;..&#x2F;conf&#x2F;zoo.cfg</span><br><span class="line">Starting zookeeper ... STARTED</span><br><span class="line">#</span><br></pre></td></tr></table></figure>
-
-<p>现在可以连接到zookeeper端口上，通过发送四字命令srvr来验证zookeeper是否安装正确。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#telnet localhost 2181</span><br><span class="line">Trying ::1...</span><br><span class="line">Connected to localhost.</span><br><span class="line">Escape character is &#39;^]&#39;.</span><br><span class="line">srvr</span><br><span class="line">Zookeeper version: 3.4.14-4c25d480e66aadd371de8bd2fd8da255ac140bcf, built on 03&#x2F;06&#x2F;2019 16:18 GMT</span><br><span class="line">Latency min&#x2F;avg&#x2F;max: 0&#x2F;0&#x2F;0</span><br><span class="line">Received: 1</span><br><span class="line">Sent: 0</span><br><span class="line">Connections: 1</span><br><span class="line">Outstanding: 0</span><br><span class="line">Zxid: 0x0</span><br><span class="line">Mode: standalone</span><br><span class="line">Node count: 4</span><br><span class="line">Connection closed by foreign host.</span><br></pre></td></tr></table></figure>
-
-<h2 id="Zookeeper群组"><a href="#Zookeeper群组" class="headerlink" title="Zookeeper群组"></a>Zookeeper群组</h2><p>Zookeeper集群被称为Zookeeper群组，Zookeeper使用的是一致性协议，所以每个群组里应该包含奇数个节点。因为只有群组里的大多数节点处于可用状态，zookeeper才能处理外部请求。</p>
-]]></content>
-      <categories>
-        <category>架构</category>
-      </categories>
-      <tags>
-        <tag>zookeeper</tag>
       </tags>
   </entry>
   <entry>
@@ -699,7 +810,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 <h1 id="可视模式"><a href="#可视模式" class="headerlink" title="可视模式"></a>可视模式</h1><ul>
 <li>按v键，进入字符可视模式，移动光标可进行选择</li>
 <li>按V键，进入行可视模式,移动光标可进行选择</li>
-<li>按Ctrl+v键，进入行可视模式,移动光标可进行选择</li>
+<li>按Ctrl+v键，进入行可视模式,移动光标可进行选择<br>SHIFT+i(I) 输入要插入的内容<br>ESC 按两次，会在每行的选定的区域出现插入的内容</li>
 <li>选择后，可以输入一个操作符对选中的文本进行操作，比如d 删除</li>
 <li>u或U，字母大小写切换</li>
 <li>d删除选中字符，D删除整行</li>
@@ -1328,21 +1439,6 @@ public class EvolutionaryExpiredSessionStrategy implements SessionInformationExp
       </tags>
   </entry>
   <entry>
-    <title>使用jdk自带工具jvisualvm查看.hprof文件</title>
-    <url>/2019/06/10/%E4%BD%BF%E7%94%A8jdk%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7jvisualvm%E6%9F%A5%E7%9C%8B.hprof%E6%96%87%E4%BB%B6/</url>
-    <content><![CDATA[<p>使用jdk自带的jvisualvm.exe程序来查看内存溢出文件</p>
-<p>位置：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$JAVA_HOME&#x2F;bin&#x2F;jvisualvm</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>JVM</category>
-      </categories>
-      <tags>
-        <tag>JVM</tag>
-        <tag>工具</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Spring Security（10）－短信登录开发</title>
     <url>/2019/06/10/Spring%20Security%EF%BC%8810%EF%BC%89%EF%BC%8D%E7%9F%AD%E4%BF%A1%E7%99%BB%E5%BD%95%E5%BC%80%E5%8F%91/</url>
     <content><![CDATA[<p>Spring Security默认没有支持基于短信的认证方式，我们先回顾一下Spring Security开发基于表单的认流程：</p>
@@ -1375,6 +1471,21 @@ http.authenticationProvider(smsCodeAuthenticationProvider)
       </tags>
   </entry>
   <entry>
+    <title>使用jdk自带工具jvisualvm查看.hprof文件</title>
+    <url>/2019/06/10/%E4%BD%BF%E7%94%A8jdk%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7jvisualvm%E6%9F%A5%E7%9C%8B.hprof%E6%96%87%E4%BB%B6/</url>
+    <content><![CDATA[<p>使用jdk自带的jvisualvm.exe程序来查看内存溢出文件</p>
+<p>位置：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$JAVA_HOME&#x2F;bin&#x2F;jvisualvm</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>JVM</category>
+      </categories>
+      <tags>
+        <tag>JVM</tag>
+        <tag>工具</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Spring Security（9）－验证码处理</title>
     <url>/2019/06/09/Spring%20Security%EF%BC%889%EF%BC%89%EF%BC%8D%E9%AA%8C%E8%AF%81%E7%A0%81%E5%A4%84%E7%90%86/</url>
     <content><![CDATA[<p>先看一下短信接口的代码结构图：</p>
@@ -1387,27 +1498,6 @@ http.authenticationProvider(smsCodeAuthenticationProvider)
       </categories>
       <tags>
         <tag>Spring-Security</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>生产故障排查流程</title>
-    <url>/2019/06/08/%E7%94%9F%E4%BA%A7%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h1 id="使用-top-查看系统中消耗cpu比较多的进程PID"><a href="#使用-top-查看系统中消耗cpu比较多的进程PID" class="headerlink" title="使用 top 查看系统中消耗cpu比较多的进程PID"></a>使用 top 查看系统中消耗cpu比较多的进程PID</h1><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">[richey@localhost ~]$ top |grep java</span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   2.7  11.3   5:49.83 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:49.87 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.7  11.3   5:49.92 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:49.96 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:50.00 java                                                                             </span><br><span class="line"> 7439 richey    20   0 7785472 346788  21388 S   0.3   2.1   0:06.05 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:50.04 java</span><br></pre></td></tr></table></figure>
-<h1 id="使用-ps-查看java相关进程的详细信息"><a href="#使用-ps-查看java相关进程的详细信息" class="headerlink" title="使用 ps 查看java相关进程的详细信息"></a>使用 ps 查看java相关进程的详细信息</h1><p>可以看出java进程JVM的详细配置</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[richey@localhost ~]$ ps -ef|grep java|grep 6274</span><br><span class="line"></span><br><span class="line">[richey@localhost ~]$ ps -ef|grep java|grep 6274</span><br><span class="line">richey    6274  6220 39 23:32 ?        00:05:52 /opt/idea-IU-172.4155.36/jre64/bin/java -Xbootclasspath/a:/opt/idea-IU-172.4155.36/lib/boot.jar -classpath /opt/idea-IU-172.4155.36/lib/bootstrap.jar:/opt/idea-IU-172.4155.36/lib/extensions.jar:/opt/idea-IU-172.4155.36/lib/util.jar:/opt/idea-IU-172.4155.36/lib/jdom.jar:/opt/idea-IU-172.4155.36/lib/log4j.jar:/opt/idea-IU-172.4155.36/lib/trove4j.jar:/opt/idea-IU-172.4155.36/lib/jna.jar:/opt/idea-IU-172.4155.36/jre64/lib/tools.jar -Xms2048m -Xmx6144m -XX:ReservedCodeCacheSize=240m -XX:+UseConcMarkSweepGC -XX:SoftRefLRUPolicyMSPerMB=50 -ea -Dsun.io.useCanonCaches=false -Djava.net.preferIPv4Stack=true -XX:+HeapDumpOnOutOfMemoryError -XX:-OmitStackTraceInFastThrow -Dawt.useSystemAAFontSettings=lcd -Dsun.java2d.renderer=sun.java2d.marlin.MarlinRenderingEngine -XX:ErrorFile=/home/richey/java_error_in_IDEA_%p.log -XX:HeapDumpPath=/home/richey/java_error_in_IDEA.hprof -Didea.paths.selector=IntelliJIdea2017.2 -Djb.vmOptionsFile=/opt/idea-IU-172.4155.36/bin/idea64.vmoptions -Didea.jre.check=true com.intellij.idea.Main</span><br></pre></td></tr></table></figure>
-
-<h1 id="使用-top-H-p-PID-来查看当前进程中比较消耗cpu的线程"><a href="#使用-top-H-p-PID-来查看当前进程中比较消耗cpu的线程" class="headerlink" title="使用 top -H -p PID 来查看当前进程中比较消耗cpu的线程"></a>使用 top -H -p PID 来查看当前进程中比较消耗cpu的线程</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">top -H -p 6274</span><br></pre></td></tr></table></figure>
-
-<p>拿到消耗cpu比较高的线程pid,先转换成16进制的</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 将16进制的pid 1077 转换成10进制</span><br><span class="line">rintf &quot;%x\n&quot; 1077</span><br></pre></td></tr></table></figure>
-
-<p>最后使用jstack pid|grep 16进制的线程id，就可以定位到问题代码。</p>
-]]></content>
-      <categories>
-        <category>生产故障</category>
-      </categories>
-      <tags>
-        <tag>问题定位</tag>
       </tags>
   </entry>
   <entry>
@@ -1586,6 +1676,27 @@ http.authenticationProvider(smsCodeAuthenticationProvider)
       </categories>
       <tags>
         <tag>Spring-Security</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>生产故障排查流程</title>
+    <url>/2019/06/08/%E7%94%9F%E4%BA%A7%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="使用-top-查看系统中消耗cpu比较多的进程PID"><a href="#使用-top-查看系统中消耗cpu比较多的进程PID" class="headerlink" title="使用 top 查看系统中消耗cpu比较多的进程PID"></a>使用 top 查看系统中消耗cpu比较多的进程PID</h1><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">[richey@localhost ~]$ top |grep java</span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   2.7  11.3   5:49.83 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:49.87 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.7  11.3   5:49.92 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:49.96 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:50.00 java                                                                             </span><br><span class="line"> 7439 richey    20   0 7785472 346788  21388 S   0.3   2.1   0:06.05 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:50.04 java</span><br></pre></td></tr></table></figure>
+<h1 id="使用-ps-查看java相关进程的详细信息"><a href="#使用-ps-查看java相关进程的详细信息" class="headerlink" title="使用 ps 查看java相关进程的详细信息"></a>使用 ps 查看java相关进程的详细信息</h1><p>可以看出java进程JVM的详细配置</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[richey@localhost ~]$ ps -ef|grep java|grep 6274</span><br><span class="line"></span><br><span class="line">[richey@localhost ~]$ ps -ef|grep java|grep 6274</span><br><span class="line">richey    6274  6220 39 23:32 ?        00:05:52 /opt/idea-IU-172.4155.36/jre64/bin/java -Xbootclasspath/a:/opt/idea-IU-172.4155.36/lib/boot.jar -classpath /opt/idea-IU-172.4155.36/lib/bootstrap.jar:/opt/idea-IU-172.4155.36/lib/extensions.jar:/opt/idea-IU-172.4155.36/lib/util.jar:/opt/idea-IU-172.4155.36/lib/jdom.jar:/opt/idea-IU-172.4155.36/lib/log4j.jar:/opt/idea-IU-172.4155.36/lib/trove4j.jar:/opt/idea-IU-172.4155.36/lib/jna.jar:/opt/idea-IU-172.4155.36/jre64/lib/tools.jar -Xms2048m -Xmx6144m -XX:ReservedCodeCacheSize=240m -XX:+UseConcMarkSweepGC -XX:SoftRefLRUPolicyMSPerMB=50 -ea -Dsun.io.useCanonCaches=false -Djava.net.preferIPv4Stack=true -XX:+HeapDumpOnOutOfMemoryError -XX:-OmitStackTraceInFastThrow -Dawt.useSystemAAFontSettings=lcd -Dsun.java2d.renderer=sun.java2d.marlin.MarlinRenderingEngine -XX:ErrorFile=/home/richey/java_error_in_IDEA_%p.log -XX:HeapDumpPath=/home/richey/java_error_in_IDEA.hprof -Didea.paths.selector=IntelliJIdea2017.2 -Djb.vmOptionsFile=/opt/idea-IU-172.4155.36/bin/idea64.vmoptions -Didea.jre.check=true com.intellij.idea.Main</span><br></pre></td></tr></table></figure>
+
+<h1 id="使用-top-H-p-PID-来查看当前进程中比较消耗cpu的线程"><a href="#使用-top-H-p-PID-来查看当前进程中比较消耗cpu的线程" class="headerlink" title="使用 top -H -p PID 来查看当前进程中比较消耗cpu的线程"></a>使用 top -H -p PID 来查看当前进程中比较消耗cpu的线程</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">top -H -p 6274</span><br></pre></td></tr></table></figure>
+
+<p>拿到消耗cpu比较高的线程pid,先转换成16进制的</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 将16进制的pid 1077 转换成10进制</span><br><span class="line">rintf &quot;%x\n&quot; 1077</span><br></pre></td></tr></table></figure>
+
+<p>最后使用jstack pid|grep 16进制的线程id，就可以定位到问题代码。</p>
+]]></content>
+      <categories>
+        <category>生产故障</category>
+      </categories>
+      <tags>
+        <tag>问题定位</tag>
       </tags>
   </entry>
   <entry>
@@ -1962,47 +2073,6 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
       </tags>
   </entry>
   <entry>
-    <title>Mysql（12）-Mysql事务隔离是如何实现的</title>
-    <url>/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/</url>
-    <content><![CDATA[<h1 id="事务的启动时机。"><a href="#事务的启动时机。" class="headerlink" title="事务的启动时机。"></a>事务的启动时机。</h1><p>begin/start transaction 命令并不是一个事务的起点，在执行到它们之后的第一个操作 InnoDB 表的语句，事务才真正启动。如果你想要马上启动一个事务，可以使用 start transaction with consistent snapshot 这个命令。</p>
-<p>第一种启动方式，一致性视图是在第执行第一个快照读语句时创建的；<br>第二种启动方式，一致性视图是在执行 start transaction with consistent snapshot 时创建的。</p>
-<h1 id="在-MySQL-里，有两个“视图”的概念"><a href="#在-MySQL-里，有两个“视图”的概念" class="headerlink" title="在 MySQL 里，有两个“视图”的概念"></a>在 MySQL 里，有两个“视图”的概念</h1><p>一个是 view。它是一个用查询语句定义的虚拟表，在调用的时候执行查询语句并生成结果。创建视图的语法是 create view … ，而它的查询方法与表一样。</p>
-<p>另一个是 InnoDB 在实现 MVCC 时用到的一致性读视图，即 consistent read view，用于支持 RC（Read Committed，读提交）和 RR（Repeatable Read，可重复读）隔离级别的实现。</p>
-<h1 id="“快照”在-MVCC-里是怎么工作的？"><a href="#“快照”在-MVCC-里是怎么工作的？" class="headerlink" title="“快照”在 MVCC 里是怎么工作的？"></a>“快照”在 MVCC 里是怎么工作的？</h1><p>在可重复读隔离级别下，事务在启动的时候就“拍了个快照”。注意，这个快照是基于整库的。</p>
-<p>InnoDB 里面每个事务有一个唯一的事务 ID，叫作 transaction id。它是在事务开始的时候向 InnoDB 的事务系统申请的，是按申请顺序严格递增的。</p>
-<p>而每行数据也都是有多个版本的。每次事务更新数据的时候，都会生成一个新的数据版本，并且把 transaction id 赋值给这个数据版本的事务 ID，记为 row trx_id。同时，旧的数据版本要保留，并且在新的数据版本中，能够有信息可以直接拿到它。</p>
-<p>也就是说，数据表中的一行记录，其实可能有多个版本 (row)，每个版本有自己的 row trx_id。</p>
-<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg" alt="Mysql数据MVVC"></p>
-<p>中的三个虚线箭头，就是 undo log；而 V1、V2、V3 并不是物理上真实存在的，而是每次需要的时候根据当前版本和 undo log 计算出来的。比如，需要 V2 的时候，就是通过 V4 依次执行 U3、U2 算出来。</p>
-<p>可重复读的定义：一个事务启动的时候，能够看到所有已经提交的事务结果。但是之后，这个事务执行期间，其他事务的更新对它不可见。</p>
-<p>因此，一个事务只需要在启动的时候声明说，“以我启动的时刻为准，如果一个数据版本是在我启动之前生成的，就认；如果是我启动以后才生成的，我就不认，我必须要找到它的上一个版本”。</p>
-<p>一个数据版本，对于一个事务视图来说，除了自己的更新总是可见以外，有三种情况：</p>
-<ol>
-<li>版本未提交，不可见；</li>
-<li>版本已提交，但是是在视图创建后提交的，不可见；</li>
-<li>版本已提交，而且是在视图创建前提交的，可见。</li>
-</ol>
-<p>更新数据都是先读后写的，而这个读，只能读当前的值，称为“当前读”（current read）。</p>
-<p>这里我们提到了一个概念，叫作当前读。其实，除了 update 语句外，select 语句如果加锁，也是当前读。</p>
-<h1 id="事务的可重复读的能力是怎么实现的？"><a href="#事务的可重复读的能力是怎么实现的？" class="headerlink" title="事务的可重复读的能力是怎么实现的？"></a>事务的可重复读的能力是怎么实现的？</h1><p>可重复读的核心就是一致性读（consistent read）；而事务更新数据的时候，只能用当前读。如果当前的记录的行锁被其他事务占用的话，就需要进入锁等待。</p>
-<h1 id="读提交的逻辑和可重复读的区别"><a href="#读提交的逻辑和可重复读的区别" class="headerlink" title="读提交的逻辑和可重复读的区别"></a>读提交的逻辑和可重复读的区别</h1><p>在可重复读隔离级别下，只需要在事务开始的时候创建一致性视图，之后事务里的其他查询都共用这个一致性视图；</p>
-<p>在读提交隔离级别下，每一个语句执行前都会重新算出一个新的视图。</p>
-<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>InnoDB 的行数据有多个版本，每个数据版本有自己的 row trx_id，每个事务或者语句有自己的一致性视图。普通查询语句是一致性读，一致性读会根据 row trx_id 和一致性视图确定数据版本的可见性。</p>
-<ul>
-<li>对于可重复读，查询只承认在事务启动前就已经提交完成的数据；</li>
-<li>对于读提交，查询只承认在语句启动前就已经提交完成的数据；</li>
-<li>而当前读，总是读取已经提交完成的最新版本。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-        <tag>事务</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Spring Security（5）－认证流程源码详解</title>
     <url>/2019/06/05/Spring%20Security%EF%BC%885%EF%BC%89%EF%BC%8D%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3/</url>
     <content><![CDATA[<p>概要：</p>
@@ -2168,6 +2238,47 @@ public Object getCurrentUserToo(@AuthenticationPrincipal UserDetails userDetails
       </tags>
   </entry>
   <entry>
+    <title>Mysql（12）-Mysql事务隔离是如何实现的</title>
+    <url>/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/</url>
+    <content><![CDATA[<h1 id="事务的启动时机。"><a href="#事务的启动时机。" class="headerlink" title="事务的启动时机。"></a>事务的启动时机。</h1><p>begin/start transaction 命令并不是一个事务的起点，在执行到它们之后的第一个操作 InnoDB 表的语句，事务才真正启动。如果你想要马上启动一个事务，可以使用 start transaction with consistent snapshot 这个命令。</p>
+<p>第一种启动方式，一致性视图是在第执行第一个快照读语句时创建的；<br>第二种启动方式，一致性视图是在执行 start transaction with consistent snapshot 时创建的。</p>
+<h1 id="在-MySQL-里，有两个“视图”的概念"><a href="#在-MySQL-里，有两个“视图”的概念" class="headerlink" title="在 MySQL 里，有两个“视图”的概念"></a>在 MySQL 里，有两个“视图”的概念</h1><p>一个是 view。它是一个用查询语句定义的虚拟表，在调用的时候执行查询语句并生成结果。创建视图的语法是 create view … ，而它的查询方法与表一样。</p>
+<p>另一个是 InnoDB 在实现 MVCC 时用到的一致性读视图，即 consistent read view，用于支持 RC（Read Committed，读提交）和 RR（Repeatable Read，可重复读）隔离级别的实现。</p>
+<h1 id="“快照”在-MVCC-里是怎么工作的？"><a href="#“快照”在-MVCC-里是怎么工作的？" class="headerlink" title="“快照”在 MVCC 里是怎么工作的？"></a>“快照”在 MVCC 里是怎么工作的？</h1><p>在可重复读隔离级别下，事务在启动的时候就“拍了个快照”。注意，这个快照是基于整库的。</p>
+<p>InnoDB 里面每个事务有一个唯一的事务 ID，叫作 transaction id。它是在事务开始的时候向 InnoDB 的事务系统申请的，是按申请顺序严格递增的。</p>
+<p>而每行数据也都是有多个版本的。每次事务更新数据的时候，都会生成一个新的数据版本，并且把 transaction id 赋值给这个数据版本的事务 ID，记为 row trx_id。同时，旧的数据版本要保留，并且在新的数据版本中，能够有信息可以直接拿到它。</p>
+<p>也就是说，数据表中的一行记录，其实可能有多个版本 (row)，每个版本有自己的 row trx_id。</p>
+<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg" alt="Mysql数据MVVC"></p>
+<p>中的三个虚线箭头，就是 undo log；而 V1、V2、V3 并不是物理上真实存在的，而是每次需要的时候根据当前版本和 undo log 计算出来的。比如，需要 V2 的时候，就是通过 V4 依次执行 U3、U2 算出来。</p>
+<p>可重复读的定义：一个事务启动的时候，能够看到所有已经提交的事务结果。但是之后，这个事务执行期间，其他事务的更新对它不可见。</p>
+<p>因此，一个事务只需要在启动的时候声明说，“以我启动的时刻为准，如果一个数据版本是在我启动之前生成的，就认；如果是我启动以后才生成的，我就不认，我必须要找到它的上一个版本”。</p>
+<p>一个数据版本，对于一个事务视图来说，除了自己的更新总是可见以外，有三种情况：</p>
+<ol>
+<li>版本未提交，不可见；</li>
+<li>版本已提交，但是是在视图创建后提交的，不可见；</li>
+<li>版本已提交，而且是在视图创建前提交的，可见。</li>
+</ol>
+<p>更新数据都是先读后写的，而这个读，只能读当前的值，称为“当前读”（current read）。</p>
+<p>这里我们提到了一个概念，叫作当前读。其实，除了 update 语句外，select 语句如果加锁，也是当前读。</p>
+<h1 id="事务的可重复读的能力是怎么实现的？"><a href="#事务的可重复读的能力是怎么实现的？" class="headerlink" title="事务的可重复读的能力是怎么实现的？"></a>事务的可重复读的能力是怎么实现的？</h1><p>可重复读的核心就是一致性读（consistent read）；而事务更新数据的时候，只能用当前读。如果当前的记录的行锁被其他事务占用的话，就需要进入锁等待。</p>
+<h1 id="读提交的逻辑和可重复读的区别"><a href="#读提交的逻辑和可重复读的区别" class="headerlink" title="读提交的逻辑和可重复读的区别"></a>读提交的逻辑和可重复读的区别</h1><p>在可重复读隔离级别下，只需要在事务开始的时候创建一致性视图，之后事务里的其他查询都共用这个一致性视图；</p>
+<p>在读提交隔离级别下，每一个语句执行前都会重新算出一个新的视图。</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>InnoDB 的行数据有多个版本，每个数据版本有自己的 row trx_id，每个事务或者语句有自己的一致性视图。普通查询语句是一致性读，一致性读会根据 row trx_id 和一致性视图确定数据版本的可见性。</p>
+<ul>
+<li>对于可重复读，查询只承认在事务启动前就已经提交完成的数据；</li>
+<li>对于读提交，查询只承认在语句启动前就已经提交完成的数据；</li>
+<li>而当前读，总是读取已经提交完成的最新版本。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
+        <tag>事务</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Spring Security（4）－个性化用户认证流程（二）</title>
     <url>/2019/06/04/Spring%20Security%EF%BC%884%EF%BC%89%EF%BC%8D%E4%B8%AA%E6%80%A7%E5%8C%96%E7%94%A8%E6%88%B7%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%EF%BC%88%E4%BA%8C%EF%BC%89/</url>
     <content><![CDATA[<p>概要：</p>
@@ -2282,6 +2393,44 @@ public class EvolutionaryAuthenticationFailureHandler extends SimpleUrlAuthentic
       </categories>
       <tags>
         <tag>Spring-Security</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mysql（11）-有意思的Mysql问题</title>
+    <url>/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<ol>
+<li>当备库用–single-transaciton做逻辑备份的时候,如果主库的binlog传来一个DDL语句会怎样？</li>
+</ol>
+<p>备份操作是一个过程，DDL从主库传过来时，备份过程可能处于不同的阶段，所以DDL对备份的影响也不同。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Q1:SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;</span><br><span class="line">Q2:START TRANSACTION  WITH CONSISTENT SNAPSHOT；</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br><span class="line">Q3:SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 1 *&#x2F;</span><br><span class="line">Q4:show create table &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 2 *&#x2F;</span><br><span class="line">Q5:SELECT * FROM &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 3 *&#x2F;</span><br><span class="line">Q6:ROLLBACK TO SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 4 *&#x2F;</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br></pre></td></tr></table></figure>
+<p>在备份开始的时候，为了确保 RR（可重复读）隔离级别，再设置一次 RR 隔离级别 (Q1);</p>
+<p>启动事务，这里用 WITH CONSISTENT SNAPSHOT 确保这个语句执行完就可以得到一个一致性视图（Q2)；</p>
+<p>设置一个保存点，这个很重要（Q3）；</p>
+<p>show create 是为了拿到表结构 (Q4)，然后正式导数据 （Q5），回滚到 SAVEPOINT sp，在这里的作用是释放 t1 的 MDL 锁 （Q6）。当然这部分属于“超纲”，上文正文里面都没提到。</p>
+<p>答案如下：</p>
+<ul>
+<li><p>如果在 Q4 语句执行之前到达，现象：没有影响，备份拿到的是 DDL 后的表结构。</p>
+</li>
+<li><p>如果在“时刻 2”到达，则表结构被改过，Q5 执行的时候，报 Table definition has changed, please retry transaction，现象：mysqldump 终止；</p>
+</li>
+<li><p>如果在“时刻 2”和“时刻 3”之间到达，mysqldump 占着 t1 的 MDL 读锁，binlog 被阻塞，现象：主从延迟，直到 Q6 执行完成。</p>
+</li>
+<li><p>从“时刻 4”开始，mysqldump 释放了 MDL 读锁，现象：没有影响，备份拿到的是 DDL 前的表结构。</p>
+</li>
+</ul>
+<p>总结就是在拿到表结构之前到达，没影响；在拿到表结构之后，备份数据之前到，会报错；在备份后到达，主从延迟</p>
+<ol start="2">
+<li>Mysql选错索引的一个案例分析<br>//todo 待分析</li>
+</ol>
+<p>在生产上遇见了一个非常经典的Mysql选错索引的问题，简述如下：有一张日志表，id是自增主键，假设还有一个字段是code，code字段也有索引；</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CREATE TABLE IF NOT EXISTS &#96;log_test&#96;(</span><br><span class="line">  &#96;id&#96; INT  AUTO_INCREMENT,</span><br><span class="line">  &#96;key&#96; VARCHAR(100) NOT NULL,</span><br><span class="line">  PRIMARY KEY (&#96;id&#96;),</span><br><span class="line">  index idx_key(&#96;key&#96;)</span><br><span class="line">)ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_unicode_ci;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">delimiter ;;</span><br><span class="line">create procedure idata()</span><br><span class="line">begin</span><br><span class="line">  declare i int;</span><br><span class="line">  set i&#x3D;1;</span><br><span class="line">  while(i&lt;&#x3D;100000)do</span><br><span class="line">    insert into log_test values(i, i);</span><br><span class="line">    set i&#x3D;i+1;</span><br><span class="line">  end while;</span><br><span class="line">end;;</span><br><span class="line">delimiter ;</span><br><span class="line">call idata();</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
+        <tag>面试</tag>
       </tags>
   </entry>
   <entry>
@@ -2445,44 +2594,6 @@ evolutionary.security.brower.loginInType=REDIRECT</code></pre>]]></content>
       </categories>
       <tags>
         <tag>Spring-Security</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Mysql（11）-有意思的Mysql问题</title>
-    <url>/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/</url>
-    <content><![CDATA[<ol>
-<li>当备库用–single-transaciton做逻辑备份的时候,如果主库的binlog传来一个DDL语句会怎样？</li>
-</ol>
-<p>备份操作是一个过程，DDL从主库传过来时，备份过程可能处于不同的阶段，所以DDL对备份的影响也不同。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Q1:SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;</span><br><span class="line">Q2:START TRANSACTION  WITH CONSISTENT SNAPSHOT；</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br><span class="line">Q3:SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 1 *&#x2F;</span><br><span class="line">Q4:show create table &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 2 *&#x2F;</span><br><span class="line">Q5:SELECT * FROM &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 3 *&#x2F;</span><br><span class="line">Q6:ROLLBACK TO SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 4 *&#x2F;</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br></pre></td></tr></table></figure>
-<p>在备份开始的时候，为了确保 RR（可重复读）隔离级别，再设置一次 RR 隔离级别 (Q1);</p>
-<p>启动事务，这里用 WITH CONSISTENT SNAPSHOT 确保这个语句执行完就可以得到一个一致性视图（Q2)；</p>
-<p>设置一个保存点，这个很重要（Q3）；</p>
-<p>show create 是为了拿到表结构 (Q4)，然后正式导数据 （Q5），回滚到 SAVEPOINT sp，在这里的作用是释放 t1 的 MDL 锁 （Q6）。当然这部分属于“超纲”，上文正文里面都没提到。</p>
-<p>答案如下：</p>
-<ul>
-<li><p>如果在 Q4 语句执行之前到达，现象：没有影响，备份拿到的是 DDL 后的表结构。</p>
-</li>
-<li><p>如果在“时刻 2”到达，则表结构被改过，Q5 执行的时候，报 Table definition has changed, please retry transaction，现象：mysqldump 终止；</p>
-</li>
-<li><p>如果在“时刻 2”和“时刻 3”之间到达，mysqldump 占着 t1 的 MDL 读锁，binlog 被阻塞，现象：主从延迟，直到 Q6 执行完成。</p>
-</li>
-<li><p>从“时刻 4”开始，mysqldump 释放了 MDL 读锁，现象：没有影响，备份拿到的是 DDL 前的表结构。</p>
-</li>
-</ul>
-<p>总结就是在拿到表结构之前到达，没影响；在拿到表结构之后，备份数据之前到，会报错；在备份后到达，主从延迟</p>
-<ol start="2">
-<li>Mysql选错索引的一个案例分析<br>//todo 待分析</li>
-</ol>
-<p>在生产上遇见了一个非常经典的Mysql选错索引的问题，简述如下：有一张日志表，id是自增主键，假设还有一个字段是code，code字段也有索引；</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CREATE TABLE IF NOT EXISTS &#96;log_test&#96;(</span><br><span class="line">  &#96;id&#96; INT  AUTO_INCREMENT,</span><br><span class="line">  &#96;key&#96; VARCHAR(100) NOT NULL,</span><br><span class="line">  PRIMARY KEY (&#96;id&#96;),</span><br><span class="line">  index idx_key(&#96;key&#96;)</span><br><span class="line">)ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_unicode_ci;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">delimiter ;;</span><br><span class="line">create procedure idata()</span><br><span class="line">begin</span><br><span class="line">  declare i int;</span><br><span class="line">  set i&#x3D;1;</span><br><span class="line">  while(i&lt;&#x3D;100000)do</span><br><span class="line">    insert into log_test values(i, i);</span><br><span class="line">    set i&#x3D;i+1;</span><br><span class="line">  end while;</span><br><span class="line">end;;</span><br><span class="line">delimiter ;</span><br><span class="line">call idata();</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-        <tag>面试</tag>
       </tags>
   </entry>
   <entry>
@@ -3468,59 +3579,146 @@ public class SpringBootDemoApplication {
       </tags>
   </entry>
   <entry>
-    <title>maven必知必会</title>
-    <url>/2019/04/06/maven%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A/</url>
-    <content><![CDATA[<h1 id="仓库"><a href="#仓库" class="headerlink" title="仓库"></a>仓库</h1><p>对于Maven来说，仓库只分为两类：本地仓库和远程仓库。当Maven需要根据坐标寻找构件的时候，它首先会查找本地仓库，如果本地仓库有此构件，则直接使用；</p>
-<p>如果本地仓库没有此构件或许需要查看此构件是否有更新版本Maven会去远程仓库查找，发现需要的构件后，会先下载到本地仓库再使用。如果本地仓库和远程仓库都没有找到需要的构件，则Maven会报错。</p>
-<iframe id="embed_dom" name="embed_dom" frameborder="0" style="display:block;width:525px; height:245px;" src="https://www.processon.com/embed/5ca8497de4b0ec8ff3663e7d"></iframe>
-
-<h1 id="远程仓库"><a href="#远程仓库" class="headerlink" title="远程仓库"></a>远程仓库</h1><h2 id="中央仓库"><a href="#中央仓库" class="headerlink" title="中央仓库"></a>中央仓库</h2><p>中央仓库是默认的远程仓库，Maven安装文件中自带的超级POM中自带了中央仓库的配置，所有的Maven项目都会继承Maven的这个超级POM.</p>
-<p>超级POM中的中央仓库配置：</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repositories</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;<span class="name">repository</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span> central<span class="tag">&lt;/<span class="name">id</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span> Maven Repository Switchboard<span class="tag">&lt;/<span class="name">name</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">layout</span>&gt;</span> default<span class="tag">&lt;/<span class="name">layout</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span> http://repo1.maven.org/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">      <span class="comment">&lt;!-- 不从该仓库下载快照版本的构件 --&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">enabled</span>&gt;</span> false<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;/<span class="name">repository</span>&gt;</span>        </span><br><span class="line"><span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>覆盖中央仓库的默认地址</p>
-<p>在setting.xml里面配置：</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">settings</span>&gt;</span>        </span><br><span class="line">…        </span><br><span class="line">  <span class="tag">&lt;<span class="name">mirrors</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">mirror</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span> maven-net-cn<span class="tag">&lt;/<span class="name">id</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">name</span>&gt;</span> Maven China Mirror<span class="tag">&lt;/<span class="name">name</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">url</span>&gt;</span> http://maven.net.cn/content/groups/public/<span class="tag">&lt;/<span class="name">url</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">mirrorOf</span>&gt;</span> central<span class="tag">&lt;/<span class="name">mirrorOf</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;/<span class="name">mirror</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;/<span class="name">mirrors</span>&gt;</span>        </span><br><span class="line">…        </span><br><span class="line"><span class="tag">&lt;/<span class="name">settings</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>central表示只为central仓库做镜像，如果想为所有的仓库做镜像可以将central改为： *</p>
-<h2 id="配置远程仓库"><a href="#配置远程仓库" class="headerlink" title="配置远程仓库"></a>配置远程仓库</h2><p>在repositories元素下，可以使用repository子元素声明一个或多个远程仓库。</p>
-<p>作用于当先项目</p>
-<p>添加如下配置到pom的第一层（xml），只作用于当前项目</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 可添加多个 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>jboss<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>JBoss Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 仓库地址 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://repository.jboss.com/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 是否下载该仓库的release类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">updatePolicy</span>&gt;</span>daily<span class="tag">&lt;/<span class="name">updatePolicy</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">checksumPolicy</span>&gt;</span>ignore<span class="tag">&lt;/<span class="name">checksumPolicy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 是否下载该仓库的snapshots类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">           <span class="comment">&lt;!-- Maven从远程仓库检查的频率，默认是daily --&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">updatePolicy</span>&gt;</span>daily<span class="tag">&lt;/<span class="name">updatePolicy</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">checksumPolicy</span>&gt;</span>ignore<span class="tag">&lt;/<span class="name">checksumPolicy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h2 id="snapshots和releases元素的子元素："><a href="#snapshots和releases元素的子元素：" class="headerlink" title="snapshots和releases元素的子元素："></a>snapshots和releases元素的子元素：</h2><ul>
-<li><p>updatePolicy</p>
-<p>Maven从远程仓库检查的频率，默认是daily，表示Maven每天检查一次。其它可用的值包括：never——从不检查更新；<br>always——每次构建都检查更新；X——每隔X分钟检查一次（X为任意整数）。</p>
-</li>
-<li><p>checksumPolicy<br>用来配置Mavne校验和文件的策略。当部署构件到仓库时会同时部署校验和文件。下载构件时Maven会验证校验和文件。如果验证失败，怎么办？<br>当checksumPolicy的值为默认的warn时，Maven会在执行构建时输出警告信息，其它可能的值包括：fail——验证不通过时，让构建失败；ignore——使<br>Maven完全忽略验证错误。</p>
-</li>
-<li><p>作用于全局</p>
-<p>在settings文件中添加配置，添加profiles后，mirrors可以省略</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">profiles</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">profile</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>besttop_nexus<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 激活此profile --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">activation</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">activeByDefault</span>&gt;</span>true<span class="tag">&lt;/<span class="name">activeByDefault</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">activation</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--all requests to nexus via the mirror --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 可添加多个 --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">id</span>&gt;</span>jboss<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">name</span>&gt;</span>JBoss Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 仓库地址 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://repository.jboss.com/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 是否下载该仓库的release类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 是否下载该仓库的snapshots类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">profile</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">profiles</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h2 id="远程仓库的认证"><a href="#远程仓库的认证" class="headerlink" title="远程仓库的认证"></a>远程仓库的认证</h2><p>大部分远程仓库无需认证就可以访问，但有时候出于安全方面的考虑，我们需要提供认证信息才能访问一些仓库。比如组织内部的私有仓库。</p>
-</li>
-</ul>
-<p>仓库信息可以配置子啊POM中，但是认证信息必须配置在setting.xml文件中。</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">servers</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">server</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span>my-proj<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">username</span>&gt;</span>admin<span class="tag">&lt;/<span class="name">username</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">password</span>&gt;</span>pwd<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">server</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">servers</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>注意：</p>
-<p>这里的关键是id，这里的id必须要与POM中需要认证的repository元素的id完全一致。换句话说，正是这个id将认证信息与仓库联系在一起。</p>
-<p>部署至远程仓库<br>私服的一大作用就是部署第三方构件，包括组织内部生成的构件及一些无法从外部仓库直接获取的构件。<br>无论是日常开发中生成的构件，还是正式版本发布的构件，都需要部署到仓库中，供其它团队成员使用。</p>
-<p>配置distributionManagement元素：</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">distributionManagement</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 发布版本的构件仓库 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">repository</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">uniqueVersion</span>&gt;</span>false<span class="tag">&lt;/<span class="name">uniqueVersion</span>&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- id是仓库的唯一标识 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>corp1<span class="tag">&lt;/<span class="name">id</span>&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- name是为了方便人阅读 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>Corporate Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- 表示该仓库的地址 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span>scp://repo/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">layout</span>&gt;</span>default<span class="tag">&lt;/<span class="name">layout</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;/<span class="name">repository</span>&gt;</span>  </span><br><span class="line">  <span class="comment">&lt;!-- 快照版本的构件仓库 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">snapshotRepository</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">uniqueVersion</span>&gt;</span>true<span class="tag">&lt;/<span class="name">uniqueVersion</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>propSnap<span class="tag">&lt;/<span class="name">id</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>Propellors Snapshots<span class="tag">&lt;/<span class="name">name</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span>sftp://propellers.net/maven<span class="tag">&lt;/<span class="name">url</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;/<span class="name">snapshotRepository</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;/<span class="name">distributionManagement</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>Maven的快照版本，在发布的过程中会自动打上时间戳，有了时间戳，Maven就能找到相同快照版本的最新文件。<br>当我们下载某一个版本的快照时，Maven会从远程仓库检查该构件是否有更新，有的话会先下载更新到本地仓库。<br>注意Maven并不会每次都去检查，默认会每天检查一次（根据updatePolicy配置），我们可以使用-U命令，让Maven强制更新，比如：mvn clean install -U.</p>
-<p>其它Maven配置详解</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">settings</span> <span class="attr">xmlns</span>=<span class="string">"http://maven.apache.org/POM/4.0.0"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://maven.apache.org/POM/4.0.0</span></span></span><br><span class="line"><span class="tag"><span class="string">                               http://maven.apache.org/xsd/settings-1.0.0.xsd"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">localRepository</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">interactiveMode</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">usePluginRegistry</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">offline</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">pluginGroups</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">servers</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">mirrors</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">proxies</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">profiles</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">activeProfiles</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">settings</span>&gt;</span></span><br></pre></td></tr></table></figure>
+    <title>Mysql（8）-搞定Mysql字符集及校对规则</title>
+    <url>/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/</url>
+    <content><![CDATA[<h1 id="MySQL的字符集（Character-Set"><a href="#MySQL的字符集（Character-Set" class="headerlink" title="MySQL的字符集（Character Set)"></a>MySQL的字符集（Character Set)</h1><p>关于字符集，之前转载了一篇文章讲的非常好——<a href="">关于字符编码，你所需要知道的（ASCII,Unicode,Utf-8,GB2312…）</a></p>
+<p>常见字符集：</p>
 <ul>
-<li><p>localRepository</p>
-<p>表示本地库的保存位置，也就是maven2主要的jar保存位置，默认在${user.dir}/.m2/repository，如果需要另外设置，就换成其他的路径。</p>
-</li>
-<li><p>offline</p>
-<p>设置为true后，不会每次编译，都去查找远程中心库。当然前提是你已经下载了必须的依赖包。实际开发过程中迭代频繁的情况下，构件经常变动，不建议设置为true。</p>
-</li>
+<li>ASCII字符集：基于罗马字母表的一套字符集，它采用1个字节的低7位表示字符，高位始终为0。</li>
+<li>LATIN1字符集：相对于ASCII字符集做了扩展，仍然使用一个字节表示字符，但启用了高位，扩展了字符集的表示范围。</li>
+<li>GBK字符集：支持中文，字符有一字节编码和两字节编码方式。</li>
+<li>UTF8字符集：Unicode字符集的一种，是计算机科学领域里的一项业界标准，支持了所有国家的文字字符，utf8采用1-4个字节表示字符。</li>
 </ul>
+<h1 id="MySQL与字符集"><a href="#MySQL与字符集" class="headerlink" title="MySQL与字符集"></a>MySQL与字符集</h1><p>查看NySQL系统变量：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| Variable_name            | Value                      |</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| character_set_client     | utf8                       |</span><br><span class="line">| character_set_connection | utf8                       |</span><br><span class="line">| character_set_database   | latin1                     |</span><br><span class="line">| character_set_filesystem | binary                     |</span><br><span class="line">| character_set_results    | utf8                       |</span><br><span class="line">| character_set_server     | latin1                     |</span><br><span class="line">| character_set_system     | utf8                       |</span><br><span class="line">| character_sets_dir       | &#x2F;usr&#x2F;share&#x2F;mysql&#x2F;charsets&#x2F; |</span><br><span class="line">+--------------------------+----------------------------+</span><br></pre></td></tr></table></figure>
+<p>正确使用字符集</p>
+<table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>变量作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>character_set_client</td>
+<td>客户端来源数据使用的字符集</td>
+</tr>
+<tr>
+<td>character_set_connection</td>
+<td>连接层字符集</td>
+</tr>
+<tr>
+<td>character_set_database</td>
+<td>当前选中数据库的默认字符集</td>
+</tr>
+<tr>
+<td>character_set_results</td>
+<td>查询结果字符集</td>
+</tr>
+<tr>
+<td>character_set_server</td>
+<td>默认的内部操作字符集</td>
+</tr>
+<tr>
+<td>character_set_system</td>
+<td>数据元数据（字段名等）字符集</td>
+</tr>
+</tbody></table>
+<p>这些字符集参数的作用说明：</p>
+<ol>
+<li>设置库、表、列字符集<ul>
+<li>建库时，若未明确指定字符集，则采用character_set_server指定的字符集。</li>
+<li>建表时，若未明确指定字符集，则采用当前库所采用的字符集。</li>
+<li>新增时，修改表字段时，若未明确指定字符集，则采用当前表所采用的字符集。</li>
+</ul>
+</li>
+<li>更新查询涉及的字符集变量<ul>
+<li>更新流程字符集转换过程：character_set_client–&gt;character_set_connection–&gt;表字符集。</li>
+<li>查询流程字符集转换过程：表字符集–&gt;character_set_result</li>
+</ul>
+</li>
+<li>character_set_database<ul>
+<li>当前默认数据库的字符集，比如执行use xxx后，当前数据库变为xxx，若xxx的字符集为utf8，那么此变量值就变为utf8(供系统设置，无需人工设置)。</li>
+</ul>
+</li>
+</ol>
+<h1 id="MySQL客户端与字符集"><a href="#MySQL客户端与字符集" class="headerlink" title="MySQL客户端与字符集"></a>MySQL客户端与字符集</h1><p>1.对于输入来说：</p>
+<p>客户端使用的字符集必须通过character_set_client、character_set_connection体现出来：</p>
+<ul>
+<li>在客户端对数据进行编码（Linux：utf8、windows：gbk）</li>
+<li>MySQL接到SQL语句后(比如insert)，发现有字符，询问客户端通过什么方式对字符编码：客户端通过character_set_client参数告知MySQL客户端的编码方式(所以此参数需要正确反映客户端对应的编码)</li>
+<li>当MySQL发现客户端的client所传输的字符集与自己的connection不一样时，会将client的字符集转换为connection的字符集</li>
+<li>MySQL将转换后的编码存储到MySQL表的列上，在存储的时候再判断编码是否与内部存储字符集（按照优先级判断字符集类型）上的编码一致，如果不一致需要再次转换</li>
+</ul>
+<p>2.对于查询来说：</p>
+<p>客户端使用的字符集必须通过character_set_results来体现，服务器询问客户端字符集，通过character_set_results将结果转换为与客户端相同的字符集传递给客户端。(character_set_results默认等于character_set_client)</p>
+<h1 id="字符集常见处理操作"><a href="#字符集常见处理操作" class="headerlink" title="字符集常见处理操作"></a>字符集常见处理操作</h1><p>查看字符集编码设置</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br></pre></td></tr></table></figure>
+
+<p>运行时设置字符集编码</p>
+<p>运行时修改（重启后会失效，如果想要重启后保持不变，需要写进配置文件里）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; set names &#39;utf8&#39;;</span><br><span class="line"></span><br><span class="line">相当于同时：</span><br><span class="line"></span><br><span class="line">set character_set_client &#x3D; utf8;</span><br><span class="line">set character_set_results &#x3D; utf8;</span><br><span class="line">set character_set_connection &#x3D; utf8;</span><br></pre></td></tr></table></figure>
+<p>修改数据库字符集</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; alter database database_name character set xxx;</span><br></pre></td></tr></table></figure>
+<p>只修改库的字符集，影响后续创建的表的默认定义；对于已创建的表的字符集不受影响。（一般在数据库实现字符集即可，表和列都默认采用数据库的字符集）</p>
+<p>修改表的字符集</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-- 只修改表的字符集，影响后续该表新增列的默认定义，已有列的字符集不受影响。</span><br><span class="line">mysql&gt; alter table table_name character set xxx；</span><br><span class="line"></span><br><span class="line">-- 同时修改表字符集和已有列字符集，并将已有数据进行字符集编码转换。</span><br><span class="line">mysql&gt; alter table table_name convert to character set xxx;</span><br></pre></td></tr></table></figure>
+<p>修改列的字符集</p>
+<p>格式：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ALTER TABLE table_name MODIFY</span><br><span class="line">column_name &#123;CHAR | VARCHAR | TEXT&#125; (column_length)</span><br><span class="line">    [CHARACTER SET charset_name]</span><br><span class="line">    [COLLATE collation_name]</span><br><span class="line">mysql&gt; alter table table_name modify col_name varchar(col_length) character set xxx;</span><br></pre></td></tr></table></figure>
+<p>启动服务时指定字符集</p>
+<p>可以在MySQL服务启动时，指定server字符集、字符序。如不指定，默认的字符序分别为latin1、latin1_swedish_ci</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1 \</span><br><span class="line">       --collation-server&#x3D;latin1_swedish_ci</span><br></pre></td></tr></table></figure>
+<p>单独指定server字符集，此时，server字符序为latin1的默认字符序latin1_swedish_ci。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1</span><br></pre></td></tr></table></figure>
+<p>配置文件指定字符集</p>
+<p>除了在命令行参数里指定，也可以在配置文件里指定，如下所示。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysql]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">collation-server &#x3D; utf8_unicode_ci</span><br><span class="line">init-connect&#x3D;&#39;SET NAMES utf8&#39;</span><br><span class="line">character-set-server &#x3D; utf8</span><br></pre></td></tr></table></figure>
+<p>字符集的正确实践<br>MySQL软件工具本身是没有字符集的，主要是因为工具所在的OS的字符集（Windows：gbk、Linux：utf8），所以字符集的正确实践非常重要：</p>
+<ol>
+<li>对于insert来说，character_set_client、character_set_connection相同，而且正确反映客户端使用的字符集</li>
+<li>对于select来说，character_set_results正确反映客户端字符集</li>
+<li>数据库字符集取决于我们要存储的字符类型</li>
+<li>字符集转换最多发生一次，这就要求character_set_client、character_set_connection相同</li>
+<li>所有的字符集转换都发生在数据库端</li>
+</ol>
+<p>综述：</p>
+<ol>
+<li>建立数据库的时候注意字符集（gbk、utf8）；</li>
+<li>连接数据库以后，无论是执行dml还是select，只要涉及到varchar、char列，就需要设置正确的字符集参数。</li>
+</ol>
+<h1 id="MySQL的校对规则"><a href="#MySQL的校对规则" class="headerlink" title="MySQL的校对规则"></a>MySQL的校对规则</h1><p>字符集是一套符号和对应的编号</p>
+<ol start="4">
+<li><p>查看数据库支持的所有字符集(charset)：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show character set;</span><br></pre></td></tr></table></figure>
+<p>校对规则(collation)是在字符集内用于字符比较和排序的一套规则，比如有的规则区分大小写，有的则无视。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; create table t1(id int,name varchar(20)); -- t1建表没有指定校对规则</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    1 | A    |</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
+<p>查看数据库支持的校对规则</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show collation;</span><br></pre></td></tr></table></figure>
+<p>查看当前字符集和校对规则设置</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; mysql&gt; show variables like &#39;collation_%&#39;;</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| Variable_name        | Value             |</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| collation_connection | utf8_general_ci   |</span><br><span class="line">| collation_database   | utf8_general_ci   |</span><br><span class="line">| collation_server     | latin1_swedish_ci |</span><br><span class="line">+----------------------+-------------------+</span><br></pre></td></tr></table></figure>
+<p>校对规则特征：</p>
+</li>
+<li><p>两个不同的字符集不能有相同的校对规则；</p>
+</li>
+<li><p>每个字符集有一个默认校对规则；</p>
+</li>
+<li><p>存在校对规则命名约定：以其相关的字符集名开始，中间包括一个语言名，并且以_ci（大小写不敏感）、_cs（大小写敏感）或_bin（二元）结束。<br>注意：</p>
+</li>
+</ol>
+<p>系统使用utf8字符集，若使用utf8_bin校对规则执行SQL查询时区分大小写，使用utf8_general_ci不区分大小写(默认的utf8字符集对应的校对规则是utf8_general_ci)。</p>
+<p>示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; create table t2(id int,name varchar(20)) character set&#x3D;utf8 collate&#x3D;utf8_bin;</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line"></span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
+<p>相关连接</p>
+<p><a href="https://www.cnblogs.com/chyingp/p/mysql-character-set-collation.html" target="_blank" rel="noopener">再见乱码：5分钟读懂MySQL字符集设置</a></p>
+<p><a href="https://www.cnblogs.com/geaozhang/p/6724393.html" target="_blank" rel="noopener">MySQL字符集及校对规则的理解</a></p>
 ]]></content>
       <categories>
-        <category>ci/cd</category>
+        <category>DB</category>
       </categories>
       <tags>
-        <tag>maven</tag>
+        <tag>Mysql</tag>
+        <tag>编码</tag>
       </tags>
   </entry>
   <entry>
@@ -3701,146 +3899,59 @@ hgetall(key)：返回名称为key的hash中所有的键（field）及其对应�
       </tags>
   </entry>
   <entry>
-    <title>Mysql（8）-搞定Mysql字符集及校对规则</title>
-    <url>/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/</url>
-    <content><![CDATA[<h1 id="MySQL的字符集（Character-Set"><a href="#MySQL的字符集（Character-Set" class="headerlink" title="MySQL的字符集（Character Set)"></a>MySQL的字符集（Character Set)</h1><p>关于字符集，之前转载了一篇文章讲的非常好——<a href="">关于字符编码，你所需要知道的（ASCII,Unicode,Utf-8,GB2312…）</a></p>
-<p>常见字符集：</p>
-<ul>
-<li>ASCII字符集：基于罗马字母表的一套字符集，它采用1个字节的低7位表示字符，高位始终为0。</li>
-<li>LATIN1字符集：相对于ASCII字符集做了扩展，仍然使用一个字节表示字符，但启用了高位，扩展了字符集的表示范围。</li>
-<li>GBK字符集：支持中文，字符有一字节编码和两字节编码方式。</li>
-<li>UTF8字符集：Unicode字符集的一种，是计算机科学领域里的一项业界标准，支持了所有国家的文字字符，utf8采用1-4个字节表示字符。</li>
-</ul>
-<h1 id="MySQL与字符集"><a href="#MySQL与字符集" class="headerlink" title="MySQL与字符集"></a>MySQL与字符集</h1><p>查看NySQL系统变量：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| Variable_name            | Value                      |</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| character_set_client     | utf8                       |</span><br><span class="line">| character_set_connection | utf8                       |</span><br><span class="line">| character_set_database   | latin1                     |</span><br><span class="line">| character_set_filesystem | binary                     |</span><br><span class="line">| character_set_results    | utf8                       |</span><br><span class="line">| character_set_server     | latin1                     |</span><br><span class="line">| character_set_system     | utf8                       |</span><br><span class="line">| character_sets_dir       | &#x2F;usr&#x2F;share&#x2F;mysql&#x2F;charsets&#x2F; |</span><br><span class="line">+--------------------------+----------------------------+</span><br></pre></td></tr></table></figure>
-<p>正确使用字符集</p>
-<table>
-<thead>
-<tr>
-<th>参数名</th>
-<th>变量作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>character_set_client</td>
-<td>客户端来源数据使用的字符集</td>
-</tr>
-<tr>
-<td>character_set_connection</td>
-<td>连接层字符集</td>
-</tr>
-<tr>
-<td>character_set_database</td>
-<td>当前选中数据库的默认字符集</td>
-</tr>
-<tr>
-<td>character_set_results</td>
-<td>查询结果字符集</td>
-</tr>
-<tr>
-<td>character_set_server</td>
-<td>默认的内部操作字符集</td>
-</tr>
-<tr>
-<td>character_set_system</td>
-<td>数据元数据（字段名等）字符集</td>
-</tr>
-</tbody></table>
-<p>这些字符集参数的作用说明：</p>
-<ol>
-<li>设置库、表、列字符集<ul>
-<li>建库时，若未明确指定字符集，则采用character_set_server指定的字符集。</li>
-<li>建表时，若未明确指定字符集，则采用当前库所采用的字符集。</li>
-<li>新增时，修改表字段时，若未明确指定字符集，则采用当前表所采用的字符集。</li>
-</ul>
-</li>
-<li>更新查询涉及的字符集变量<ul>
-<li>更新流程字符集转换过程：character_set_client–&gt;character_set_connection–&gt;表字符集。</li>
-<li>查询流程字符集转换过程：表字符集–&gt;character_set_result</li>
-</ul>
-</li>
-<li>character_set_database<ul>
-<li>当前默认数据库的字符集，比如执行use xxx后，当前数据库变为xxx，若xxx的字符集为utf8，那么此变量值就变为utf8(供系统设置，无需人工设置)。</li>
-</ul>
-</li>
-</ol>
-<h1 id="MySQL客户端与字符集"><a href="#MySQL客户端与字符集" class="headerlink" title="MySQL客户端与字符集"></a>MySQL客户端与字符集</h1><p>1.对于输入来说：</p>
-<p>客户端使用的字符集必须通过character_set_client、character_set_connection体现出来：</p>
-<ul>
-<li>在客户端对数据进行编码（Linux：utf8、windows：gbk）</li>
-<li>MySQL接到SQL语句后(比如insert)，发现有字符，询问客户端通过什么方式对字符编码：客户端通过character_set_client参数告知MySQL客户端的编码方式(所以此参数需要正确反映客户端对应的编码)</li>
-<li>当MySQL发现客户端的client所传输的字符集与自己的connection不一样时，会将client的字符集转换为connection的字符集</li>
-<li>MySQL将转换后的编码存储到MySQL表的列上，在存储的时候再判断编码是否与内部存储字符集（按照优先级判断字符集类型）上的编码一致，如果不一致需要再次转换</li>
-</ul>
-<p>2.对于查询来说：</p>
-<p>客户端使用的字符集必须通过character_set_results来体现，服务器询问客户端字符集，通过character_set_results将结果转换为与客户端相同的字符集传递给客户端。(character_set_results默认等于character_set_client)</p>
-<h1 id="字符集常见处理操作"><a href="#字符集常见处理操作" class="headerlink" title="字符集常见处理操作"></a>字符集常见处理操作</h1><p>查看字符集编码设置</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br></pre></td></tr></table></figure>
+    <title>maven必知必会</title>
+    <url>/2019/04/06/maven%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A/</url>
+    <content><![CDATA[<h1 id="仓库"><a href="#仓库" class="headerlink" title="仓库"></a>仓库</h1><p>对于Maven来说，仓库只分为两类：本地仓库和远程仓库。当Maven需要根据坐标寻找构件的时候，它首先会查找本地仓库，如果本地仓库有此构件，则直接使用；</p>
+<p>如果本地仓库没有此构件或许需要查看此构件是否有更新版本Maven会去远程仓库查找，发现需要的构件后，会先下载到本地仓库再使用。如果本地仓库和远程仓库都没有找到需要的构件，则Maven会报错。</p>
+<iframe id="embed_dom" name="embed_dom" frameborder="0" style="display:block;width:525px; height:245px;" src="https://www.processon.com/embed/5ca8497de4b0ec8ff3663e7d"></iframe>
 
-<p>运行时设置字符集编码</p>
-<p>运行时修改（重启后会失效，如果想要重启后保持不变，需要写进配置文件里）</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; set names &#39;utf8&#39;;</span><br><span class="line"></span><br><span class="line">相当于同时：</span><br><span class="line"></span><br><span class="line">set character_set_client &#x3D; utf8;</span><br><span class="line">set character_set_results &#x3D; utf8;</span><br><span class="line">set character_set_connection &#x3D; utf8;</span><br></pre></td></tr></table></figure>
-<p>修改数据库字符集</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; alter database database_name character set xxx;</span><br></pre></td></tr></table></figure>
-<p>只修改库的字符集，影响后续创建的表的默认定义；对于已创建的表的字符集不受影响。（一般在数据库实现字符集即可，表和列都默认采用数据库的字符集）</p>
-<p>修改表的字符集</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-- 只修改表的字符集，影响后续该表新增列的默认定义，已有列的字符集不受影响。</span><br><span class="line">mysql&gt; alter table table_name character set xxx；</span><br><span class="line"></span><br><span class="line">-- 同时修改表字符集和已有列字符集，并将已有数据进行字符集编码转换。</span><br><span class="line">mysql&gt; alter table table_name convert to character set xxx;</span><br></pre></td></tr></table></figure>
-<p>修改列的字符集</p>
-<p>格式：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ALTER TABLE table_name MODIFY</span><br><span class="line">column_name &#123;CHAR | VARCHAR | TEXT&#125; (column_length)</span><br><span class="line">    [CHARACTER SET charset_name]</span><br><span class="line">    [COLLATE collation_name]</span><br><span class="line">mysql&gt; alter table table_name modify col_name varchar(col_length) character set xxx;</span><br></pre></td></tr></table></figure>
-<p>启动服务时指定字符集</p>
-<p>可以在MySQL服务启动时，指定server字符集、字符序。如不指定，默认的字符序分别为latin1、latin1_swedish_ci</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1 \</span><br><span class="line">       --collation-server&#x3D;latin1_swedish_ci</span><br></pre></td></tr></table></figure>
-<p>单独指定server字符集，此时，server字符序为latin1的默认字符序latin1_swedish_ci。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1</span><br></pre></td></tr></table></figure>
-<p>配置文件指定字符集</p>
-<p>除了在命令行参数里指定，也可以在配置文件里指定，如下所示。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysql]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">collation-server &#x3D; utf8_unicode_ci</span><br><span class="line">init-connect&#x3D;&#39;SET NAMES utf8&#39;</span><br><span class="line">character-set-server &#x3D; utf8</span><br></pre></td></tr></table></figure>
-<p>字符集的正确实践<br>MySQL软件工具本身是没有字符集的，主要是因为工具所在的OS的字符集（Windows：gbk、Linux：utf8），所以字符集的正确实践非常重要：</p>
-<ol>
-<li>对于insert来说，character_set_client、character_set_connection相同，而且正确反映客户端使用的字符集</li>
-<li>对于select来说，character_set_results正确反映客户端字符集</li>
-<li>数据库字符集取决于我们要存储的字符类型</li>
-<li>字符集转换最多发生一次，这就要求character_set_client、character_set_connection相同</li>
-<li>所有的字符集转换都发生在数据库端</li>
-</ol>
-<p>综述：</p>
-<ol>
-<li>建立数据库的时候注意字符集（gbk、utf8）；</li>
-<li>连接数据库以后，无论是执行dml还是select，只要涉及到varchar、char列，就需要设置正确的字符集参数。</li>
-</ol>
-<h1 id="MySQL的校对规则"><a href="#MySQL的校对规则" class="headerlink" title="MySQL的校对规则"></a>MySQL的校对规则</h1><p>字符集是一套符号和对应的编号</p>
-<ol start="4">
-<li><p>查看数据库支持的所有字符集(charset)：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show character set;</span><br></pre></td></tr></table></figure>
-<p>校对规则(collation)是在字符集内用于字符比较和排序的一套规则，比如有的规则区分大小写，有的则无视。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; create table t1(id int,name varchar(20)); -- t1建表没有指定校对规则</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    1 | A    |</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
-<p>查看数据库支持的校对规则</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show collation;</span><br></pre></td></tr></table></figure>
-<p>查看当前字符集和校对规则设置</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; mysql&gt; show variables like &#39;collation_%&#39;;</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| Variable_name        | Value             |</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| collation_connection | utf8_general_ci   |</span><br><span class="line">| collation_database   | utf8_general_ci   |</span><br><span class="line">| collation_server     | latin1_swedish_ci |</span><br><span class="line">+----------------------+-------------------+</span><br></pre></td></tr></table></figure>
-<p>校对规则特征：</p>
+<h1 id="远程仓库"><a href="#远程仓库" class="headerlink" title="远程仓库"></a>远程仓库</h1><h2 id="中央仓库"><a href="#中央仓库" class="headerlink" title="中央仓库"></a>中央仓库</h2><p>中央仓库是默认的远程仓库，Maven安装文件中自带的超级POM中自带了中央仓库的配置，所有的Maven项目都会继承Maven的这个超级POM.</p>
+<p>超级POM中的中央仓库配置：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repositories</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;<span class="name">repository</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span> central<span class="tag">&lt;/<span class="name">id</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span> Maven Repository Switchboard<span class="tag">&lt;/<span class="name">name</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">layout</span>&gt;</span> default<span class="tag">&lt;/<span class="name">layout</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span> http://repo1.maven.org/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">      <span class="comment">&lt;!-- 不从该仓库下载快照版本的构件 --&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">enabled</span>&gt;</span> false<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;/<span class="name">repository</span>&gt;</span>        </span><br><span class="line"><span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>覆盖中央仓库的默认地址</p>
+<p>在setting.xml里面配置：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">settings</span>&gt;</span>        </span><br><span class="line">…        </span><br><span class="line">  <span class="tag">&lt;<span class="name">mirrors</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">mirror</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span> maven-net-cn<span class="tag">&lt;/<span class="name">id</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">name</span>&gt;</span> Maven China Mirror<span class="tag">&lt;/<span class="name">name</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">url</span>&gt;</span> http://maven.net.cn/content/groups/public/<span class="tag">&lt;/<span class="name">url</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">mirrorOf</span>&gt;</span> central<span class="tag">&lt;/<span class="name">mirrorOf</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;/<span class="name">mirror</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;/<span class="name">mirrors</span>&gt;</span>        </span><br><span class="line">…        </span><br><span class="line"><span class="tag">&lt;/<span class="name">settings</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>central表示只为central仓库做镜像，如果想为所有的仓库做镜像可以将central改为： *</p>
+<h2 id="配置远程仓库"><a href="#配置远程仓库" class="headerlink" title="配置远程仓库"></a>配置远程仓库</h2><p>在repositories元素下，可以使用repository子元素声明一个或多个远程仓库。</p>
+<p>作用于当先项目</p>
+<p>添加如下配置到pom的第一层（xml），只作用于当前项目</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 可添加多个 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>jboss<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>JBoss Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 仓库地址 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://repository.jboss.com/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 是否下载该仓库的release类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">updatePolicy</span>&gt;</span>daily<span class="tag">&lt;/<span class="name">updatePolicy</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">checksumPolicy</span>&gt;</span>ignore<span class="tag">&lt;/<span class="name">checksumPolicy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 是否下载该仓库的snapshots类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">           <span class="comment">&lt;!-- Maven从远程仓库检查的频率，默认是daily --&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">updatePolicy</span>&gt;</span>daily<span class="tag">&lt;/<span class="name">updatePolicy</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">checksumPolicy</span>&gt;</span>ignore<span class="tag">&lt;/<span class="name">checksumPolicy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="snapshots和releases元素的子元素："><a href="#snapshots和releases元素的子元素：" class="headerlink" title="snapshots和releases元素的子元素："></a>snapshots和releases元素的子元素：</h2><ul>
+<li><p>updatePolicy</p>
+<p>Maven从远程仓库检查的频率，默认是daily，表示Maven每天检查一次。其它可用的值包括：never——从不检查更新；<br>always——每次构建都检查更新；X——每隔X分钟检查一次（X为任意整数）。</p>
 </li>
-<li><p>两个不同的字符集不能有相同的校对规则；</p>
+<li><p>checksumPolicy<br>用来配置Mavne校验和文件的策略。当部署构件到仓库时会同时部署校验和文件。下载构件时Maven会验证校验和文件。如果验证失败，怎么办？<br>当checksumPolicy的值为默认的warn时，Maven会在执行构建时输出警告信息，其它可能的值包括：fail——验证不通过时，让构建失败；ignore——使<br>Maven完全忽略验证错误。</p>
 </li>
-<li><p>每个字符集有一个默认校对规则；</p>
+<li><p>作用于全局</p>
+<p>在settings文件中添加配置，添加profiles后，mirrors可以省略</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">profiles</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">profile</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>besttop_nexus<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 激活此profile --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">activation</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">activeByDefault</span>&gt;</span>true<span class="tag">&lt;/<span class="name">activeByDefault</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">activation</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--all requests to nexus via the mirror --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 可添加多个 --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">id</span>&gt;</span>jboss<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">name</span>&gt;</span>JBoss Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 仓库地址 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://repository.jboss.com/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 是否下载该仓库的release类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 是否下载该仓库的snapshots类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">profile</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">profiles</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="远程仓库的认证"><a href="#远程仓库的认证" class="headerlink" title="远程仓库的认证"></a>远程仓库的认证</h2><p>大部分远程仓库无需认证就可以访问，但有时候出于安全方面的考虑，我们需要提供认证信息才能访问一些仓库。比如组织内部的私有仓库。</p>
 </li>
-<li><p>存在校对规则命名约定：以其相关的字符集名开始，中间包括一个语言名，并且以_ci（大小写不敏感）、_cs（大小写敏感）或_bin（二元）结束。<br>注意：</p>
+</ul>
+<p>仓库信息可以配置子啊POM中，但是认证信息必须配置在setting.xml文件中。</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">servers</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">server</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span>my-proj<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">username</span>&gt;</span>admin<span class="tag">&lt;/<span class="name">username</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">password</span>&gt;</span>pwd<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">server</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">servers</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>注意：</p>
+<p>这里的关键是id，这里的id必须要与POM中需要认证的repository元素的id完全一致。换句话说，正是这个id将认证信息与仓库联系在一起。</p>
+<p>部署至远程仓库<br>私服的一大作用就是部署第三方构件，包括组织内部生成的构件及一些无法从外部仓库直接获取的构件。<br>无论是日常开发中生成的构件，还是正式版本发布的构件，都需要部署到仓库中，供其它团队成员使用。</p>
+<p>配置distributionManagement元素：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">distributionManagement</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 发布版本的构件仓库 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">repository</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">uniqueVersion</span>&gt;</span>false<span class="tag">&lt;/<span class="name">uniqueVersion</span>&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- id是仓库的唯一标识 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>corp1<span class="tag">&lt;/<span class="name">id</span>&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- name是为了方便人阅读 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>Corporate Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- 表示该仓库的地址 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span>scp://repo/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">layout</span>&gt;</span>default<span class="tag">&lt;/<span class="name">layout</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;/<span class="name">repository</span>&gt;</span>  </span><br><span class="line">  <span class="comment">&lt;!-- 快照版本的构件仓库 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">snapshotRepository</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">uniqueVersion</span>&gt;</span>true<span class="tag">&lt;/<span class="name">uniqueVersion</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>propSnap<span class="tag">&lt;/<span class="name">id</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>Propellors Snapshots<span class="tag">&lt;/<span class="name">name</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span>sftp://propellers.net/maven<span class="tag">&lt;/<span class="name">url</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;/<span class="name">snapshotRepository</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;/<span class="name">distributionManagement</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>Maven的快照版本，在发布的过程中会自动打上时间戳，有了时间戳，Maven就能找到相同快照版本的最新文件。<br>当我们下载某一个版本的快照时，Maven会从远程仓库检查该构件是否有更新，有的话会先下载更新到本地仓库。<br>注意Maven并不会每次都去检查，默认会每天检查一次（根据updatePolicy配置），我们可以使用-U命令，让Maven强制更新，比如：mvn clean install -U.</p>
+<p>其它Maven配置详解</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">settings</span> <span class="attr">xmlns</span>=<span class="string">"http://maven.apache.org/POM/4.0.0"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://maven.apache.org/POM/4.0.0</span></span></span><br><span class="line"><span class="tag"><span class="string">                               http://maven.apache.org/xsd/settings-1.0.0.xsd"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">localRepository</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">interactiveMode</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">usePluginRegistry</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">offline</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">pluginGroups</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">servers</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">mirrors</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">proxies</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">profiles</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">activeProfiles</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">settings</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>localRepository</p>
+<p>表示本地库的保存位置，也就是maven2主要的jar保存位置，默认在${user.dir}/.m2/repository，如果需要另外设置，就换成其他的路径。</p>
 </li>
-</ol>
-<p>系统使用utf8字符集，若使用utf8_bin校对规则执行SQL查询时区分大小写，使用utf8_general_ci不区分大小写(默认的utf8字符集对应的校对规则是utf8_general_ci)。</p>
-<p>示例：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; create table t2(id int,name varchar(20)) character set&#x3D;utf8 collate&#x3D;utf8_bin;</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line"></span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
-<p>相关连接</p>
-<p><a href="https://www.cnblogs.com/chyingp/p/mysql-character-set-collation.html" target="_blank" rel="noopener">再见乱码：5分钟读懂MySQL字符集设置</a></p>
-<p><a href="https://www.cnblogs.com/geaozhang/p/6724393.html" target="_blank" rel="noopener">MySQL字符集及校对规则的理解</a></p>
+<li><p>offline</p>
+<p>设置为true后，不会每次编译，都去查找远程中心库。当然前提是你已经下载了必须的依赖包。实际开发过程中迭代频繁的情况下，构件经常变动，不建议设置为true。</p>
+</li>
+</ul>
 ]]></content>
       <categories>
-        <category>DB</category>
+        <category>ci/cd</category>
       </categories>
       <tags>
-        <tag>Mysql</tag>
-        <tag>编码</tag>
+        <tag>maven</tag>
       </tags>
   </entry>
   <entry>
@@ -4154,28 +4265,6 @@ OK
       </tags>
   </entry>
   <entry>
-    <title>Mysql（5）-数据库索引（必知必会）</title>
-    <url>/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/</url>
-    <content><![CDATA[<h2 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h2><p>二级索引已经“覆盖了”我们的查询需求，不需要再回表查整行记录，我们称为覆盖索引。</p>
-<p>覆盖索引可以减少树的搜索次数，显著提升查询性能，所以使用覆盖索引是一个常用的性能优化手段。</p>
-<h2 id="最左前缀原则"><a href="#最左前缀原则" class="headerlink" title="最左前缀原则"></a>最左前缀原则</h2><p>索引项是按照索引定义里面出现的字段顺序排序的。正因为如此根据最左前缀，我们找到第一条数据位置，然后遍历到最后一条匹配到最左前缀的就可以了（因为按照顺序相同最左前缀的都排在一块）。</p>
-<p>不只是索引的全部定义，只要满足最左前缀，就可以利用索引来加速检索。这个最左前缀可以是联合索引的最左 N 个字段，也可以是字符串索引的最左 M 个字符。</p>
-<h3 id="在建立联合索引的时候，如何安排索引内的字段顺序。"><a href="#在建立联合索引的时候，如何安排索引内的字段顺序。" class="headerlink" title="在建立联合索引的时候，如何安排索引内的字段顺序。"></a>在建立联合索引的时候，如何安排索引内的字段顺序。</h3><p>第一原则是，如果通过调整顺序，可以少维护一个索引，那么这个顺序往往就是需要优先考虑采用的。提高索引的复用能力，比如根据最左前缀原则，当已经有了 (a,b)这个联合索引后，一般就不需要单独在 a 上建立索引了。</p>
-<p>第二原则，考虑的是空间。</p>
-<p>如果a，b要建联合索引，且单查a或b的时候都要走索引，那么就要再a或b上再加一个索引，此时就要考虑空间。比如a字段b字段更占空间那就建一个（a，b）的联合索引和一个b的索引。</p>
-<h2 id="索引下推"><a href="#索引下推" class="headerlink" title="索引下推"></a>索引下推</h2><p>MySQL 5.6引入的索引下推优化（index condition pushdown)，可以在索引遍历过程中，对索引中包含的字段先做判断，直接过滤掉不满足条件的记录，减少回表次数。</p>
-<h2 id="重建索引"><a href="#重建索引" class="headerlink" title="重建索引"></a>重建索引</h2><p>索引可能因为删除，或者页分裂等原因，导致数据页有空洞，重建索引的过程会创建一个新的索引，把数据按顺序插入，这样页面的利用率最高，也就是索引更紧凑、更省空间。</p>
-<h3 id="重建二级索引索引"><a href="#重建二级索引索引" class="headerlink" title="重建二级索引索引"></a>重建二级索引索引</h3><p>alter table T drop index k;<br>alter table T add index(k);</p>
-<h3 id="重建主键索引："><a href="#重建主键索引：" class="headerlink" title="重建主键索引："></a>重建主键索引：</h3><p>alter table T engine=InnoDB</p>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Mysql（6）-数据库索引（数据结构）</title>
     <url>/2019/03/28/Mysql%EF%BC%886%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%89/</url>
     <content><![CDATA[<h2 id="索引的作用"><a href="#索引的作用" class="headerlink" title="索引的作用"></a>索引的作用</h2><p>索引是为了提高数据库的查询效率。</p>
@@ -4218,6 +4307,28 @@ OK
 <li>该索引是唯一索引</li>
 </ol>
 <p>就是典型的 KV 场景。由于没有其他索引，所以也就不用考虑其他索引的叶子节点大小的问题。</p>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mysql（5）-数据库索引（必知必会）</title>
+    <url>/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/</url>
+    <content><![CDATA[<h2 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h2><p>二级索引已经“覆盖了”我们的查询需求，不需要再回表查整行记录，我们称为覆盖索引。</p>
+<p>覆盖索引可以减少树的搜索次数，显著提升查询性能，所以使用覆盖索引是一个常用的性能优化手段。</p>
+<h2 id="最左前缀原则"><a href="#最左前缀原则" class="headerlink" title="最左前缀原则"></a>最左前缀原则</h2><p>索引项是按照索引定义里面出现的字段顺序排序的。正因为如此根据最左前缀，我们找到第一条数据位置，然后遍历到最后一条匹配到最左前缀的就可以了（因为按照顺序相同最左前缀的都排在一块）。</p>
+<p>不只是索引的全部定义，只要满足最左前缀，就可以利用索引来加速检索。这个最左前缀可以是联合索引的最左 N 个字段，也可以是字符串索引的最左 M 个字符。</p>
+<h3 id="在建立联合索引的时候，如何安排索引内的字段顺序。"><a href="#在建立联合索引的时候，如何安排索引内的字段顺序。" class="headerlink" title="在建立联合索引的时候，如何安排索引内的字段顺序。"></a>在建立联合索引的时候，如何安排索引内的字段顺序。</h3><p>第一原则是，如果通过调整顺序，可以少维护一个索引，那么这个顺序往往就是需要优先考虑采用的。提高索引的复用能力，比如根据最左前缀原则，当已经有了 (a,b)这个联合索引后，一般就不需要单独在 a 上建立索引了。</p>
+<p>第二原则，考虑的是空间。</p>
+<p>如果a，b要建联合索引，且单查a或b的时候都要走索引，那么就要再a或b上再加一个索引，此时就要考虑空间。比如a字段b字段更占空间那就建一个（a，b）的联合索引和一个b的索引。</p>
+<h2 id="索引下推"><a href="#索引下推" class="headerlink" title="索引下推"></a>索引下推</h2><p>MySQL 5.6引入的索引下推优化（index condition pushdown)，可以在索引遍历过程中，对索引中包含的字段先做判断，直接过滤掉不满足条件的记录，减少回表次数。</p>
+<h2 id="重建索引"><a href="#重建索引" class="headerlink" title="重建索引"></a>重建索引</h2><p>索引可能因为删除，或者页分裂等原因，导致数据页有空洞，重建索引的过程会创建一个新的索引，把数据按顺序插入，这样页面的利用率最高，也就是索引更紧凑、更省空间。</p>
+<h3 id="重建二级索引索引"><a href="#重建二级索引索引" class="headerlink" title="重建二级索引索引"></a>重建二级索引索引</h3><p>alter table T drop index k;<br>alter table T add index(k);</p>
+<h3 id="重建主键索引："><a href="#重建主键索引：" class="headerlink" title="重建主键索引："></a>重建主键索引：</h3><p>alter table T engine=InnoDB</p>
 ]]></content>
       <categories>
         <category>DB</category>
@@ -4392,63 +4503,6 @@ OK
       </tags>
   </entry>
   <entry>
-    <title>Mysql（2）-基本架构</title>
-    <url>/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/</url>
-    <content><![CDATA[<h2 id="Mysql基本架构是什么样子的（简述Mysql基本架构）"><a href="#Mysql基本架构是什么样子的（简述Mysql基本架构）" class="headerlink" title="Mysql基本架构是什么样子的（简述Mysql基本架构）"></a>Mysql基本架构是什么样子的（简述Mysql基本架构）</h2><p>Mysql由服务层（Service层）和存储引擎层构成。</p>
-<ul>
-<li><p>Service层涵盖Mysql的大多数核心功能，及所有的内置函数</p>
-<p>包含连接器、查询缓存、分析器、优化器、执行器；</p>
-<p>所有跨存储引擎的功能都在这一层实现；</p>
-</li>
-<li><p>存储引擎层，负责数据的存储和提取</p>
-<p>采用插件式设计，支持InnoDB、MYISAM、Memory等多个存储引擎；</p>
-<p>建表时，如果不制定引擎类型，会默认使用InnoDB</p>
-  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#指定存储引擎</span><br><span class="line">create table foo（id int primary key,name var(10) not null）engine&#x3D;InnoDB;</span><br></pre></td></tr></table></figure>
-<p>不同的存储引擎共用一个service层</p>
-</li>
-</ul>
-<h2 id="Mysql由哪些组件组成-各个组件的作用是什么"><a href="#Mysql由哪些组件组成-各个组件的作用是什么" class="headerlink" title="Mysql由哪些组件组成,各个组件的作用是什么"></a>Mysql由哪些组件组成,各个组件的作用是什么</h2><h3 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h3><p>  负责跟客户端建立连接，获取权限，维持和管理连接；</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#mysql客户端工具连接</span><br><span class="line">mysql -h$ip -P$port -u$user -p</span><br></pre></td></tr></table></figure>
-
-<p>  客户端同服务端建立连接，在完成TCP握手后，连接器就开始认证身份，需要我们提供用户名密码；</p>
-<p>  认证通过后，连接器会到权限表里查出所有你拥有的权限，之后这个连接里的所有权限判断，都将依赖于此时读到的权限。也就是说连接成功后权限就不会改变了，如果修改了权限，需要重新连接。</p>
-<p>  关于连接的一些参数：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">show processlist; --查看所有链接状态</span><br><span class="line"></span><br><span class="line">-- 查看mysql參數</span><br><span class="line">show variables like &quot;%timeout%&quot;；</span><br><span class="line">-- wait_timeout：设置非交互连接（就是指那些连接池方式、非客户端方式连接的）的超时时间，默认是28800，就是8小时，超过这个时间，mysql服务器会主动切断那些已经连接的，但是状态是sleep的连接。</span><br><span class="line"></span><br><span class="line">-- interactive_timeout:交互链接超时时间;</span><br><span class="line"></span><br><span class="line">-- connection_timeout：“连接过程中”的等待时间</span><br></pre></td></tr></table></figure>
-
-<p>  建立连接的过程通常是比较复杂的，所以建议你在使用中要尽量减少建立连接的动作，也就是尽量使用长连接。</p>
-<p>  MySQL 在执行过程中临时使用的内存是管理在连接对象里面的。这些资源会在连接断开的时候才释放。所以如果长连接累积下来，可能导致内存占用太大，被系统强行杀掉（OOM），从现象看就是 MySQL 异常重启了。</p>
-<pre><code>解决：
-定期断开长连接。使用一段时间，或者程序里面判断执行过一个占用内存的大查询后，断开连接，之后要查询再重连。
-
-如果你用的是 MySQL 5.7 或更新版本，可以在每次执行一个比较大的操作后，通过执行 mysql_reset_connection 来重新初始化连接资源。这个过程不需要重连和重新做权限验证，但是会将连接恢复到刚刚创建完时的状态。</code></pre><h3 id="查询缓存"><a href="#查询缓存" class="headerlink" title="查询缓存"></a>查询缓存</h3><p>  键值对的形式，key是查询语句，valve是结果；</p>
-<p>  查询缓存的失效非常频繁，只要有对一个表的更新，这个表上所有的查询缓存都会被清空。</p>
-<p>  可以将参数 query_cache_type 设置成 DEMAND，这样对于默认的 SQL 语句都不使用查询缓存。</p>
-<p>  MySQL 8.0版本直接将查询缓存的整块功能删掉了，也就是说 8.0 开始彻底没有这个功能了。</p>
-<p>  如果命中查询缓存，会在查询缓存返回结果的时候，做权限验证。</p>
-<p>  关于查询缓存的一些参数：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">query_catche_size&#x3D;0; -- 最好设置为1024的倍数，参考值32M</span><br><span class="line">query_catch_type&#x3D;0; -- 0禁用 1缓存所有查询 2只缓存通过SQL_CACHE指定需要缓存的查询</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="分析器"><a href="#分析器" class="headerlink" title="分析器"></a>分析器</h3><p>  词法分析；</p>
-<pre><code>读取表定义，识别关键字及表和列信息等</code></pre><p>  语法分析；</p>
-<pre><code>ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &apos;elect * from t where ID=1&apos; at line 1</code></pre><h3 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h3><p>  查询会在优化器之前调用 precheck 验证权限；</p>
-<p>  选择索引，决定表的连接顺序。</p>
-<h3 id="执行器"><a href="#执行器" class="headerlink" title="执行器"></a>执行器</h3><p>  权限检查；</p>
-<p>  开表；</p>
-<p>  重复调用表定义的引擎接口，直到表的最后一行，拿到所有满足条件的接口，组成结果集返回给客户端；</p>
-<h2 id="Mysql权限是怎么控制的？"><a href="#Mysql权限是怎么控制的？" class="headerlink" title="Mysql权限是怎么控制的？"></a>Mysql权限是怎么控制的？</h2><p>  客户端通过认证后，会去权限表读取权限，此后所有的权限判断都基于此时读取的权限。除非重新连接，否则不会改变。</p>
-<p>  命中缓存后，返回结果前会校验权限；</p>
-<p>  优化器之前会调用precheck权限验证；</p>
-<p>  执行器开表前会进行权限验证。</p>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Nginx-2：Nginx安装</title>
     <url>/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/</url>
     <content><![CDATA[<p>安装nginx有两种方式：</p>
@@ -4524,6 +4578,63 @@ OK
       </categories>
       <tags>
         <tag>nginx</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mysql（2）-基本架构</title>
+    <url>/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/</url>
+    <content><![CDATA[<h2 id="Mysql基本架构是什么样子的（简述Mysql基本架构）"><a href="#Mysql基本架构是什么样子的（简述Mysql基本架构）" class="headerlink" title="Mysql基本架构是什么样子的（简述Mysql基本架构）"></a>Mysql基本架构是什么样子的（简述Mysql基本架构）</h2><p>Mysql由服务层（Service层）和存储引擎层构成。</p>
+<ul>
+<li><p>Service层涵盖Mysql的大多数核心功能，及所有的内置函数</p>
+<p>包含连接器、查询缓存、分析器、优化器、执行器；</p>
+<p>所有跨存储引擎的功能都在这一层实现；</p>
+</li>
+<li><p>存储引擎层，负责数据的存储和提取</p>
+<p>采用插件式设计，支持InnoDB、MYISAM、Memory等多个存储引擎；</p>
+<p>建表时，如果不制定引擎类型，会默认使用InnoDB</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#指定存储引擎</span><br><span class="line">create table foo（id int primary key,name var(10) not null）engine&#x3D;InnoDB;</span><br></pre></td></tr></table></figure>
+<p>不同的存储引擎共用一个service层</p>
+</li>
+</ul>
+<h2 id="Mysql由哪些组件组成-各个组件的作用是什么"><a href="#Mysql由哪些组件组成-各个组件的作用是什么" class="headerlink" title="Mysql由哪些组件组成,各个组件的作用是什么"></a>Mysql由哪些组件组成,各个组件的作用是什么</h2><h3 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h3><p>  负责跟客户端建立连接，获取权限，维持和管理连接；</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#mysql客户端工具连接</span><br><span class="line">mysql -h$ip -P$port -u$user -p</span><br></pre></td></tr></table></figure>
+
+<p>  客户端同服务端建立连接，在完成TCP握手后，连接器就开始认证身份，需要我们提供用户名密码；</p>
+<p>  认证通过后，连接器会到权限表里查出所有你拥有的权限，之后这个连接里的所有权限判断，都将依赖于此时读到的权限。也就是说连接成功后权限就不会改变了，如果修改了权限，需要重新连接。</p>
+<p>  关于连接的一些参数：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">show processlist; --查看所有链接状态</span><br><span class="line"></span><br><span class="line">-- 查看mysql參數</span><br><span class="line">show variables like &quot;%timeout%&quot;；</span><br><span class="line">-- wait_timeout：设置非交互连接（就是指那些连接池方式、非客户端方式连接的）的超时时间，默认是28800，就是8小时，超过这个时间，mysql服务器会主动切断那些已经连接的，但是状态是sleep的连接。</span><br><span class="line"></span><br><span class="line">-- interactive_timeout:交互链接超时时间;</span><br><span class="line"></span><br><span class="line">-- connection_timeout：“连接过程中”的等待时间</span><br></pre></td></tr></table></figure>
+
+<p>  建立连接的过程通常是比较复杂的，所以建议你在使用中要尽量减少建立连接的动作，也就是尽量使用长连接。</p>
+<p>  MySQL 在执行过程中临时使用的内存是管理在连接对象里面的。这些资源会在连接断开的时候才释放。所以如果长连接累积下来，可能导致内存占用太大，被系统强行杀掉（OOM），从现象看就是 MySQL 异常重启了。</p>
+<pre><code>解决：
+定期断开长连接。使用一段时间，或者程序里面判断执行过一个占用内存的大查询后，断开连接，之后要查询再重连。
+
+如果你用的是 MySQL 5.7 或更新版本，可以在每次执行一个比较大的操作后，通过执行 mysql_reset_connection 来重新初始化连接资源。这个过程不需要重连和重新做权限验证，但是会将连接恢复到刚刚创建完时的状态。</code></pre><h3 id="查询缓存"><a href="#查询缓存" class="headerlink" title="查询缓存"></a>查询缓存</h3><p>  键值对的形式，key是查询语句，valve是结果；</p>
+<p>  查询缓存的失效非常频繁，只要有对一个表的更新，这个表上所有的查询缓存都会被清空。</p>
+<p>  可以将参数 query_cache_type 设置成 DEMAND，这样对于默认的 SQL 语句都不使用查询缓存。</p>
+<p>  MySQL 8.0版本直接将查询缓存的整块功能删掉了，也就是说 8.0 开始彻底没有这个功能了。</p>
+<p>  如果命中查询缓存，会在查询缓存返回结果的时候，做权限验证。</p>
+<p>  关于查询缓存的一些参数：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">query_catche_size&#x3D;0; -- 最好设置为1024的倍数，参考值32M</span><br><span class="line">query_catch_type&#x3D;0; -- 0禁用 1缓存所有查询 2只缓存通过SQL_CACHE指定需要缓存的查询</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="分析器"><a href="#分析器" class="headerlink" title="分析器"></a>分析器</h3><p>  词法分析；</p>
+<pre><code>读取表定义，识别关键字及表和列信息等</code></pre><p>  语法分析；</p>
+<pre><code>ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &apos;elect * from t where ID=1&apos; at line 1</code></pre><h3 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h3><p>  查询会在优化器之前调用 precheck 验证权限；</p>
+<p>  选择索引，决定表的连接顺序。</p>
+<h3 id="执行器"><a href="#执行器" class="headerlink" title="执行器"></a>执行器</h3><p>  权限检查；</p>
+<p>  开表；</p>
+<p>  重复调用表定义的引擎接口，直到表的最后一行，拿到所有满足条件的接口，组成结果集返回给客户端；</p>
+<h2 id="Mysql权限是怎么控制的？"><a href="#Mysql权限是怎么控制的？" class="headerlink" title="Mysql权限是怎么控制的？"></a>Mysql权限是怎么控制的？</h2><p>  客户端通过认证后，会去权限表读取权限，此后所有的权限判断都基于此时读取的权限。除非重新连接，否则不会改变。</p>
+<p>  命中缓存后，返回结果前会校验权限；</p>
+<p>  优化器之前会调用precheck权限验证；</p>
+<p>  执行器开表前会进行权限验证。</p>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
       </tags>
   </entry>
   <entry>
@@ -5033,6 +5144,47 @@ echo $PATH  //记录命令的搜索路径</code></pre></li>
       </categories>
   </entry>
   <entry>
+    <title>Linux使用私钥公钥(Public key)登录 - 免密码登录</title>
+    <url>/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/</url>
+    <content><![CDATA[<p>为了更安全、方便的登录Linux服务器，可以取消密码登录，使用私钥公钥的方式来登录，更方便也更安全。</p>
+<h1 id="生成密钥（客户端机器）"><a href="#生成密钥（客户端机器）" class="headerlink" title="生成密钥（客户端机器）"></a>生成密钥（客户端机器）</h1><pre><code>ssh-keygen -t [rsa|dsa] -P &apos;&apos;</code></pre><p>直接ssh-keygen然后三次回车就可以了。<br>-P表示密码，-P ‘’ 就表示空密码，也可以不用-P参数，这样就要三车回车，用-P就一次回车。<br>它在/home/chenlb下生成.ssh目录，.ssh下有id_rsa和id_rsa.pub这样一对公私钥。</p>
+<h1 id="上传公钥到服务器端"><a href="#上传公钥到服务器端" class="headerlink" title="上传公钥到服务器端"></a>上传公钥到服务器端</h1><p>先在服务器对应用户目录下创建~/.ssh/authorized_keys目录（如果目录已存在，这一步会被略过）</p>
+<p>ssh richey@host mkdir -p .ssh/authorized_keys</p>
+<p>把客户端的公钥_rsa.pub复制到服务器端机器的.ssh/authorized_keys文件里</p>
+<pre><code>* 可以用scp复制到服务器，然后再从服务器中把从客户端复制的id_rsa.pub添加到.ssh/authorzied_keys文件里。
+
+    scp .ssh/id_rsa.pub  richey@45.xx.xx.16:/home/richey/id_rsa.pub
+
+* 或者
+
+    cat .ssh/id_rsa.pub | ssh richey@hostB &apos;cat &gt;&gt; .ssh/authorized_keys&apos;</code></pre><ul>
+<li><p>上述的创建目录并复制的操作也可以通过一个 ssh-copy-id 命令一步完成：    </p>
+<pre><code>ssh-copy-id -i ~/.ssh/id_rsa.pub aliceB@hostB</code></pre></li>
+<li><p>authorized_keys的权限要是600。</p>
+<pre><code>chmod 600 .ssh/authorized_keys</code></pre></li>
+</ul>
+<h1 id="修改SSH的配置文件"><a href="#修改SSH的配置文件" class="headerlink" title="修改SSH的配置文件"></a>修改SSH的配置文件</h1><p>配置文件位置</p>
+<pre><code>/etc/ssh/sshd_config :
+
+#RSAAuthentication yes
+#PubkeyAuthentication yes
+#AuthorizedKeysFile .ssh/authorized_keys</code></pre><p>去调上面3行前面的#，保存后重启SSH服务。</p>
+<pre><code>使用SYSVINIT初始化系统的Linux系统：service sshd restart
+使用SYSTEMD初始化系统的Linux系统：systemctl restart sshd</code></pre><p>至此服务器端已经支持使用SSH私钥证书登录。</p>
+<h1 id="关闭root用户使用密码登陆"><a href="#关闭root用户使用密码登陆" class="headerlink" title="关闭root用户使用密码登陆"></a>关闭root用户使用密码登陆</h1><p>在使用SSH Key登录验证成功后，还是为了安全，建议关闭root用户使用密码登陆，关闭的方法如下：</p>
+<p>修改SSH的配置文件/etc/ssh/sshd_config，找到下面1行：</p>
+<pre><code>PasswordAuthentication yes</code></pre><p>修改为：</p>
+<pre><code>PasswordAuthentication no</code></pre><p>保存后重启SSH服务。</p>
+<pre><code>service sshd restart</code></pre><p>好了，至此只要你保存好你的私钥（为安全，建议删除服务器端的私钥），你的服务器相比原来使用root用户加密码登陆来说已经安全多了。</p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>ssh</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Linux常用命令</title>
     <url>/2019/03/12/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
     <content><![CDATA[<h4 id="1、查找文件"><a href="#1、查找文件" class="headerlink" title="1、查找文件"></a>1、查找文件</h4><pre><code>find . -name &quot;*.xml&quot; 递归查找所有的xml文件
@@ -5078,47 +5230,6 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
       <categories>
         <category>Linux</category>
       </categories>
-  </entry>
-  <entry>
-    <title>Linux使用私钥公钥(Public key)登录 - 免密码登录</title>
-    <url>/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/</url>
-    <content><![CDATA[<p>为了更安全、方便的登录Linux服务器，可以取消密码登录，使用私钥公钥的方式来登录，更方便也更安全。</p>
-<h1 id="生成密钥（客户端机器）"><a href="#生成密钥（客户端机器）" class="headerlink" title="生成密钥（客户端机器）"></a>生成密钥（客户端机器）</h1><pre><code>ssh-keygen -t [rsa|dsa] -P &apos;&apos;</code></pre><p>直接ssh-keygen然后三次回车就可以了。<br>-P表示密码，-P ‘’ 就表示空密码，也可以不用-P参数，这样就要三车回车，用-P就一次回车。<br>它在/home/chenlb下生成.ssh目录，.ssh下有id_rsa和id_rsa.pub这样一对公私钥。</p>
-<h1 id="上传公钥到服务器端"><a href="#上传公钥到服务器端" class="headerlink" title="上传公钥到服务器端"></a>上传公钥到服务器端</h1><p>先在服务器对应用户目录下创建~/.ssh/authorized_keys目录（如果目录已存在，这一步会被略过）</p>
-<p>ssh richey@host mkdir -p .ssh/authorized_keys</p>
-<p>把客户端的公钥_rsa.pub复制到服务器端机器的.ssh/authorized_keys文件里</p>
-<pre><code>* 可以用scp复制到服务器，然后再从服务器中把从客户端复制的id_rsa.pub添加到.ssh/authorzied_keys文件里。
-
-    scp .ssh/id_rsa.pub  richey@45.xx.xx.16:/home/richey/id_rsa.pub
-
-* 或者
-
-    cat .ssh/id_rsa.pub | ssh richey@hostB &apos;cat &gt;&gt; .ssh/authorized_keys&apos;</code></pre><ul>
-<li><p>上述的创建目录并复制的操作也可以通过一个 ssh-copy-id 命令一步完成：    </p>
-<pre><code>ssh-copy-id -i ~/.ssh/id_rsa.pub aliceB@hostB</code></pre></li>
-<li><p>authorized_keys的权限要是600。</p>
-<pre><code>chmod 600 .ssh/authorized_keys</code></pre></li>
-</ul>
-<h1 id="修改SSH的配置文件"><a href="#修改SSH的配置文件" class="headerlink" title="修改SSH的配置文件"></a>修改SSH的配置文件</h1><p>配置文件位置</p>
-<pre><code>/etc/ssh/sshd_config :
-
-#RSAAuthentication yes
-#PubkeyAuthentication yes
-#AuthorizedKeysFile .ssh/authorized_keys</code></pre><p>去调上面3行前面的#，保存后重启SSH服务。</p>
-<pre><code>使用SYSVINIT初始化系统的Linux系统：service sshd restart
-使用SYSTEMD初始化系统的Linux系统：systemctl restart sshd</code></pre><p>至此服务器端已经支持使用SSH私钥证书登录。</p>
-<h1 id="关闭root用户使用密码登陆"><a href="#关闭root用户使用密码登陆" class="headerlink" title="关闭root用户使用密码登陆"></a>关闭root用户使用密码登陆</h1><p>在使用SSH Key登录验证成功后，还是为了安全，建议关闭root用户使用密码登陆，关闭的方法如下：</p>
-<p>修改SSH的配置文件/etc/ssh/sshd_config，找到下面1行：</p>
-<pre><code>PasswordAuthentication yes</code></pre><p>修改为：</p>
-<pre><code>PasswordAuthentication no</code></pre><p>保存后重启SSH服务。</p>
-<pre><code>service sshd restart</code></pre><p>好了，至此只要你保存好你的私钥（为安全，建议删除服务器端的私钥），你的服务器相比原来使用root用户加密码登陆来说已经安全多了。</p>
-]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
-      <tags>
-        <tag>ssh</tag>
-      </tags>
   </entry>
   <entry>
     <title>Linux下iptables 禁止端口和开放端口</title>
@@ -5207,27 +5318,6 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
       </categories>
       <tags>
         <tag>lambda</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>hexo命令</title>
-    <url>/2019/03/08/hexo%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<ul>
-<li><p>hexo g 生成静态文件</p>
-</li>
-<li><p>hexo s 启动本地服务</p>
-</li>
-<li><p>hexo clean 清除缓存文件(db.json)和已生成的静态文件(public)</p>
-</li>
-<li><p>hexo g -d 生成文件并部署到github</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>其它</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -5443,6 +5533,27 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
       </categories>
       <tags>
         <tag>lambda</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hexo命令</title>
+    <url>/2019/03/08/hexo%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<ul>
+<li><p>hexo g 生成静态文件</p>
+</li>
+<li><p>hexo s 启动本地服务</p>
+</li>
+<li><p>hexo clean 清除缓存文件(db.json)和已生成的静态文件(public)</p>
+</li>
+<li><p>hexo g -d 生成文件并部署到github</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>其它</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -6227,6 +6338,23 @@ docker inspect --format=&apos;{{ .NetworkSettings.IPAddress }}&apos; containner_
       </tags>
   </entry>
   <entry>
+    <title>15、React：React 常用开发调试工具</title>
+    <url>/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/</url>
+    <content><![CDATA[<p>主要介绍ESLint、Prettier、React DevTool、Redux DevTool</p>
+<h1 id="ESLink"><a href="#ESLink" class="headerlink" title="ESLink"></a>ESLink</h1><p>javascript语法检查和一致性保证的标准</p>
+<h1 id="Prettier"><a href="#Prettier" class="headerlink" title="Prettier"></a>Prettier</h1><p>facebook出的用于格式化代码的工具：</p>
+<h1 id="格式化代码"><a href="#格式化代码" class="headerlink" title="格式化代码"></a>格式化代码</h1><p>保证更容易写出风格一致的代码</p>
+<h1 id="React-DevTool"><a href="#React-DevTool" class="headerlink" title="React DevTool"></a>React DevTool</h1><p>用来调试React的chrome插件</p>
+<h1 id="Redux-DevTool"><a href="#Redux-DevTool" class="headerlink" title="Redux DevTool"></a>Redux DevTool</h1><p>用来调试Redux的chrome插件</p>
+]]></content>
+      <categories>
+        <category>前端</category>
+      </categories>
+      <tags>
+        <tag>React</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>React：最佳实践</title>
     <url>/2019/01/15/React%EF%BC%9A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/</url>
     <content><![CDATA[<h1 id="零碎知识点"><a href="#零碎知识点" class="headerlink" title="零碎知识点"></a>零碎知识点</h1><p>在 React 中另一个不同点是你不能通过返回 false的方式阻止默认行为。你必须显式的使用 preventDefault.</p>
@@ -6245,23 +6373,6 @@ docker inspect --format=&apos;{{ .NetworkSettings.IPAddress }}&apos; containner_
 <h2 id="向事件处理程序传递参数"><a href="#向事件处理程序传递参数" class="headerlink" title="向事件处理程序传递参数"></a>向事件处理程序传递参数</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;button onClick&#x3D;&#123;(e) &#x3D;&gt; this.deleteRow(id, e)&#125;&gt;Delete Row&lt;&#x2F;button&gt;</span><br><span class="line">&lt;button onClick&#x3D;&#123;this.deleteRow.bind(this, id)&#125;&gt;Delete Row&lt;&#x2F;button&gt;</span><br></pre></td></tr></table></figure>
 
 <h1 id="表单"><a href="#表单" class="headerlink" title="表单"></a>表单</h1>]]></content>
-      <categories>
-        <category>前端</category>
-      </categories>
-      <tags>
-        <tag>React</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>15、React：React 常用开发调试工具</title>
-    <url>/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/</url>
-    <content><![CDATA[<p>主要介绍ESLint、Prettier、React DevTool、Redux DevTool</p>
-<h1 id="ESLink"><a href="#ESLink" class="headerlink" title="ESLink"></a>ESLink</h1><p>javascript语法检查和一致性保证的标准</p>
-<h1 id="Prettier"><a href="#Prettier" class="headerlink" title="Prettier"></a>Prettier</h1><p>facebook出的用于格式化代码的工具：</p>
-<h1 id="格式化代码"><a href="#格式化代码" class="headerlink" title="格式化代码"></a>格式化代码</h1><p>保证更容易写出风格一致的代码</p>
-<h1 id="React-DevTool"><a href="#React-DevTool" class="headerlink" title="React DevTool"></a>React DevTool</h1><p>用来调试React的chrome插件</p>
-<h1 id="Redux-DevTool"><a href="#Redux-DevTool" class="headerlink" title="Redux DevTool"></a>Redux DevTool</h1><p>用来调试Redux的chrome插件</p>
-]]></content>
       <categories>
         <category>前端</category>
       </categories>

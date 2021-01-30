@@ -288,6 +288,544 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2020/03/01/jvm%E5%B7%A5%E5%85%B7-%E5%A0%86-jmap/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/03/01/jvm%E5%B7%A5%E5%85%B7-%E5%A0%86-jmap/" itemprop="url">jvm工具-堆-jmap</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-01T00:00:00+08:00">
+                2020-03-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/03/01/jvm%E5%B7%A5%E5%85%B7-%E5%A0%86-jmap/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/03/01/jvm%E5%B7%A5%E5%85%B7-%E5%A0%86-jmap/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2020/03/01/jvm%E5%B7%A5%E5%85%B7-%E5%A0%86-jmap/" class="leancloud_visitors" data-flag-title="jvm工具-堆-jmap">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="将-JAVA-HOME-bin添加到当前环境变量"><a href="#将-JAVA-HOME-bin添加到当前环境变量" class="headerlink" title="将$JAVA_HOME/bin添加到当前环境变量"></a>将$JAVA_HOME/bin添加到当前环境变量</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">PATH=<span class="variable">$PATH</span>:<span class="variable">$JAVA_HOME</span>/bin</span></span><br><span class="line"><span class="meta">#</span><span class="bash">env  查看环境变量</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="什么时候使用"><a href="#什么时候使用" class="headerlink" title="什么时候使用"></a>什么时候使用</h1><p>当服务发生GC问题时，一般会使用jmap工具进行分析.</p>
+<h1 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h1><ul>
+<li>查看堆各个对象的数量、大小</li>
+<li>dump堆里的对象信息,然后可以使用MAT等工具分析</li>
+<li>查看堆的配置情况和GC算法</li>
+<li>查看堆永久代信息</li>
+</ul>
+<h1 id="jmap命令"><a href="#jmap命令" class="headerlink" title="jmap命令"></a>jmap命令</h1><h2 id="jmap-histo-live-less"><a href="#jmap-histo-live-less" class="headerlink" title="jmap -histo[:live]  |less"></a>jmap -histo[:live] <pid> |less</h2><p>-histo：打印当前java堆中各个对象的数量、大小，添加了live，只会打印活跃的对象。</p>
+<p>这个命令执行，JVM会先触发gc，然后再统计信息。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">查看对象数最多的对象，并按降序排序输出：</span><br><span class="line">jmap -histo &lt;pid&gt;|grep alibaba|sort -k <span class="number">2</span> -g -r|less</span><br><span class="line"></span><br><span class="line">查看占用内存最多的最象，并按降序排序输出：</span><br><span class="line">jmap -histo &lt;pid&gt;|grep alibaba|sort -k <span class="number">3</span> -g -r|less</span><br></pre></td></tr></table></figure>
+
+<h2 id="jmap-dump-live-format-b-file"><a href="#jmap-dump-live-format-b-file" class="headerlink" title="jmap -dump:[live,]format=b,file= "></a>jmap -dump:[live,]format=b,file=<filename> <pid></h2><p>-dump：把java堆中的对象dump到本地文件，然后使用MAT进行分析。如果添加了live，只会dump活跃的对象。</p>
+<p>这个命令执行，JVM会将整个heap的信息dump写入到一个文件，heap如果比较大的话，就会导致这个过程比较耗时，并且执行的过程中为了保证dump的信息是可靠的，所以会暂停应用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">使用hprof二进制形式,输出jvm的heap内容到文件</span><br><span class="line">[richey<span class="meta">@localhost</span> ~]$ jmap -dump:live,format=b,file=jmap.hprof <span class="number">6274</span></span><br><span class="line">Dumping heap to /home/richey/jmap.hprof ...</span><br><span class="line">Heap dump file created</span><br></pre></td></tr></table></figure>
+
+<h2 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h2><h2 id="让JVM在遇到OOM-OutOfMemoryError-时生成Dump文件"><a href="#让JVM在遇到OOM-OutOfMemoryError-时生成Dump文件" class="headerlink" title="让JVM在遇到OOM(OutOfMemoryError)时生成Dump文件"></a>让JVM在遇到OOM(OutOfMemoryError)时生成Dump文件</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/path/to/heap/dump</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p>Error attaching to process: sun.jvm.hotspot.debugger.DebuggerException: Can’t attach to the process<br>在ubuntu中第一次使用jmap会报错：Error attaching to process: sun.jvm.hotspot.debugger.DebuggerException: Can’t attach to the process，这是oracla文档中提到的一个bug:<a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7050524,解决方式如下：" target="_blank" rel="noopener">http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7050524,解决方式如下：</a></p>
+</blockquote>
+<blockquote>
+<p>echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope 该方法在下次重启前有效。</p>
+</blockquote>
+<blockquote>
+<p>永久有效方法 sudo vi /etc/sysctl.d/10-ptrace.conf 编辑下面这行: kernel.yama.ptrace_scope = 1 修改为: kernel.yama.ptrace_scope = 0 重启系统，使修改生效。</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2020/02/01/Java4%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/02/01/Java4%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/" itemprop="url">Java4种引用类型</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-01T00:00:00+08:00">
+                2020-02-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/02/01/Java4%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/02/01/Java4%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2020/02/01/Java4%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/" class="leancloud_visitors" data-flag-title="Java4种引用类型">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>Java的“引用”决定了对象的存活.</p>
+<p>JDK1.2之后，java提供了4中引用类型：</p>
+<ul>
+<li><p>强引用</p>
+<p>创建对象时默认声明的就是强引用，只要强引用和还在，垃圾收集器不会回收掉被引用的对象。</p>
+</li>
+</ul>
+<ul>
+<li><p>软引用</p>
+<p>用来描述一些有用，但非必须的对象。系统在内存溢出之前（内存不足的时候）会对软引用关联的对象进行回收。</p>
+<p>主要应用于缓存实现，内存不足的时候释放缓存。</p>
+</li>
+</ul>
+<ul>
+<li><p>弱引用</p>
+<p>被弱引用关联的对象只能存活到下一次GC之前。弱引用完全不会影响对象的生命周期。</p>
+<p>索引想使用某些对象，又不想影响其本身的生命周期的时候可以使用。</p>
+</li>
+<li><p>虚引用（幽灵引用、幻影引用）</p>
+<p>最弱的一种引用关系。无法通过虚引用来获取一个对象实例，没有单独使用的意义。</p>
+<p>设置虚引用关联的唯一目的就是能在这个对象被GC会收到一个系统消息。</p>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2020/01/01/springboot-validation%E7%BB%9F%E4%B8%80%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/01/01/springboot-validation%E7%BB%9F%E4%B8%80%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" itemprop="url">springboot-validation统一异常处理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-01T00:00:00+08:00">
+                2020-01-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" itemprop="url" rel="index">
+                    <span itemprop="name">异常处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/01/01/springboot-validation%E7%BB%9F%E4%B8%80%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/01/01/springboot-validation%E7%BB%9F%E4%B8%80%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2020/01/01/springboot-validation%E7%BB%9F%E4%B8%80%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" class="leancloud_visitors" data-flag-title="springboot-validation统一异常处理">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/12/01/Mysql%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -412,6 +950,175 @@
 </ul>
 <h1 id="索引失效的场景"><a href="#索引失效的场景" class="headerlink" title="索引失效的场景"></a>索引失效的场景</h1><h1 id="Mysql-有哪几种日志，分别有什么作用"><a href="#Mysql-有哪几种日志，分别有什么作用" class="headerlink" title="Mysql 有哪几种日志，分别有什么作用"></a>Mysql 有哪几种日志，分别有什么作用</h1><h1 id="每次更新数据都写磁盘的话，io成本会很高，mysql是如何解决的这个问题"><a href="#每次更新数据都写磁盘的话，io成本会很高，mysql是如何解决的这个问题" class="headerlink" title="每次更新数据都写磁盘的话，io成本会很高，mysql是如何解决的这个问题"></a>每次更新数据都写磁盘的话，io成本会很高，mysql是如何解决的这个问题</h1><p>WAL</p>
 <h1 id="死锁产生的原因以及解决方式"><a href="#死锁产生的原因以及解决方式" class="headerlink" title="死锁产生的原因以及解决方式"></a>死锁产生的原因以及解决方式</h1>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/" itemprop="url">安装zookeeper</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-07T00:00:00+08:00">
+                2019-07-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9E%B6%E6%9E%84/" itemprop="url" rel="index">
+                    <span itemprop="name">架构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/" class="leancloud_visitors" data-flag-title="安装zookeeper">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="安装zookeeper"><a href="#安装zookeeper" class="headerlink" title="安装zookeeper"></a>安装zookeeper</h1><h2 id="单机服务"><a href="#单机服务" class="headerlink" title="单机服务"></a>单机服务</h2><p>从apache.org下载zookeeper,这里下载的是zookeeper-3.4.14.tar</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#tar -zxf zookeeper-3.4.14.tar.gz</span><br><span class="line">#mv zookeeper-3.4.14 &#x2F;usr&#x2F;local&#x2F;zookeeper</span><br><span class="line">#cat &gt; &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;conf&#x2F;zoo.cfg &lt;&lt; EOF</span><br><span class="line">&gt; tickTime&#x3D;2000</span><br><span class="line">&gt; dataDir&#x3D;&#x2F;var&#x2F;lib&#x2F;zookeeper</span><br><span class="line">&gt; clientPort&#x3D;2181</span><br><span class="line">&gt; EOF</span><br><span class="line">#&#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh start</span><br><span class="line">ZooKeeper JMX enabled by default</span><br><span class="line">Using config: &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;..&#x2F;conf&#x2F;zoo.cfg</span><br><span class="line">Starting zookeeper ... STARTED</span><br><span class="line">#</span><br></pre></td></tr></table></figure>
+
+<p>现在可以连接到zookeeper端口上，通过发送四字命令srvr来验证zookeeper是否安装正确。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#telnet localhost 2181</span><br><span class="line">Trying ::1...</span><br><span class="line">Connected to localhost.</span><br><span class="line">Escape character is &#39;^]&#39;.</span><br><span class="line">srvr</span><br><span class="line">Zookeeper version: 3.4.14-4c25d480e66aadd371de8bd2fd8da255ac140bcf, built on 03&#x2F;06&#x2F;2019 16:18 GMT</span><br><span class="line">Latency min&#x2F;avg&#x2F;max: 0&#x2F;0&#x2F;0</span><br><span class="line">Received: 1</span><br><span class="line">Sent: 0</span><br><span class="line">Connections: 1</span><br><span class="line">Outstanding: 0</span><br><span class="line">Zxid: 0x0</span><br><span class="line">Mode: standalone</span><br><span class="line">Node count: 4</span><br><span class="line">Connection closed by foreign host.</span><br></pre></td></tr></table></figure>
+
+<h2 id="Zookeeper群组"><a href="#Zookeeper群组" class="headerlink" title="Zookeeper群组"></a>Zookeeper群组</h2><p>Zookeeper集群被称为Zookeeper群组，Zookeeper使用的是一致性协议，所以每个群组里应该包含奇数个节点。因为只有群组里的大多数节点处于可用状态，zookeeper才能处理外部请求。</p>
+
           
         
       
@@ -604,175 +1311,6 @@
 
 
 <h1 id="Broker配置"><a href="#Broker配置" class="headerlink" title="Broker配置"></a>Broker配置</h1><h1 id="主题的默认配置"><a href="#主题的默认配置" class="headerlink" title="主题的默认配置"></a>主题的默认配置</h1>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/" itemprop="url">安装zookeeper</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-07T00:00:00+08:00">
-                2019-07-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9E%B6%E6%9E%84/" itemprop="url" rel="index">
-                    <span itemprop="name">架构</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/" class="leancloud_visitors" data-flag-title="安装zookeeper">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="安装zookeeper"><a href="#安装zookeeper" class="headerlink" title="安装zookeeper"></a>安装zookeeper</h1><h2 id="单机服务"><a href="#单机服务" class="headerlink" title="单机服务"></a>单机服务</h2><p>从apache.org下载zookeeper,这里下载的是zookeeper-3.4.14.tar</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#tar -zxf zookeeper-3.4.14.tar.gz</span><br><span class="line">#mv zookeeper-3.4.14 &#x2F;usr&#x2F;local&#x2F;zookeeper</span><br><span class="line">#cat &gt; &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;conf&#x2F;zoo.cfg &lt;&lt; EOF</span><br><span class="line">&gt; tickTime&#x3D;2000</span><br><span class="line">&gt; dataDir&#x3D;&#x2F;var&#x2F;lib&#x2F;zookeeper</span><br><span class="line">&gt; clientPort&#x3D;2181</span><br><span class="line">&gt; EOF</span><br><span class="line">#&#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh start</span><br><span class="line">ZooKeeper JMX enabled by default</span><br><span class="line">Using config: &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;..&#x2F;conf&#x2F;zoo.cfg</span><br><span class="line">Starting zookeeper ... STARTED</span><br><span class="line">#</span><br></pre></td></tr></table></figure>
-
-<p>现在可以连接到zookeeper端口上，通过发送四字命令srvr来验证zookeeper是否安装正确。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#telnet localhost 2181</span><br><span class="line">Trying ::1...</span><br><span class="line">Connected to localhost.</span><br><span class="line">Escape character is &#39;^]&#39;.</span><br><span class="line">srvr</span><br><span class="line">Zookeeper version: 3.4.14-4c25d480e66aadd371de8bd2fd8da255ac140bcf, built on 03&#x2F;06&#x2F;2019 16:18 GMT</span><br><span class="line">Latency min&#x2F;avg&#x2F;max: 0&#x2F;0&#x2F;0</span><br><span class="line">Received: 1</span><br><span class="line">Sent: 0</span><br><span class="line">Connections: 1</span><br><span class="line">Outstanding: 0</span><br><span class="line">Zxid: 0x0</span><br><span class="line">Mode: standalone</span><br><span class="line">Node count: 4</span><br><span class="line">Connection closed by foreign host.</span><br></pre></td></tr></table></figure>
-
-<h2 id="Zookeeper群组"><a href="#Zookeeper群组" class="headerlink" title="Zookeeper群组"></a>Zookeeper群组</h2><p>Zookeeper集群被称为Zookeeper群组，Zookeeper使用的是一致性协议，所以每个群组里应该包含奇数个节点。因为只有群组里的大多数节点处于可用状态，zookeeper才能处理外部请求。</p>
-
           
         
       
@@ -1353,7 +1891,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 <h1 id="可视模式"><a href="#可视模式" class="headerlink" title="可视模式"></a>可视模式</h1><ul>
 <li>按v键，进入字符可视模式，移动光标可进行选择</li>
 <li>按V键，进入行可视模式,移动光标可进行选择</li>
-<li>按Ctrl+v键，进入行可视模式,移动光标可进行选择</li>
+<li>按Ctrl+v键，进入行可视模式,移动光标可进行选择<br>SHIFT+i(I) 输入要插入的内容<br>ESC 按两次，会在每行的选定的区域出现插入的内容</li>
 <li>选择后，可以输入一个操作符对选中的文本进行操作，比如d 删除</li>
 <li>u或U，字母大小写切换</li>
 <li>d删除选中字符，D删除整行</li>
@@ -1807,651 +2345,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/19/SpringSocial(2)-%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E5%8E%9F%E7%90%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/06/19/SpringSocial(2)-%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E5%8E%9F%E7%90%86/" itemprop="url">SpringSocial(2)-第三方登录原理</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-19T00:00:00+08:00">
-                2019-06-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/06/19/SpringSocial(2)-%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E5%8E%9F%E7%90%86/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/19/SpringSocial(2)-%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E5%8E%9F%E7%90%86/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/06/19/SpringSocial(2)-%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E5%8E%9F%E7%90%86/" class="leancloud_visitors" data-flag-title="SpringSocial(2)-第三方登录原理">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="http://on-img.com/chart_image/5b9ccb5de4b0bd4db93d9616.png" alt="image"></p>
-<p>对照上面的流程我们来分析一下SpringSocial实现第三方登录的原理:</p>
-<ul>
-<li>登录的实现还是用的SpringSecurity,SpringSocial只不过是将第三方登录的过程对接到了SpringSecurity</li>
-<li>既然是SpringSecurity,拿核心依然是过滤器链,SpringSocial提供了SocialAuthenticationFilter.</li>
-<li>SpringSocial将OAuth2认证流程封装,最终产出的结果就是标准的Connection,Connection里面包含了用户的信息</li>
-<li>SocialAuthenticationService封装了取Connection的过程</li>
-<li>拿到Connection相当于拿到了用户登录的Authentication,但此时的Authentication是未认证通过的,到这里相当于只是拿到了用于用于登录的数据</li>
-<li>处理用户登录,当然还是要回到SpringSecurity的授权流程,通过AuthenticationManager,找到对应的AthenticationProvider,这里是SpringSocial提供了SocialAuthenticationProvider处理登录信息.</li>
-<li>Connection信息维护了一个第三方用户和当前服务业务用户的一个映射关系,拿到connection,我们就可以拿到用户在当前服务的userId</li>
-<li>有了userId,我们就可以通过SocialUserDetailService来得到SocialUserDeail,到这里相当于拿到了用户的信息</li>
-<li>将用户信息维护进Connection再继续走授权流程,处理session等,整个第三方登录过程大致就是这样.</li>
-</ul>
-<p>总结:整个过程其实就是整合了SpringSecurity认证流程以及SpringSocial实现OAuth2的流程,之后前的文章我们已经分别分析了SpringSecurity及SpringSocial,流程万变不离其宗,流程和原理知道了,如果实际的开发过程中遇到问题,看一下源码也是非常便捷的.</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/17/SpringSocial(1)-%E5%BC%80%E5%8F%91QQ%E7%99%BB%E5%BD%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/06/17/SpringSocial(1)-%E5%BC%80%E5%8F%91QQ%E7%99%BB%E5%BD%95/" itemprop="url">SpringSocial(1)-开发QQ登录</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-17T00:00:00+08:00">
-                2019-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/06/17/SpringSocial(1)-%E5%BC%80%E5%8F%91QQ%E7%99%BB%E5%BD%95/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/17/SpringSocial(1)-%E5%BC%80%E5%8F%91QQ%E7%99%BB%E5%BD%95/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/06/17/SpringSocial(1)-%E5%BC%80%E5%8F%91QQ%E7%99%BB%E5%BD%95/" class="leancloud_visitors" data-flag-title="SpringSocial(1)-开发QQ登录">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在用SpringSocial开发QQ第三方登录之前，我们先来回顾下SpringSocial实现OAuth第三方登录的流程：</p>
-<p><img src="http://ogiythg18.bkt.clouddn.com/SpringSocial%E5%AE%9E%E7%8E%B0OAuah%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81.png" alt="image"></p>
-<p>SpringSocial是同各种第三方服务进行对接最终得到的是标准的Connectionn，并最终保存到db中。</p>
-<p>我们要做的就是提供生成Connection所需要的各种接口的实现类，这些接口的作用上一篇已经说了，其中SpringSocial为一些接口已经提供了抽象实现，我们继承就可以了。</p>
-<p>代码细节就不说了，<a href="https://github.com/liubaolin/evolutionary/tree/master/evolutionary-security" target="_blank" rel="noopener">具体可以去github看</a>，这里分析下这个流程中几个重要的地方：</p>
-<ul>
-<li>在实现号所有接口后，提供具体配置</li>
-</ul>
-<pre><code>@Configuration
-@ConditionalOnProperty(prefix = &quot;evolutionary.security.social.qq&quot;, name = &quot;app-id&quot;)
-public class QQAutoConfig extends SocialAutoConfigurerAdapter {
-
-    @Autowired
-    private SecurityProperties securityProperties;
-
-    @Override
-    protected ConnectionFactory&lt;?&gt; createConnectionFactory() {
-        QQProperties qqConfig = securityProperties.getSocial().getQq();
-        return new QQConnectionFactory(qqConfig.getProviderId(), qqConfig.getAppId(), qqConfig.getAppSecret());
-    }
-}</code></pre><ul>
-<li><p>数据库表</p>
-<p>  我们在JdbcUsersConnectionRepository相同的包路径下可以看到JdbcUsersConnectionRepository.sql，没错，考出来执行一下就可以了。</p>
-</li>
-<li><p>SocialCoinfig</p>
-</li>
-</ul>
-<pre><code>@Configuration
-@EnableSocial
-public class SocialConfig extends SocialConfigurerAdapter {
-
-    @Autowired
-    private DataSource dataSource;
-
-    @Override
-    public UsersConnectionRepository getUsersConnectionRepository(ConnectionFactoryLocator connectionFactoryLocator) {
-        JdbcUsersConnectionRepository repository = new JdbcUsersConnectionRepository(dataSource, connectionFactoryLocator, Encryptors.noOpText());
-//        repository.setTablePrefix(&quot;evolutionary_&quot;);
-        return repository;
-    }
-
-    @Bean
-    public SpringSocialConfigurer evolutionarySocialSecurityConfig() {
-        return new SpringSocialConfigurer();
-    }
-
-}</code></pre><ul>
-<li>将SpringSocial的配置配到SpringSecurity中</li>
-</ul>
-<pre><code>protected void configure(HttpSecurity http) throws Exception {
-
-    http.apply(evolutionarySocialConfigurer)；
-
-}</code></pre><ul>
-<li><p>前端页面</p>
-<pre><code>&lt;h3&gt;社交登录&lt;/h3&gt;
-&lt;a href=&quot;/auth/qq&quot;&gt;QQ登录&lt;/a&gt;</code></pre></li>
-</ul>
-<pre><code>注意我们页面写的这个QQ登录的地址“/auth/qq&quot;,前面的”/auth/“是SpringSocial的默认请求处理地址前缀，是在SpringSocialAuthenticationFilter中提供的默认路径。 后面的qq是我们自己提供的，在构建ConnectionFactory时，传入了，实际上该参数就是我们封装的服务提供商Provider的标识。
-
-
-public class QQProperties extends SocialProperties {
-
-    /**
-     * 用于区分不同的provider的
-     */
-    private String providerId = &quot;qq&quot;;
-
-    public String getProviderId() {
-        return providerId;
-    }
-
-    public void setProviderId(String providerId) {
-        this.providerId = providerId;
-    }
-}
-
-ConnectionFactory需要传入qqConfig.getProviderId()
-
-@Configuration
-@ConditionalOnProperty(prefix = &quot;evolutionary.security.social.qq&quot;, name = &quot;app-id&quot;)
-public class QQAutoConfig extends SocialAutoConfigurerAdapter {
-
-    @Autowired
-    private SecurityProperties securityProperties;
-
-    @Override
-    protected ConnectionFactory&lt;?&gt; createConnectionFactory() {
-        QQProperties qqConfig = securityProperties.getSocial().getQq();
-        return new QQConnectionFactory(qqConfig.getProviderId(), qqConfig.getAppId(), qqConfig.getAppSecret());
-    }
-}</code></pre><p><img src="http://ogiythg18.bkt.clouddn.com/OAuth%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95.png" alt="image"></p>
-<p><strong>注意：</strong></p>
-<p>”/auth/qq“这个地址就是上图中触发第一步：将用户导向认证服务器的地址，同时也是第三步：用户同意授权后跳转回来的地址。</p>
-<h3 id="修改SpringSocial默认请求拦截路径-auth"><a href="#修改SpringSocial默认请求拦截路径-auth" class="headerlink" title="修改SpringSocial默认请求拦截路径/auth"></a>修改SpringSocial默认请求拦截路径/auth</h3><pre><code>@Configuration
-@EnableSocial
-public class SocialConfig extends SocialConfigurerAdapter {
-
-    @Autowired
-    private DataSource dataSource;
-
-    @Override
-    public UsersConnectionRepository getUsersConnectionRepository(ConnectionFactoryLocator connectionFactoryLocator) {
-        JdbcUsersConnectionRepository repository = new JdbcUsersConnectionRepository(dataSource, connectionFactoryLocator, Encryptors.noOpText());
-//        repository.setTablePrefix(&quot;evolutionary_&quot;);
-        return repository;
-    }
-
-    @Bean
-    public SpringSocialConfigurer evolutionarySocialSecurityConfig() {
-        return new SpringSocialConfigurer();
-    }
-
-
-}</code></pre><p>在SpringSocialConfigurer中将SpringsocialAuthenticationFilter放到了SpringSecurity的过滤器链上，并做了一些处理，源码如下：</p>
-<pre><code>http.authenticationProvider(new SocialAuthenticationProvider(usersConnectionRepository, socialUsersDetailsService)).
-addFilterBefore((Filter)this.postProcess(filter), AbstractPreAuthenticatedProcessingFilter.class);</code></pre><p>我们可以看到在加到过滤器链之前做了一个后处理操作this.postProcess(filter)，我们可以在重写这个方法，对SpringsocialAuthenticationFilter做一些定制化的操作。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/16/SpringSocial(0)-SpringSocial%E7%AE%80%E4%BB%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/06/16/SpringSocial(0)-SpringSocial%E7%AE%80%E4%BB%8B/" itemprop="url">SpringSocial(0)-SpringSocial简介</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-16T00:00:00+08:00">
-                2019-06-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/06/16/SpringSocial(0)-SpringSocial%E7%AE%80%E4%BB%8B/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/16/SpringSocial(0)-SpringSocial%E7%AE%80%E4%BB%8B/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/06/16/SpringSocial(0)-SpringSocial%E7%AE%80%E4%BB%8B/" class="leancloud_visitors" data-flag-title="SpringSocial(0)-SpringSocial简介">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>之前我们介绍了OAuth协议，知道了OAuth协议中的各种角色及认证流程，着重说明了授权码模式的认证。这里我们以授权码默认认证为基础说一下第三方登录的流程：</p>
-<p>在拿到令牌后，第三方应用就可以从服务提供商这里获取用户基本信息了，拿到用户基本信息后，我们构建Authentication并放到SecurityContext中，这样就完成了登录。</p>
-<p><img src="http://ogiythg18.bkt.clouddn.com/OAuth%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95.png" alt="image"></p>
-<p>这就是OAuth和Spring Security配合完成第三方登录的流程。SpringSocial将这个流程封装到了SocialAuthenticationFilter中，并放到了Spring Security的过滤器链中：</p>
-<p><img src="http://ogiythg18.bkt.clouddn.com/SocialAuthenticationFilter.png" alt="image"></p>
-<h2 id="SpringSocial开发第三方登录"><a href="#SpringSocial开发第三方登录" class="headerlink" title="SpringSocial开发第三方登录"></a>SpringSocial开发第三方登录</h2><p>在上面的OAuth第三方登录流程中，我们可以看出1-6步都需要同服务提供商交互，并并且对于不同的登录1-5步都是一样的，第6步不同的服务提供商提供的用户信息的数据结构不尽相同。</p>
-<p>我们对照图片看一下Spring Social对上面的流程做了怎样的封装：</p>
-<p><img src="http://ogiythg18.bkt.clouddn.com/SpringSocial%E5%AE%9E%E7%8E%B0OAuah%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81.png" alt="image"></p>
-<ul>
-<li><p>对于服务提供商</p>
-<ul>
-<li>SpringSocial将与服务商的交互封装进了ServiceProvider，并提供了抽象的实现AbstractOAutrh2ServiceProvider；</li>
-<li>SpringSocial将前5步操作封装进了OAuth2Operations，并提供了默认实现OAuth2Template；</li>
-<li>对于第6步获取用户信息，由于不同的服务商提供的数据格式不一样，SpringSocial提供了一个接口，以及抽象的类AbstractOAuth2ApiBinding，方便我们继承完善。</li>
-</ul>
-</li>
-<li><p>对于第三方应用</p>
-<p>  SpringSocial将从服务提供商获取用户基本信息的整个过程封装成了一个Connection：</p>
-<ul>
-<li>通过ServiceProvider取用户基信息</li>
-<li>通ApiAdapter处理适配用户信息数据</li>
-<li>通过工厂类ConnectionFactory获取Connection</li>
-<li>拿到服务提供你商提供的用户信息后，用户信息与第三方应用本身用户的映射关系存在表UserConnection中</li>
-<li>通过UsersConnectionRepository操作UserConnection</li>
-</ul>
-</li>
-</ul>
-<p>上面就是SpringSocial实现OAuth2第三方登录的流程，上面的这些接口需要为我们配合实现。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2506,7 +2399,7 @@ addFilterBefore((Filter)this.postProcess(filter), AbstractPreAuthenticatedProces
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">107</span>
+                  <span class="site-state-item-count">110</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2517,7 +2410,7 @@ addFilterBefore((Filter)this.postProcess(filter), AbstractPreAuthenticatedProces
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2528,7 +2421,7 @@ addFilterBefore((Filter)this.postProcess(filter), AbstractPreAuthenticatedProces
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-count">38</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

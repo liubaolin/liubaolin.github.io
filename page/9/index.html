@@ -288,6 +288,675 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/02/06/Docker%EF%BC%884%EF%BC%89-%20%E5%85%A5%E9%97%A8%EF%BC%88%E5%91%BD%E4%BB%A4%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/02/06/Docker%EF%BC%884%EF%BC%89-%20%E5%85%A5%E9%97%A8%EF%BC%88%E5%91%BD%E4%BB%A4%EF%BC%89/" itemprop="url">Docker（4）- 入门（命令）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-06T00:00:00+08:00">
+                2019-02-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%B9%E5%99%A8/" itemprop="url" rel="index">
+                    <span itemprop="name">容器</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/02/06/Docker%EF%BC%884%EF%BC%89-%20%E5%85%A5%E9%97%A8%EF%BC%88%E5%91%BD%E4%BB%A4%EF%BC%89/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/02/06/Docker%EF%BC%884%EF%BC%89-%20%E5%85%A5%E9%97%A8%EF%BC%88%E5%91%BD%E4%BB%A4%EF%BC%89/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/02/06/Docker%EF%BC%884%EF%BC%89-%20%E5%85%A5%E9%97%A8%EF%BC%88%E5%91%BD%E4%BB%A4%EF%BC%89/" class="leancloud_visitors" data-flag-title="Docker（4）- 入门（命令）">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="启动和关闭守护进程"><a href="#启动和关闭守护进程" class="headerlink" title="启动和关闭守护进程"></a>启动和关闭守护进程</h1><h2 id="在Red-Hat系发行版中启动Docker守护进程"><a href="#在Red-Hat系发行版中启动Docker守护进程" class="headerlink" title="在Red Hat系发行版中启动Docker守护进程"></a>在Red Hat系发行版中启动Docker守护进程</h2><h3 id="在RHEL-6或CentOS-6中"><a href="#在RHEL-6或CentOS-6中" class="headerlink" title="在RHEL 6或CentOS 6中"></a>在RHEL 6或CentOS 6中</h3><ul>
+<li><p>启动/关闭Docker服务</p>
+<pre><code>sudo service docker start　　　　
+sudo service docker stop</code></pre></li>
+<li><p>确保在RHEL 6中开机启动Docker</p>
+<pre><code>sudo service docker enable</code></pre></li>
+</ul>
+<h3 id="在RHEL-7或Fedora中"><a href="#在RHEL-7或Fedora中" class="headerlink" title="在RHEL 7或Fedora中"></a>在RHEL 7或Fedora中</h3><ul>
+<li><p>启动/关闭Docker服务</p>
+<pre><code>sudo systemctl start docker
+sudo systemctl stop docker</code></pre></li>
+</ul>
+<ul>
+<li><p>在系统开机自动启动Docker服务</p>
+<pre><code>sudo systemctl enable docker</code></pre></li>
+<li><p>检查Docker是否正确安装</p>
+<pre><code>sudo docker info</code></pre></li>
+</ul>
+<h1 id="创建并启动容器"><a href="#创建并启动容器" class="headerlink" title="创建并启动容器"></a>创建并启动容器</h1><ul>
+<li><p>==docker run==命令提供了Docker容器的创建到启动的功能</p>
+<pre><code>docker run -i -t ubuntu /bin/bash</code></pre><ul>
+<li><p>-i 标志保证STDIN是开启的    </p>
+</li>
+<li><p>-t 则告诉Docker要为创建的容器分配一个伪tty终端。</p>
+</li>
+<li><p>若要在命令行下创建一个能与之进行交互的容，而不是一个运后台服务的容器，这两个参数是最基本的参数</p>
+</li>
+<li><p>ubuntu 告诉Docker我们要基于ubuntu镜像来创建容器(ubuntu镜像是一个常备镜像，也可以称之为“基础”镜像)。首先docker会检查本地是否有ubuntu镜像，如果没有的话就会去Docker Hub中找，找到后会下载并保存该镜像到本地宿主机中。</p>
+</li>
+<li><p>/bin/bash 告诉Docker在新容器中要运行什么命令</p>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="使用容器"><a href="#使用容器" class="headerlink" title="使用容器"></a>使用容器</h1><ul>
+<li><p>检查容器的主机名</p>
+<pre><code>homename //可以看到容器的主机名就是容器的ID</code></pre></li>
+<li><p>查看容器的/etc/hosts文件，发现Docker已经在hosts文件中为该容器的ip添加来一条主机配置项</p>
+</li>
+</ul>
+<h1 id="查看当前系统中的容器列表"><a href="#查看当前系统中的容器列表" class="headerlink" title="查看当前系统中的容器列表"></a>查看当前系统中的容器列表</h1><pre><code>docker ps -a //查看所有容器
+
+docker ps //只能看到正在运行的容器
+
+docker ps -l //列出最后一个运行的容器
+
+docker ps -n x //显示最后x个容器，不论这些容器正在运行还是已停止</code></pre><h1 id="容器命名"><a href="#容器命名" class="headerlink" title="容器命名"></a>容器命名</h1><ul>
+<li><p>Docker会为我们创建的每一个容器自动生成一个随机的名称</p>
+</li>
+<li><p>可以通过 –name 参数指定容器的名字</p>
+<pre><code>docker run --name my_container -i -t ubuntu /bin/bash</code></pre></li>
+</ul>
+<h1 id="删除已存在容器"><a href="#删除已存在容器" class="headerlink" title="删除已存在容器"></a>删除已存在容器</h1><pre><code>docker rm my_container
+
+docker rm &apos;sudo docker ps -a -q&apos;</code></pre><h1 id="重新启动已停止的容器"><a href="#重新启动已停止的容器" class="headerlink" title="重新启动已停止的容器"></a>重新启动已停止的容器</h1><pre><code>sudo docker start my_container
+
+sudo docker restart my_container //也可以重启一个容器</code></pre><h1 id="附着到容器上"><a href="#附着到容器上" class="headerlink" title="附着到容器上"></a>附着到容器上</h1><ul>
+<li><p>我们可以用docker attach命令，附着到容器的会话上</p>
+<pre><code>sudo docker attach my_container</code></pre></li>
+<li><p>注意：如果退出容器的shell，==容器会停止运行==</p>
+</li>
+</ul>
+<h1 id="创建守护式容器"><a href="#创建守护式容器" class="headerlink" title="创建守护式容器"></a>创建守护式容器</h1><ul>
+<li><p>守护式容器没有交互式会话，非常适合运行应用程序和服务</p>
+<pre><code>sudo docker run --name daemon_container -d ubuntu /bin/sh -c &quot;while true; do echo hello world; sleep 1; down&quot;</code></pre></li>
+<li><p>使用来-d参数，因此Docker会将容器放在后台运行。</p>
+</li>
+</ul>
+<h1 id="获取docker容器的日志"><a href="#获取docker容器的日志" class="headerlink" title="获取docker容器的日志"></a>获取docker容器的日志</h1><ul>
+<li><p>可以用docker logs命令来获取容器的日志</p>
+<pre><code>docker logs daemon_container //输出最后几条日志并返回
+
+docker logs -f daemon_container //类似于tail -f
+
+docker logs --tail 10 daemon_container //最后10行
+
+docker logs --tail 0 -f daemon_container //跟踪容器的最新日志
+
+docker logs -ft daemon_containner //-t 为日志加上时间戳</code></pre></li>
+</ul>
+<h1 id="查看容器内的进程"><a href="#查看容器内的进程" class="headerlink" title="查看容器内的进程"></a>查看容器内的进程</h1><pre><code>sudo docker top daemon_containner</code></pre><h1 id="Docker统计信息"><a href="#Docker统计信息" class="headerlink" title="Docker统计信息"></a>Docker统计信息</h1><pre><code>docker stats</code></pre><h1 id="在容器内部运行进程"><a href="#在容器内部运行进程" class="headerlink" title="在容器内部运行进程"></a>在容器内部运行进程</h1><ul>
+<li><p>可以通过docker exec命令在容器内部额外启动新进程</p>
+</li>
+<li><p>可以在容器中运行的进程有两种类型：后台任务和交互任务</p>
+<ul>
+<li><p>后台命令</p>
+<pre><code>sudo docker exec -d richey_ubuntu_container touch /etc/new_test_config_file</code></pre></li>
+<li><p>交互式命令</p>
+<pre><code>sudo docker exec -t -i richey_ubuntu_container /bin/bash</code></pre></li>
+</ul>
+</li>
+</ul>
+<h1 id="自动重启容器"><a href="#自动重启容器" class="headerlink" title="自动重启容器"></a>自动重启容器</h1><ul>
+<li><p>可以通过–restart标志自动重启容器</p>
+<pre><code>sudo docker run --restart=always --name daemon_container -d ubuntu /bin/sh -c &quot;while true; do echo hello world; sleep 1; down&quot;
+
+sudo docker run --restart=on-failure:5 --name daemon_container -d ubuntu /bin/sh -c &quot;while true; do echo hello world; sleep 1; down&quot;</code></pre></li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/02/05/Docker%EF%BC%883%EF%BC%89-%20%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/02/05/Docker%EF%BC%883%EF%BC%89-%20%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B/" itemprop="url">Docker（3）- 守护进程</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-05T00:00:00+08:00">
+                2019-02-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%B9%E5%99%A8/" itemprop="url" rel="index">
+                    <span itemprop="name">容器</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/02/05/Docker%EF%BC%883%EF%BC%89-%20%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/02/05/Docker%EF%BC%883%EF%BC%89-%20%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/02/05/Docker%EF%BC%883%EF%BC%89-%20%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B/" class="leancloud_visitors" data-flag-title="Docker（3）- 守护进程">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Docker守护进程"><a href="#Docker守护进程" class="headerlink" title="Docker守护进程"></a>Docker守护进程</h1><ul>
+<li><p>Docker软件包安装完毕后，默认会立即启动Docker守护进程</p>
+</li>
+<li><p>守护进程监听/var/run/docker.sock这个Unix套接字文件，来获取来自客户端Docker的请求</p>
+</li>
+<li><p>如果系统中存在名为docker的用户组的话，Docker则会将该套接字文件的所有者设为该用户组，这样docker用户组的所有者就可以直接运行Docker，而无需使用Docker命令了。</p>
+</li>
+<li><p>安装完Docker后要确认Docker的守护进程是否运行</p>
+</li>
+<li><p>Docker进程是Docker守护进程的客户端程序</p>
+</li>
+<li><p>使用 ==docker daemon==命令控制Docker守护进程（该命令已经过时了，1.6后会被弃用）</p>
+</li>
+</ul>
+<h2 id="配置Docker守护进程"><a href="#配置Docker守护进程" class="headerlink" title="配置Docker守护进程"></a>配置Docker守护进程</h2><ul>
+<li><p>运行Docker守护进程时，可以用-H标志调整守护进程绑定监听接口的方式</p>
+</li>
+<li><p>使用-H标志指定不同的网络接口和端口配置</p>
+<pre><code>sudo docker daemon -H tcp:0.0.0.0:2375</code></pre></li>
+<li><p>如果把守护进程或端口改成4200，那么运行客户端时就必须指定</p>
+<pre><code>docker -H :4200</code></pre></li>
+<li><p>如果不想每次运行客户端都加上-H标志，可以设置DOCKER_HOST环境变量来省略此步骤</p>
+<pre><code>export DOCKER_HOST=&quot;tcp://0.0.0.0:2375&quot;</code></pre></li>
+<li><p>也能通过-H标志指定一个Unix套接字路径</p>
+<pre><code>sudo docker daemon -H unix://home/docker/docker.sock
+
+sudo docker daemon -H tcp:0.0.0.0:2375 -H unix://home/docker/docker.sock</code></pre></li>
+<li><p>如果Docker运行在代理或者公司防火墙之后，也可以使用THHPS_PROXY、HTTP_PROX和NO_PROXY选项来控制守护进程如何连接</p>
+</li>
+<li><p>还可以用-D标志来输出Docker守护进程更详细的信息</p>
+<pre><code>sudo docker daemon -D</code></pre></li>
+</ul>
+<h2 id="检查Docker守护进程是否在运行"><a href="#检查Docker守护进程是否在运行" class="headerlink" title="检查Docker守护进程是否在运行"></a>检查Docker守护进程是否在运行</h2><h3 id="在Ubuntu中"><a href="#在Ubuntu中" class="headerlink" title="在Ubuntu中"></a>在Ubuntu中</h3><ul>
+<li><p>如果Docker是通过软件包安装的话，可以用Upstart的status命令来检查Docker守护进程是否在运行及启动停止Docker进程等操作</p>
+<pre><code>sudo status docker
+
+sudo stop docker
+
+sudo start docker</code></pre></li>
+</ul>
+<h3 id="在Red-Hat和Fedora中启动和停止Docker"><a href="#在Red-Hat和Fedora中启动和停止Docker" class="headerlink" title="在Red Hat和Fedora中启动和停止Docker"></a>在Red Hat和Fedora中启动和停止Docker</h3><pre><code>sudo service docker stop
+
+sudo service docker start</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/02/04/Docker%EF%BC%882%EF%BC%89-%20%E5%AE%89%E8%A3%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/02/04/Docker%EF%BC%882%EF%BC%89-%20%E5%AE%89%E8%A3%85/" itemprop="url">Docker（2）- 安装</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-04T00:00:00+08:00">
+                2019-02-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%B9%E5%99%A8/" itemprop="url" rel="index">
+                    <span itemprop="name">容器</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/02/04/Docker%EF%BC%882%EF%BC%89-%20%E5%AE%89%E8%A3%85/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/02/04/Docker%EF%BC%882%EF%BC%89-%20%E5%AE%89%E8%A3%85/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/02/04/Docker%EF%BC%882%EF%BC%89-%20%E5%AE%89%E8%A3%85/" class="leancloud_visitors" data-flag-title="Docker（2）- 安装">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="安装Docker"><a href="#安装Docker" class="headerlink" title="安装Docker"></a>安装Docker</h1><ul>
+<li><p>目前Docker团队推荐在UBuntu、Debian或者RHEL系列（CentOS、Fedora等）宿主机中部署Docker。</p>
+</li>
+<li><p>Docker也支持一些云平台</p>
+</li>
+<li><p>Docker目前只能运行在64位CPU架构的计算机上</p>
+</li>
+<li><p>运行Linux3.8或更高版本的内核</p>
+</li>
+</ul>
+<h2 id="检查前提条件"><a href="#检查前提条件" class="headerlink" title="检查前提条件"></a>检查前提条件</h2><ul>
+<li><p>内核3.8及以上</p>
+<pre><code>uname -a</code></pre></li>
+</ul>
+<h2 id="在Ubuntu和Debian中安装Docker"><a href="#在Ubuntu和Debian中安装Docker" class="headerlink" title="在Ubuntu和Debian中安装Docker"></a>在Ubuntu和Debian中安装Docker</h2><h2 id="在Red-Hat和Red-Hat系发行办版中安装Docker"><a href="#在Red-Hat和Red-Hat系发行办版中安装Docker" class="headerlink" title="在Red Hat和Red Hat系发行办版中安装Docker"></a>在Red Hat和Red Hat系发行办版中安装Docker</h2><h3 id="1、在RHEL-6和CentOS-6中安装Docker"><a href="#1、在RHEL-6和CentOS-6中安装Docker" class="headerlink" title="1、在RHEL 6和CentOS 6中安装Docker"></a>1、在RHEL 6和CentOS 6中安装Docker</h3><h3 id="2、在RHEL-7中安装Docker"><a href="#2、在RHEL-7中安装Docker" class="headerlink" title="2、在RHEL 7中安装Docker"></a>2、在RHEL 7中安装Docker</h3><h3 id="3、在Fedora中安装Docker"><a href="#3、在Fedora中安装Docker" class="headerlink" title="3、在Fedora中安装Docker"></a>3、在Fedora中安装Docker</h3><ul>
+<li><p>在Fedora 19安装Docker</p>
+<pre><code>sudo yum -y install docker-io</code></pre></li>
+<li><p>在Fedora 20或更高版本中安装Docker</p>
+<pre><code>sudo yum -y install docker</code></pre></li>
+<li><p>在Fodora 21中，软件包名称又回退到了docker-io</p>
+<pre><code>sudo yum -y install docker-io</code></pre></li>
+<li><p>最后到了Fedora 22，软件包名称则又变回了docker</p>
+<pre><code>sudo dnf install docker</code></pre></li>
+</ul>
+<blockquote>
+<p>具体的安装文档可以在官方文档中找到</p>
+</blockquote>
+<p><a href="https://docs.docker.com/engine/installation/linux/docker-ee/oracle/" target="_blank" rel="noopener">在Linux上安装Docker的文档</a></p>
+<blockquote>
+<p>也可以直接从Docker官方网站下载RHEL、CentOS和Fedora用的罪行RPM包</p>
+</blockquote>
+<h2 id="Docker安装脚本"><a href="#Docker安装脚本" class="headerlink" title="Docker安装脚本"></a>Docker安装脚本</h2><ul>
+<li><p>使用远程安装脚本在宿主机上安装Docker，<a href="get.docker.com">get.docker.com</a>网站获取这个安装脚本</p>
+</li>
+<li><p>目前该脚本只支持在Ubuntu、Fedora、Debian和Gentoo中安装Docker</p>
+</li>
+</ul>
+<h3 id="首先要确认curl命令已经安装"><a href="#首先要确认curl命令已经安装" class="headerlink" title="首先要确认curl命令已经安装"></a>首先要确认curl命令已经安装</h3><pre><code>whereis curl</code></pre><h3 id="安装curl"><a href="#安装curl" class="headerlink" title="安装curl"></a>安装curl</h3><ul>
+<li><p>Ubuntu中安装     </p>
+<pre><code>sudo apt-get -y install curl</code></pre></li>
+<li><p>Fedora中安装curl</p>
+<pre><code>sudo dnf install curl</code></pre></li>
+</ul>
+<h3 id="利用安装脚本来安装Docker"><a href="#利用安装脚本来安装Docker" class="headerlink" title="利用安装脚本来安装Docker"></a>利用安装脚本来安装Docker</h3><pre><code>curl https://get.docker.com/ | sudo sh</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/02/03/Docker%EF%BC%88%EF%BC%91%EF%BC%89-%20%E7%AE%80%E4%BB%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1008,6 +1677,174 @@ docker inspect --format=&apos;{{ .NetworkSettings.IPAddress }}&apos; containner_
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/" itemprop="url">15、React：React 常用开发调试工具</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-15T00:00:00+08:00">
+                2019-01-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/" class="leancloud_visitors" data-flag-title="15、React：React 常用开发调试工具">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>主要介绍ESLint、Prettier、React DevTool、Redux DevTool</p>
+<h1 id="ESLink"><a href="#ESLink" class="headerlink" title="ESLink"></a>ESLink</h1><p>javascript语法检查和一致性保证的标准</p>
+<h1 id="Prettier"><a href="#Prettier" class="headerlink" title="Prettier"></a>Prettier</h1><p>facebook出的用于格式化代码的工具：</p>
+<h1 id="格式化代码"><a href="#格式化代码" class="headerlink" title="格式化代码"></a>格式化代码</h1><p>保证更容易写出风格一致的代码</p>
+<h1 id="React-DevTool"><a href="#React-DevTool" class="headerlink" title="React DevTool"></a>React DevTool</h1><p>用来调试React的chrome插件</p>
+<h1 id="Redux-DevTool"><a href="#Redux-DevTool" class="headerlink" title="Redux DevTool"></a>Redux DevTool</h1><p>用来调试Redux的chrome插件</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/15/React%EF%BC%9A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1138,174 +1975,6 @@ docker inspect --format=&apos;{{ .NetworkSettings.IPAddress }}&apos; containner_
 <h2 id="向事件处理程序传递参数"><a href="#向事件处理程序传递参数" class="headerlink" title="向事件处理程序传递参数"></a>向事件处理程序传递参数</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;button onClick&#x3D;&#123;(e) &#x3D;&gt; this.deleteRow(id, e)&#125;&gt;Delete Row&lt;&#x2F;button&gt;</span><br><span class="line">&lt;button onClick&#x3D;&#123;this.deleteRow.bind(this, id)&#125;&gt;Delete Row&lt;&#x2F;button&gt;</span><br></pre></td></tr></table></figure>
 
 <h1 id="表单"><a href="#表单" class="headerlink" title="表单"></a>表单</h1>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/" itemprop="url">15、React：React 常用开发调试工具</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-15T00:00:00+08:00">
-                2019-01-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
-                    <span itemprop="name">前端</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/" class="leancloud_visitors" data-flag-title="15、React：React 常用开发调试工具">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>主要介绍ESLint、Prettier、React DevTool、Redux DevTool</p>
-<h1 id="ESLink"><a href="#ESLink" class="headerlink" title="ESLink"></a>ESLink</h1><p>javascript语法检查和一致性保证的标准</p>
-<h1 id="Prettier"><a href="#Prettier" class="headerlink" title="Prettier"></a>Prettier</h1><p>facebook出的用于格式化代码的工具：</p>
-<h1 id="格式化代码"><a href="#格式化代码" class="headerlink" title="格式化代码"></a>格式化代码</h1><p>保证更容易写出风格一致的代码</p>
-<h1 id="React-DevTool"><a href="#React-DevTool" class="headerlink" title="React DevTool"></a>React DevTool</h1><p>用来调试React的chrome插件</p>
-<h1 id="Redux-DevTool"><a href="#Redux-DevTool" class="headerlink" title="Redux DevTool"></a>Redux DevTool</h1><p>用来调试Redux的chrome插件</p>
-
           
         
       
@@ -1731,525 +2400,6 @@ docker inspect --format=&apos;{{ .NetworkSettings.IPAddress }}&apos; containner_
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/12/12%E3%80%81React%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A8Redux%E4%B8%AD%E7%BB%84%E7%BB%87Action%E5%92%8CReducer/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/12/12%E3%80%81React%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A8Redux%E4%B8%AD%E7%BB%84%E7%BB%87Action%E5%92%8CReducer/" itemprop="url">12、React：如何在Redux中组织Action和Reducer</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-12T00:00:00+08:00">
-                2019-01-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
-                    <span itemprop="name">前端</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/01/12/12%E3%80%81React%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A8Redux%E4%B8%AD%E7%BB%84%E7%BB%87Action%E5%92%8CReducer/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/12/12%E3%80%81React%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A8Redux%E4%B8%AD%E7%BB%84%E7%BB%87Action%E5%92%8CReducer/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/01/12/12%E3%80%81React%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A8Redux%E4%B8%AD%E7%BB%84%E7%BB%87Action%E5%92%8CReducer/" class="leancloud_visitors" data-flag-title="12、React：如何在Redux中组织Action和Reducer">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="“标准”形式Redux-Action的问题"><a href="#“标准”形式Redux-Action的问题" class="headerlink" title="“标准”形式Redux Action的问题"></a>“标准”形式Redux Action的问题</h1><ol>
-<li>所有Action放一个文件，会无限扩展</li>
-<li>Action、Reducer分开放，实现业务逻辑时需要来回切换</li>
-<li>不能直观的看到系统中有哪些ACtion</li>
-</ol>
-<p>例如：<a href="https://github.com/reduxjs/redux/tree/master/examples/todomvc/src/actions" target="_blank" rel="noopener">https://github.com/reduxjs/redux/tree/master/examples/todomvc/src/actions</a></p>
-<h1 id="新的方式"><a href="#新的方式" class="headerlink" title="新的方式"></a>新的方式</h1><p>单个action和reducer放在同一个文件</p>
-<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/action-reducer-file.png" alt="image"></p>
-<ol>
-<li>易于开发：不用在action和reducer文件件来回切换</li>
-<li>易于维护：每个action文件都很小，容易理解</li>
-<li>易于测试：每个业务逻辑只需要对应一个测试文件</li>
-<li>易于理解：没见名就是action名字，文件列表就是action列表</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/11/11%E3%80%81React%EF%BC%9ARedux%E2%80%94%E2%80%94%E7%90%86%E8%A7%A3%E5%BC%82%E6%AD%A5Action%E3%80%81Redux%E4%B8%AD%E9%97%B4%E4%BB%B6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/11/11%E3%80%81React%EF%BC%9ARedux%E2%80%94%E2%80%94%E7%90%86%E8%A7%A3%E5%BC%82%E6%AD%A5Action%E3%80%81Redux%E4%B8%AD%E9%97%B4%E4%BB%B6/" itemprop="url">11、React：Redux——理解异步Action、Redux中间件</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-11T00:00:00+08:00">
-                2019-01-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
-                    <span itemprop="name">前端</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/01/11/11%E3%80%81React%EF%BC%9ARedux%E2%80%94%E2%80%94%E7%90%86%E8%A7%A3%E5%BC%82%E6%AD%A5Action%E3%80%81Redux%E4%B8%AD%E9%97%B4%E4%BB%B6/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/11/11%E3%80%81React%EF%BC%9ARedux%E2%80%94%E2%80%94%E7%90%86%E8%A7%A3%E5%BC%82%E6%AD%A5Action%E3%80%81Redux%E4%B8%AD%E9%97%B4%E4%BB%B6/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/01/11/11%E3%80%81React%EF%BC%9ARedux%E2%80%94%E2%80%94%E7%90%86%E8%A7%A3%E5%BC%82%E6%AD%A5Action%E3%80%81Redux%E4%B8%AD%E9%97%B4%E4%BB%B6/" class="leancloud_visitors" data-flag-title="11、React：Redux——理解异步Action、Redux中间件">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="Redux异步Action"><a href="#Redux异步Action" class="headerlink" title="Redux异步Action"></a>Redux异步Action</h1><p>异步action不是特殊action，而是多个同步action的组合使用</p>
-<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/redux%E5%BC%82%E6%AD%A5%E8%AF%B7%E6%B1%82.png" alt="image"></p>
-<h1 id="Redux中间件（Middleware）"><a href="#Redux中间件（Middleware）" class="headerlink" title="Redux中间件（Middleware）"></a>Redux中间件（Middleware）</h1><p>中间件在dispatcher中截获action做特殊处理</p>
-<ol>
-<li>截获action</li>
-<li>发出action</li>
-</ol>
-<h1 id="中间件应用场景"><a href="#中间件应用场景" class="headerlink" title="中间件应用场景"></a>中间件应用场景</h1><p>日志：</p>
-<p>通过日志中间件打印所有action，方便调试</p>
-<h1 id="Redux异步Action-Demo"><a href="#Redux异步Action-Demo" class="headerlink" title="Redux异步Action Demo"></a>Redux异步Action Demo</h1><h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ol>
-<li>异步action不是特殊的action，而是多个同步action的组合使用</li>
-<li>中间件在dispatcher中截获action做特殊处理</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/10/10%E3%80%81React%EF%BC%9A%E5%9C%A8React%E4%B8%AD%E4%BD%BF%E7%94%A8Redux/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/10/10%E3%80%81React%EF%BC%9A%E5%9C%A8React%E4%B8%AD%E4%BD%BF%E7%94%A8Redux/" itemprop="url">10、React：在React中使用Redux</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-10T00:00:00+08:00">
-                2019-01-10
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
-                    <span itemprop="name">前端</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/01/10/10%E3%80%81React%EF%BC%9A%E5%9C%A8React%E4%B8%AD%E4%BD%BF%E7%94%A8Redux/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/10/10%E3%80%81React%EF%BC%9A%E5%9C%A8React%E4%B8%AD%E4%BD%BF%E7%94%A8Redux/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/01/10/10%E3%80%81React%EF%BC%9A%E5%9C%A8React%E4%B8%AD%E4%BD%BF%E7%94%A8Redux/" class="leancloud_visitors" data-flag-title="10、React：在React中使用Redux">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="组件和Store的关系"><a href="#组件和Store的关系" class="headerlink" title="组件和Store的关系"></a>组件和Store的关系</h1><p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/react-component-store.png" alt="image"></p>
-<p>通过connect组件连接Component和Store,redux提供了react-redux包，里面提供了connect组件。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import &#123;connect&#125; from &#39;react-redux&#39;;</span><br></pre></td></tr></table></figure>
-
-<h2 id="connect组件的工作原理：高阶组件"><a href="#connect组件的工作原理：高阶组件" class="headerlink" title="connect组件的工作原理：高阶组件"></a>connect组件的工作原理：高阶组件</h2><p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/react-connect-hoc.png" alt="react-connect-hoc"></p>
-<p><a href="https://github.com/liubaolin/evolutionary/blob/master/JS/react-cli-demo/src/Redux/Counter.js" target="_blank" rel="noopener">代码示例</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2304,7 +2454,7 @@ docker inspect --format=&apos;{{ .NetworkSettings.IPAddress }}&apos; containner_
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">107</span>
+                  <span class="site-state-item-count">110</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2315,7 +2465,7 @@ docker inspect --format=&apos;{{ .NetworkSettings.IPAddress }}&apos; containner_
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2326,7 +2476,7 @@ docker inspect --format=&apos;{{ .NetworkSettings.IPAddress }}&apos; containner_
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-count">38</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

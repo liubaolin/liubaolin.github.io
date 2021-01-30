@@ -288,6 +288,603 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/28/Mysql%EF%BC%886%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/28/Mysql%EF%BC%886%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%89/" itemprop="url">Mysql（6）-数据库索引（数据结构）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-28T00:00:00+08:00">
+                2019-03-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/DB/" itemprop="url" rel="index">
+                    <span itemprop="name">DB</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/03/28/Mysql%EF%BC%886%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%89/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/28/Mysql%EF%BC%886%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%89/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/03/28/Mysql%EF%BC%886%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%89/" class="leancloud_visitors" data-flag-title="Mysql（6）-数据库索引（数据结构）">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="索引的作用"><a href="#索引的作用" class="headerlink" title="索引的作用"></a>索引的作用</h2><p>索引是为了提高数据库的查询效率。</p>
+<h2 id="索引的常见模型"><a href="#索引的常见模型" class="headerlink" title="索引的常见模型"></a>索引的常见模型</h2><p>三种简单的，比较常见的可以有效提高读写效率的数据结构：</p>
+<ul>
+<li>哈希表</li>
+<li>有序数组</li>
+<li>搜索树</li>
+</ul>
+<h3 id="哈希表"><a href="#哈希表" class="headerlink" title="哈希表"></a>哈希表</h3><p>哈希表是一种以键 - 值（key-value）存储数据的结构。</p>
+<p>哈希的思路很简单，把值放在数组里，用一个哈希函数把 key 换算成一个确定的位置，然后把 value 放在数组的这个位置。</p>
+<p>哈希表这种结构适用于只有等值查询的场景。因为哈希值不是有序的，所以哈希索引做区间查询的速度是很慢的。</p>
+<h3 id="有序数组"><a href="#有序数组" class="headerlink" title="有序数组"></a>有序数组</h3><p>有序数组在等值查询和范围查询场景中的性能就都非常优秀。</p>
+<p>  有序的数组，可以用二分法快速查出指定值，时间复杂度是O(log(N))。同样区间查询也可以用二分法先找到前值，然后编辑到后值。</p>
+<p>有序数组索引只适用于静态存储引擎。</p>
+<p>  因为有序数组在需要更新数据的时候，往中间插入一个记录就必须得挪动后面所有的记录，成本太高。</p>
+<h2 id="搜索树"><a href="#搜索树" class="headerlink" title="搜索树"></a>搜索树</h2><h3 id="二叉搜索树"><a href="#二叉搜索树" class="headerlink" title="二叉搜索树"></a>二叉搜索树</h3><p>二叉搜索树的特点是：每个节点的左儿子小于父节点，父节点又小于右儿子。</p>
+<p>搜索指定节点的时间复杂度是O(log(N))。</p>
+<p>为了维持 O(log(N)) 的查询复杂度，你就需要保持这棵树是平衡二叉树。为了做这个保证，更新的时间复杂度也是 O(log(N))。</p>
+<h3 id="N叉树（B树）"><a href="#N叉树（B树）" class="headerlink" title="N叉树（B树）"></a>N叉树（B树）</h3><p>多叉树就是每个节点有多个儿子，儿子之间的大小保证从左到右递增。二叉树是搜索效率最高的，但是实际上大多数的数据库存储却并不使用二叉树。其原因是，索引不止存在内存中，还要写到磁盘上。使用多叉树是为了降低树高，减少磁盘寻址次数。</p>
+<p>数据库底层存储的核心就是基于这些数据模型的。每碰到一个新数据库，我们需要先关注它的数据模型，这样才能从理论上分析出这个数据库的适用场景。</p>
+<p>B树，就是一个N叉查找树。</p>
+<h2 id="InnoDB-的索引模型"><a href="#InnoDB-的索引模型" class="headerlink" title="InnoDB 的索引模型"></a>InnoDB 的索引模型</h2><p>在 MySQL 中，索引是在存储引擎层实现的。</p>
+<p>在 InnoDB 中，表都是根据主键顺序以索引的形式存放的，这种存储方式的表称为索引组织表。InnoDB 使用了 B+ 树索引模型，所以数据都是存储在 B+ 树中的。</p>
+<p>主键索引的叶子节点存的是整行数据。在 InnoDB 里，主键索引也被称为聚簇索引（clustered index）。</p>
+<p>非主键索引的叶子节点内容是主键的值。在 InnoDB 里，非主键索引也被称为二级索引（secondary index）。</p>
+<h3 id="基于主键索引和普通索引的查询有什么区别？"><a href="#基于主键索引和普通索引的查询有什么区别？" class="headerlink" title="基于主键索引和普通索引的查询有什么区别？"></a>基于主键索引和普通索引的查询有什么区别？</h3><p>非主键索引，又称二级索引，二级索引里面存的是主键值。通过二级索引查询的时候，要先查寻二级索引的B+树，查到主键值，再查询主键索引的B+树，查找对应的记录，需要查两次，这个过程称为回表。</p>
+<p>因此，我们在应用中应该尽量使用主键查询。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>InnoDB中，每一张表就是多棵B+树，主键索引key是主键值，叶子节点是整行数据。每加一个索引都会新建一棵B+树，key是索引值，叶子节点是主键值，所以二级索引查询要有回表过程。</p>
+<h2 id="索引维护"><a href="#索引维护" class="headerlink" title="索引维护"></a>索引维护</h2><p>B+ 树为了维护索引有序性，在插入新值的时候需要做必要的维。</p>
+<h3 id="推荐使用自增主键"><a href="#推荐使用自增主键" class="headerlink" title="推荐使用自增主键"></a>推荐使用自增主键</h3><ol>
+<li><p>如果索引字段值是无序的，则可能需要挪动既有数据，会造成页分裂，或合并，影响性能。</p>
+</li>
+<li><p>二级索引的叶子节点存的是主键的索引值，所以主键长度越小，普通索引的叶子节点就越小，普通索引占用的空间也就越小。</p>
+</li>
+</ol>
+<p>所以，从性能和存储空间方面考量，自增主键往往是更合理的选择。</p>
+<h3 id="业务字段做主键的场景"><a href="#业务字段做主键的场景" class="headerlink" title="业务字段做主键的场景"></a>业务字段做主键的场景</h3><ol>
+<li>只有一个索引</li>
+<li>该索引是唯一索引</li>
+</ol>
+<p>就是典型的 KV 场景。由于没有其他索引，所以也就不用考虑其他索引的叶子节点大小的问题。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/" itemprop="url">Mysql（5）-数据库索引（必知必会）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-28T00:00:00+08:00">
+                2019-03-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/DB/" itemprop="url" rel="index">
+                    <span itemprop="name">DB</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/" class="leancloud_visitors" data-flag-title="Mysql（5）-数据库索引（必知必会）">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h2><p>二级索引已经“覆盖了”我们的查询需求，不需要再回表查整行记录，我们称为覆盖索引。</p>
+<p>覆盖索引可以减少树的搜索次数，显著提升查询性能，所以使用覆盖索引是一个常用的性能优化手段。</p>
+<h2 id="最左前缀原则"><a href="#最左前缀原则" class="headerlink" title="最左前缀原则"></a>最左前缀原则</h2><p>索引项是按照索引定义里面出现的字段顺序排序的。正因为如此根据最左前缀，我们找到第一条数据位置，然后遍历到最后一条匹配到最左前缀的就可以了（因为按照顺序相同最左前缀的都排在一块）。</p>
+<p>不只是索引的全部定义，只要满足最左前缀，就可以利用索引来加速检索。这个最左前缀可以是联合索引的最左 N 个字段，也可以是字符串索引的最左 M 个字符。</p>
+<h3 id="在建立联合索引的时候，如何安排索引内的字段顺序。"><a href="#在建立联合索引的时候，如何安排索引内的字段顺序。" class="headerlink" title="在建立联合索引的时候，如何安排索引内的字段顺序。"></a>在建立联合索引的时候，如何安排索引内的字段顺序。</h3><p>第一原则是，如果通过调整顺序，可以少维护一个索引，那么这个顺序往往就是需要优先考虑采用的。提高索引的复用能力，比如根据最左前缀原则，当已经有了 (a,b)这个联合索引后，一般就不需要单独在 a 上建立索引了。</p>
+<p>第二原则，考虑的是空间。</p>
+<p>如果a，b要建联合索引，且单查a或b的时候都要走索引，那么就要再a或b上再加一个索引，此时就要考虑空间。比如a字段b字段更占空间那就建一个（a，b）的联合索引和一个b的索引。</p>
+<h2 id="索引下推"><a href="#索引下推" class="headerlink" title="索引下推"></a>索引下推</h2><p>MySQL 5.6引入的索引下推优化（index condition pushdown)，可以在索引遍历过程中，对索引中包含的字段先做判断，直接过滤掉不满足条件的记录，减少回表次数。</p>
+<h2 id="重建索引"><a href="#重建索引" class="headerlink" title="重建索引"></a>重建索引</h2><p>索引可能因为删除，或者页分裂等原因，导致数据页有空洞，重建索引的过程会创建一个新的索引，把数据按顺序插入，这样页面的利用率最高，也就是索引更紧凑、更省空间。</p>
+<h3 id="重建二级索引索引"><a href="#重建二级索引索引" class="headerlink" title="重建二级索引索引"></a>重建二级索引索引</h3><p>alter table T drop index k;<br>alter table T add index(k);</p>
+<h3 id="重建主键索引："><a href="#重建主键索引：" class="headerlink" title="重建主键索引："></a>重建主键索引：</h3><p>alter table T engine=InnoDB</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/27/Mysql%EF%BC%884%EF%BC%89-%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E6%80%A7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/27/Mysql%EF%BC%884%EF%BC%89-%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E6%80%A7/" itemprop="url">Mysql（4）-事务的隔离性</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-27T00:00:00+08:00">
+                2019-03-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/DB/" itemprop="url" rel="index">
+                    <span itemprop="name">DB</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/03/27/Mysql%EF%BC%884%EF%BC%89-%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E6%80%A7/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/27/Mysql%EF%BC%884%EF%BC%89-%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E6%80%A7/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/03/27/Mysql%EF%BC%884%EF%BC%89-%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E6%80%A7/" class="leancloud_visitors" data-flag-title="Mysql（4）-事务的隔离性">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在 MySQL 中，事务支持是在引擎层实现的。</p>
+<h2 id="隔离级别"><a href="#隔离级别" class="headerlink" title="隔离级别"></a>隔离级别</h2><p>  当数据库上有多个事务同时执行的时候，就可能出现脏读（dirty read）、不可重复读（non-repeatable read）、幻读（phantom read）的问题，为了解决这些问题，就有了“隔离级别”的概念。</p>
+<p>  SQL 标准的事务隔离级别包括：</p>
+<ul>
+<li><p>读未提交（read uncommitted）</p>
+</li>
+<li><p>读提交（read committed）</p>
+</li>
+<li><p>可重复读（repeatable read</p>
+</li>
+<li><p>串行化（serializable ）。</p>
+<p>读未提交是指，一个事务还没提交时，它做的变更就能被别的事务看到。</p>
+<p>读提交是指，一个事务提交之后，它做的变更才会被其他事务看到。</p>
+<p>可重复读是指，一个事务执行过程中看到的数据，总是跟这个事务在启动时看到的数据是一致的。当然在可重复读隔离级别下，未提交变更对其他事务也是不可见的。</p>
+<p>串行化，顾名思义是对于同一行记录，“写”会加“写锁”，“读”会加“读锁”。当出现读写锁冲突的时候，后访问的事务必须等前一个事务执行完成，才能继续执行。</p>
+<p>在实现上，数据库里面会创建一个视图，访问的时候以视图的逻辑结果为准。在“可重复读”隔离级别下，这个视图是在事务启动时创建的，整个事务存在期间都用这个视图。在“读提交”隔离级别下，这个视图是在每个SQL语句开始执行的时候创建的。这里需要注意的是，“读未提交”隔离级别下直接返回记录上的最新值，没有视图概念；而“串行化”隔离级别下直接用加锁的方式来避免并行访问。</p>
+<p>查看数据库隔离级别:</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;transaction_isolation&#39;;</span><br></pre></td></tr></table></figure>
+<p>  设置数据库的隔离级别：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SET [SESSION | GLOBAL] TRANSACTION ISOLATION LEVEL &#123;READ UNCOMMITTED | READ COMMITTED | REPEATABLE READ | SERIALIZABLE&#125;</span><br></pre></td></tr></table></figure>
+
+<p>  事务启动时的视图可以认为是静态的，不受其他事务更新的影响。</p>
+<h2 id="事务隔离的实现"><a href="#事务隔离的实现" class="headerlink" title="事务隔离的实现"></a>事务隔离的实现</h2><p>在 MySQL 中，实际上每条记录在更新的时候都会同时记录一条回滚操作。记录上的最新值，通过回滚操作，都可以得到前一个状态的值。同一条记录在系统中可以存在多个版本，就是数据库的多版本并发控制（MVCC）。</p>
+<h2 id="为什么建议你尽量不要使用长事务。"><a href="#为什么建议你尽量不要使用长事务。" class="headerlink" title="为什么建议你尽量不要使用长事务。"></a>为什么建议你尽量不要使用长事务。</h2><p>长事务意味着系统里面会存在很老的事务视图。由于这些事务随时可能访问数据库里面的任何数据，所以这个事务提交之前，数据库里面它可能用到的回滚记录都必须保留，这就会导致大量占用存储空间。</p>
+<p>除了对回滚段的影响，长事务还占用锁资源，也可能拖垮整个库.</p>
+<h2 id="事务的启动方式"><a href="#事务的启动方式" class="headerlink" title="事务的启动方式"></a>事务的启动方式</h2><p>MySQL 的事务启动方式有以下几种：</p>
+<ol>
+<li>显示的启动事务：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">begin 或start transaction</span><br><span class="line">提交语句是commit</span><br><span class="line">回滚是rollback</span><br><span class="line">commit work and chain 提交事务并启动下一个事务</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>将线程的自动提交关掉</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">set autocommit&#x3D;0</span><br><span class="line">事务会持续到我们主动commit或rollback，或者断开连接</span><br></pre></td></tr></table></figure>
+
+<p>查询系统中的长事务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">selselect * from information_schema.innodb_trx where TIME_TO_SEC(timediff(now(),trx_started))&gt;60</span><br></pre></td></tr></table></figure>
+
+<h2 id="如何避免长事务？"><a href="#如何避免长事务？" class="headerlink" title="如何避免长事务？"></a>如何避免长事务？</h2><h3 id="应用开发层面"><a href="#应用开发层面" class="headerlink" title="应用开发层面"></a>应用开发层面</h3><ol>
+<li><p>确认是否使用了set autocommit=0</p>
+<p> 可以通过general_log的日志开确认，MySQL开启general_log跟踪sql执行记录：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># 设置general log保存路径</span><br><span class="line"># 注意在Linux中只能设置到 &#x2F;tmp 或 &#x2F;var 文件夹下，设置其他路径出错</span><br><span class="line"># 需要root用户才有访问此文件的权限</span><br><span class="line"></span><br><span class="line">mysql&gt;set global general_log_file&#x3D;&#39;&#x2F;tmp&#x2F;general.log&#39;; #设置路径</span><br><span class="line">mysql&gt;set global general_log&#x3D;on;  # 开启general log模式</span><br><span class="line">mysql&gt;set global general_log&#x3D;off;   # 关闭general</span><br><span class="line"></span><br><span class="line">命令行设置即可,无需重启</span><br><span class="line">在general log模式开启过程中，所有对数据库的操作都将被记录 general.log 文件</span><br><span class="line"></span><br><span class="line">或者也可以将日志记录在表中:</span><br><span class="line">mysql&gt;set global log_output&#x3D;&#39;table&#39;</span><br><span class="line">运行后,可以在mysql数据库下查找 general_log表</span><br></pre></td></tr></table></figure></li>
+<li><p>取消不必要的只读事务</p>
+<p> 开发过程后，特别是使用Spring框架管理事务的时候，很多人习惯所有方法用@Transaction标注，把好几个selet语句放到事务中，这种只读事务有时是不需要的。</p>
+</li>
+<li><p>业务连接数据库的时候，根据业务本身的预估，通过 SET MAX_EXECUTION_TIME命令，来控制每个语句执行的最长时间，避免单个语句意外执行太长时间。</p>
+</li>
+</ol>
+<h3 id="数据库层面"><a href="#数据库层面" class="headerlink" title="数据库层面"></a>数据库层面</h3><ol>
+<li><p>监控 information_schema.Innodb_trx 表，设置长事务阈值，超过就报警 / 或者 kill；</p>
+</li>
+<li><p>Percona 的 pt-kill 这个工具不错，推荐使用；</p>
+</li>
+<li><p>在业务功能测试阶段要求输出所有的general_log，分析日志行为提前发现问题；</p>
+</li>
+<li><p>如果使用的是 MySQL 5.6 或者更新版本，把 innodb_undo_tablespaces 设置成 2（或更大的值）。如果真的出现大事务导致回滚段过大，这样设置后清理起来更方便。</p>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/26/Mysql%EF%BC%883%EF%BC%89-redo%E6%97%A5%E5%BF%97%E5%92%8Cbinlog%E6%97%A5%E5%BF%97/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -684,214 +1281,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/" itemprop="url">Mysql（2）-基本架构</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-25T00:00:00+08:00">
-                2019-03-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/DB/" itemprop="url" rel="index">
-                    <span itemprop="name">DB</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/" class="leancloud_visitors" data-flag-title="Mysql（2）-基本架构">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Mysql基本架构是什么样子的（简述Mysql基本架构）"><a href="#Mysql基本架构是什么样子的（简述Mysql基本架构）" class="headerlink" title="Mysql基本架构是什么样子的（简述Mysql基本架构）"></a>Mysql基本架构是什么样子的（简述Mysql基本架构）</h2><p>Mysql由服务层（Service层）和存储引擎层构成。</p>
-<ul>
-<li><p>Service层涵盖Mysql的大多数核心功能，及所有的内置函数</p>
-<p>包含连接器、查询缓存、分析器、优化器、执行器；</p>
-<p>所有跨存储引擎的功能都在这一层实现；</p>
-</li>
-<li><p>存储引擎层，负责数据的存储和提取</p>
-<p>采用插件式设计，支持InnoDB、MYISAM、Memory等多个存储引擎；</p>
-<p>建表时，如果不制定引擎类型，会默认使用InnoDB</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#指定存储引擎</span><br><span class="line">create table foo（id int primary key,name var(10) not null）engine&#x3D;InnoDB;</span><br></pre></td></tr></table></figure>
-<p>不同的存储引擎共用一个service层</p>
-</li>
-</ul>
-<h2 id="Mysql由哪些组件组成-各个组件的作用是什么"><a href="#Mysql由哪些组件组成-各个组件的作用是什么" class="headerlink" title="Mysql由哪些组件组成,各个组件的作用是什么"></a>Mysql由哪些组件组成,各个组件的作用是什么</h2><h3 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h3><p>  负责跟客户端建立连接，获取权限，维持和管理连接；</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#mysql客户端工具连接</span><br><span class="line">mysql -h$ip -P$port -u$user -p</span><br></pre></td></tr></table></figure>
-
-<p>  客户端同服务端建立连接，在完成TCP握手后，连接器就开始认证身份，需要我们提供用户名密码；</p>
-<p>  认证通过后，连接器会到权限表里查出所有你拥有的权限，之后这个连接里的所有权限判断，都将依赖于此时读到的权限。也就是说连接成功后权限就不会改变了，如果修改了权限，需要重新连接。</p>
-<p>  关于连接的一些参数：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">show processlist; --查看所有链接状态</span><br><span class="line"></span><br><span class="line">-- 查看mysql參數</span><br><span class="line">show variables like &quot;%timeout%&quot;；</span><br><span class="line">-- wait_timeout：设置非交互连接（就是指那些连接池方式、非客户端方式连接的）的超时时间，默认是28800，就是8小时，超过这个时间，mysql服务器会主动切断那些已经连接的，但是状态是sleep的连接。</span><br><span class="line"></span><br><span class="line">-- interactive_timeout:交互链接超时时间;</span><br><span class="line"></span><br><span class="line">-- connection_timeout：“连接过程中”的等待时间</span><br></pre></td></tr></table></figure>
-
-<p>  建立连接的过程通常是比较复杂的，所以建议你在使用中要尽量减少建立连接的动作，也就是尽量使用长连接。</p>
-<p>  MySQL 在执行过程中临时使用的内存是管理在连接对象里面的。这些资源会在连接断开的时候才释放。所以如果长连接累积下来，可能导致内存占用太大，被系统强行杀掉（OOM），从现象看就是 MySQL 异常重启了。</p>
-<pre><code>解决：
-定期断开长连接。使用一段时间，或者程序里面判断执行过一个占用内存的大查询后，断开连接，之后要查询再重连。
-
-如果你用的是 MySQL 5.7 或更新版本，可以在每次执行一个比较大的操作后，通过执行 mysql_reset_connection 来重新初始化连接资源。这个过程不需要重连和重新做权限验证，但是会将连接恢复到刚刚创建完时的状态。</code></pre><h3 id="查询缓存"><a href="#查询缓存" class="headerlink" title="查询缓存"></a>查询缓存</h3><p>  键值对的形式，key是查询语句，valve是结果；</p>
-<p>  查询缓存的失效非常频繁，只要有对一个表的更新，这个表上所有的查询缓存都会被清空。</p>
-<p>  可以将参数 query_cache_type 设置成 DEMAND，这样对于默认的 SQL 语句都不使用查询缓存。</p>
-<p>  MySQL 8.0版本直接将查询缓存的整块功能删掉了，也就是说 8.0 开始彻底没有这个功能了。</p>
-<p>  如果命中查询缓存，会在查询缓存返回结果的时候，做权限验证。</p>
-<p>  关于查询缓存的一些参数：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">query_catche_size&#x3D;0; -- 最好设置为1024的倍数，参考值32M</span><br><span class="line">query_catch_type&#x3D;0; -- 0禁用 1缓存所有查询 2只缓存通过SQL_CACHE指定需要缓存的查询</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="分析器"><a href="#分析器" class="headerlink" title="分析器"></a>分析器</h3><p>  词法分析；</p>
-<pre><code>读取表定义，识别关键字及表和列信息等</code></pre><p>  语法分析；</p>
-<pre><code>ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &apos;elect * from t where ID=1&apos; at line 1</code></pre><h3 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h3><p>  查询会在优化器之前调用 precheck 验证权限；</p>
-<p>  选择索引，决定表的连接顺序。</p>
-<h3 id="执行器"><a href="#执行器" class="headerlink" title="执行器"></a>执行器</h3><p>  权限检查；</p>
-<p>  开表；</p>
-<p>  重复调用表定义的引擎接口，直到表的最后一行，拿到所有满足条件的接口，组成结果集返回给客户端；</p>
-<h2 id="Mysql权限是怎么控制的？"><a href="#Mysql权限是怎么控制的？" class="headerlink" title="Mysql权限是怎么控制的？"></a>Mysql权限是怎么控制的？</h2><p>  客户端通过认证后，会去权限表读取权限，此后所有的权限判断都基于此时读取的权限。除非重新连接，否则不会改变。</p>
-<p>  命中缓存后，返回结果前会校验权限；</p>
-<p>  优化器之前会调用precheck权限验证；</p>
-<p>  执行器开表前会进行权限验证。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1073,6 +1462,214 @@
 
 <p>这里最主要的nginx的二进制文件就在sbin目录下，决定nginx功能的配置文件在conf目录下</p>
 <p>以上就是nginx编译安装的全部步骤。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/" itemprop="url">Mysql（2）-基本架构</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-25T00:00:00+08:00">
+                2019-03-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/DB/" itemprop="url" rel="index">
+                    <span itemprop="name">DB</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/" class="leancloud_visitors" data-flag-title="Mysql（2）-基本架构">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Mysql基本架构是什么样子的（简述Mysql基本架构）"><a href="#Mysql基本架构是什么样子的（简述Mysql基本架构）" class="headerlink" title="Mysql基本架构是什么样子的（简述Mysql基本架构）"></a>Mysql基本架构是什么样子的（简述Mysql基本架构）</h2><p>Mysql由服务层（Service层）和存储引擎层构成。</p>
+<ul>
+<li><p>Service层涵盖Mysql的大多数核心功能，及所有的内置函数</p>
+<p>包含连接器、查询缓存、分析器、优化器、执行器；</p>
+<p>所有跨存储引擎的功能都在这一层实现；</p>
+</li>
+<li><p>存储引擎层，负责数据的存储和提取</p>
+<p>采用插件式设计，支持InnoDB、MYISAM、Memory等多个存储引擎；</p>
+<p>建表时，如果不制定引擎类型，会默认使用InnoDB</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#指定存储引擎</span><br><span class="line">create table foo（id int primary key,name var(10) not null）engine&#x3D;InnoDB;</span><br></pre></td></tr></table></figure>
+<p>不同的存储引擎共用一个service层</p>
+</li>
+</ul>
+<h2 id="Mysql由哪些组件组成-各个组件的作用是什么"><a href="#Mysql由哪些组件组成-各个组件的作用是什么" class="headerlink" title="Mysql由哪些组件组成,各个组件的作用是什么"></a>Mysql由哪些组件组成,各个组件的作用是什么</h2><h3 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h3><p>  负责跟客户端建立连接，获取权限，维持和管理连接；</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#mysql客户端工具连接</span><br><span class="line">mysql -h$ip -P$port -u$user -p</span><br></pre></td></tr></table></figure>
+
+<p>  客户端同服务端建立连接，在完成TCP握手后，连接器就开始认证身份，需要我们提供用户名密码；</p>
+<p>  认证通过后，连接器会到权限表里查出所有你拥有的权限，之后这个连接里的所有权限判断，都将依赖于此时读到的权限。也就是说连接成功后权限就不会改变了，如果修改了权限，需要重新连接。</p>
+<p>  关于连接的一些参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">show processlist; --查看所有链接状态</span><br><span class="line"></span><br><span class="line">-- 查看mysql參數</span><br><span class="line">show variables like &quot;%timeout%&quot;；</span><br><span class="line">-- wait_timeout：设置非交互连接（就是指那些连接池方式、非客户端方式连接的）的超时时间，默认是28800，就是8小时，超过这个时间，mysql服务器会主动切断那些已经连接的，但是状态是sleep的连接。</span><br><span class="line"></span><br><span class="line">-- interactive_timeout:交互链接超时时间;</span><br><span class="line"></span><br><span class="line">-- connection_timeout：“连接过程中”的等待时间</span><br></pre></td></tr></table></figure>
+
+<p>  建立连接的过程通常是比较复杂的，所以建议你在使用中要尽量减少建立连接的动作，也就是尽量使用长连接。</p>
+<p>  MySQL 在执行过程中临时使用的内存是管理在连接对象里面的。这些资源会在连接断开的时候才释放。所以如果长连接累积下来，可能导致内存占用太大，被系统强行杀掉（OOM），从现象看就是 MySQL 异常重启了。</p>
+<pre><code>解决：
+定期断开长连接。使用一段时间，或者程序里面判断执行过一个占用内存的大查询后，断开连接，之后要查询再重连。
+
+如果你用的是 MySQL 5.7 或更新版本，可以在每次执行一个比较大的操作后，通过执行 mysql_reset_connection 来重新初始化连接资源。这个过程不需要重连和重新做权限验证，但是会将连接恢复到刚刚创建完时的状态。</code></pre><h3 id="查询缓存"><a href="#查询缓存" class="headerlink" title="查询缓存"></a>查询缓存</h3><p>  键值对的形式，key是查询语句，valve是结果；</p>
+<p>  查询缓存的失效非常频繁，只要有对一个表的更新，这个表上所有的查询缓存都会被清空。</p>
+<p>  可以将参数 query_cache_type 设置成 DEMAND，这样对于默认的 SQL 语句都不使用查询缓存。</p>
+<p>  MySQL 8.0版本直接将查询缓存的整块功能删掉了，也就是说 8.0 开始彻底没有这个功能了。</p>
+<p>  如果命中查询缓存，会在查询缓存返回结果的时候，做权限验证。</p>
+<p>  关于查询缓存的一些参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">query_catche_size&#x3D;0; -- 最好设置为1024的倍数，参考值32M</span><br><span class="line">query_catch_type&#x3D;0; -- 0禁用 1缓存所有查询 2只缓存通过SQL_CACHE指定需要缓存的查询</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="分析器"><a href="#分析器" class="headerlink" title="分析器"></a>分析器</h3><p>  词法分析；</p>
+<pre><code>读取表定义，识别关键字及表和列信息等</code></pre><p>  语法分析；</p>
+<pre><code>ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &apos;elect * from t where ID=1&apos; at line 1</code></pre><h3 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h3><p>  查询会在优化器之前调用 precheck 验证权限；</p>
+<p>  选择索引，决定表的连接顺序。</p>
+<h3 id="执行器"><a href="#执行器" class="headerlink" title="执行器"></a>执行器</h3><p>  权限检查；</p>
+<p>  开表；</p>
+<p>  重复调用表定义的引擎接口，直到表的最后一行，拿到所有满足条件的接口，组成结果集返回给客户端；</p>
+<h2 id="Mysql权限是怎么控制的？"><a href="#Mysql权限是怎么控制的？" class="headerlink" title="Mysql权限是怎么控制的？"></a>Mysql权限是怎么控制的？</h2><p>  客户端通过认证后，会去权限表读取权限，此后所有的权限判断都基于此时读取的权限。除非重新连接，否则不会改变。</p>
+<p>  命中缓存后，返回结果前会校验权限；</p>
+<p>  优化器之前会调用precheck权限验证；</p>
+<p>  执行器开表前会进行权限验证。</p>
 
           
         
@@ -1719,904 +2316,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/18/Linux%E7%AC%94%E8%AE%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/18/Linux%E7%AC%94%E8%AE%B0/" itemprop="url">Linux笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-18T00:00:00+08:00">
-                2019-03-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/03/18/Linux%E7%AC%94%E8%AE%B0/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/18/Linux%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/03/18/Linux%E7%AC%94%E8%AE%B0/" class="leancloud_visitors" data-flag-title="Linux笔记">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="1、安装规划"><a href="#1、安装规划" class="headerlink" title="1、安装规划"></a>1、安装规划</h1><ul>
-<li><p>必须要有的两个分区为根分区和swap分区</p>
-</li>
-<li><p>交换分区是一个特殊的分区，相当于windows下的虚拟分区，一般设为物理内存的两倍，但是建议不要超过8GB</p>
-</li>
-</ul>
-<h1 id="2、用户"><a href="#2、用户" class="headerlink" title="2、用户"></a>2、用户</h1><ul>
-<li><p>确认自己的UID</p>
-<pre><code>id</code></pre></li>
-<li><p>确认自己所属的用户组</p>
-<pre><code>groups</code></pre></li>
-<li><p>查看用户信息</p>
-<pre><code>users、who、w</code></pre></li>
-<li><p>调查用户</p>
-<pre><code>finger richey</code></pre></li>
-<li><p>切换用户</p>
-<pre><code>su - //加-是用户环境一块切换
-
-sudo  //不切换用户直接以root身份执行</code></pre></li>
-</ul>
-<blockquote>
-<p>在演示sudo命令前，首先要编辑/etc/sudoers这个配置文件<br>linux专门提供里visudo来编辑这个文件<br>添加 richey  ALL=(ALL)  ALL<br>richey  ALL=(ALL)  NOPASSWD:ALL  这样设置就不需要输密码了</p>
-</blockquote>
-<ul>
-<li><p>修改用户组</p>
-<p>  usermod -g root richey 将用户添加到用户组，即拥有root权限</p>
-</li>
-</ul>
-<h1 id="3、帐号管理"><a href="#3、帐号管理" class="headerlink" title="3、帐号管理"></a>3、帐号管理</h1><ul>
-<li><p>添加新用户</p>
-<pre><code>useradd</code></pre></li>
-<li><p>修改密码</p>
-<pre><code>passwd</code></pre></li>
-<li><p>删除用户</p>
-<pre><code>userdel</code></pre></li>
-<li><p>添加用户组</p>
-<pre><code>groupadd</code></pre></li>
-<li><p>删除用户组</p>
-<pre><code>groupdel</code></pre></li>
-</ul>
-<ul>
-<li><p>demo:添加一个用户richey，并且将其用户组改为root（即赋予root权限）</p>
-<p>  useradd richey</p>
-<p>  usermod -g root richey   执行该命令时可能需要先将richey添加到/etc/sudoers这个配置文件</p>
-</li>
-</ul>
-<h1 id="4、例行任务管理"><a href="#4、例行任务管理" class="headerlink" title="4、例行任务管理"></a>4、例行任务管理</h1><ul>
-<li><p>单一时刻执行一次任务：==at==</p>
-<pre><code>[richey@192 ~]$ at now +30 minutes  //从现在开始，30分钟后安排一个任务
-warning: commands will be executed using /bin/sh
-at&gt; /sbin/shutdown -h now  //到时间后执行关机操作
-at&gt; &lt;EOT&gt;   //这不是手输入的，而是组合键Ctrl+D，表示输入结束
-job 4 at Sun Aug 13 23:21:00 2017</code></pre></li>
-</ul>
-<pre><code>at 00:00 2017-08-13   //可以设置具体时间</code></pre><ul>
-<li>查看当前使用at命令调度的任务列表：atq</li>
-</ul>
-<ul>
-<li><p>atrm 删除任务</p>
-<pre><code>atrm 1 //删除标号为1的任务</code></pre></li>
-<li><p>周期性执行任务：cron</p>
-<ul>
-<li><p>首先确认crond进程在运行，如果没有，需要先运行该进程</p>
-<pre><code>service crond start</code></pre></li>
-</ul>
-</li>
-</ul>
-<h1 id="5、文件相关操作"><a href="#5、文件相关操作" class="headerlink" title="5、文件相关操作"></a>5、文件相关操作</h1><ul>
-<li><p>touch    </p>
-<p>  如果用touch命令创建文件的时候，当前目录中已经存在了这个文件，那么这个命令不会对当前文件造成影响。它不会修改文件的内容，但是会更新文件的创建时间属性。</p>
-<p>  在linux中文件也是一种目录，所以touch一个目录，这个目录的创建时间也会被更新</p>
-<p>  可利用touch的这种特性生成时间戳文件，进行差异化备份    </p>
-<pre><code>touch time_stamp</code></pre></li>
-<li><p>cat</p>
-<pre><code>cat foo.log
-
-cat -n foo.log   //加上-n参数可以显示行号</code></pre></li>
-</ul>
-<ul>
-<li><p>head 查看头文件</p>
-<pre><code>head foo.log   //默认显示10行内容
-
-head -n 20 foo.log  //-n 参数指定显示的行数</code></pre></li>
-</ul>
-<ul>
-<li><p>tail 查看文件尾    </p>
-<pre><code>tail foo.log   //默认显示10行内容
-
-tail -n 20 foo.log    //-n 参数指定显示的行数
-
-tail -f foo.log   //动态查看文件尾</code></pre></li>
-<li><p>dos2unix 文件格式转换</p>
-</li>
-</ul>
-<ul>
-<li><p>mkdir     </p>
-<pre><code>mkdir -p dir1/dir2  //-p参数一次性创建所有目录</code></pre></li>
-</ul>
-<ul>
-<li><p>lsattr 显示文件的隐藏属性</p>
-<pre><code>lsattr foo.log  //默认隐藏属性都是没有设置的</code></pre></li>
-<li><p>chattr 设置文件的隐藏属性    </p>
-<p>  常用隐藏属性</p>
-<ul>
-<li><p>a属性 拥有这种属性的文件只能在尾部增数据而不能被删除</p>
-<pre><code>chattr +a foo.log  //设置了a属性即便是root用户也不能删除它    </code></pre></li>
-<li><p>i属性 设置了这种权限的文件将无法写入、删除、改名，即使root用户也不行，这总属性常用于设置在系统或关键服务中的配置文件。</p>
-<pre><code>chattr +i foo.log</code></pre></li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>chmod 改变文件权限</p>
-<ul>
-<li><p>每个文件都定义了拥有者（user）、拥有组（group）、其他人（other）的权限  </p>
-</li>
-<li><p>r=4  w=2 x=1</p>
-</li>
-<li><p>-R 递归修改所有文件权限</p>
-</li>
-</ul>
-</li>
-</ul>
-<p><img src="http://orybhlel7.bkt.clouddn.com/image/jpg/weread_image_788589565193717.jpeg" alt="image"></p>
-<ul>
-<li><p>chown 改变文件拥有者（拥有组）</p>
-<pre><code>chown richey foo.log //将foo.log的所有者该为richey    
-
-chown :richey foo.log //将foo.log文件改为richey用户组
-
-chown richey:richey foo.log</code></pre></li>
-<li><p>chgrp 改变文件的拥有组</p>
-<pre><code>chgrp richey foo.log  //将foo.log文件的所属组改为richey</code></pre></li>
-</ul>
-<ul>
-<li><p>特殊文件属性SUID/SGID/Sticky</p>
-<p>  SUID : 设置了SUID权限的，意味着普通用户可以用root身份来执行这个命令，SUID权限只能用于二进制文件。</p>
-<pre><code>chmod u+s somefile</code></pre><p>  SGID : 如果某个二进制文件的用户组设置了SGID权限，那么该组的所有用户都可以用root身份执行该文件。</p>
-<pre><code>chmod g+s somefile</code></pre><p>  Sticky : Sticky权限只能设置在目录上，设置了这种权限的目录，任何用户都可以在该目录中创建和修改文件，但是只有文件的创建者和root用户可以删除自己的文件。</p>
-<pre><code>chmod o +t somedir //权限部分的最后是t</code></pre></li>
-<li><p>file 查看文件类型</p>
-<pre><code>file somefile</code></pre></li>
-<li><p>查找文件   </p>
-<ul>
-<li><p>一般查找：find    </p>
-<pre><code>find PATH -name FILENAME
-
-find / -name httpd.conf //查找一个名为httpd.conf的文件
-
-find / -name *.conf  //通配符查找    </code></pre></li>
-</ul>
-</li>
-</ul>
-<pre><code>    ![image](http://orybhlel7.bkt.clouddn.com/image/jpg/weread_image_879160622465831.jpeg)    
-
-* 数据库查找
-
-    updatedb //查询前可更新下数据库，但者不是必须的，系统每天会自动更新
-
-    locate httpd.conf    
-
-* 查找执行文件：which/whereis
-
-    which用于从系统PATH定义的目录中查找可执行文件的绝对路径    
-
-        which passwd
-
-    whereis也能查到路径，而且还能找到相关的man文件
-
-        whereis passwd</code></pre><ul>
-<li><p>文件压缩打包</p>
-<ul>
-<li><p>gzip/gunzip</p>
-<pre><code>gzip foo.log    
-
-gunzip foo.log.gz</code></pre></li>
-<li><p>tar 不但可以打包文件，还可以将真个目录中的文件合成一个包，这个合包的同时还可以用gzip命令进行压缩。</p>
-<p>  一般整合后的包习惯用.tar作为后缀    </p>
-<p>  使用gzip压缩后的文件则使用.gz作为后缀    </p>
-<p>  同时整合和压缩后的文件可以使用.tar.gz作为后缀，或者简写为.tgz    </p>
-<pre><code>tar -zcvf  boot.tgz /boot // -z 使用gzip压缩  -c创建压缩文件（create） -v显示当前被压缩的文件   -f 指定使用的文件名（boot.tgz)
-
-tar -zxvf boot.tgz
-
-tar -zxvf boot.tgz -C /tmp //-C 指定压缩后的目录存放位置</code></pre></li>
-<li><p>bzip2</p>
-<p>  使用bzip2压缩文件时默认会产生.bz扩展名结尾的文件</p>
-<p>  使用-z 参数进行压缩</p>
-<p>  使用-d 参数进行解压</p>
-</li>
-<li><p>cpio</p>
-<p>  该命令一般配合find命令一起使用，通过管道的方式进行压缩备份及还原</p>
-</li>
-</ul>
-</li>
-</ul>
-<h1 id="6、磁盘分区、创建文件系统、挂载"><a href="#6、磁盘分区、创建文件系统、挂载" class="headerlink" title="6、磁盘分区、创建文件系统、挂载"></a>6、磁盘分区、创建文件系统、挂载</h1><ul>
-<li><p>磁盘使用前要对其进行分割，这种操作被称为分区    </p>
-</li>
-<li><p>磁盘的分区分为两类：主分区和扩展分区</p>
-</li>
-<li><p>受限于磁盘分区表的大小（MBR512字节，其中分区表栈64字节），每个分区信息占用16字节，所以一块磁盘最多只能创建四个分区。（主分区+扩展分区不能超过四个）</p>
-</li>
-<li><p>完成分区后要创建文件系统，最后将分区挂载到系统中的某个挂载点才可以使用</p>
-</li>
-</ul>
-<h2 id="查看磁盘的使用情况以及文件系统被挂载的位置s"><a href="#查看磁盘的使用情况以及文件系统被挂载的位置s" class="headerlink" title="查看磁盘的使用情况以及文件系统被挂载的位置ｓ"></a>查看磁盘的使用情况以及文件系统被挂载的位置ｓ</h2><pre><code>df -l</code></pre><h2 id="创建文件系统：fdisk"><a href="#创建文件系统：fdisk" class="headerlink" title="创建文件系统：fdisk"></a>创建文件系统：fdisk</h2><pre><code>fdisk -l //显示当前设备的分区表
-
-fdisk -s /dev/sda1  //显示指定分区的大小
-
-fdisk -s /dev/sda   //显示设备所有分区大小的总和
-
-fdisk /dev/sda  创建分区</code></pre><h2 id="磁盘挂载"><a href="#磁盘挂载" class="headerlink" title="磁盘挂载"></a>磁盘挂载</h2><ul>
-<li><p>创建了文件系统的分区后，在Linux系统中要进行挂载后才能使用，挂载的命令时amount</p>
-<pre><code>mount DEVICE MOUNT_POINT //DEVICE指的时具体的设备
-
-mount /dev/sda1  /home/workbench
-
-mount //没有参数的mount会显所有的挂载</code></pre></li>
-</ul>
-<ul>
-<li><p>设置启动自动挂载    </p>
-<p>  使用mount挂的设备在计算机重启后就会消失，所以必须通过配置/etc/fstab使得系统在重启后进行自动挂载。这里只需要一条命令即可：     </p>
-<pre><code>echo &quot;/dev/sdb1 /root/newDisk ext3 defaults 00&quot; &gt;&gt; /etc/fstab</code></pre><p>  命令的意思：/dev/sdb1（第一部分） 挂载到 /root/newDisk（第二部分） ,文件系统是ext3（第三部分），使用系统默认额度挂载参数（第四部分），第五部分是dump命令在进行备份时是否要将这个分区存档，默认是0，第六部分是设定系统启动时是否对该设备进行fsck。</p>
-</li>
-</ul>
-<ul>
-<li><p>lvm卷不能挂载的问题</p>
-<pre><code>mount: 未知的文件系统类型“LVM2_member”    </code></pre><p>  解决办法：<a href="http://blog.csdn.net/pengyouchuan/article/details/17578189" target="_blank" rel="noopener">http://blog.csdn.net/pengyouchuan/article/details/17578189</a></p>
-</li>
-</ul>
-<h2 id="解除挂载"><a href="#解除挂载" class="headerlink" title="解除挂载"></a>解除挂载</h2><pre><code>umount /DEVICE/PATH
-
-或者
-
-unount MOUNT_POINT</code></pre><h2 id="硬链接和软链接"><a href="#硬链接和软链接" class="headerlink" title="硬链接和软链接"></a>硬链接和软链接</h2><ul>
-<li><p>硬链接</p>
-<p>  硬链接又称实际链接，是指通过索引节点进行链接。在Linux系统中每个文件都会有一个编号，称为inode，多个文件指向同一个索引节点是被允许的，这种链接就是硬链接</p>
-<p>  删除一个链接不会影响索引节点本身和其他链接</p>
-<p>  文件真正删除的前提条件是与之相关的所有硬链接均被删除</p>
-<p>  不允许给目录创建硬链接</p>
-<p>  只有同一个文件系统中的文件之间才能创建链接</p>
-<pre><code>mkdir hard
-
-cd hard
-
-touch hard01
-
-ls -li //i 参数可是显示文件的inode
-
-ln hard01 hard01_hlink //创建指向hard01的硬链接
-
-ls -li //inode值是一致的</code></pre></li>
-<li><p>软链接</p>
-<p>  软链接又称符号链接，是一个包含了另一个文件路径名的文件，可以指向任意文件或目录，可以可以跨不同的文件系统。类似于windows系统的快捷方式。</p>
-<pre><code>touch file01
-
-ln -s file01 file01_slink //使用-s参数创建软链接</code></pre></li>
-</ul>
-<h1 id="7、字符处理"><a href="#7、字符处理" class="headerlink" title="7、字符处理"></a>7、字符处理</h1><pre><code>//TODO</code></pre><h1 id="8、网路管理"><a href="#8、网路管理" class="headerlink" title="8、网路管理"></a>8、网路管理</h1><h2 id="网路接口和配置"><a href="#网路接口和配置" class="headerlink" title="网路接口和配置"></a>网路接口和配置</h2><ul>
-<li><p>使用ifconfig检查和配置网卡</p>
-<pre><code>ifconfig // 输出当前系统中所有处于活动状态的网络接口</code></pre></li>
-</ul>
-<h1 id="9、进程管理"><a href="#9、进程管理" class="headerlink" title="9、进程管理"></a>9、进程管理</h1><h2 id="查询进程打开的文件：lsof"><a href="#查询进程打开的文件：lsof" class="headerlink" title="查询进程打开的文件：lsof"></a>查询进程打开的文件：lsof</h2><p>lsof(list open files)是一个列出当前系统中所有打开文件的工具。</p>
-<p>Linux中一切皆文件，所以在系统中被打开的文件可以是普通文件、目录、网路文件系统中的文件、字符设备、管道、socket等</p>
-<pre><code>dnf install lsof
-
-lsof [options] filename
-
-lsof filename //显示打开指定文件的所有进程
-
-lsof -c string //显示COMMOND列中包含指定字符串的进程打开的所有文件
-
-lsof -u username //显示所属于user进程打开的文件
-
-lsof -g gid //显示属于gid的进程情况
-
-lsof +d /DIR/ //显示目录下被进程打开的文件
-
-lsof +D /DIR/ //同上，但是会搜索目录下的所有目录，时间相对较长
-
-lsof -i 显示符合条件的进程情况</code></pre><ul>
-<li><p>查找使用了某个端口的进程</p>
-<pre><code>lsof -i :8080</code></pre></li>
-<li><p>查看当前有什么进程正在使用某文件</p>
-<pre><code>lsof /var/log/messages</code></pre></li>
-<li><p>利用lsof恢复被删除的文件，但这是有条件的，必须是文件正在被某个进程使用，而且该进程未停止（也就是我们依然有打开文件的句柄）</p>
-</li>
-</ul>
-<h1 id="10、Shell编程"><a href="#10、Shell编程" class="headerlink" title="10、Shell编程"></a>10、Shell编程</h1><h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><h3 id="局部变量"><a href="#局部变量" class="headerlink" title="局部变量"></a>局部变量</h3><p>在某个shell中生效的变量，在其它shell中无效，随着shell的消失而消失</p>
-<h3 id="环境变量"><a href="#环境变量" class="headerlink" title="环境变量"></a>环境变量</h3><ul>
-<li><p>环境变量又称“全局变量”。在shell脚本中变量默认就是全局的，但是为了子Shell继当前Shell的变量，可以使用export内建命令，将其导出为环境变量。该命令的使用方式为：</p>
-<pre><code>export VAR=value  //VAR为变量名字，value为值，用等号相连，等号两边没有空格
-echo $VAR //打印环境变量VAR</code></pre></li>
-<li><p>环境变量可以用在创建环境变量的Shell和从该Shell派生的任意子Shell或进程中（使用export内建命令将变量导出为环境变量），因此环境变量又被称为全局变量。</p>
-</li>
-<li><p>环境变量被创建时所处的Shell被称为父Shell，如果在父Shell中再创建一个Shell，则该Shell被称作子Shell。</p>
-</li>
-<li><p>环境变量只能向下传递不能向上传递。</p>
-</li>
-<li><p>常用环境变量</p>
-<pre><code>echo $HOMETYPE  //展示主机的架构
-
-echo $LANG
-
-echo $PATH  //记录命令的搜索路径</code></pre></li>
-</ul>
-<pre><code>export PATH=/some/path:$PATH //重设PATH，增加/some/path至原来的PATH中</code></pre><ul>
-<li><p>设置环境变量方法，如想将一个路径加入到$PATH中，可以像下面这样做:    </p>
-<ul>
-<li><p>控制台中设置，不赞成这种方式，因为他只对当前的shell 起作用，换一个shell设置就无效了：    </p>
-<pre><code>$PATH=&quot;$PATH&quot;:/NEW_PATH  (关闭shell Path会还原为原来的path)</code></pre></li>
-<li><p>修改 /etc/profile文件如果你的计算机仅仅作为开发使用时推存使用这种方法，因为所有用户的shell都有权使用这个环境变量，可能会给系统带来安全性问题。这里是针对所有的用户的，所有的shell</p>
-<pre><code>在/etc/profile的最下面添加：  export  PATH=&quot;$PATH:/NEW_PATH&quot;    </code></pre><p>  注：修改文件后要想马上生效还要运行# ==source /etc/profile==不然只能在下次重进此用户时生效</p>
-</li>
-<li><p>修改bashrc文件，这种方法更为安全，它可以把使用这些环境变量的权限控制到用户级别，这里是针对某一特定的用户，如果你需要给某个用户权限使用这些环境变量，你只需要修改其个人用户主目录下的 .bashrc文件就可以了。</p>
-<pre><code>在下面添加：Export  PATH=&quot;$PATH:/NEW_PATH&quot;    </code></pre><p>  注：修改文件后要想马上生效还要运行$ source /home/richey/.bash_profile不然只能在下次重进此用户时生效</p>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>使用evn查看所有环境变量</p>
-<p>  env</p>
-</li>
-<li><p>使用unset删除指定的环境变量</p>
-<p>  unset VAR //删除环境变量VAR</p>
-</li>
-</ul>
-<ul>
-<li>demo</li>
-</ul>
-<ol>
-<li><p>永久修改，对所有用户有效    </p>
-<p> vi /etc/profile<br> //按键盘[Shift + g], 在profile文件最后添加下面的内容:<br> export JAVA_HOME = /home/myuser/jdk1.7.0_03<br> export PATH = $JAVA_HOME/bin:$PATH<br> export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar<br> [注]：修改文件后如果想马上生效，还要运行 #source /etc/profile</p>
-</li>
-<li><p>永久修改，对单一用户有效    </p>
-<p> //修改用户目录下的.bash_profile文件<br>  $ vi /home/myuser/.bash_profile<br> //在文件最后添加下面的内容<br>  export JAVA_HOME = /home/myuser/jdk1.7.0_03<br>  export PATH = $JAVA_HOME/bin:$PATH<br>  export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar<br>  [注]：修改文件后如果想马上生效，还要运行 #source /home/myuser/.bash_profile</p>
-</li>
-<li><p>只对当前bash /shell 生效    </p>
-<p> $ export JAVA_HOME = /home/myuser/jdk1.7.0_03<br> $ export PATH = $JAVA_HOME/bin:$PATH<br> $ export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar</p>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/12/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/12/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" itemprop="url">Linux常用命令</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-12T00:00:00+08:00">
-                2019-03-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/03/12/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/12/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/03/12/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" class="leancloud_visitors" data-flag-title="Linux常用命令">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="1、查找文件"><a href="#1、查找文件" class="headerlink" title="1、查找文件"></a>1、查找文件</h4><pre><code>find . -name &quot;*.xml&quot; 递归查找所有的xml文件
-find / -name filename.txt 根据名称查找/目录下的filename.txt文件。
-find . -name &quot;*.xml&quot; |xargs grep &quot;hello world&quot; 递归查找所有文件内容中包含hello world的xml文件
-find ./ -size 0 | xargs rm -f &amp;amp; 删除文件大小为零的文件
-grep -H &apos;spring&apos; *.xml 查找所以有的包含spring的xml文件
-ls -l | grep &apos;.jar&apos; 查找当前目录中的所有jar文件
-grep &apos;test&apos; d* 显示所有以d开头的文件中包含test的行。
-grep &apos;test&apos; aa bb cc 显示在aa，bb，cc文件中匹配test的行。
-grep &apos;[a-z]\{5\}&apos; aa 显示所有包含每个字符串至少有5个连续小写字符的字符串的行。</code></pre><h4 id="2、查看一个程序是否运行"><a href="#2、查看一个程序是否运行" class="headerlink" title="2、查看一个程序是否运行"></a>2、查看一个程序是否运行</h4><pre><code>ps –ef|grep tomcat 查看所有有关tomcat的进程</code></pre><h4 id="3、终止线程"><a href="#3、终止线程" class="headerlink" title="3、终止线程"></a>3、终止线程</h4><pre><code>kill -9 19979 终止线程号位19979的进程</code></pre><h4 id="4、查看文件，包含隐藏文件"><a href="#4、查看文件，包含隐藏文件" class="headerlink" title="4、查看文件，包含隐藏文件"></a>4、查看文件，包含隐藏文件</h4><pre><code>ls -al</code></pre><h4 id="5、当前工作目录"><a href="#5、当前工作目录" class="headerlink" title="5、当前工作目录"></a>5、当前工作目录</h4><pre><code>pwd</code></pre><h4 id="6、创建目录"><a href="#6、创建目录" class="headerlink" title="6、创建目录"></a>6、创建目录</h4><pre><code>mkdir newfolder</code></pre><h4 id="7、复制文件"><a href="#7、复制文件" class="headerlink" title="7、复制文件"></a>7、复制文件</h4><pre><code>cp source dest 复制文件
-cp -r sourceFolder targetFolder 递归复制整个文件夹
-scp sourecFile romoteUserName@remoteIp:remoteAddr 远程拷贝</code></pre><h4 id="8、删除目录"><a href="#8、删除目录" class="headerlink" title="8、删除目录"></a>8、删除目录</h4><pre><code>rmdir deleteEmptyFolder 删除空目录
-rm -rf deleteFile 递归删除目录中所有内容</code></pre><h4 id="9、重命令"><a href="#9、重命令" class="headerlink" title="9、重命令"></a>9、重命令</h4><pre><code>mv oldNameFile newNameFile</code></pre><h4 id="10、移动文件"><a href="#10、移动文件" class="headerlink" title="10、移动文件"></a>10、移动文件</h4><pre><code>mv /temp/movefile /targetFolder</code></pre><h4 id="11、切换用户"><a href="#11、切换用户" class="headerlink" title="11、切换用户"></a>11、切换用户</h4><pre><code>su -username</code></pre><h4 id="12、修改文件权限"><a href="#12、修改文件权限" class="headerlink" title="12、修改文件权限"></a>12、修改文件权限</h4><pre><code>chmod 777 file.java //file.java的权限-rwxrwxrwx，r表示读、w表示写、x表示可
-执行</code></pre><h4 id="13、压缩文件"><a href="#13、压缩文件" class="headerlink" title="13、压缩文件"></a>13、压缩文件</h4><pre><code>tar -czf test.tar.gz /test1 /test2</code></pre><h4 id="14、列出压缩文件列表"><a href="#14、列出压缩文件列表" class="headerlink" title="14、列出压缩文件列表"></a>14、列出压缩文件列表</h4><pre><code>tar -tzf test.tar.gz</code></pre><h4 id="15、解压文件"><a href="#15、解压文件" class="headerlink" title="15、解压文件"></a>15、解压文件</h4><pre><code>tar -xvzf test.tar.gz</code></pre><h4 id="16、查看文件头10行"><a href="#16、查看文件头10行" class="headerlink" title="16、查看文件头10行"></a>16、查看文件头10行</h4><pre><code>head -n 10 example.txt</code></pre><h4 id="17、查看文件尾10行"><a href="#17、查看文件尾10行" class="headerlink" title="17、查看文件尾10行"></a>17、查看文件尾10行</h4><pre><code>tail -n 10 example.txt</code></pre><h4 id="18、使用超级管理员身份执行命令"><a href="#18、使用超级管理员身份执行命令" class="headerlink" title="18、使用超级管理员身份执行命令"></a>18、使用超级管理员身份执行命令</h4><pre><code>sudo rm a.txt 使用管理员身份删除文件</code></pre><h4 id="19、查看日志类型文件"><a href="#19、查看日志类型文件" class="headerlink" title="19、查看日志类型文件"></a>19、查看日志类型文件</h4><pre><code>tail -f exmaple.log //这个命令会自动显示新增内容，屏幕只显示10行内容的（可设置）。</code></pre><h4 id="20、查看端口占用情况"><a href="#20、查看端口占用情况" class="headerlink" title="20、查看端口占用情况"></a>20、查看端口占用情况</h4><pre><code>netstat -tlnp | grep 8080 查看端口8080的使用情况</code></pre><ul>
-<li><p>打开端口</p>
-<p>  iptables -A INPUT -ptcp –dport  端口号 -j ACCEPT</p>
-</li>
-<li><p>关闭端口</p>
-<p>  iptables -A INPUT -p tcp –drop 端口号 -j DROP</p>
-<p>  iptables -A OUTPUT -p tcp –dport 端口号 -j DROP</p>
-</li>
-<li><p>demo打开23端口（即telnet端口）</p>
-<p>  nc -lp23</p>
-</li>
-</ul>
-<h4 id="21、查看端口属于哪个程序"><a href="#21、查看端口属于哪个程序" class="headerlink" title="21、查看端口属于哪个程序"></a>21、查看端口属于哪个程序</h4><pre><code>lsof -i :8080</code></pre><h4 id="22、查看进程"><a href="#22、查看进程" class="headerlink" title="22、查看进程"></a>22、查看进程</h4><pre><code>ps aux|grep java 查看java进程
-ps aux 查看所有进程</code></pre><h4 id="23、以树状图列出目录的内容"><a href="#23、以树状图列出目录的内容" class="headerlink" title="23、以树状图列出目录的内容"></a>23、以树状图列出目录的内容</h4><pre><code>tree a
-
-ps:Mac下使用tree命令
-
-http://www.hollischuang.com/archives/546</code></pre><h4 id="24、文件下载"><a href="#24、文件下载" class="headerlink" title="24、文件下载"></a>24、文件下载</h4><pre><code>wget http://file.tgz
-curl http://file.tgz
-
-mac下安装wget命令
-
-http://www.hollischuang.com/archives/548</code></pre><h4 id="25、网络检测"><a href="#25、网络检测" class="headerlink" title="25、网络检测"></a>25、网络检测</h4><pre><code>ping www.just-ping.com</code></pre><h4 id="26、远程登录"><a href="#26、远程登录" class="headerlink" title="26、远程登录"></a>26、远程登录</h4><pre><code>ssh userName@ip</code></pre><h4 id="27、打印信息"><a href="#27、打印信息" class="headerlink" title="27、打印信息"></a>27、打印信息</h4><pre><code>echo $JAVA_HOME 打印java home环境变量的值</code></pre><h4 id="28、java-常用命令"><a href="#28、java-常用命令" class="headerlink" title="28、java 常用命令"></a>28、java 常用命令</h4><pre><code>java javac jps ,jstat ,jmap, jstack
-
-jps:http://www.hollischuang.com/archives/105
-jstat:http://www.hollischuang.com/archives/481
-jmap:http://www.hollischuang.com/archives/303
-jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看所有的可用服务"><a href="#29、查看所有的可用服务" class="headerlink" title="29、查看所有的可用服务"></a>29、查看所有的可用服务</h4><pre><code>systemctl list-unit-files |grep service |grep enable</code></pre><h4 id="30、关闭服务"><a href="#30、关闭服务" class="headerlink" title="30、关闭服务"></a>30、关闭服务</h4><pre><code>systemctl stop ipatables</code></pre><h4 id="30、开机不启动"><a href="#30、开机不启动" class="headerlink" title="30、开机不启动"></a>30、开机不启动</h4><pre><code>systemctl disable iptables</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/" itemprop="url">Linux使用私钥公钥(Public key)登录 - 免密码登录</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-12T00:00:00+08:00">
-                2019-03-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/" class="leancloud_visitors" data-flag-title="Linux使用私钥公钥(Public key)登录 - 免密码登录">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>为了更安全、方便的登录Linux服务器，可以取消密码登录，使用私钥公钥的方式来登录，更方便也更安全。</p>
-<h1 id="生成密钥（客户端机器）"><a href="#生成密钥（客户端机器）" class="headerlink" title="生成密钥（客户端机器）"></a>生成密钥（客户端机器）</h1><pre><code>ssh-keygen -t [rsa|dsa] -P &apos;&apos;</code></pre><p>直接ssh-keygen然后三次回车就可以了。<br>-P表示密码，-P ‘’ 就表示空密码，也可以不用-P参数，这样就要三车回车，用-P就一次回车。<br>它在/home/chenlb下生成.ssh目录，.ssh下有id_rsa和id_rsa.pub这样一对公私钥。</p>
-<h1 id="上传公钥到服务器端"><a href="#上传公钥到服务器端" class="headerlink" title="上传公钥到服务器端"></a>上传公钥到服务器端</h1><p>先在服务器对应用户目录下创建~/.ssh/authorized_keys目录（如果目录已存在，这一步会被略过）</p>
-<p>ssh richey@host mkdir -p .ssh/authorized_keys</p>
-<p>把客户端的公钥_rsa.pub复制到服务器端机器的.ssh/authorized_keys文件里</p>
-<pre><code>* 可以用scp复制到服务器，然后再从服务器中把从客户端复制的id_rsa.pub添加到.ssh/authorzied_keys文件里。
-
-    scp .ssh/id_rsa.pub  richey@45.xx.xx.16:/home/richey/id_rsa.pub
-
-* 或者
-
-    cat .ssh/id_rsa.pub | ssh richey@hostB &apos;cat &gt;&gt; .ssh/authorized_keys&apos;</code></pre><ul>
-<li><p>上述的创建目录并复制的操作也可以通过一个 ssh-copy-id 命令一步完成：    </p>
-<pre><code>ssh-copy-id -i ~/.ssh/id_rsa.pub aliceB@hostB</code></pre></li>
-<li><p>authorized_keys的权限要是600。</p>
-<pre><code>chmod 600 .ssh/authorized_keys</code></pre></li>
-</ul>
-<h1 id="修改SSH的配置文件"><a href="#修改SSH的配置文件" class="headerlink" title="修改SSH的配置文件"></a>修改SSH的配置文件</h1><p>配置文件位置</p>
-<pre><code>/etc/ssh/sshd_config :
-
-#RSAAuthentication yes
-#PubkeyAuthentication yes
-#AuthorizedKeysFile .ssh/authorized_keys</code></pre><p>去调上面3行前面的#，保存后重启SSH服务。</p>
-<pre><code>使用SYSVINIT初始化系统的Linux系统：service sshd restart
-使用SYSTEMD初始化系统的Linux系统：systemctl restart sshd</code></pre><p>至此服务器端已经支持使用SSH私钥证书登录。</p>
-<h1 id="关闭root用户使用密码登陆"><a href="#关闭root用户使用密码登陆" class="headerlink" title="关闭root用户使用密码登陆"></a>关闭root用户使用密码登陆</h1><p>在使用SSH Key登录验证成功后，还是为了安全，建议关闭root用户使用密码登陆，关闭的方法如下：</p>
-<p>修改SSH的配置文件/etc/ssh/sshd_config，找到下面1行：</p>
-<pre><code>PasswordAuthentication yes</code></pre><p>修改为：</p>
-<pre><code>PasswordAuthentication no</code></pre><p>保存后重启SSH服务。</p>
-<pre><code>service sshd restart</code></pre><p>好了，至此只要你保存好你的私钥（为安全，建议删除服务器端的私钥），你的服务器相比原来使用root用户加密码登陆来说已经安全多了。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2671,7 +2370,7 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">107</span>
+                  <span class="site-state-item-count">110</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2682,7 +2381,7 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2693,7 +2392,7 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-count">38</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

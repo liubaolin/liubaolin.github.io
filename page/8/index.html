@@ -288,6 +288,904 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/18/Linux%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/18/Linux%E7%AC%94%E8%AE%B0/" itemprop="url">Linux笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-18T00:00:00+08:00">
+                2019-03-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/03/18/Linux%E7%AC%94%E8%AE%B0/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/18/Linux%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/03/18/Linux%E7%AC%94%E8%AE%B0/" class="leancloud_visitors" data-flag-title="Linux笔记">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="1、安装规划"><a href="#1、安装规划" class="headerlink" title="1、安装规划"></a>1、安装规划</h1><ul>
+<li><p>必须要有的两个分区为根分区和swap分区</p>
+</li>
+<li><p>交换分区是一个特殊的分区，相当于windows下的虚拟分区，一般设为物理内存的两倍，但是建议不要超过8GB</p>
+</li>
+</ul>
+<h1 id="2、用户"><a href="#2、用户" class="headerlink" title="2、用户"></a>2、用户</h1><ul>
+<li><p>确认自己的UID</p>
+<pre><code>id</code></pre></li>
+<li><p>确认自己所属的用户组</p>
+<pre><code>groups</code></pre></li>
+<li><p>查看用户信息</p>
+<pre><code>users、who、w</code></pre></li>
+<li><p>调查用户</p>
+<pre><code>finger richey</code></pre></li>
+<li><p>切换用户</p>
+<pre><code>su - //加-是用户环境一块切换
+
+sudo  //不切换用户直接以root身份执行</code></pre></li>
+</ul>
+<blockquote>
+<p>在演示sudo命令前，首先要编辑/etc/sudoers这个配置文件<br>linux专门提供里visudo来编辑这个文件<br>添加 richey  ALL=(ALL)  ALL<br>richey  ALL=(ALL)  NOPASSWD:ALL  这样设置就不需要输密码了</p>
+</blockquote>
+<ul>
+<li><p>修改用户组</p>
+<p>  usermod -g root richey 将用户添加到用户组，即拥有root权限</p>
+</li>
+</ul>
+<h1 id="3、帐号管理"><a href="#3、帐号管理" class="headerlink" title="3、帐号管理"></a>3、帐号管理</h1><ul>
+<li><p>添加新用户</p>
+<pre><code>useradd</code></pre></li>
+<li><p>修改密码</p>
+<pre><code>passwd</code></pre></li>
+<li><p>删除用户</p>
+<pre><code>userdel</code></pre></li>
+<li><p>添加用户组</p>
+<pre><code>groupadd</code></pre></li>
+<li><p>删除用户组</p>
+<pre><code>groupdel</code></pre></li>
+</ul>
+<ul>
+<li><p>demo:添加一个用户richey，并且将其用户组改为root（即赋予root权限）</p>
+<p>  useradd richey</p>
+<p>  usermod -g root richey   执行该命令时可能需要先将richey添加到/etc/sudoers这个配置文件</p>
+</li>
+</ul>
+<h1 id="4、例行任务管理"><a href="#4、例行任务管理" class="headerlink" title="4、例行任务管理"></a>4、例行任务管理</h1><ul>
+<li><p>单一时刻执行一次任务：==at==</p>
+<pre><code>[richey@192 ~]$ at now +30 minutes  //从现在开始，30分钟后安排一个任务
+warning: commands will be executed using /bin/sh
+at&gt; /sbin/shutdown -h now  //到时间后执行关机操作
+at&gt; &lt;EOT&gt;   //这不是手输入的，而是组合键Ctrl+D，表示输入结束
+job 4 at Sun Aug 13 23:21:00 2017</code></pre></li>
+</ul>
+<pre><code>at 00:00 2017-08-13   //可以设置具体时间</code></pre><ul>
+<li>查看当前使用at命令调度的任务列表：atq</li>
+</ul>
+<ul>
+<li><p>atrm 删除任务</p>
+<pre><code>atrm 1 //删除标号为1的任务</code></pre></li>
+<li><p>周期性执行任务：cron</p>
+<ul>
+<li><p>首先确认crond进程在运行，如果没有，需要先运行该进程</p>
+<pre><code>service crond start</code></pre></li>
+</ul>
+</li>
+</ul>
+<h1 id="5、文件相关操作"><a href="#5、文件相关操作" class="headerlink" title="5、文件相关操作"></a>5、文件相关操作</h1><ul>
+<li><p>touch    </p>
+<p>  如果用touch命令创建文件的时候，当前目录中已经存在了这个文件，那么这个命令不会对当前文件造成影响。它不会修改文件的内容，但是会更新文件的创建时间属性。</p>
+<p>  在linux中文件也是一种目录，所以touch一个目录，这个目录的创建时间也会被更新</p>
+<p>  可利用touch的这种特性生成时间戳文件，进行差异化备份    </p>
+<pre><code>touch time_stamp</code></pre></li>
+<li><p>cat</p>
+<pre><code>cat foo.log
+
+cat -n foo.log   //加上-n参数可以显示行号</code></pre></li>
+</ul>
+<ul>
+<li><p>head 查看头文件</p>
+<pre><code>head foo.log   //默认显示10行内容
+
+head -n 20 foo.log  //-n 参数指定显示的行数</code></pre></li>
+</ul>
+<ul>
+<li><p>tail 查看文件尾    </p>
+<pre><code>tail foo.log   //默认显示10行内容
+
+tail -n 20 foo.log    //-n 参数指定显示的行数
+
+tail -f foo.log   //动态查看文件尾</code></pre></li>
+<li><p>dos2unix 文件格式转换</p>
+</li>
+</ul>
+<ul>
+<li><p>mkdir     </p>
+<pre><code>mkdir -p dir1/dir2  //-p参数一次性创建所有目录</code></pre></li>
+</ul>
+<ul>
+<li><p>lsattr 显示文件的隐藏属性</p>
+<pre><code>lsattr foo.log  //默认隐藏属性都是没有设置的</code></pre></li>
+<li><p>chattr 设置文件的隐藏属性    </p>
+<p>  常用隐藏属性</p>
+<ul>
+<li><p>a属性 拥有这种属性的文件只能在尾部增数据而不能被删除</p>
+<pre><code>chattr +a foo.log  //设置了a属性即便是root用户也不能删除它    </code></pre></li>
+<li><p>i属性 设置了这种权限的文件将无法写入、删除、改名，即使root用户也不行，这总属性常用于设置在系统或关键服务中的配置文件。</p>
+<pre><code>chattr +i foo.log</code></pre></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>chmod 改变文件权限</p>
+<ul>
+<li><p>每个文件都定义了拥有者（user）、拥有组（group）、其他人（other）的权限  </p>
+</li>
+<li><p>r=4  w=2 x=1</p>
+</li>
+<li><p>-R 递归修改所有文件权限</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src="http://orybhlel7.bkt.clouddn.com/image/jpg/weread_image_788589565193717.jpeg" alt="image"></p>
+<ul>
+<li><p>chown 改变文件拥有者（拥有组）</p>
+<pre><code>chown richey foo.log //将foo.log的所有者该为richey    
+
+chown :richey foo.log //将foo.log文件改为richey用户组
+
+chown richey:richey foo.log</code></pre></li>
+<li><p>chgrp 改变文件的拥有组</p>
+<pre><code>chgrp richey foo.log  //将foo.log文件的所属组改为richey</code></pre></li>
+</ul>
+<ul>
+<li><p>特殊文件属性SUID/SGID/Sticky</p>
+<p>  SUID : 设置了SUID权限的，意味着普通用户可以用root身份来执行这个命令，SUID权限只能用于二进制文件。</p>
+<pre><code>chmod u+s somefile</code></pre><p>  SGID : 如果某个二进制文件的用户组设置了SGID权限，那么该组的所有用户都可以用root身份执行该文件。</p>
+<pre><code>chmod g+s somefile</code></pre><p>  Sticky : Sticky权限只能设置在目录上，设置了这种权限的目录，任何用户都可以在该目录中创建和修改文件，但是只有文件的创建者和root用户可以删除自己的文件。</p>
+<pre><code>chmod o +t somedir //权限部分的最后是t</code></pre></li>
+<li><p>file 查看文件类型</p>
+<pre><code>file somefile</code></pre></li>
+<li><p>查找文件   </p>
+<ul>
+<li><p>一般查找：find    </p>
+<pre><code>find PATH -name FILENAME
+
+find / -name httpd.conf //查找一个名为httpd.conf的文件
+
+find / -name *.conf  //通配符查找    </code></pre></li>
+</ul>
+</li>
+</ul>
+<pre><code>    ![image](http://orybhlel7.bkt.clouddn.com/image/jpg/weread_image_879160622465831.jpeg)    
+
+* 数据库查找
+
+    updatedb //查询前可更新下数据库，但者不是必须的，系统每天会自动更新
+
+    locate httpd.conf    
+
+* 查找执行文件：which/whereis
+
+    which用于从系统PATH定义的目录中查找可执行文件的绝对路径    
+
+        which passwd
+
+    whereis也能查到路径，而且还能找到相关的man文件
+
+        whereis passwd</code></pre><ul>
+<li><p>文件压缩打包</p>
+<ul>
+<li><p>gzip/gunzip</p>
+<pre><code>gzip foo.log    
+
+gunzip foo.log.gz</code></pre></li>
+<li><p>tar 不但可以打包文件，还可以将真个目录中的文件合成一个包，这个合包的同时还可以用gzip命令进行压缩。</p>
+<p>  一般整合后的包习惯用.tar作为后缀    </p>
+<p>  使用gzip压缩后的文件则使用.gz作为后缀    </p>
+<p>  同时整合和压缩后的文件可以使用.tar.gz作为后缀，或者简写为.tgz    </p>
+<pre><code>tar -zcvf  boot.tgz /boot // -z 使用gzip压缩  -c创建压缩文件（create） -v显示当前被压缩的文件   -f 指定使用的文件名（boot.tgz)
+
+tar -zxvf boot.tgz
+
+tar -zxvf boot.tgz -C /tmp //-C 指定压缩后的目录存放位置</code></pre></li>
+<li><p>bzip2</p>
+<p>  使用bzip2压缩文件时默认会产生.bz扩展名结尾的文件</p>
+<p>  使用-z 参数进行压缩</p>
+<p>  使用-d 参数进行解压</p>
+</li>
+<li><p>cpio</p>
+<p>  该命令一般配合find命令一起使用，通过管道的方式进行压缩备份及还原</p>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="6、磁盘分区、创建文件系统、挂载"><a href="#6、磁盘分区、创建文件系统、挂载" class="headerlink" title="6、磁盘分区、创建文件系统、挂载"></a>6、磁盘分区、创建文件系统、挂载</h1><ul>
+<li><p>磁盘使用前要对其进行分割，这种操作被称为分区    </p>
+</li>
+<li><p>磁盘的分区分为两类：主分区和扩展分区</p>
+</li>
+<li><p>受限于磁盘分区表的大小（MBR512字节，其中分区表栈64字节），每个分区信息占用16字节，所以一块磁盘最多只能创建四个分区。（主分区+扩展分区不能超过四个）</p>
+</li>
+<li><p>完成分区后要创建文件系统，最后将分区挂载到系统中的某个挂载点才可以使用</p>
+</li>
+</ul>
+<h2 id="查看磁盘的使用情况以及文件系统被挂载的位置s"><a href="#查看磁盘的使用情况以及文件系统被挂载的位置s" class="headerlink" title="查看磁盘的使用情况以及文件系统被挂载的位置ｓ"></a>查看磁盘的使用情况以及文件系统被挂载的位置ｓ</h2><pre><code>df -l</code></pre><h2 id="创建文件系统：fdisk"><a href="#创建文件系统：fdisk" class="headerlink" title="创建文件系统：fdisk"></a>创建文件系统：fdisk</h2><pre><code>fdisk -l //显示当前设备的分区表
+
+fdisk -s /dev/sda1  //显示指定分区的大小
+
+fdisk -s /dev/sda   //显示设备所有分区大小的总和
+
+fdisk /dev/sda  创建分区</code></pre><h2 id="磁盘挂载"><a href="#磁盘挂载" class="headerlink" title="磁盘挂载"></a>磁盘挂载</h2><ul>
+<li><p>创建了文件系统的分区后，在Linux系统中要进行挂载后才能使用，挂载的命令时amount</p>
+<pre><code>mount DEVICE MOUNT_POINT //DEVICE指的时具体的设备
+
+mount /dev/sda1  /home/workbench
+
+mount //没有参数的mount会显所有的挂载</code></pre></li>
+</ul>
+<ul>
+<li><p>设置启动自动挂载    </p>
+<p>  使用mount挂的设备在计算机重启后就会消失，所以必须通过配置/etc/fstab使得系统在重启后进行自动挂载。这里只需要一条命令即可：     </p>
+<pre><code>echo &quot;/dev/sdb1 /root/newDisk ext3 defaults 00&quot; &gt;&gt; /etc/fstab</code></pre><p>  命令的意思：/dev/sdb1（第一部分） 挂载到 /root/newDisk（第二部分） ,文件系统是ext3（第三部分），使用系统默认额度挂载参数（第四部分），第五部分是dump命令在进行备份时是否要将这个分区存档，默认是0，第六部分是设定系统启动时是否对该设备进行fsck。</p>
+</li>
+</ul>
+<ul>
+<li><p>lvm卷不能挂载的问题</p>
+<pre><code>mount: 未知的文件系统类型“LVM2_member”    </code></pre><p>  解决办法：<a href="http://blog.csdn.net/pengyouchuan/article/details/17578189" target="_blank" rel="noopener">http://blog.csdn.net/pengyouchuan/article/details/17578189</a></p>
+</li>
+</ul>
+<h2 id="解除挂载"><a href="#解除挂载" class="headerlink" title="解除挂载"></a>解除挂载</h2><pre><code>umount /DEVICE/PATH
+
+或者
+
+unount MOUNT_POINT</code></pre><h2 id="硬链接和软链接"><a href="#硬链接和软链接" class="headerlink" title="硬链接和软链接"></a>硬链接和软链接</h2><ul>
+<li><p>硬链接</p>
+<p>  硬链接又称实际链接，是指通过索引节点进行链接。在Linux系统中每个文件都会有一个编号，称为inode，多个文件指向同一个索引节点是被允许的，这种链接就是硬链接</p>
+<p>  删除一个链接不会影响索引节点本身和其他链接</p>
+<p>  文件真正删除的前提条件是与之相关的所有硬链接均被删除</p>
+<p>  不允许给目录创建硬链接</p>
+<p>  只有同一个文件系统中的文件之间才能创建链接</p>
+<pre><code>mkdir hard
+
+cd hard
+
+touch hard01
+
+ls -li //i 参数可是显示文件的inode
+
+ln hard01 hard01_hlink //创建指向hard01的硬链接
+
+ls -li //inode值是一致的</code></pre></li>
+<li><p>软链接</p>
+<p>  软链接又称符号链接，是一个包含了另一个文件路径名的文件，可以指向任意文件或目录，可以可以跨不同的文件系统。类似于windows系统的快捷方式。</p>
+<pre><code>touch file01
+
+ln -s file01 file01_slink //使用-s参数创建软链接</code></pre></li>
+</ul>
+<h1 id="7、字符处理"><a href="#7、字符处理" class="headerlink" title="7、字符处理"></a>7、字符处理</h1><pre><code>//TODO</code></pre><h1 id="8、网路管理"><a href="#8、网路管理" class="headerlink" title="8、网路管理"></a>8、网路管理</h1><h2 id="网路接口和配置"><a href="#网路接口和配置" class="headerlink" title="网路接口和配置"></a>网路接口和配置</h2><ul>
+<li><p>使用ifconfig检查和配置网卡</p>
+<pre><code>ifconfig // 输出当前系统中所有处于活动状态的网络接口</code></pre></li>
+</ul>
+<h1 id="9、进程管理"><a href="#9、进程管理" class="headerlink" title="9、进程管理"></a>9、进程管理</h1><h2 id="查询进程打开的文件：lsof"><a href="#查询进程打开的文件：lsof" class="headerlink" title="查询进程打开的文件：lsof"></a>查询进程打开的文件：lsof</h2><p>lsof(list open files)是一个列出当前系统中所有打开文件的工具。</p>
+<p>Linux中一切皆文件，所以在系统中被打开的文件可以是普通文件、目录、网路文件系统中的文件、字符设备、管道、socket等</p>
+<pre><code>dnf install lsof
+
+lsof [options] filename
+
+lsof filename //显示打开指定文件的所有进程
+
+lsof -c string //显示COMMOND列中包含指定字符串的进程打开的所有文件
+
+lsof -u username //显示所属于user进程打开的文件
+
+lsof -g gid //显示属于gid的进程情况
+
+lsof +d /DIR/ //显示目录下被进程打开的文件
+
+lsof +D /DIR/ //同上，但是会搜索目录下的所有目录，时间相对较长
+
+lsof -i 显示符合条件的进程情况</code></pre><ul>
+<li><p>查找使用了某个端口的进程</p>
+<pre><code>lsof -i :8080</code></pre></li>
+<li><p>查看当前有什么进程正在使用某文件</p>
+<pre><code>lsof /var/log/messages</code></pre></li>
+<li><p>利用lsof恢复被删除的文件，但这是有条件的，必须是文件正在被某个进程使用，而且该进程未停止（也就是我们依然有打开文件的句柄）</p>
+</li>
+</ul>
+<h1 id="10、Shell编程"><a href="#10、Shell编程" class="headerlink" title="10、Shell编程"></a>10、Shell编程</h1><h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><h3 id="局部变量"><a href="#局部变量" class="headerlink" title="局部变量"></a>局部变量</h3><p>在某个shell中生效的变量，在其它shell中无效，随着shell的消失而消失</p>
+<h3 id="环境变量"><a href="#环境变量" class="headerlink" title="环境变量"></a>环境变量</h3><ul>
+<li><p>环境变量又称“全局变量”。在shell脚本中变量默认就是全局的，但是为了子Shell继当前Shell的变量，可以使用export内建命令，将其导出为环境变量。该命令的使用方式为：</p>
+<pre><code>export VAR=value  //VAR为变量名字，value为值，用等号相连，等号两边没有空格
+echo $VAR //打印环境变量VAR</code></pre></li>
+<li><p>环境变量可以用在创建环境变量的Shell和从该Shell派生的任意子Shell或进程中（使用export内建命令将变量导出为环境变量），因此环境变量又被称为全局变量。</p>
+</li>
+<li><p>环境变量被创建时所处的Shell被称为父Shell，如果在父Shell中再创建一个Shell，则该Shell被称作子Shell。</p>
+</li>
+<li><p>环境变量只能向下传递不能向上传递。</p>
+</li>
+<li><p>常用环境变量</p>
+<pre><code>echo $HOMETYPE  //展示主机的架构
+
+echo $LANG
+
+echo $PATH  //记录命令的搜索路径</code></pre></li>
+</ul>
+<pre><code>export PATH=/some/path:$PATH //重设PATH，增加/some/path至原来的PATH中</code></pre><ul>
+<li><p>设置环境变量方法，如想将一个路径加入到$PATH中，可以像下面这样做:    </p>
+<ul>
+<li><p>控制台中设置，不赞成这种方式，因为他只对当前的shell 起作用，换一个shell设置就无效了：    </p>
+<pre><code>$PATH=&quot;$PATH&quot;:/NEW_PATH  (关闭shell Path会还原为原来的path)</code></pre></li>
+<li><p>修改 /etc/profile文件如果你的计算机仅仅作为开发使用时推存使用这种方法，因为所有用户的shell都有权使用这个环境变量，可能会给系统带来安全性问题。这里是针对所有的用户的，所有的shell</p>
+<pre><code>在/etc/profile的最下面添加：  export  PATH=&quot;$PATH:/NEW_PATH&quot;    </code></pre><p>  注：修改文件后要想马上生效还要运行# ==source /etc/profile==不然只能在下次重进此用户时生效</p>
+</li>
+<li><p>修改bashrc文件，这种方法更为安全，它可以把使用这些环境变量的权限控制到用户级别，这里是针对某一特定的用户，如果你需要给某个用户权限使用这些环境变量，你只需要修改其个人用户主目录下的 .bashrc文件就可以了。</p>
+<pre><code>在下面添加：Export  PATH=&quot;$PATH:/NEW_PATH&quot;    </code></pre><p>  注：修改文件后要想马上生效还要运行$ source /home/richey/.bash_profile不然只能在下次重进此用户时生效</p>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>使用evn查看所有环境变量</p>
+<p>  env</p>
+</li>
+<li><p>使用unset删除指定的环境变量</p>
+<p>  unset VAR //删除环境变量VAR</p>
+</li>
+</ul>
+<ul>
+<li>demo</li>
+</ul>
+<ol>
+<li><p>永久修改，对所有用户有效    </p>
+<p> vi /etc/profile<br> //按键盘[Shift + g], 在profile文件最后添加下面的内容:<br> export JAVA_HOME = /home/myuser/jdk1.7.0_03<br> export PATH = $JAVA_HOME/bin:$PATH<br> export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar<br> [注]：修改文件后如果想马上生效，还要运行 #source /etc/profile</p>
+</li>
+<li><p>永久修改，对单一用户有效    </p>
+<p> //修改用户目录下的.bash_profile文件<br>  $ vi /home/myuser/.bash_profile<br> //在文件最后添加下面的内容<br>  export JAVA_HOME = /home/myuser/jdk1.7.0_03<br>  export PATH = $JAVA_HOME/bin:$PATH<br>  export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar<br>  [注]：修改文件后如果想马上生效，还要运行 #source /home/myuser/.bash_profile</p>
+</li>
+<li><p>只对当前bash /shell 生效    </p>
+<p> $ export JAVA_HOME = /home/myuser/jdk1.7.0_03<br> $ export PATH = $JAVA_HOME/bin:$PATH<br> $ export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar</p>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/" itemprop="url">Linux使用私钥公钥(Public key)登录 - 免密码登录</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-12T00:00:00+08:00">
+                2019-03-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/" class="leancloud_visitors" data-flag-title="Linux使用私钥公钥(Public key)登录 - 免密码登录">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>为了更安全、方便的登录Linux服务器，可以取消密码登录，使用私钥公钥的方式来登录，更方便也更安全。</p>
+<h1 id="生成密钥（客户端机器）"><a href="#生成密钥（客户端机器）" class="headerlink" title="生成密钥（客户端机器）"></a>生成密钥（客户端机器）</h1><pre><code>ssh-keygen -t [rsa|dsa] -P &apos;&apos;</code></pre><p>直接ssh-keygen然后三次回车就可以了。<br>-P表示密码，-P ‘’ 就表示空密码，也可以不用-P参数，这样就要三车回车，用-P就一次回车。<br>它在/home/chenlb下生成.ssh目录，.ssh下有id_rsa和id_rsa.pub这样一对公私钥。</p>
+<h1 id="上传公钥到服务器端"><a href="#上传公钥到服务器端" class="headerlink" title="上传公钥到服务器端"></a>上传公钥到服务器端</h1><p>先在服务器对应用户目录下创建~/.ssh/authorized_keys目录（如果目录已存在，这一步会被略过）</p>
+<p>ssh richey@host mkdir -p .ssh/authorized_keys</p>
+<p>把客户端的公钥_rsa.pub复制到服务器端机器的.ssh/authorized_keys文件里</p>
+<pre><code>* 可以用scp复制到服务器，然后再从服务器中把从客户端复制的id_rsa.pub添加到.ssh/authorzied_keys文件里。
+
+    scp .ssh/id_rsa.pub  richey@45.xx.xx.16:/home/richey/id_rsa.pub
+
+* 或者
+
+    cat .ssh/id_rsa.pub | ssh richey@hostB &apos;cat &gt;&gt; .ssh/authorized_keys&apos;</code></pre><ul>
+<li><p>上述的创建目录并复制的操作也可以通过一个 ssh-copy-id 命令一步完成：    </p>
+<pre><code>ssh-copy-id -i ~/.ssh/id_rsa.pub aliceB@hostB</code></pre></li>
+<li><p>authorized_keys的权限要是600。</p>
+<pre><code>chmod 600 .ssh/authorized_keys</code></pre></li>
+</ul>
+<h1 id="修改SSH的配置文件"><a href="#修改SSH的配置文件" class="headerlink" title="修改SSH的配置文件"></a>修改SSH的配置文件</h1><p>配置文件位置</p>
+<pre><code>/etc/ssh/sshd_config :
+
+#RSAAuthentication yes
+#PubkeyAuthentication yes
+#AuthorizedKeysFile .ssh/authorized_keys</code></pre><p>去调上面3行前面的#，保存后重启SSH服务。</p>
+<pre><code>使用SYSVINIT初始化系统的Linux系统：service sshd restart
+使用SYSTEMD初始化系统的Linux系统：systemctl restart sshd</code></pre><p>至此服务器端已经支持使用SSH私钥证书登录。</p>
+<h1 id="关闭root用户使用密码登陆"><a href="#关闭root用户使用密码登陆" class="headerlink" title="关闭root用户使用密码登陆"></a>关闭root用户使用密码登陆</h1><p>在使用SSH Key登录验证成功后，还是为了安全，建议关闭root用户使用密码登陆，关闭的方法如下：</p>
+<p>修改SSH的配置文件/etc/ssh/sshd_config，找到下面1行：</p>
+<pre><code>PasswordAuthentication yes</code></pre><p>修改为：</p>
+<pre><code>PasswordAuthentication no</code></pre><p>保存后重启SSH服务。</p>
+<pre><code>service sshd restart</code></pre><p>好了，至此只要你保存好你的私钥（为安全，建议删除服务器端的私钥），你的服务器相比原来使用root用户加密码登陆来说已经安全多了。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/12/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/12/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" itemprop="url">Linux常用命令</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-12T00:00:00+08:00">
+                2019-03-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/03/12/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/12/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/03/12/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" class="leancloud_visitors" data-flag-title="Linux常用命令">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="1、查找文件"><a href="#1、查找文件" class="headerlink" title="1、查找文件"></a>1、查找文件</h4><pre><code>find . -name &quot;*.xml&quot; 递归查找所有的xml文件
+find / -name filename.txt 根据名称查找/目录下的filename.txt文件。
+find . -name &quot;*.xml&quot; |xargs grep &quot;hello world&quot; 递归查找所有文件内容中包含hello world的xml文件
+find ./ -size 0 | xargs rm -f &amp;amp; 删除文件大小为零的文件
+grep -H &apos;spring&apos; *.xml 查找所以有的包含spring的xml文件
+ls -l | grep &apos;.jar&apos; 查找当前目录中的所有jar文件
+grep &apos;test&apos; d* 显示所有以d开头的文件中包含test的行。
+grep &apos;test&apos; aa bb cc 显示在aa，bb，cc文件中匹配test的行。
+grep &apos;[a-z]\{5\}&apos; aa 显示所有包含每个字符串至少有5个连续小写字符的字符串的行。</code></pre><h4 id="2、查看一个程序是否运行"><a href="#2、查看一个程序是否运行" class="headerlink" title="2、查看一个程序是否运行"></a>2、查看一个程序是否运行</h4><pre><code>ps –ef|grep tomcat 查看所有有关tomcat的进程</code></pre><h4 id="3、终止线程"><a href="#3、终止线程" class="headerlink" title="3、终止线程"></a>3、终止线程</h4><pre><code>kill -9 19979 终止线程号位19979的进程</code></pre><h4 id="4、查看文件，包含隐藏文件"><a href="#4、查看文件，包含隐藏文件" class="headerlink" title="4、查看文件，包含隐藏文件"></a>4、查看文件，包含隐藏文件</h4><pre><code>ls -al</code></pre><h4 id="5、当前工作目录"><a href="#5、当前工作目录" class="headerlink" title="5、当前工作目录"></a>5、当前工作目录</h4><pre><code>pwd</code></pre><h4 id="6、创建目录"><a href="#6、创建目录" class="headerlink" title="6、创建目录"></a>6、创建目录</h4><pre><code>mkdir newfolder</code></pre><h4 id="7、复制文件"><a href="#7、复制文件" class="headerlink" title="7、复制文件"></a>7、复制文件</h4><pre><code>cp source dest 复制文件
+cp -r sourceFolder targetFolder 递归复制整个文件夹
+scp sourecFile romoteUserName@remoteIp:remoteAddr 远程拷贝</code></pre><h4 id="8、删除目录"><a href="#8、删除目录" class="headerlink" title="8、删除目录"></a>8、删除目录</h4><pre><code>rmdir deleteEmptyFolder 删除空目录
+rm -rf deleteFile 递归删除目录中所有内容</code></pre><h4 id="9、重命令"><a href="#9、重命令" class="headerlink" title="9、重命令"></a>9、重命令</h4><pre><code>mv oldNameFile newNameFile</code></pre><h4 id="10、移动文件"><a href="#10、移动文件" class="headerlink" title="10、移动文件"></a>10、移动文件</h4><pre><code>mv /temp/movefile /targetFolder</code></pre><h4 id="11、切换用户"><a href="#11、切换用户" class="headerlink" title="11、切换用户"></a>11、切换用户</h4><pre><code>su -username</code></pre><h4 id="12、修改文件权限"><a href="#12、修改文件权限" class="headerlink" title="12、修改文件权限"></a>12、修改文件权限</h4><pre><code>chmod 777 file.java //file.java的权限-rwxrwxrwx，r表示读、w表示写、x表示可
+执行</code></pre><h4 id="13、压缩文件"><a href="#13、压缩文件" class="headerlink" title="13、压缩文件"></a>13、压缩文件</h4><pre><code>tar -czf test.tar.gz /test1 /test2</code></pre><h4 id="14、列出压缩文件列表"><a href="#14、列出压缩文件列表" class="headerlink" title="14、列出压缩文件列表"></a>14、列出压缩文件列表</h4><pre><code>tar -tzf test.tar.gz</code></pre><h4 id="15、解压文件"><a href="#15、解压文件" class="headerlink" title="15、解压文件"></a>15、解压文件</h4><pre><code>tar -xvzf test.tar.gz</code></pre><h4 id="16、查看文件头10行"><a href="#16、查看文件头10行" class="headerlink" title="16、查看文件头10行"></a>16、查看文件头10行</h4><pre><code>head -n 10 example.txt</code></pre><h4 id="17、查看文件尾10行"><a href="#17、查看文件尾10行" class="headerlink" title="17、查看文件尾10行"></a>17、查看文件尾10行</h4><pre><code>tail -n 10 example.txt</code></pre><h4 id="18、使用超级管理员身份执行命令"><a href="#18、使用超级管理员身份执行命令" class="headerlink" title="18、使用超级管理员身份执行命令"></a>18、使用超级管理员身份执行命令</h4><pre><code>sudo rm a.txt 使用管理员身份删除文件</code></pre><h4 id="19、查看日志类型文件"><a href="#19、查看日志类型文件" class="headerlink" title="19、查看日志类型文件"></a>19、查看日志类型文件</h4><pre><code>tail -f exmaple.log //这个命令会自动显示新增内容，屏幕只显示10行内容的（可设置）。</code></pre><h4 id="20、查看端口占用情况"><a href="#20、查看端口占用情况" class="headerlink" title="20、查看端口占用情况"></a>20、查看端口占用情况</h4><pre><code>netstat -tlnp | grep 8080 查看端口8080的使用情况</code></pre><ul>
+<li><p>打开端口</p>
+<p>  iptables -A INPUT -ptcp –dport  端口号 -j ACCEPT</p>
+</li>
+<li><p>关闭端口</p>
+<p>  iptables -A INPUT -p tcp –drop 端口号 -j DROP</p>
+<p>  iptables -A OUTPUT -p tcp –dport 端口号 -j DROP</p>
+</li>
+<li><p>demo打开23端口（即telnet端口）</p>
+<p>  nc -lp23</p>
+</li>
+</ul>
+<h4 id="21、查看端口属于哪个程序"><a href="#21、查看端口属于哪个程序" class="headerlink" title="21、查看端口属于哪个程序"></a>21、查看端口属于哪个程序</h4><pre><code>lsof -i :8080</code></pre><h4 id="22、查看进程"><a href="#22、查看进程" class="headerlink" title="22、查看进程"></a>22、查看进程</h4><pre><code>ps aux|grep java 查看java进程
+ps aux 查看所有进程</code></pre><h4 id="23、以树状图列出目录的内容"><a href="#23、以树状图列出目录的内容" class="headerlink" title="23、以树状图列出目录的内容"></a>23、以树状图列出目录的内容</h4><pre><code>tree a
+
+ps:Mac下使用tree命令
+
+http://www.hollischuang.com/archives/546</code></pre><h4 id="24、文件下载"><a href="#24、文件下载" class="headerlink" title="24、文件下载"></a>24、文件下载</h4><pre><code>wget http://file.tgz
+curl http://file.tgz
+
+mac下安装wget命令
+
+http://www.hollischuang.com/archives/548</code></pre><h4 id="25、网络检测"><a href="#25、网络检测" class="headerlink" title="25、网络检测"></a>25、网络检测</h4><pre><code>ping www.just-ping.com</code></pre><h4 id="26、远程登录"><a href="#26、远程登录" class="headerlink" title="26、远程登录"></a>26、远程登录</h4><pre><code>ssh userName@ip</code></pre><h4 id="27、打印信息"><a href="#27、打印信息" class="headerlink" title="27、打印信息"></a>27、打印信息</h4><pre><code>echo $JAVA_HOME 打印java home环境变量的值</code></pre><h4 id="28、java-常用命令"><a href="#28、java-常用命令" class="headerlink" title="28、java 常用命令"></a>28、java 常用命令</h4><pre><code>java javac jps ,jstat ,jmap, jstack
+
+jps:http://www.hollischuang.com/archives/105
+jstat:http://www.hollischuang.com/archives/481
+jmap:http://www.hollischuang.com/archives/303
+jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看所有的可用服务"><a href="#29、查看所有的可用服务" class="headerlink" title="29、查看所有的可用服务"></a>29、查看所有的可用服务</h4><pre><code>systemctl list-unit-files |grep service |grep enable</code></pre><h4 id="30、关闭服务"><a href="#30、关闭服务" class="headerlink" title="30、关闭服务"></a>30、关闭服务</h4><pre><code>systemctl stop ipatables</code></pre><h4 id="30、开机不启动"><a href="#30、开机不启动" class="headerlink" title="30、开机不启动"></a>30、开机不启动</h4><pre><code>systemctl disable iptables</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/10/Linux%E4%B8%8Biptables%20%E7%A6%81%E6%AD%A2%E7%AB%AF%E5%8F%A3%E5%92%8C%E5%BC%80%E6%94%BE%E7%AB%AF%E5%8F%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -679,178 +1577,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/08/hexo%E5%91%BD%E4%BB%A4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/08/hexo%E5%91%BD%E4%BB%A4/" itemprop="url">hexo命令</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-08T00:00:00+08:00">
-                2019-03-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%B6%E5%AE%83/" itemprop="url" rel="index">
-                    <span itemprop="name">其它</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/03/08/hexo%E5%91%BD%E4%BB%A4/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/08/hexo%E5%91%BD%E4%BB%A4/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/03/08/hexo%E5%91%BD%E4%BB%A4/" class="leancloud_visitors" data-flag-title="hexo命令">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <ul>
-<li><p>hexo g 生成静态文件</p>
-</li>
-<li><p>hexo s 启动本地服务</p>
-</li>
-<li><p>hexo clean 清除缓存文件(db.json)和已生成的静态文件(public)</p>
-</li>
-<li><p>hexo g -d 生成文件并部署到github</p>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/08/Java%20Stream/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1169,6 +1895,178 @@
 <p><a href="http://www.importnew.com/25315.html" target="_blank" rel="noopener">http://www.importnew.com/25315.html</a></p>
 <h1 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h1><p><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#package.description" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#package.description</a><br><a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html</a><br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html</a><br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html</a><br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collectors.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collectors.html</a></p>
 <p><a href="http://www.importnew.com/24237.html" target="_blank" rel="noopener">http://www.importnew.com/24237.html</a><br><a href="http://www.importnew.com/24245.html" target="_blank" rel="noopener">http://www.importnew.com/24245.html</a><br><a href="http://www.importnew.com/24235.html" target="_blank" rel="noopener">http://www.importnew.com/24235.html</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/08/hexo%E5%91%BD%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/08/hexo%E5%91%BD%E4%BB%A4/" itemprop="url">hexo命令</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-08T00:00:00+08:00">
+                2019-03-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%85%B6%E5%AE%83/" itemprop="url" rel="index">
+                    <span itemprop="name">其它</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/03/08/hexo%E5%91%BD%E4%BB%A4/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/08/hexo%E5%91%BD%E4%BB%A4/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/03/08/hexo%E5%91%BD%E4%BB%A4/" class="leancloud_visitors" data-flag-title="hexo命令">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <ul>
+<li><p>hexo g 生成静态文件</p>
+</li>
+<li><p>hexo s 启动本地服务</p>
+</li>
+<li><p>hexo clean 清除缓存文件(db.json)和已生成的静态文件(public)</p>
+</li>
+<li><p>hexo g -d 生成文件并部署到github</p>
+</li>
+</ul>
 
           
         
@@ -1955,675 +2853,6 @@ docker.io/ubuntu    16.04               00fd29ccc6f1        3 weeks ago         
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/02/06/Docker%EF%BC%884%EF%BC%89-%20%E5%85%A5%E9%97%A8%EF%BC%88%E5%91%BD%E4%BB%A4%EF%BC%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/02/06/Docker%EF%BC%884%EF%BC%89-%20%E5%85%A5%E9%97%A8%EF%BC%88%E5%91%BD%E4%BB%A4%EF%BC%89/" itemprop="url">Docker（4）- 入门（命令）</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-06T00:00:00+08:00">
-                2019-02-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%B9%E5%99%A8/" itemprop="url" rel="index">
-                    <span itemprop="name">容器</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/02/06/Docker%EF%BC%884%EF%BC%89-%20%E5%85%A5%E9%97%A8%EF%BC%88%E5%91%BD%E4%BB%A4%EF%BC%89/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/02/06/Docker%EF%BC%884%EF%BC%89-%20%E5%85%A5%E9%97%A8%EF%BC%88%E5%91%BD%E4%BB%A4%EF%BC%89/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/02/06/Docker%EF%BC%884%EF%BC%89-%20%E5%85%A5%E9%97%A8%EF%BC%88%E5%91%BD%E4%BB%A4%EF%BC%89/" class="leancloud_visitors" data-flag-title="Docker（4）- 入门（命令）">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="启动和关闭守护进程"><a href="#启动和关闭守护进程" class="headerlink" title="启动和关闭守护进程"></a>启动和关闭守护进程</h1><h2 id="在Red-Hat系发行版中启动Docker守护进程"><a href="#在Red-Hat系发行版中启动Docker守护进程" class="headerlink" title="在Red Hat系发行版中启动Docker守护进程"></a>在Red Hat系发行版中启动Docker守护进程</h2><h3 id="在RHEL-6或CentOS-6中"><a href="#在RHEL-6或CentOS-6中" class="headerlink" title="在RHEL 6或CentOS 6中"></a>在RHEL 6或CentOS 6中</h3><ul>
-<li><p>启动/关闭Docker服务</p>
-<pre><code>sudo service docker start　　　　
-sudo service docker stop</code></pre></li>
-<li><p>确保在RHEL 6中开机启动Docker</p>
-<pre><code>sudo service docker enable</code></pre></li>
-</ul>
-<h3 id="在RHEL-7或Fedora中"><a href="#在RHEL-7或Fedora中" class="headerlink" title="在RHEL 7或Fedora中"></a>在RHEL 7或Fedora中</h3><ul>
-<li><p>启动/关闭Docker服务</p>
-<pre><code>sudo systemctl start docker
-sudo systemctl stop docker</code></pre></li>
-</ul>
-<ul>
-<li><p>在系统开机自动启动Docker服务</p>
-<pre><code>sudo systemctl enable docker</code></pre></li>
-<li><p>检查Docker是否正确安装</p>
-<pre><code>sudo docker info</code></pre></li>
-</ul>
-<h1 id="创建并启动容器"><a href="#创建并启动容器" class="headerlink" title="创建并启动容器"></a>创建并启动容器</h1><ul>
-<li><p>==docker run==命令提供了Docker容器的创建到启动的功能</p>
-<pre><code>docker run -i -t ubuntu /bin/bash</code></pre><ul>
-<li><p>-i 标志保证STDIN是开启的    </p>
-</li>
-<li><p>-t 则告诉Docker要为创建的容器分配一个伪tty终端。</p>
-</li>
-<li><p>若要在命令行下创建一个能与之进行交互的容，而不是一个运后台服务的容器，这两个参数是最基本的参数</p>
-</li>
-<li><p>ubuntu 告诉Docker我们要基于ubuntu镜像来创建容器(ubuntu镜像是一个常备镜像，也可以称之为“基础”镜像)。首先docker会检查本地是否有ubuntu镜像，如果没有的话就会去Docker Hub中找，找到后会下载并保存该镜像到本地宿主机中。</p>
-</li>
-<li><p>/bin/bash 告诉Docker在新容器中要运行什么命令</p>
-</li>
-</ul>
-</li>
-</ul>
-<h1 id="使用容器"><a href="#使用容器" class="headerlink" title="使用容器"></a>使用容器</h1><ul>
-<li><p>检查容器的主机名</p>
-<pre><code>homename //可以看到容器的主机名就是容器的ID</code></pre></li>
-<li><p>查看容器的/etc/hosts文件，发现Docker已经在hosts文件中为该容器的ip添加来一条主机配置项</p>
-</li>
-</ul>
-<h1 id="查看当前系统中的容器列表"><a href="#查看当前系统中的容器列表" class="headerlink" title="查看当前系统中的容器列表"></a>查看当前系统中的容器列表</h1><pre><code>docker ps -a //查看所有容器
-
-docker ps //只能看到正在运行的容器
-
-docker ps -l //列出最后一个运行的容器
-
-docker ps -n x //显示最后x个容器，不论这些容器正在运行还是已停止</code></pre><h1 id="容器命名"><a href="#容器命名" class="headerlink" title="容器命名"></a>容器命名</h1><ul>
-<li><p>Docker会为我们创建的每一个容器自动生成一个随机的名称</p>
-</li>
-<li><p>可以通过 –name 参数指定容器的名字</p>
-<pre><code>docker run --name my_container -i -t ubuntu /bin/bash</code></pre></li>
-</ul>
-<h1 id="删除已存在容器"><a href="#删除已存在容器" class="headerlink" title="删除已存在容器"></a>删除已存在容器</h1><pre><code>docker rm my_container
-
-docker rm &apos;sudo docker ps -a -q&apos;</code></pre><h1 id="重新启动已停止的容器"><a href="#重新启动已停止的容器" class="headerlink" title="重新启动已停止的容器"></a>重新启动已停止的容器</h1><pre><code>sudo docker start my_container
-
-sudo docker restart my_container //也可以重启一个容器</code></pre><h1 id="附着到容器上"><a href="#附着到容器上" class="headerlink" title="附着到容器上"></a>附着到容器上</h1><ul>
-<li><p>我们可以用docker attach命令，附着到容器的会话上</p>
-<pre><code>sudo docker attach my_container</code></pre></li>
-<li><p>注意：如果退出容器的shell，==容器会停止运行==</p>
-</li>
-</ul>
-<h1 id="创建守护式容器"><a href="#创建守护式容器" class="headerlink" title="创建守护式容器"></a>创建守护式容器</h1><ul>
-<li><p>守护式容器没有交互式会话，非常适合运行应用程序和服务</p>
-<pre><code>sudo docker run --name daemon_container -d ubuntu /bin/sh -c &quot;while true; do echo hello world; sleep 1; down&quot;</code></pre></li>
-<li><p>使用来-d参数，因此Docker会将容器放在后台运行。</p>
-</li>
-</ul>
-<h1 id="获取docker容器的日志"><a href="#获取docker容器的日志" class="headerlink" title="获取docker容器的日志"></a>获取docker容器的日志</h1><ul>
-<li><p>可以用docker logs命令来获取容器的日志</p>
-<pre><code>docker logs daemon_container //输出最后几条日志并返回
-
-docker logs -f daemon_container //类似于tail -f
-
-docker logs --tail 10 daemon_container //最后10行
-
-docker logs --tail 0 -f daemon_container //跟踪容器的最新日志
-
-docker logs -ft daemon_containner //-t 为日志加上时间戳</code></pre></li>
-</ul>
-<h1 id="查看容器内的进程"><a href="#查看容器内的进程" class="headerlink" title="查看容器内的进程"></a>查看容器内的进程</h1><pre><code>sudo docker top daemon_containner</code></pre><h1 id="Docker统计信息"><a href="#Docker统计信息" class="headerlink" title="Docker统计信息"></a>Docker统计信息</h1><pre><code>docker stats</code></pre><h1 id="在容器内部运行进程"><a href="#在容器内部运行进程" class="headerlink" title="在容器内部运行进程"></a>在容器内部运行进程</h1><ul>
-<li><p>可以通过docker exec命令在容器内部额外启动新进程</p>
-</li>
-<li><p>可以在容器中运行的进程有两种类型：后台任务和交互任务</p>
-<ul>
-<li><p>后台命令</p>
-<pre><code>sudo docker exec -d richey_ubuntu_container touch /etc/new_test_config_file</code></pre></li>
-<li><p>交互式命令</p>
-<pre><code>sudo docker exec -t -i richey_ubuntu_container /bin/bash</code></pre></li>
-</ul>
-</li>
-</ul>
-<h1 id="自动重启容器"><a href="#自动重启容器" class="headerlink" title="自动重启容器"></a>自动重启容器</h1><ul>
-<li><p>可以通过–restart标志自动重启容器</p>
-<pre><code>sudo docker run --restart=always --name daemon_container -d ubuntu /bin/sh -c &quot;while true; do echo hello world; sleep 1; down&quot;
-
-sudo docker run --restart=on-failure:5 --name daemon_container -d ubuntu /bin/sh -c &quot;while true; do echo hello world; sleep 1; down&quot;</code></pre></li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/02/05/Docker%EF%BC%883%EF%BC%89-%20%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/02/05/Docker%EF%BC%883%EF%BC%89-%20%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B/" itemprop="url">Docker（3）- 守护进程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-05T00:00:00+08:00">
-                2019-02-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%B9%E5%99%A8/" itemprop="url" rel="index">
-                    <span itemprop="name">容器</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/02/05/Docker%EF%BC%883%EF%BC%89-%20%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/02/05/Docker%EF%BC%883%EF%BC%89-%20%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/02/05/Docker%EF%BC%883%EF%BC%89-%20%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B/" class="leancloud_visitors" data-flag-title="Docker（3）- 守护进程">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="Docker守护进程"><a href="#Docker守护进程" class="headerlink" title="Docker守护进程"></a>Docker守护进程</h1><ul>
-<li><p>Docker软件包安装完毕后，默认会立即启动Docker守护进程</p>
-</li>
-<li><p>守护进程监听/var/run/docker.sock这个Unix套接字文件，来获取来自客户端Docker的请求</p>
-</li>
-<li><p>如果系统中存在名为docker的用户组的话，Docker则会将该套接字文件的所有者设为该用户组，这样docker用户组的所有者就可以直接运行Docker，而无需使用Docker命令了。</p>
-</li>
-<li><p>安装完Docker后要确认Docker的守护进程是否运行</p>
-</li>
-<li><p>Docker进程是Docker守护进程的客户端程序</p>
-</li>
-<li><p>使用 ==docker daemon==命令控制Docker守护进程（该命令已经过时了，1.6后会被弃用）</p>
-</li>
-</ul>
-<h2 id="配置Docker守护进程"><a href="#配置Docker守护进程" class="headerlink" title="配置Docker守护进程"></a>配置Docker守护进程</h2><ul>
-<li><p>运行Docker守护进程时，可以用-H标志调整守护进程绑定监听接口的方式</p>
-</li>
-<li><p>使用-H标志指定不同的网络接口和端口配置</p>
-<pre><code>sudo docker daemon -H tcp:0.0.0.0:2375</code></pre></li>
-<li><p>如果把守护进程或端口改成4200，那么运行客户端时就必须指定</p>
-<pre><code>docker -H :4200</code></pre></li>
-<li><p>如果不想每次运行客户端都加上-H标志，可以设置DOCKER_HOST环境变量来省略此步骤</p>
-<pre><code>export DOCKER_HOST=&quot;tcp://0.0.0.0:2375&quot;</code></pre></li>
-<li><p>也能通过-H标志指定一个Unix套接字路径</p>
-<pre><code>sudo docker daemon -H unix://home/docker/docker.sock
-
-sudo docker daemon -H tcp:0.0.0.0:2375 -H unix://home/docker/docker.sock</code></pre></li>
-<li><p>如果Docker运行在代理或者公司防火墙之后，也可以使用THHPS_PROXY、HTTP_PROX和NO_PROXY选项来控制守护进程如何连接</p>
-</li>
-<li><p>还可以用-D标志来输出Docker守护进程更详细的信息</p>
-<pre><code>sudo docker daemon -D</code></pre></li>
-</ul>
-<h2 id="检查Docker守护进程是否在运行"><a href="#检查Docker守护进程是否在运行" class="headerlink" title="检查Docker守护进程是否在运行"></a>检查Docker守护进程是否在运行</h2><h3 id="在Ubuntu中"><a href="#在Ubuntu中" class="headerlink" title="在Ubuntu中"></a>在Ubuntu中</h3><ul>
-<li><p>如果Docker是通过软件包安装的话，可以用Upstart的status命令来检查Docker守护进程是否在运行及启动停止Docker进程等操作</p>
-<pre><code>sudo status docker
-
-sudo stop docker
-
-sudo start docker</code></pre></li>
-</ul>
-<h3 id="在Red-Hat和Fedora中启动和停止Docker"><a href="#在Red-Hat和Fedora中启动和停止Docker" class="headerlink" title="在Red Hat和Fedora中启动和停止Docker"></a>在Red Hat和Fedora中启动和停止Docker</h3><pre><code>sudo service docker stop
-
-sudo service docker start</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/02/04/Docker%EF%BC%882%EF%BC%89-%20%E5%AE%89%E8%A3%85/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/02/04/Docker%EF%BC%882%EF%BC%89-%20%E5%AE%89%E8%A3%85/" itemprop="url">Docker（2）- 安装</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-04T00:00:00+08:00">
-                2019-02-04
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%B9%E5%99%A8/" itemprop="url" rel="index">
-                    <span itemprop="name">容器</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/02/04/Docker%EF%BC%882%EF%BC%89-%20%E5%AE%89%E8%A3%85/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/02/04/Docker%EF%BC%882%EF%BC%89-%20%E5%AE%89%E8%A3%85/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/02/04/Docker%EF%BC%882%EF%BC%89-%20%E5%AE%89%E8%A3%85/" class="leancloud_visitors" data-flag-title="Docker（2）- 安装">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="安装Docker"><a href="#安装Docker" class="headerlink" title="安装Docker"></a>安装Docker</h1><ul>
-<li><p>目前Docker团队推荐在UBuntu、Debian或者RHEL系列（CentOS、Fedora等）宿主机中部署Docker。</p>
-</li>
-<li><p>Docker也支持一些云平台</p>
-</li>
-<li><p>Docker目前只能运行在64位CPU架构的计算机上</p>
-</li>
-<li><p>运行Linux3.8或更高版本的内核</p>
-</li>
-</ul>
-<h2 id="检查前提条件"><a href="#检查前提条件" class="headerlink" title="检查前提条件"></a>检查前提条件</h2><ul>
-<li><p>内核3.8及以上</p>
-<pre><code>uname -a</code></pre></li>
-</ul>
-<h2 id="在Ubuntu和Debian中安装Docker"><a href="#在Ubuntu和Debian中安装Docker" class="headerlink" title="在Ubuntu和Debian中安装Docker"></a>在Ubuntu和Debian中安装Docker</h2><h2 id="在Red-Hat和Red-Hat系发行办版中安装Docker"><a href="#在Red-Hat和Red-Hat系发行办版中安装Docker" class="headerlink" title="在Red Hat和Red Hat系发行办版中安装Docker"></a>在Red Hat和Red Hat系发行办版中安装Docker</h2><h3 id="1、在RHEL-6和CentOS-6中安装Docker"><a href="#1、在RHEL-6和CentOS-6中安装Docker" class="headerlink" title="1、在RHEL 6和CentOS 6中安装Docker"></a>1、在RHEL 6和CentOS 6中安装Docker</h3><h3 id="2、在RHEL-7中安装Docker"><a href="#2、在RHEL-7中安装Docker" class="headerlink" title="2、在RHEL 7中安装Docker"></a>2、在RHEL 7中安装Docker</h3><h3 id="3、在Fedora中安装Docker"><a href="#3、在Fedora中安装Docker" class="headerlink" title="3、在Fedora中安装Docker"></a>3、在Fedora中安装Docker</h3><ul>
-<li><p>在Fedora 19安装Docker</p>
-<pre><code>sudo yum -y install docker-io</code></pre></li>
-<li><p>在Fedora 20或更高版本中安装Docker</p>
-<pre><code>sudo yum -y install docker</code></pre></li>
-<li><p>在Fodora 21中，软件包名称又回退到了docker-io</p>
-<pre><code>sudo yum -y install docker-io</code></pre></li>
-<li><p>最后到了Fedora 22，软件包名称则又变回了docker</p>
-<pre><code>sudo dnf install docker</code></pre></li>
-</ul>
-<blockquote>
-<p>具体的安装文档可以在官方文档中找到</p>
-</blockquote>
-<p><a href="https://docs.docker.com/engine/installation/linux/docker-ee/oracle/" target="_blank" rel="noopener">在Linux上安装Docker的文档</a></p>
-<blockquote>
-<p>也可以直接从Docker官方网站下载RHEL、CentOS和Fedora用的罪行RPM包</p>
-</blockquote>
-<h2 id="Docker安装脚本"><a href="#Docker安装脚本" class="headerlink" title="Docker安装脚本"></a>Docker安装脚本</h2><ul>
-<li><p>使用远程安装脚本在宿主机上安装Docker，<a href="get.docker.com">get.docker.com</a>网站获取这个安装脚本</p>
-</li>
-<li><p>目前该脚本只支持在Ubuntu、Fedora、Debian和Gentoo中安装Docker</p>
-</li>
-</ul>
-<h3 id="首先要确认curl命令已经安装"><a href="#首先要确认curl命令已经安装" class="headerlink" title="首先要确认curl命令已经安装"></a>首先要确认curl命令已经安装</h3><pre><code>whereis curl</code></pre><h3 id="安装curl"><a href="#安装curl" class="headerlink" title="安装curl"></a>安装curl</h3><ul>
-<li><p>Ubuntu中安装     </p>
-<pre><code>sudo apt-get -y install curl</code></pre></li>
-<li><p>Fedora中安装curl</p>
-<pre><code>sudo dnf install curl</code></pre></li>
-</ul>
-<h3 id="利用安装脚本来安装Docker"><a href="#利用安装脚本来安装Docker" class="headerlink" title="利用安装脚本来安装Docker"></a>利用安装脚本来安装Docker</h3><pre><code>curl https://get.docker.com/ | sudo sh</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2678,7 +2907,7 @@ sudo service docker start</code></pre>
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">107</span>
+                  <span class="site-state-item-count">110</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2689,7 +2918,7 @@ sudo service docker start</code></pre>
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2700,7 +2929,7 @@ sudo service docker start</code></pre>
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-count">38</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

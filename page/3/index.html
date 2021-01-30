@@ -288,6 +288,651 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/19/SpringSocial(2)-%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/19/SpringSocial(2)-%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E5%8E%9F%E7%90%86/" itemprop="url">SpringSocial(2)-第三方登录原理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-19T00:00:00+08:00">
+                2019-06-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/06/19/SpringSocial(2)-%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E5%8E%9F%E7%90%86/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/19/SpringSocial(2)-%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E5%8E%9F%E7%90%86/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/06/19/SpringSocial(2)-%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E5%8E%9F%E7%90%86/" class="leancloud_visitors" data-flag-title="SpringSocial(2)-第三方登录原理">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><img src="http://on-img.com/chart_image/5b9ccb5de4b0bd4db93d9616.png" alt="image"></p>
+<p>对照上面的流程我们来分析一下SpringSocial实现第三方登录的原理:</p>
+<ul>
+<li>登录的实现还是用的SpringSecurity,SpringSocial只不过是将第三方登录的过程对接到了SpringSecurity</li>
+<li>既然是SpringSecurity,拿核心依然是过滤器链,SpringSocial提供了SocialAuthenticationFilter.</li>
+<li>SpringSocial将OAuth2认证流程封装,最终产出的结果就是标准的Connection,Connection里面包含了用户的信息</li>
+<li>SocialAuthenticationService封装了取Connection的过程</li>
+<li>拿到Connection相当于拿到了用户登录的Authentication,但此时的Authentication是未认证通过的,到这里相当于只是拿到了用于用于登录的数据</li>
+<li>处理用户登录,当然还是要回到SpringSecurity的授权流程,通过AuthenticationManager,找到对应的AthenticationProvider,这里是SpringSocial提供了SocialAuthenticationProvider处理登录信息.</li>
+<li>Connection信息维护了一个第三方用户和当前服务业务用户的一个映射关系,拿到connection,我们就可以拿到用户在当前服务的userId</li>
+<li>有了userId,我们就可以通过SocialUserDetailService来得到SocialUserDeail,到这里相当于拿到了用户的信息</li>
+<li>将用户信息维护进Connection再继续走授权流程,处理session等,整个第三方登录过程大致就是这样.</li>
+</ul>
+<p>总结:整个过程其实就是整合了SpringSecurity认证流程以及SpringSocial实现OAuth2的流程,之后前的文章我们已经分别分析了SpringSecurity及SpringSocial,流程万变不离其宗,流程和原理知道了,如果实际的开发过程中遇到问题,看一下源码也是非常便捷的.</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/17/SpringSocial(1)-%E5%BC%80%E5%8F%91QQ%E7%99%BB%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/17/SpringSocial(1)-%E5%BC%80%E5%8F%91QQ%E7%99%BB%E5%BD%95/" itemprop="url">SpringSocial(1)-开发QQ登录</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-17T00:00:00+08:00">
+                2019-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/06/17/SpringSocial(1)-%E5%BC%80%E5%8F%91QQ%E7%99%BB%E5%BD%95/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/17/SpringSocial(1)-%E5%BC%80%E5%8F%91QQ%E7%99%BB%E5%BD%95/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/06/17/SpringSocial(1)-%E5%BC%80%E5%8F%91QQ%E7%99%BB%E5%BD%95/" class="leancloud_visitors" data-flag-title="SpringSocial(1)-开发QQ登录">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在用SpringSocial开发QQ第三方登录之前，我们先来回顾下SpringSocial实现OAuth第三方登录的流程：</p>
+<p><img src="http://ogiythg18.bkt.clouddn.com/SpringSocial%E5%AE%9E%E7%8E%B0OAuah%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81.png" alt="image"></p>
+<p>SpringSocial是同各种第三方服务进行对接最终得到的是标准的Connectionn，并最终保存到db中。</p>
+<p>我们要做的就是提供生成Connection所需要的各种接口的实现类，这些接口的作用上一篇已经说了，其中SpringSocial为一些接口已经提供了抽象实现，我们继承就可以了。</p>
+<p>代码细节就不说了，<a href="https://github.com/liubaolin/evolutionary/tree/master/evolutionary-security" target="_blank" rel="noopener">具体可以去github看</a>，这里分析下这个流程中几个重要的地方：</p>
+<ul>
+<li>在实现号所有接口后，提供具体配置</li>
+</ul>
+<pre><code>@Configuration
+@ConditionalOnProperty(prefix = &quot;evolutionary.security.social.qq&quot;, name = &quot;app-id&quot;)
+public class QQAutoConfig extends SocialAutoConfigurerAdapter {
+
+    @Autowired
+    private SecurityProperties securityProperties;
+
+    @Override
+    protected ConnectionFactory&lt;?&gt; createConnectionFactory() {
+        QQProperties qqConfig = securityProperties.getSocial().getQq();
+        return new QQConnectionFactory(qqConfig.getProviderId(), qqConfig.getAppId(), qqConfig.getAppSecret());
+    }
+}</code></pre><ul>
+<li><p>数据库表</p>
+<p>  我们在JdbcUsersConnectionRepository相同的包路径下可以看到JdbcUsersConnectionRepository.sql，没错，考出来执行一下就可以了。</p>
+</li>
+<li><p>SocialCoinfig</p>
+</li>
+</ul>
+<pre><code>@Configuration
+@EnableSocial
+public class SocialConfig extends SocialConfigurerAdapter {
+
+    @Autowired
+    private DataSource dataSource;
+
+    @Override
+    public UsersConnectionRepository getUsersConnectionRepository(ConnectionFactoryLocator connectionFactoryLocator) {
+        JdbcUsersConnectionRepository repository = new JdbcUsersConnectionRepository(dataSource, connectionFactoryLocator, Encryptors.noOpText());
+//        repository.setTablePrefix(&quot;evolutionary_&quot;);
+        return repository;
+    }
+
+    @Bean
+    public SpringSocialConfigurer evolutionarySocialSecurityConfig() {
+        return new SpringSocialConfigurer();
+    }
+
+}</code></pre><ul>
+<li>将SpringSocial的配置配到SpringSecurity中</li>
+</ul>
+<pre><code>protected void configure(HttpSecurity http) throws Exception {
+
+    http.apply(evolutionarySocialConfigurer)；
+
+}</code></pre><ul>
+<li><p>前端页面</p>
+<pre><code>&lt;h3&gt;社交登录&lt;/h3&gt;
+&lt;a href=&quot;/auth/qq&quot;&gt;QQ登录&lt;/a&gt;</code></pre></li>
+</ul>
+<pre><code>注意我们页面写的这个QQ登录的地址“/auth/qq&quot;,前面的”/auth/“是SpringSocial的默认请求处理地址前缀，是在SpringSocialAuthenticationFilter中提供的默认路径。 后面的qq是我们自己提供的，在构建ConnectionFactory时，传入了，实际上该参数就是我们封装的服务提供商Provider的标识。
+
+
+public class QQProperties extends SocialProperties {
+
+    /**
+     * 用于区分不同的provider的
+     */
+    private String providerId = &quot;qq&quot;;
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
+    }
+}
+
+ConnectionFactory需要传入qqConfig.getProviderId()
+
+@Configuration
+@ConditionalOnProperty(prefix = &quot;evolutionary.security.social.qq&quot;, name = &quot;app-id&quot;)
+public class QQAutoConfig extends SocialAutoConfigurerAdapter {
+
+    @Autowired
+    private SecurityProperties securityProperties;
+
+    @Override
+    protected ConnectionFactory&lt;?&gt; createConnectionFactory() {
+        QQProperties qqConfig = securityProperties.getSocial().getQq();
+        return new QQConnectionFactory(qqConfig.getProviderId(), qqConfig.getAppId(), qqConfig.getAppSecret());
+    }
+}</code></pre><p><img src="http://ogiythg18.bkt.clouddn.com/OAuth%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95.png" alt="image"></p>
+<p><strong>注意：</strong></p>
+<p>”/auth/qq“这个地址就是上图中触发第一步：将用户导向认证服务器的地址，同时也是第三步：用户同意授权后跳转回来的地址。</p>
+<h3 id="修改SpringSocial默认请求拦截路径-auth"><a href="#修改SpringSocial默认请求拦截路径-auth" class="headerlink" title="修改SpringSocial默认请求拦截路径/auth"></a>修改SpringSocial默认请求拦截路径/auth</h3><pre><code>@Configuration
+@EnableSocial
+public class SocialConfig extends SocialConfigurerAdapter {
+
+    @Autowired
+    private DataSource dataSource;
+
+    @Override
+    public UsersConnectionRepository getUsersConnectionRepository(ConnectionFactoryLocator connectionFactoryLocator) {
+        JdbcUsersConnectionRepository repository = new JdbcUsersConnectionRepository(dataSource, connectionFactoryLocator, Encryptors.noOpText());
+//        repository.setTablePrefix(&quot;evolutionary_&quot;);
+        return repository;
+    }
+
+    @Bean
+    public SpringSocialConfigurer evolutionarySocialSecurityConfig() {
+        return new SpringSocialConfigurer();
+    }
+
+
+}</code></pre><p>在SpringSocialConfigurer中将SpringsocialAuthenticationFilter放到了SpringSecurity的过滤器链上，并做了一些处理，源码如下：</p>
+<pre><code>http.authenticationProvider(new SocialAuthenticationProvider(usersConnectionRepository, socialUsersDetailsService)).
+addFilterBefore((Filter)this.postProcess(filter), AbstractPreAuthenticatedProcessingFilter.class);</code></pre><p>我们可以看到在加到过滤器链之前做了一个后处理操作this.postProcess(filter)，我们可以在重写这个方法，对SpringsocialAuthenticationFilter做一些定制化的操作。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/16/SpringSocial(0)-SpringSocial%E7%AE%80%E4%BB%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/16/SpringSocial(0)-SpringSocial%E7%AE%80%E4%BB%8B/" itemprop="url">SpringSocial(0)-SpringSocial简介</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-16T00:00:00+08:00">
+                2019-06-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/06/16/SpringSocial(0)-SpringSocial%E7%AE%80%E4%BB%8B/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/16/SpringSocial(0)-SpringSocial%E7%AE%80%E4%BB%8B/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/06/16/SpringSocial(0)-SpringSocial%E7%AE%80%E4%BB%8B/" class="leancloud_visitors" data-flag-title="SpringSocial(0)-SpringSocial简介">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>之前我们介绍了OAuth协议，知道了OAuth协议中的各种角色及认证流程，着重说明了授权码模式的认证。这里我们以授权码默认认证为基础说一下第三方登录的流程：</p>
+<p>在拿到令牌后，第三方应用就可以从服务提供商这里获取用户基本信息了，拿到用户基本信息后，我们构建Authentication并放到SecurityContext中，这样就完成了登录。</p>
+<p><img src="http://ogiythg18.bkt.clouddn.com/OAuth%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95.png" alt="image"></p>
+<p>这就是OAuth和Spring Security配合完成第三方登录的流程。SpringSocial将这个流程封装到了SocialAuthenticationFilter中，并放到了Spring Security的过滤器链中：</p>
+<p><img src="http://ogiythg18.bkt.clouddn.com/SocialAuthenticationFilter.png" alt="image"></p>
+<h2 id="SpringSocial开发第三方登录"><a href="#SpringSocial开发第三方登录" class="headerlink" title="SpringSocial开发第三方登录"></a>SpringSocial开发第三方登录</h2><p>在上面的OAuth第三方登录流程中，我们可以看出1-6步都需要同服务提供商交互，并并且对于不同的登录1-5步都是一样的，第6步不同的服务提供商提供的用户信息的数据结构不尽相同。</p>
+<p>我们对照图片看一下Spring Social对上面的流程做了怎样的封装：</p>
+<p><img src="http://ogiythg18.bkt.clouddn.com/SpringSocial%E5%AE%9E%E7%8E%B0OAuah%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81.png" alt="image"></p>
+<ul>
+<li><p>对于服务提供商</p>
+<ul>
+<li>SpringSocial将与服务商的交互封装进了ServiceProvider，并提供了抽象的实现AbstractOAutrh2ServiceProvider；</li>
+<li>SpringSocial将前5步操作封装进了OAuth2Operations，并提供了默认实现OAuth2Template；</li>
+<li>对于第6步获取用户信息，由于不同的服务商提供的数据格式不一样，SpringSocial提供了一个接口，以及抽象的类AbstractOAuth2ApiBinding，方便我们继承完善。</li>
+</ul>
+</li>
+<li><p>对于第三方应用</p>
+<p>  SpringSocial将从服务提供商获取用户基本信息的整个过程封装成了一个Connection：</p>
+<ul>
+<li>通过ServiceProvider取用户基信息</li>
+<li>通ApiAdapter处理适配用户信息数据</li>
+<li>通过工厂类ConnectionFactory获取Connection</li>
+<li>拿到服务提供你商提供的用户信息后，用户信息与第三方应用本身用户的映射关系存在表UserConnection中</li>
+<li>通过UsersConnectionRepository操作UserConnection</li>
+</ul>
+</li>
+</ul>
+<p>上面就是SpringSocial实现OAuth2第三方登录的流程，上面的这些接口需要为我们配合实现。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/14/SpringSecurity-%E9%80%80%E5%87%BA%E7%99%BB%E5%BD%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1504,171 +2149,6 @@ public class EvolutionaryExpiredSessionStrategy implements SessionInformationExp
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/10/%E4%BD%BF%E7%94%A8jdk%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7jvisualvm%E6%9F%A5%E7%9C%8B.hprof%E6%96%87%E4%BB%B6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/06/10/%E4%BD%BF%E7%94%A8jdk%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7jvisualvm%E6%9F%A5%E7%9C%8B.hprof%E6%96%87%E4%BB%B6/" itemprop="url">使用jdk自带工具jvisualvm查看.hprof文件</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-10T00:00:00+08:00">
-                2019-06-10
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JVM/" itemprop="url" rel="index">
-                    <span itemprop="name">JVM</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/06/10/%E4%BD%BF%E7%94%A8jdk%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7jvisualvm%E6%9F%A5%E7%9C%8B.hprof%E6%96%87%E4%BB%B6/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/10/%E4%BD%BF%E7%94%A8jdk%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7jvisualvm%E6%9F%A5%E7%9C%8B.hprof%E6%96%87%E4%BB%B6/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/06/10/%E4%BD%BF%E7%94%A8jdk%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7jvisualvm%E6%9F%A5%E7%9C%8B.hprof%E6%96%87%E4%BB%B6/" class="leancloud_visitors" data-flag-title="使用jdk自带工具jvisualvm查看.hprof文件">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>使用jdk自带的jvisualvm.exe程序来查看内存溢出文件</p>
-<p>位置：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$JAVA_HOME&#x2F;bin&#x2F;jvisualvm</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/10/Spring%20Security%EF%BC%8810%EF%BC%89%EF%BC%8D%E7%9F%AD%E4%BF%A1%E7%99%BB%E5%BD%95%E5%BC%80%E5%8F%91/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1839,344 +2319,6 @@ http.authenticationProvider(smsCodeAuthenticationProvider)
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/09/Spring%20Security%EF%BC%889%EF%BC%89%EF%BC%8D%E9%AA%8C%E8%AF%81%E7%A0%81%E5%A4%84%E7%90%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/06/09/Spring%20Security%EF%BC%889%EF%BC%89%EF%BC%8D%E9%AA%8C%E8%AF%81%E7%A0%81%E5%A4%84%E7%90%86/" itemprop="url">Spring Security（9）－验证码处理</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-09T00:00:00+08:00">
-                2019-06-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/06/09/Spring%20Security%EF%BC%889%EF%BC%89%EF%BC%8D%E9%AA%8C%E8%AF%81%E7%A0%81%E5%A4%84%E7%90%86/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/09/Spring%20Security%EF%BC%889%EF%BC%89%EF%BC%8D%E9%AA%8C%E8%AF%81%E7%A0%81%E5%A4%84%E7%90%86/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/06/09/Spring%20Security%EF%BC%889%EF%BC%89%EF%BC%8D%E9%AA%8C%E8%AF%81%E7%A0%81%E5%A4%84%E7%90%86/" class="leancloud_visitors" data-flag-title="Spring Security（9）－验证码处理">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>先看一下短信接口的代码结构图：</p>
-<p><img src="http://ogiythg18.bkt.clouddn.com/%E9%AA%8C%E8%AF%81%E7%A0%81%E5%A4%84%E7%90%86%E5%99%A8%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84%E5%9B%BE.jpg" alt="验证码处理代码结构图"></p>
-<p>这里我们将验证码的处理抽象为一层，不仅用于处理短信验证码，也处理图片验证码。同时将验证码生成的逻辑单独抽象为一层，这体现了代码分层的思想。当业务变动的时候我们可以较为灵活的修改某一层的代码即可。</p>
-<p>代码就不多说了，感兴趣可移步<a href="https://github.com/liubaolin/evolutionary/tree/master/evolutionary-security" target="_blank" rel="noopener">github的项目地址</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/08/%E7%94%9F%E4%BA%A7%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%E6%B5%81%E7%A8%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/06/08/%E7%94%9F%E4%BA%A7%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%E6%B5%81%E7%A8%8B/" itemprop="url">生产故障排查流程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-08T00:00:00+08:00">
-                2019-06-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%94%9F%E4%BA%A7%E6%95%85%E9%9A%9C/" itemprop="url" rel="index">
-                    <span itemprop="name">生产故障</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/06/08/%E7%94%9F%E4%BA%A7%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%E6%B5%81%E7%A8%8B/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/08/%E7%94%9F%E4%BA%A7%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%E6%B5%81%E7%A8%8B/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/06/08/%E7%94%9F%E4%BA%A7%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%E6%B5%81%E7%A8%8B/" class="leancloud_visitors" data-flag-title="生产故障排查流程">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="使用-top-查看系统中消耗cpu比较多的进程PID"><a href="#使用-top-查看系统中消耗cpu比较多的进程PID" class="headerlink" title="使用 top 查看系统中消耗cpu比较多的进程PID"></a>使用 top 查看系统中消耗cpu比较多的进程PID</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">[richey@localhost ~]$ top |grep java</span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   2.7  11.3   5:49.83 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:49.87 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.7  11.3   5:49.92 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:49.96 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:50.00 java                                                                             </span><br><span class="line"> 7439 richey    20   0 7785472 346788  21388 S   0.3   2.1   0:06.05 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:50.04 java</span><br></pre></td></tr></table></figure>
-<h1 id="使用-ps-查看java相关进程的详细信息"><a href="#使用-ps-查看java相关进程的详细信息" class="headerlink" title="使用 ps 查看java相关进程的详细信息"></a>使用 ps 查看java相关进程的详细信息</h1><p>可以看出java进程JVM的详细配置</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[richey@localhost ~]$ ps -ef|grep java|grep 6274</span><br><span class="line"></span><br><span class="line">[richey@localhost ~]$ ps -ef|grep java|grep 6274</span><br><span class="line">richey    6274  6220 39 23:32 ?        00:05:52 /opt/idea-IU-172.4155.36/jre64/bin/java -Xbootclasspath/a:/opt/idea-IU-172.4155.36/lib/boot.jar -classpath /opt/idea-IU-172.4155.36/lib/bootstrap.jar:/opt/idea-IU-172.4155.36/lib/extensions.jar:/opt/idea-IU-172.4155.36/lib/util.jar:/opt/idea-IU-172.4155.36/lib/jdom.jar:/opt/idea-IU-172.4155.36/lib/log4j.jar:/opt/idea-IU-172.4155.36/lib/trove4j.jar:/opt/idea-IU-172.4155.36/lib/jna.jar:/opt/idea-IU-172.4155.36/jre64/lib/tools.jar -Xms2048m -Xmx6144m -XX:ReservedCodeCacheSize=240m -XX:+UseConcMarkSweepGC -XX:SoftRefLRUPolicyMSPerMB=50 -ea -Dsun.io.useCanonCaches=false -Djava.net.preferIPv4Stack=true -XX:+HeapDumpOnOutOfMemoryError -XX:-OmitStackTraceInFastThrow -Dawt.useSystemAAFontSettings=lcd -Dsun.java2d.renderer=sun.java2d.marlin.MarlinRenderingEngine -XX:ErrorFile=/home/richey/java_error_in_IDEA_%p.log -XX:HeapDumpPath=/home/richey/java_error_in_IDEA.hprof -Didea.paths.selector=IntelliJIdea2017.2 -Djb.vmOptionsFile=/opt/idea-IU-172.4155.36/bin/idea64.vmoptions -Didea.jre.check=true com.intellij.idea.Main</span><br></pre></td></tr></table></figure>
-
-<h1 id="使用-top-H-p-PID-来查看当前进程中比较消耗cpu的线程"><a href="#使用-top-H-p-PID-来查看当前进程中比较消耗cpu的线程" class="headerlink" title="使用 top -H -p PID 来查看当前进程中比较消耗cpu的线程"></a>使用 top -H -p PID 来查看当前进程中比较消耗cpu的线程</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">top -H -p 6274</span><br></pre></td></tr></table></figure>
-
-<p>拿到消耗cpu比较高的线程pid,先转换成16进制的</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 将16进制的pid 1077 转换成10进制</span><br><span class="line">rintf &quot;%x\n&quot; 1077</span><br></pre></td></tr></table></figure>
-
-<p>最后使用jstack pid|grep 16进制的线程id，就可以定位到问题代码。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2231,7 +2373,7 @@ http.authenticationProvider(smsCodeAuthenticationProvider)
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">107</span>
+                  <span class="site-state-item-count">110</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2242,7 +2384,7 @@ http.authenticationProvider(smsCodeAuthenticationProvider)
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2253,7 +2395,7 @@ http.authenticationProvider(smsCodeAuthenticationProvider)
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-count">38</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
