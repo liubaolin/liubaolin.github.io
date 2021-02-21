@@ -288,6 +288,742 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/15/React%EF%BC%9A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/01/15/React%EF%BC%9A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" itemprop="url">React：最佳实践</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-15T00:00:00+08:00">
+                2019-01-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/01/15/React%EF%BC%9A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/15/React%EF%BC%9A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/01/15/React%EF%BC%9A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" class="leancloud_visitors" data-flag-title="React：最佳实践">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="零碎知识点"><a href="#零碎知识点" class="headerlink" title="零碎知识点"></a>零碎知识点</h1><p>在 React 中另一个不同点是你不能通过返回 false的方式阻止默认行为。你必须显式的使用 preventDefault.</p>
+<p>阻止组件渲染,可以让 render 方法直接返回 null，而不进行任何渲染。</p>
+<h1 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h1><p>Keys 帮助 React 识别哪些元素改变了，比如被添加或删除。因此你应当给数组中的每一个元素赋予一个确定的标识。</p>
+<p>键（Key）只是在兄弟节点之间必须唯一．</p>
+<h1 id="事件"><a href="#事件" class="headerlink" title="事件"></a>事件</h1><p>使用 React 时，你一般不需要使用 addEventListener 为已创建的 DOM 元素添加监听器。React恰恰与之相反，你仅需要在该元素初始渲染的时候添加一个监听器。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">class Toggle extends React.Component &#123;</span><br><span class="line">  constructor(props) &#123;</span><br><span class="line">    super(props);</span><br><span class="line">    this.state &#x3D; &#123;isToggleOn: true&#125;;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 为了在回调中使用 &#96;this&#96;，这个绑定是必不可少的</span><br><span class="line">    this.handleClick &#x3D; this.handleClick.bind(this);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  handleClick() &#123;</span><br><span class="line">    this.setState(state &#x3D;&gt; (&#123;</span><br><span class="line">      isToggleOn: !state.isToggleOn</span><br><span class="line">    &#125;));</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  render() &#123;</span><br><span class="line">    return (</span><br><span class="line">      &lt;button onClick&#x3D;&#123;this.handleClick&#125;&gt;</span><br><span class="line">        &#123;this.state.isToggleOn ? &#39;ON&#39; : &#39;OFF&#39;&#125;</span><br><span class="line">      &lt;&#x2F;button&gt;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ReactDOM.render(</span><br><span class="line">  &lt;Toggle &#x2F;&gt;,</span><br><span class="line">  document.getElementById(&#39;root&#39;)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">class LoggingButton extends React.Component &#123;</span><br><span class="line">  &#x2F;&#x2F; 这种语法确保 &#96;this&#96; 绑定在 &#96;handleClick&#96; 内。</span><br><span class="line">  &#x2F;&#x2F; 注意: 这是 *实验性* 语法。</span><br><span class="line">  handleClick &#x3D; () &#x3D;&gt; &#123;</span><br><span class="line">    console.log(&#39;this is:&#39;, this);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  render() &#123;</span><br><span class="line">    return (</span><br><span class="line">      &lt;button onClick&#x3D;&#123;this.handleClick&#125;&gt;</span><br><span class="line">        Click me</span><br><span class="line">      &lt;&#x2F;button&gt;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class LoggingButton extends React.Component &#123;</span><br><span class="line">  handleClick() &#123;</span><br><span class="line">    console.log(&#39;this is:&#39;, this);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  render() &#123;</span><br><span class="line">    &#x2F;&#x2F; 这种语法确保 &#96;this&#96; 绑定在 &#96;handleClick&#96; 内。</span><br><span class="line">    return (</span><br><span class="line">      &lt;button onClick&#x3D;&#123;(e) &#x3D;&gt; this.handleClick(e)&#125;&gt;</span><br><span class="line">        Click me</span><br><span class="line">      &lt;&#x2F;button&gt;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="向事件处理程序传递参数"><a href="#向事件处理程序传递参数" class="headerlink" title="向事件处理程序传递参数"></a>向事件处理程序传递参数</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;button onClick&#x3D;&#123;(e) &#x3D;&gt; this.deleteRow(id, e)&#125;&gt;Delete Row&lt;&#x2F;button&gt;</span><br><span class="line">&lt;button onClick&#x3D;&#123;this.deleteRow.bind(this, id)&#125;&gt;Delete Row&lt;&#x2F;button&gt;</span><br></pre></td></tr></table></figure>
+
+<h1 id="表单"><a href="#表单" class="headerlink" title="表单"></a>表单</h1>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/" itemprop="url">15、React：React 常用开发调试工具</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-15T00:00:00+08:00">
+                2019-01-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/" class="leancloud_visitors" data-flag-title="15、React：React 常用开发调试工具">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>主要介绍ESLint、Prettier、React DevTool、Redux DevTool</p>
+<h1 id="ESLink"><a href="#ESLink" class="headerlink" title="ESLink"></a>ESLink</h1><p>javascript语法检查和一致性保证的标准</p>
+<h1 id="Prettier"><a href="#Prettier" class="headerlink" title="Prettier"></a>Prettier</h1><p>facebook出的用于格式化代码的工具：</p>
+<h1 id="格式化代码"><a href="#格式化代码" class="headerlink" title="格式化代码"></a>格式化代码</h1><p>保证更容易写出风格一致的代码</p>
+<h1 id="React-DevTool"><a href="#React-DevTool" class="headerlink" title="React DevTool"></a>React DevTool</h1><p>用来调试React的chrome插件</p>
+<h1 id="Redux-DevTool"><a href="#Redux-DevTool" class="headerlink" title="Redux DevTool"></a>Redux DevTool</h1><p>用来调试Redux的chrome插件</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/14/14%E3%80%81React%EF%BC%9AReact%20Router/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/01/14/14%E3%80%81React%EF%BC%9AReact%20Router/" itemprop="url">14、React：React Router</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-14T00:00:00+08:00">
+                2019-01-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/01/14/14%E3%80%81React%EF%BC%9AReact%20Router/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/14/14%E3%80%81React%EF%BC%9AReact%20Router/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/01/14/14%E3%80%81React%EF%BC%9AReact%20Router/" class="leancloud_visitors" data-flag-title="14、React：React Router">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="为什么需要陆游"><a href="#为什么需要陆游" class="headerlink" title="为什么需要陆游"></a>为什么需要陆游</h1><ol>
+<li>单页应用需要进行页面切换</li>
+<li>通过URL可以定位到页面</li>
+<li>更有语义的组织资源</li>
+</ol>
+<h1 id="路由实现的基本架构"><a href="#路由实现的基本架构" class="headerlink" title="路由实现的基本架构"></a>路由实现的基本架构</h1><p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/react-router.png" alt="image"></p>
+<h1 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h1><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">"react"</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;</span><br><span class="line">    <span class="comment">//BrowserRouter as Router,</span></span><br><span class="line">    HashRouter <span class="keyword">as</span> Router,</span><br><span class="line">    Route,</span><br><span class="line">    Link,</span><br><span class="line">    NavLink,</span><br><span class="line">    Prompt,</span><br><span class="line">    Redirect,</span><br><span class="line">    Switch</span><br><span class="line">&#125; <span class="keyword">from</span> <span class="string">"react-router-dom"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123;MemoryRouter&#125; <span class="keyword">from</span> <span class="string">"react-router"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"./RouterSample.css"</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> ReactPage = <span class="function"><span class="params">()</span> =&gt;</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>ReactPage<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"><span class="keyword">const</span> AngularPage = <span class="function"><span class="params">()</span> =&gt;</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>AngularPage<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"><span class="keyword">const</span> VuePage = <span class="function"><span class="params">()</span> =&gt;</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>VuePage<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"><span class="keyword">const</span> NavLinkPage = <span class="function"><span class="params">()</span> =&gt;</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>NavLinkPage<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"><span class="keyword">const</span> LoginPage = <span class="function"><span class="params">()</span> =&gt;</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>LoginPage<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"><span class="keyword">const</span> HomePage = <span class="function"><span class="params">()</span> =&gt;</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>HomePage<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"><span class="keyword">const</span> SwitchPage1 = <span class="function"><span class="params">()</span> =&gt;</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>SwitchPage1<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"><span class="keyword">const</span> SwitchPage2 = <span class="function"><span class="params">()</span> =&gt;</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>SwitchPage2<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">RouterSample</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">PureComponent</span> </span>&#123;</span><br><span class="line">    render() &#123;</span><br><span class="line">        <span class="keyword">let</span> formIsHalfFielledOut = <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">let</span> loggedIn = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> (</span><br><span class="line">            &lt;Router&gt;</span><br><span class="line">                &lt;div&gt;</span><br><span class="line">                    &lt;ul id=<span class="string">"menu"</span>&gt;</span><br><span class="line">                        &lt;li&gt;</span><br><span class="line">                            &lt;Link to=<span class="string">"/LoginPage"</span>&gt;LoginPage&lt;<span class="regexp">/Link&gt;</span></span><br><span class="line"><span class="regexp">                        &lt;/</span>li&gt;</span><br><span class="line">                        &lt;li&gt;</span><br><span class="line">                            &lt;Link to=<span class="string">"/ReactPage"</span>&gt;ReactPage&lt;<span class="regexp">/Link&gt;</span></span><br><span class="line"><span class="regexp">                        &lt;/</span>li&gt;</span><br><span class="line">                        &lt;li&gt;</span><br><span class="line">                            &lt;Link to=<span class="string">"/AngularPage"</span>&gt;AngularPage&lt;<span class="regexp">/Link&gt;</span></span><br><span class="line"><span class="regexp">                        &lt;/</span>li&gt;</span><br><span class="line">                        &lt;li&gt;</span><br><span class="line">                            &lt;Link to=<span class="string">"/VuePage"</span>&gt;VuePage&lt;<span class="regexp">/Link&gt;</span></span><br><span class="line"><span class="regexp">                        &lt;/</span>li&gt;</span><br><span class="line">                        &lt;li&gt;</span><br><span class="line">                            &lt;NavLink to=<span class="string">"/NavLinkPage"</span> activeClassName=<span class="string">"selected"</span>&gt;NavLinkPage&lt;<span class="regexp">/NavLink&gt;</span></span><br><span class="line"><span class="regexp">                        &lt;/</span>li&gt;</span><br><span class="line">                        &lt;li&gt;</span><br><span class="line">                            &lt;Link to=<span class="string">"/LoginPage"</span> &gt;LoginPage&lt;<span class="regexp">/Link&gt;</span></span><br><span class="line"><span class="regexp">                        &lt;/</span>li&gt;</span><br><span class="line">                        &lt;li&gt;</span><br><span class="line">                            &lt;Link to=<span class="string">"/SwitchPage"</span> &gt;SwitchPage&lt;<span class="regexp">/Link&gt;</span></span><br><span class="line"><span class="regexp">                        &lt;/</span>li&gt;</span><br><span class="line">                    &lt;<span class="regexp">/ul&gt;</span></span><br><span class="line"><span class="regexp">                    &#123;/</span>*<span class="xml"><span class="tag">&lt;<span class="name">Prompt</span> <span class="attr">to</span>=<span class="string">"/PromptPage"</span> <span class="attr">when</span>=<span class="string">&#123;formIsHalfFielledOut&#125;</span> <span class="attr">message</span>=<span class="string">"确定要离开吗？"</span> /&gt;</span></span>*<span class="regexp">/&#125;</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">                    &lt;div id="page-container"&gt;</span></span><br><span class="line"><span class="regexp">                        &lt;Route path="/</span>ReactPage<span class="string">" component=&#123;ReactPage&#125;/&gt;</span></span><br><span class="line"><span class="string">                        &lt;Route path="</span>/AngularPage<span class="string">" component=&#123;AngularPage&#125;/&gt;</span></span><br><span class="line"><span class="string">                        &lt;Route path="</span>/VuePage<span class="string">" component=&#123;VuePage&#125;/&gt;</span></span><br><span class="line"><span class="string">                        &lt;Route path="</span>/NavLinkPage<span class="string">" component=&#123;NavLinkPage&#125;/&gt;</span></span><br><span class="line"><span class="string">                        &lt;Route exact path="</span>/LoginPage<span class="string">" render=&#123;() =&gt; (</span></span><br><span class="line"><span class="string">                            loggedIn</span></span><br><span class="line"><span class="string">                                ? (&lt;Redirect to="</span>/ReactPage<span class="string">"/&gt;)</span></span><br><span class="line"><span class="string">                                :(&lt;HomePage/&gt;)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">                        )&#125;/&gt;</span></span><br><span class="line"><span class="string">                       &lt;Switch&gt;</span></span><br><span class="line"><span class="string">                           &lt;Route path="</span>/SwitchPage<span class="string">" component=&#123;SwitchPage1&#125;/&gt;</span></span><br><span class="line"><span class="string">                           &lt;Route path="</span>/SwitchPage<span class="string">" component=&#123;SwitchPage2&#125;/&gt;</span></span><br><span class="line"><span class="string">                       &lt;/Switch&gt;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">                    &lt;/div&gt;</span></span><br><span class="line"><span class="string">                &lt;/div&gt;</span></span><br><span class="line"><span class="string">            &lt;/Router&gt;</span></span><br><span class="line"><span class="string">        );</span></span><br><span class="line"><span class="string">    &#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="React-Router的特性"><a href="#React-Router的特性" class="headerlink" title="React Router的特性"></a>React Router的特性</h1><ol>
+<li>声明式路由定义</li>
+</ol>
+<p>可以在页面的任何地方写路由</p>
+<ol start="2">
+<li>动态路由</li>
+</ol>
+<h1 id="三种路由实现方式"><a href="#三种路由实现方式" class="headerlink" title="三种路由实现方式"></a>三种路由实现方式</h1><ol>
+<li>URL路径</li>
+</ol>
+<p>BrowserRouter</p>
+<ol start="2">
+<li>hash路由</li>
+</ol>
+<p>HashRouter，针对低版本浏览器，url变了页面不刷新的情况<br>3. 内存路由</p>
+<p>MemoryRouter，<br>路由并不会反映到url上，通常做服务器端渲染的时候会有用。</p>
+<h1 id="基于路由配置进行资源组织"><a href="#基于路由配置进行资源组织" class="headerlink" title="基于路由配置进行资源组织"></a>基于路由配置进行资源组织</h1><ol>
+<li>实现业务逻辑的松耦合</li>
+<li>易于扩展，重构和维护</li>
+<li>路由层面实现Lazy Load</li>
+</ol>
+<h1 id="React-Router-API"><a href="#React-Router-API" class="headerlink" title="React Router API"></a>React Router API</h1><ol>
+<li><Link>:普通链接，不会触发浏览器刷新</li>
+<li><p><NavLink>:类似Link但是会添加当前选中状态，增加一个css样式</p>
+</li>
+<li><p><Prompt>:满足条件时提示用户是否离开当前页面</p>
+</li>
+<li><p><Redirect>:重定向当前页面，例如登录判断</p>
+</li>
+<li><p><Route>:路由配的额核心标记，路径匹配时显示对应组件</p>
+<p> exact属性：精确匹配<br> Route不是排他的，及可以用时有多个相同path的Route，都会生效</p>
+</li>
+<li><p><Switch>:只显示第一个匹配的路由</p>
+</li>
+</ol>
+<h1 id="通过URL传递参数"><a href="#通过URL传递参数" class="headerlink" title="通过URL传递参数"></a>通过URL传递参数</h1><ol>
+<li>如何通过URL传递参数：&lt;Route path=”/topic:id” …/&gt;</li>
+<li>如何获取参数: this.props.match.params</li>
+<li><a href="https://github.com/pillarjs/path-to-regexp" target="_blank" rel="noopener">https://github.com/pillarjs/path-to-regexp</a> 通过正则表达式的方式做模糊正则匹配</li>
+</ol>
+<h1 id="何时需要URL参数"><a href="#何时需要URL参数" class="headerlink" title="何时需要URL参数"></a>何时需要URL参数</h1><p>页面状态尽量通过URL参数来定义</p>
+<p>React Router中url变化，组件也会刷新</p>
+<h1 id="嵌套路由"><a href="#嵌套路由" class="headerlink" title="嵌套路由"></a>嵌套路由</h1><ol>
+<li>每个React组件都可以是路由容器</li>
+<li>React Router声明式语法可以方便的定义嵌套路由</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/13/13%E3%80%81React%EF%BC%9ARedux%E2%80%94%E2%80%94%E7%90%86%E8%A7%A3%E4%B8%8D%E5%8F%AF%E5%8F%98%E6%95%B0%E6%8D%AE%EF%BC%88immutable%20data%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/01/13/13%E3%80%81React%EF%BC%9ARedux%E2%80%94%E2%80%94%E7%90%86%E8%A7%A3%E4%B8%8D%E5%8F%AF%E5%8F%98%E6%95%B0%E6%8D%AE%EF%BC%88immutable%20data%EF%BC%89/" itemprop="url">13、React：Redux——理解不可变数据（immutable data）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-13T00:00:00+08:00">
+                2019-01-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/01/13/13%E3%80%81React%EF%BC%9ARedux%E2%80%94%E2%80%94%E7%90%86%E8%A7%A3%E4%B8%8D%E5%8F%AF%E5%8F%98%E6%95%B0%E6%8D%AE%EF%BC%88immutable%20data%EF%BC%89/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/13/13%E3%80%81React%EF%BC%9ARedux%E2%80%94%E2%80%94%E7%90%86%E8%A7%A3%E4%B8%8D%E5%8F%AF%E5%8F%98%E6%95%B0%E6%8D%AE%EF%BC%88immutable%20data%EF%BC%89/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/01/13/13%E3%80%81React%EF%BC%9ARedux%E2%80%94%E2%80%94%E7%90%86%E8%A7%A3%E4%B8%8D%E5%8F%AF%E5%8F%98%E6%95%B0%E6%8D%AE%EF%BC%88immutable%20data%EF%BC%89/" class="leancloud_visitors" data-flag-title="13、React：Redux——理解不可变数据（immutable data）">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Redux中的不可变数据"><a href="#Redux中的不可变数据" class="headerlink" title="Redux中的不可变数据"></a>Redux中的不可变数据</h1><p>Redux的store每一个结点都是不可变数据，修改它必须通过复制一份的方式进行，不能直接修改。</p>
+<p>是Redux的运行基础。</p>
+<h1 id="为什么需要不可变数据"><a href="#为什么需要不可变数据" class="headerlink" title="为什么需要不可变数据"></a>为什么需要不可变数据</h1><ol>
+<li>性能优化，不需要遍历数据，只需要比较引用就可以确定当前的store有没有变，从而决定是否更新组件；</li>
+<li>易于调试和跟踪；</li>
+<li>易于推测，比较action前后store的值</li>
+</ol>
+<h1 id="如何操作不可变数据"><a href="#如何操作不可变数据" class="headerlink" title="如何操作不可变数据"></a>如何操作不可变数据</h1><ol>
+<li>原生写法：{…},Object.assign</li>
+<li>immutability-helper</li>
+<li>immer 性能稍弱</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> update <span class="keyword">from</span> <span class="string">'immutability-helper'</span>;</span><br><span class="line"><span class="keyword">import</span> produce <span class="keyword">from</span> <span class="string">'immer'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//如果操作不可变数据</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> state = &#123;<span class="attr">filter</span>: <span class="string">'completed'</span>, <span class="attr">todos</span>: [<span class="string">'Learn React'</span>]&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//原生写法</span></span><br><span class="line"><span class="comment">//通过延展属性</span></span><br><span class="line"><span class="keyword">const</span> newState = &#123;...state, <span class="attr">todos</span>: [...state.todos, <span class="string">'Learn Redux'</span>]&#125;</span><br><span class="line"><span class="comment">//Es6写法  性能最高的写法</span></span><br><span class="line"><span class="keyword">const</span> newState2 = <span class="built_in">Object</span>.assign(&#123;&#125;, state, &#123;<span class="attr">todos</span>: [...state.todos, <span class="string">'Learn Redux'</span>]&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//复杂场景，比如对象层级比较深</span></span><br><span class="line"><span class="keyword">const</span> newState3 = update(state, &#123;<span class="attr">todos</span>: &#123;<span class="attr">$push</span>: [<span class="string">'Learn Redux'</span>]&#125;&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//immer 需要为每个属性做代理，性能稍差，适用与简单场景，属性较多或层级较深时慎用</span></span><br><span class="line"><span class="keyword">const</span> newState4 = produce(state, draftState =&gt; &#123;</span><br><span class="line">    draftState.todos.push(<span class="string">'Learn Redux'</span>);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/12/12%E3%80%81React%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A8Redux%E4%B8%AD%E7%BB%84%E7%BB%87Action%E5%92%8CReducer/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1335,759 +2071,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/06/6%E3%80%81React-%E6%96%B0%E7%9A%84Contet%20API%E5%8F%8A%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/06/6%E3%80%81React-%E6%96%B0%E7%9A%84Contet%20API%E5%8F%8A%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/" itemprop="url">6、React-新的Contet API及使用场景</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-06T00:00:00+08:00">
-                2019-01-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
-                    <span itemprop="name">前端</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/01/06/6%E3%80%81React-%E6%96%B0%E7%9A%84Contet%20API%E5%8F%8A%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/06/6%E3%80%81React-%E6%96%B0%E7%9A%84Contet%20API%E5%8F%8A%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/01/06/6%E3%80%81React-%E6%96%B0%E7%9A%84Contet%20API%E5%8F%8A%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/" class="leancloud_visitors" data-flag-title="6、React-新的Contet API及使用场景">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="React-16-3新特性-Context-API"><a href="#React-16-3新特性-Context-API" class="headerlink" title="React 16.3新特性:Context API"></a>React 16.3新特性:Context API</h1><p>要解决的还是组件间通讯的问题，有些全局的状态，很多组件都会去使用，但是如果所有的属性都是一层层的传递下来，非常麻烦。</p>
-<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/react-context-api.png" alt="image"></p>
-<p><a href="https://github.com/liubaolin/evolutionary/blob/master/JS/react-cli-demo/src/LocaleSample/LocaleSample.js" target="_blank" rel="noopener">代码片段</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/05/5%E3%80%81React%E9%AB%98%E9%98%B6%E7%BB%84%E4%BB%B6(HOC)%E5%92%8C%E5%87%BD%E6%95%B0%E4%BD%9C%E4%B8%BA%E5%AD%90%E7%BB%84%E4%BB%B6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/05/5%E3%80%81React%E9%AB%98%E9%98%B6%E7%BB%84%E4%BB%B6(HOC)%E5%92%8C%E5%87%BD%E6%95%B0%E4%BD%9C%E4%B8%BA%E5%AD%90%E7%BB%84%E4%BB%B6/" itemprop="url">5、React高阶组件(HOC)和函数作为子组件</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-05T00:00:00+08:00">
-                2019-01-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
-                    <span itemprop="name">前端</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/01/05/5%E3%80%81React%E9%AB%98%E9%98%B6%E7%BB%84%E4%BB%B6(HOC)%E5%92%8C%E5%87%BD%E6%95%B0%E4%BD%9C%E4%B8%BA%E5%AD%90%E7%BB%84%E4%BB%B6/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/05/5%E3%80%81React%E9%AB%98%E9%98%B6%E7%BB%84%E4%BB%B6(HOC)%E5%92%8C%E5%87%BD%E6%95%B0%E4%BD%9C%E4%B8%BA%E5%AD%90%E7%BB%84%E4%BB%B6/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/01/05/5%E3%80%81React%E9%AB%98%E9%98%B6%E7%BB%84%E4%BB%B6(HOC)%E5%92%8C%E5%87%BD%E6%95%B0%E4%BD%9C%E4%B8%BA%E5%AD%90%E7%BB%84%E4%BB%B6/" class="leancloud_visitors" data-flag-title="5、React高阶组件(HOC)和函数作为子组件">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>组件复用的另外两种形式:</p>
-<ol>
-<li>高阶组件（HOC）</li>
-<li>函数作为子组件</li>
-</ol>
-<h1 id="高阶组件"><a href="#高阶组件" class="headerlink" title="高阶组件"></a>高阶组件</h1><p>高阶组件实际是对已有组件的一个封装,来返回一个新的组件.新的组件会包含一些应用逻辑,这些新的逻辑会产生新的状态,这些状态会传给新的组件.</p>
-<p>高阶组件一般不会有额外的UI展现,只是为它封装的组件提供额外的功能或者数据.</p>
-<p>高阶组件可以自己去获取外部资源.</p>
-<ul>
-<li>创建一个高阶组件</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const EnhancedComponent &#x3D; highterOrderComponent(WrappedComponent);</span><br></pre></td></tr></table></figure>
-
-<pre><code>高阶组件可以接受一个组件参数,并返回一个新的组件.</code></pre><h1 id="函数作为子组件"><a href="#函数作为子组件" class="headerlink" title="函数作为子组件"></a>函数作为子组件</h1><p>snippet:<br><a href="https://github.com/liubaolin/evolutionary/blob/master/JS/react-cli-demo/src/TabSelector/AdvanceTabSelector.js" target="_blank" rel="noopener">函数作为子组件</a></p>
-<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><ol>
-<li>高阶组件和函数子组件都是设计模式</li>
-<li>可以实现更多场景的组件复用</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/04/4%E3%80%81React-%E7%90%86%E8%A7%A3Virtual%20DOM%E5%8F%8Akey%E5%B1%9E%E6%80%A7%E7%9A%84%E4%BD%9C%E7%94%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/04/4%E3%80%81React-%E7%90%86%E8%A7%A3Virtual%20DOM%E5%8F%8Akey%E5%B1%9E%E6%80%A7%E7%9A%84%E4%BD%9C%E7%94%A8/" itemprop="url">4、React-理解Virtual DOM及key属性的作用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-04T00:00:00+08:00">
-                2019-01-04
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
-                    <span itemprop="name">前端</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/01/04/4%E3%80%81React-%E7%90%86%E8%A7%A3Virtual%20DOM%E5%8F%8Akey%E5%B1%9E%E6%80%A7%E7%9A%84%E4%BD%9C%E7%94%A8/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/04/4%E3%80%81React-%E7%90%86%E8%A7%A3Virtual%20DOM%E5%8F%8Akey%E5%B1%9E%E6%80%A7%E7%9A%84%E4%BD%9C%E7%94%A8/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/01/04/4%E3%80%81React-%E7%90%86%E8%A7%A3Virtual%20DOM%E5%8F%8Akey%E5%B1%9E%E6%80%A7%E7%9A%84%E4%BD%9C%E7%94%A8/" class="leancloud_visitors" data-flag-title="4、React-理解Virtual DOM及key属性的作用">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>JSX的运行基础:Virtual DOM</p>
-<p>React组件在内部维护了一套虚拟DOM的状态,这套虚拟DOM的状态最终会映射到真实DOM的节点上,当虚拟DOM发生变化的时候,内部需要计算虚拟DOM的区别来产生一个diff,并不会刷新所有的真实DOM,只会更新diff的部份.</p>
-<h1 id="虚拟DOM是如何工作的"><a href="#虚拟DOM是如何工作的" class="headerlink" title="虚拟DOM是如何工作的"></a>虚拟DOM是如何工作的</h1><p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E8%99%9A%E6%8B%9FDOM%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84.png" alt="image"></p>
-<h1 id="虚拟DOM的两个假设"><a href="#虚拟DOM的两个假设" class="headerlink" title="虚拟DOM的两个假设"></a>虚拟DOM的两个假设</h1><ol>
-<li>组件的DOM结构是相对稳定的</li>
-<li>类型相同的兄节点可以被唯一标识</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/03/3%E3%80%81React%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%85%B6%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/03/3%E3%80%81React%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%85%B6%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/" itemprop="url">3、React组件及其生命周期和使用场景</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-03T00:00:00+08:00">
-                2019-01-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
-                    <span itemprop="name">前端</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/01/03/3%E3%80%81React%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%85%B6%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/03/3%E3%80%81React%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%85%B6%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/01/03/3%E3%80%81React%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%85%B6%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/" class="leancloud_visitors" data-flag-title="3、React组件及其生命周期和使用场景">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="理解React组件"><a href="#理解React组件" class="headerlink" title="理解React组件"></a>理解React组件</h1><ol>
-<li>React组件一般不提供方法，而是提供某种状态机</li>
-<li>React组件可以理解为一个纯函数（接收的参数是什么，则输出的结果是确定的）</li>
-<li>单向数据绑定，数据变动同通过事件告诉外部</li>
-</ol>
-<h2 id="一个简单的React组件"><a href="#一个简单的React组件" class="headerlink" title="一个简单的React组件"></a>一个简单的React组件</h2><ol>
-<li><p>创建静态UI</p>
-</li>
-<li><p>考虑组件的状态组成</p>
-<p> 来自外部或者在内部维护</p>
-</li>
-<li><p>考虑组件的交互方式</p>
-</li>
-</ol>
-<h2 id="受控组件VS非受控组件"><a href="#受控组件VS非受控组件" class="headerlink" title="受控组件VS非受控组件"></a>受控组件VS非受控组件</h2><p>主用应用与form表单中</p>
-<ol>
-<li><p>受控组件</p>
-<p> 表单元素状态由使用者维护，必须指定value和onChange，<br> 即value的值是来自于外部的属性，而不是用户的输入。</p>
-</li>
-<li><p>非受控组件</p>
-<p> 表单元素状态DOM自身维护；</p>
-</li>
-</ol>
-<h2 id="创建React组件的几个原则"><a href="#创建React组件的几个原则" class="headerlink" title="创建React组件的几个原则"></a>创建React组件的几个原则</h2><ol>
-<li><p>单一职责原则</p>
-<ul>
-<li>每个组件只做一件事；</li>
-<li>如果组件变得负责，那么因该拆分成小组件</li>
-</ul>
-</li>
-<li><p>数据状态管理:DRY原则</p>
-<ul>
-<li>能计算得到的状态就不要单独存储</li>
-<li>组件尽量无状态，所需数据通过props获取</li>
-</ul>
-</li>
-</ol>
-<h1 id="React组件生命周期"><a href="#React组件生命周期" class="headerlink" title="React组件生命周期"></a>React组件生命周期</h1><p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/react-lifecycle-methods.png" alt="image"></p>
-<h1 id="constructor-NaN"><a href="#constructor-NaN" class="headerlink" title="constructor"></a>constructor</h1><ol>
-<li>用于初始化内部状态,很少使用</li>
-<li>唯一可以直接修改state的地方</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">this.state.xxx &#x3D; &#39;abc&#39;;</span><br></pre></td></tr></table></figure>
-
-<h1 id="getDerivedStateFromProps"><a href="#getDerivedStateFromProps" class="headerlink" title="getDerivedStateFromProps"></a>getDerivedStateFromProps</h1><ol>
-<li>当state需要从props初始化时使用</li>
-<li>尽量不要使用:维护两者状态一致性会增加复杂度</li>
-<li>每次render都会调用</li>
-<li>典型场景:表单控件获取默认值</li>
-</ol>
-<h1 id="componentDidMount"><a href="#componentDidMount" class="headerlink" title="componentDidMount"></a>componentDidMount</h1><ol>
-<li>UI渲染完成后调用</li>
-<li>值执行一次</li>
-<li>典型场景:获取外部资源</li>
-</ol>
-<h1 id="componentWillUnmount"><a href="#componentWillUnmount" class="headerlink" title="componentWillUnmount"></a>componentWillUnmount</h1><ol>
-<li>组件移除时调用</li>
-<li>典型场景:资源释放</li>
-</ol>
-<h1 id="getSnapshotBeforeUpdate"><a href="#getSnapshotBeforeUpdate" class="headerlink" title="getSnapshotBeforeUpdate"></a>getSnapshotBeforeUpdate</h1><ol>
-<li>在页面render之前调用,state已更新</li>
-<li>典型场景:获取render之前的DOM状态</li>
-</ol>
-<h1 id="componentDisUpdate"><a href="#componentDisUpdate" class="headerlink" title="componentDisUpdate"></a>componentDisUpdate</h1><ol>
-<li>每次UI更新时被调用</li>
-<li>典型场景:页面需要根据props变化重新获取数据</li>
-</ol>
-<h1 id="shouldComponentUpdate"><a href="#shouldComponentUpdate" class="headerlink" title="shouldComponentUpdate"></a>shouldComponentUpdate</h1><ol>
-<li>决定Virtual DOM是否要重绘</li>
-<li>一般可以有PureComponent自动实现</li>
-<li>典型场景:性能优化</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/9/">&lt;i class&#x3D;&quot;fa fa-angle-left&quot;&gt;&lt;&#x2F;i&gt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/11/">&lt;i class&#x3D;&quot;fa fa-angle-right&quot;&gt;&lt;&#x2F;i&gt;</a>
+    <a class="extend prev" rel="prev" href="/page/9/">&lt;i class&#x3D;&quot;fa fa-angle-left&quot;&gt;&lt;&#x2F;i&gt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/11/">&lt;i class&#x3D;&quot;fa fa-angle-right&quot;&gt;&lt;&#x2F;i&gt;</a>
   </nav>
 
 
@@ -2137,7 +2125,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">110</span>
+                  <span class="site-state-item-count">114</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2159,7 +2147,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-count">39</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

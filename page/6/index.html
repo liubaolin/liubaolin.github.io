@@ -288,6 +288,1114 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/05/20/Spring%20MVC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/05/20/Spring%20MVC/" itemprop="url">Spring MVC</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-20T00:00:00+08:00">
+                2019-05-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/05/20/Spring%20MVC/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/20/Spring%20MVC/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/05/20/Spring%20MVC/" class="leancloud_visitors" data-flag-title="Spring MVC">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="一、Spring-MVC-Quick-Start"><a href="#一、Spring-MVC-Quick-Start" class="headerlink" title="一、Spring MVC Quick Start"></a>一、Spring MVC Quick Start</h1><h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h3><pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;javax.servlet&lt;/groupId&gt;
+    &lt;artifactId&gt;javax.servlet-api&lt;/artifactId&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre><h3 id="Spring-MVC最简单的配置"><a href="#Spring-MVC最简单的配置" class="headerlink" title="Spring MVC最简单的配置"></a>Spring MVC最简单的配置</h3><ol>
+<li><p>在web.xml中配置Servlet</p>
+<p> Spring MVC的本质就是一个Servlet</p>
+<pre><code>&lt;!-- spring mvc 配置开始 --&gt;
+&lt;!-- Spring MVC本质上就是一个Servlet --&gt;
+&lt;servlet&gt;
+    &lt;servlet-name&gt;springMVC&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
+    &lt;!--  contextConfigLocation参数来指定Spring MVC配置文件的位置，默认为WEB-INF/[Servlet-Name]-servlet.xml文件  --&gt;
+    &lt;!--  &lt;init-param&gt;
+          &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+          &lt;param-value&gt;&lt;/param-value&gt;
+      &lt;/init-param&gt;--&gt;
+    &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+&lt;/servlet&gt;
+&lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;springMVC&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;/&lt;/url-pattern&gt;
+&lt;/servlet-mapping&gt;
+&lt;!-- spring mvc 配置结束 --&gt;</code></pre></li>
+<li><p>创建Spring MVC的xml配置文件</p>
+ <!--
+         mvc:annotation-driven是 Spring MVC提供的一键式配置方法
+         配置此标签后Spring MVC会帮我们自动做一些注册组件之类的事情
+     -->
+<pre><code>&lt;mvc:annotation-driven/&gt;
+&lt;!--扫描通过注解配置的类--&gt;
+&lt;context:component-scan base-package=&quot;top.richpeople&quot;&gt;
+    &lt;!--如果使用了spring,可以用context:include-filter设置只扫描@Controller别的交给Spring容器去管理--&gt;
+    &lt;!--&lt;context:include-filter type=&quot;annotation&quot; expression=&quot;org.springframework.stereotype.Controller&quot;/&gt;--&gt;
+&lt;/context:component-scan&gt;</code></pre></li>
+<li><p>创建Controller和view</p>
+<pre><code>/**
+ * 处理HEAD类型的&quot;/&quot;请求
+ * 此方法可以用来检测服务器的状态,因为它不返回body,所以笔GET请求更节省网络资源
+ * @return
+ */
+@RequestMapping(value = &quot;/&quot;, method = RequestMethod.HEAD)
+public String head() {
+    return &quot;go.jsp&quot;;
+}
+
+/**
+ * 处理GET类型的&quot;/index&quot;和&quot;/&quot;请求
+ */
+@RequestMapping(value = {&quot;/index&quot;, &quot;/&quot;}, method = RequestMethod.GET)
+public String testMapPathUri(Model model) {
+
+    model.addAttribute(&quot;msg&quot;, &quot;Go Go Go!&quot;);
+    return &quot;go.jsp&quot;;
+}</code></pre><p> 如果没有配置ViewResolver，Spring MVC将默认使用org.springframework.web.servlet.view.InternalResourcViewResolver作为ViewResolver，而且prefix和suffix都为空</p>
+</li>
+</ol>
+<h1 id="二、Spring-MVC-架构分析"><a href="#二、Spring-MVC-架构分析" class="headerlink" title="二、Spring MVC 架构分析"></a>二、Spring MVC 架构分析</h1><p><img src="http://ogiythg18.bkt.clouddn.com/DispatcherServlet.png" alt="DispatcherServlet"></p>
+<p>XXXAware在Spring中表示对XXX可感知，通俗点讲就是：如果在某个类里想用Spring的某个东西，就实现相应的XXXAware接口，Spring看到后就会给你送过来。</p>
+<h3 id="Spring中3个类的具体创建过程"><a href="#Spring中3个类的具体创建过程" class="headerlink" title="Spring中3个类的具体创建过程"></a>Spring中3个类的具体创建过程</h3><p>//TODO  这里要撸源码进行分析</p>
+<ul>
+<li><p>HttpServletBean</p>
+<p>  没有参与实际请求的处理</p>
+</li>
+<li><p>FrameworkServlet</p>
+<p>  将不同的请求合并到了processRequest方法统一处理，processRequest方法中做了三件事：</p>
+<ul>
+<li>调用了doService模板方法具体处理请求</li>
+<li>将当请求的LocaleContext和ServletRequestAttributes在处理请求前设置到了LocaleContextHolder和RequestContextHolder,并在请求处理完后恢复。</li>
+<li>请求完后发布了ServletRequestHandledEvent消息</li>
+</ul>
+</li>
+<li><p>DispatcherServlet</p>
+<p>  doService方法给request设置了一些属性并将请求交给doDispatch方法具体处理</p>
+</li>
+</ul>
+<h1 id="三、Spring-MVC组件分析"><a href="#三、Spring-MVC组件分析" class="headerlink" title="三、Spring MVC组件分析"></a>三、Spring MVC组件分析</h1><p>这里的组件指的是DispatcherServlet中直接初始化的那九个组件，不同的组件内部可能还会用到一些子组件。</p>
+<h3 id="1、-HandlerMapping"><a href="#1、-HandlerMapping" class="headerlink" title="1、 HandlerMapping"></a>1、 HandlerMapping</h3><p>它的作用是根据request找到相应的处理器Handler和Interceptors，该接口只有一个方法：</p>
+<pre><code>HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception;</code></pre><p>HandlerMapping编写出来后要注册到Spring MVC的容器里面才可以使用，注册和那简单，只需要在配置文件里配置一个Bean就可以了（或者使用注解）。</p>
+<p>如果有多个HandlerMapping匹配到了同一个处理器Hander，这时就要设置HandlerMapping的顺序。HandlerMapping的顺序通过实现Order接口设置order属性来定义。</p>
+<p>查找Handler是按顺序遍历所有的HandlerMapping，当找到一个HandlerMapping后立即停止并返回。</p>
+<h3 id="2、HandlerAdapter"><a href="#2、HandlerAdapter" class="headerlink" title="2、HandlerAdapter"></a>2、HandlerAdapter</h3><p>可以理解为使用处理器Handler干活的人</p>
+<p>为什么使用handlerAdapter?</p>
+<pre><code>Spring MVC没有对处理器Handler做任何的限制，处理器可以是任何合理的方式，可以是类、方法或者别的合理的方式，所以我们要用不用的Adapter去使用这些Handler</code></pre><p>我们自定义Adapter只需要实现HandlerAdapter，完成相应的逻辑就可以了，同样可以实现Order接口，默认使用第一个按顺序找到的Adapter。HandlerAdapter同样需要注册到Spring MVC容器中，只需要配置一个Bean就可以了。</p>
+<h3 id="3、HandlerExceptionResolver"><a href="#3、HandlerExceptionResolver" class="headerlink" title="3、HandlerExceptionResolver"></a>3、HandlerExceptionResolver</h3><p>此组件的作用是根据异常设置ModelAndView，之后再交给render方法去渲染。</p>
+<h3 id="4、ViewResolver"><a href="#4、ViewResolver" class="headerlink" title="4、ViewResolver"></a>4、ViewResolver</h3><p>用来将String类型的视图名（有地方也叫逻辑视图，都是同一个东西）和Locale解析为View类型的视图。</p>
+<p>一般情况下我们只需要根据视图名找到视图，然后进行渲染，并不需要对不同的区域使用不同的视图。</p>
+<p>View是用来渲染页面的，通俗点将就是将程序返回的参数填入到模板里，生成html（或者是其它类型）的文件。这里有两个关键的问题：</p>
+<ul>
+<li>使用什么模板</li>
+<li>用什么技术或规则填入参数</li>
+</ul>
+<p>这起是就是ViewResolver要做的工作。</p>
+<pre><code>View resolveViewName(String viewName, Locale locale) throws Exception;</code></pre><ul>
+<li><p>UrlBasedViewResolver系列解析器都是针对单一视图类型进行解析的</p>
+<ul>
+<li>InternalResourceViewResolver 只解析jsp类型的视图</li>
+<li>FreeMarkerViewResolver只针对FreeMarker</li>
+<li>VelocityViewResolver只针对Velocity</li>
+</ul>
+</li>
+<li><p>ResourceBundleViewResolver、XmlViewResolver、BeanNameViewResolver等解析器可以同时解析多种类型的视图。</p>
+</li>
+</ul>
+<p>ViewResolver的使用需要注册到Spring MVC容器里，默认使用的是org.springframework.web.servlet.view.InternalResourceViewResolver。</p>
+<h3 id="5、RequestToViewNameTranslator"><a href="#5、RequestToViewNameTranslator" class="headerlink" title="5、RequestToViewNameTranslator"></a>5、RequestToViewNameTranslator</h3><p>ViewResolver是根据viewName查找View，但是有的Handler处理完后没有这只View也没有设置viewName，这时需要从request中获取viewName，而如何从request中获取viewName就是RequestToViewNameTranslator要做的事情。</p>
+<pre><code>String getViewName(HttpServletRequest request) throws Exception;</code></pre><p>具体的处理逻辑需要我们自己实现，要注意的是RequestToViewNameTranslator在Spring MVC容器中只能配置一个，所有的request到viewName的转换都要在一个Rranslator中实现。</p>
+<h3 id="6、LocaleResolver"><a href="#6、LocaleResolver" class="headerlink" title="6、LocaleResolver"></a>6、LocaleResolver</h3><p>视图的解析需要两个参数，一个是视图名，一个是Locale，视图名是从Handler返回的（或者是使用RequestToViewNameTranslator解析的默认视图名），而Locale是LocaleResolver从request中解析出来的。</p>
+<pre><code>Locale resolveLocale(HttpServletRequest request);
+
+void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale);</code></pre><p>org.springframework.web.servlet.i18n.LocaleChangeInterceptor拦截器为我么那提供了默认修改Locale的便捷方式。</p>
+<h3 id="7、ThemeResolver"><a href="#7、ThemeResolver" class="headerlink" title="7、ThemeResolver"></a>7、ThemeResolver</h3><h3 id="8、MultipartResolver"><a href="#8、MultipartResolver" class="headerlink" title="8、MultipartResolver"></a>8、MultipartResolver</h3><p>MultipartResolver用于处理上传请求，处理方法就是将普通的request包装成HttpServletRequest，后者可以直接调用getFile方法获取到File，如果上传多个文件，还可以调用getFileMap得到fileName-File结构的Map。</p>
+<p>其实如果上传请求不用MutipartResolver封装成HttpServletRequest，直接用原来的request也是可以的，所以Spring MVC中没有为此组件提供默认值。</p>
+<h3 id="9、FlashMapManager"><a href="#9、FlashMapManager" class="headerlink" title="9、FlashMapManager"></a>9、FlashMapManager</h3>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/05/18/Spring%20Boot(7)-Spring%20Boot%20%E4%B8%A4%E7%A7%8D%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E9%85%8D%E7%BD%AE%EF%BC%9AJdbcTemplate%E3%80%81Spring-data-jpa/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/05/18/Spring%20Boot(7)-Spring%20Boot%20%E4%B8%A4%E7%A7%8D%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E9%85%8D%E7%BD%AE%EF%BC%9AJdbcTemplate%E3%80%81Spring-data-jpa/" itemprop="url">Spring Boot(7)-Spring Boot 两种多数据源配置：JdbcTemplate、Spring-data-jpa</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-18T00:00:00+08:00">
+                2019-05-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/05/18/Spring%20Boot(7)-Spring%20Boot%20%E4%B8%A4%E7%A7%8D%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E9%85%8D%E7%BD%AE%EF%BC%9AJdbcTemplate%E3%80%81Spring-data-jpa/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/18/Spring%20Boot(7)-Spring%20Boot%20%E4%B8%A4%E7%A7%8D%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E9%85%8D%E7%BD%AE%EF%BC%9AJdbcTemplate%E3%80%81Spring-data-jpa/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/05/18/Spring%20Boot(7)-Spring%20Boot%20%E4%B8%A4%E7%A7%8D%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E9%85%8D%E7%BD%AE%EF%BC%9AJdbcTemplate%E3%80%81Spring-data-jpa/" class="leancloud_visitors" data-flag-title="Spring Boot(7)-Spring Boot 两种多数据源配置：JdbcTemplate、Spring-data-jpa">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在单数据源的情况下，spring Boot的数据源配置非常简单，只要在applicatrion.properties中配置连接参数即可。但是随着业务的发展我们常常会对数据库拆分或者引入其它的数据库，从而需要配置多个数据源。下面我们就基于JdbcTemplate和Spring-data-jap介绍配置多数据源的方式。</p>
+<h2 id="多数据源配置"><a href="#多数据源配置" class="headerlink" title="多数据源配置"></a>多数据源配置</h2><p>创建一个Spring配置类，定义两个DataSource用来读取application.properties中的不同配置。如下例子中，主数据源配置为spring.datasource.primary开头的配置，第二数据源配置为spring.datasource.secondary开头的配置。</p>
+<pre><code>/**
+ * 多数据源配置
+ */
+@Configuration
+public class DataSourceConfig {
+
+    @Bean(name = &quot;primaryDataSource&quot;)
+    @Primary
+    @ConfigurationProperties(prefix=&quot;spring.datasource.primary&quot;)
+    public DataSource primaryDataSource() {
+        return DataSourceBuilder.create().build();
+    }
+
+    @Bean(name = &quot;secondaryDataSource&quot;)
+    @ConfigurationProperties(prefix=&quot;spring.datasource.secondary&quot;)
+    public DataSource secondaryDataSource() {
+        return DataSourceBuilder.create().build();
+    }
+
+
+}</code></pre><p>对应application.properties中的配置如下：</p>
+<pre><code># 多数据源配置
+spring.datasource.primary.url=jdbc:mysql://localhost:3306/spring-boot-db1?useUnicode=true&amp;characterEncoding=utf8
+spring.datasource.primary.username=root
+spring.datasource.primary.password=root
+spring.datasource.primary.driver-class-name=com.mysql.jdbc.Driver
+
+spring.datasource.secondary.url=jdbc:mysql://localhost:3306/spring-boot-db2?useUnicode=true&amp;characterEncoding=utf8
+spring.datasource.secondary.username=root
+spring.datasource.secondary.password=root
+spring.datasource.secondary.driver-class-name=com.mysql.jdbc.Driver</code></pre><h2 id="JdbcTemplate配置多数据源"><a href="#JdbcTemplate配置多数据源" class="headerlink" title="JdbcTemplate配置多数据源"></a>JdbcTemplate配置多数据源</h2><p>为JdbcTemplate配置多数据源比较简单，只要为其注入不同的Datasource即可，如下：</p>
+<pre><code>/**
+ * JdbcTemplate支持多数据源
+ */
+@Configuration
+public class JdbcTemplateConfig {
+
+    @Bean(name = &quot;primaryJdbcTemplate&quot;)
+    public JdbcTemplate primaryJdbcTemplate(
+            @Qualifier(&quot;primaryDataSource&quot;) DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
+    }
+
+    @Bean(name = &quot;secondaryJdbcTemplate&quot;)
+    public JdbcTemplate secondaryJdbcTemplate(
+            @Qualifier(&quot;secondaryDataSource&quot;) DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
+    }
+
+}</code></pre><h2 id="测试JdbcTemplate多数据源"><a href="#测试JdbcTemplate多数据源" class="headerlink" title="测试JdbcTemplate多数据源"></a>测试JdbcTemplate多数据源</h2><pre><code>@RunWith(SpringRunner.class)
+@SpringBootTest(classes = SpringBootDemoApplication.class)
+public class MultipleDatasource4JdbcTemplateTest {
+
+    @Autowired
+    @Qualifier(&quot;primaryJdbcTemplate&quot;)
+    protected JdbcTemplate jdbcTemplate1;
+
+    @Autowired
+    @Qualifier(&quot;secondaryJdbcTemplate&quot;)
+    protected JdbcTemplate jdbcTemplate2;
+
+    @Before
+    public void setUp() {
+        jdbcTemplate1.update(&quot;delete from user &quot;);
+        jdbcTemplate2.update(&quot;delete from user &quot;);
+    }
+
+
+    @Test
+    public void test() throws Exception {
+
+        // 往第一个数据源中插入两条数据
+        jdbcTemplate1.update(&quot;insert into user(id,name,age) values(?, ?, ?)&quot;, 1, &quot;aaa&quot;, 20);
+        jdbcTemplate1.update(&quot;insert into user(id,name,age) values(?, ?, ?)&quot;, 2, &quot;bbb&quot;, 30);
+
+        // 往第二个数据源中插入一条数据，若插入的是第一个数据源，则会主键冲突报错
+        jdbcTemplate2.update(&quot;insert into user(id,name,age) values(?, ?, ?)&quot;, 1, &quot;aaa&quot;, 20);
+
+        // 查一下第一个数据源中是否有两条数据，验证插入是否成功
+        Assert.assertEquals(&quot;2&quot;, jdbcTemplate1.queryForObject(&quot;select count(1) from user&quot;, String.class));
+
+        // 查一下第一个数据源中是否有两条数据，验证插入是否成功
+        Assert.assertEquals(&quot;1&quot;, jdbcTemplate2.queryForObject(&quot;select count(1) from user&quot;, String.class));
+
+    }
+
+}</code></pre><h2 id="Spring-data-jpa配置多数据源"><a href="#Spring-data-jpa配置多数据源" class="headerlink" title="Spring-data-jpa配置多数据源"></a>Spring-data-jpa配置多数据源</h2><p>对于数据源的配置可以沿用上例中DataSourceConfig的实现。</p>
+<p>配置Spring-data-jpa多数据源时要注意，需要指定数据源对应的Entity实体和Repository定义位置。用@Primary区分主数据源。</p>
+<p>配置第一数据源：</p>
+<pre><code>@Configuration
+@EnableTransactionManagement
+@EnableJpaRepositories(entityManagerFactoryRef = &quot;entityManagerFactoryPrimary&quot;,
+        transactionManagerRef=&quot;transactionManagerPrimary&quot;,
+        basePackages=&quot;top.evolutionary.springbootdemo.repository.primary&quot;//设置Repository所在位置
+)
+public class SpringDataJpaPrimaryConfig {
+
+    @Autowired
+    @Qualifier(&quot;primaryDataSource&quot;)
+    private DataSource primaryDataSource;
+
+    @Primary
+    @Bean(name = &quot;entityManagerPrimary&quot;)
+    public EntityManager entityManager(EntityManagerFactoryBuilder builder) {
+        return entityManagerFactoryPrimary(builder).getObject().createEntityManager();
+    }
+
+
+    @Primary
+    @Bean(name = &quot;entityManagerFactoryPrimary&quot;)
+    public LocalContainerEntityManagerFactoryBean entityManagerFactoryPrimary (EntityManagerFactoryBuilder builder) {
+        return builder
+                .dataSource(primaryDataSource)
+                .properties(getVendorProperties(primaryDataSource))
+                .packages(&quot;top.evolutionary.springbootdemo.dto.primary&quot;) //设置实体类所在位置
+                .persistenceUnit(&quot;primaryPersistenceUnit&quot;)
+                .build();
+    }
+
+
+    @Autowired
+    private JpaProperties jpaProperties;
+
+    private Map&lt;String, String&gt; getVendorProperties(DataSource dataSource) {
+        return jpaProperties.getHibernateProperties(dataSource);
+    }
+
+    @Primary
+    @Bean(name = &quot;transactionManagerPrimary&quot;)
+    public PlatformTransactionManager transactionManagerPrimary(EntityManagerFactoryBuilder builder) {
+        return new JpaTransactionManager(entityManagerFactoryPrimary(builder).getObject());
+    }
+
+}</code></pre><p>配置第二数据源：</p>
+<p>@Configuration<br>@EnableTransactionManagement<br>@EnableJpaRepositories(entityManagerFactoryRef = “entityManagerFactorySecondary”,<br>        transactionManagerRef=”transactionManagerSecondary”,<br>        basePackages=”top.evolutionary.springbootdemo.repository.secdary”//设置Repository所在位置<br>)<br>public class SpringDataJpaSecdaryConfig {</p>
+<pre><code>@Autowired
+@Qualifier(&quot;secondaryDataSource&quot;)
+private DataSource primaryDataSource;
+
+@Bean(name = &quot;entityManagerSecondary&quot;)
+public EntityManager entityManager(EntityManagerFactoryBuilder builder) {
+    return entityManagerFactoryPrimary(builder).getObject().createEntityManager();
+}
+
+
+@Bean(name = &quot;entityManagerFactorySecondary&quot;)
+public LocalContainerEntityManagerFactoryBean entityManagerFactoryPrimary (EntityManagerFactoryBuilder builder) {
+    return builder
+            .dataSource(primaryDataSource)
+            .properties(getVendorProperties(primaryDataSource))
+            .packages(&quot;top.evolutionary.springbootdemo.dto.secdary&quot;) //设置实体类所在位置
+            .persistenceUnit(&quot;secondaryPersistenceUnit&quot;)
+            .build();
+}
+
+
+@Autowired
+private JpaProperties jpaProperties;
+
+private Map&lt;String, String&gt; getVendorProperties(DataSource dataSource) {
+    return jpaProperties.getHibernateProperties(dataSource);
+}
+
+@Bean(name = &quot;transactionManagerSecondary&quot;)
+public PlatformTransactionManager transactionManagerPrimary(EntityManagerFactoryBuilder builder) {
+    return new JpaTransactionManager(entityManagerFactoryPrimary(builder).getObject());
+}</code></pre><p>}</p>
+<h2 id="测试Spring-data-jpa多数据源"><a href="#测试Spring-data-jpa多数据源" class="headerlink" title="测试Spring-data-jpa多数据源"></a>测试Spring-data-jpa多数据源</h2><pre><code>@RunWith(SpringRunner.class)
+@SpringBootTest(classes = SpringBootDemoApplication.class)
+public class MultipleDatasource4JpaTest {
+
+    @Autowired
+    private StaffRepository staffRepository;
+    @Autowired
+    private CompanyRepository companyRepository;
+
+    @Before
+    public void delete() {
+        staffRepository.deleteAll();
+        companyRepository.deleteAll();
+    }
+
+
+    @Test
+    public void test() throws Exception{
+        staffRepository.save(new Staff(&quot;richey1&quot;,18));
+        staffRepository.save(new Staff(&quot;richey2&quot;,19));
+        staffRepository.save(new Staff(&quot;richey3&quot;,20));
+
+        Assert.assertEquals(3, staffRepository.findAll().size());
+
+        companyRepository.save(new Company(&quot;company1&quot;, &quot;add1&quot;));
+        companyRepository.save(new Company(&quot;company2&quot;, &quot;add2&quot;));
+
+        Assert.assertEquals(2, companyRepository.findAll().size());
+
+
+    }
+
+}</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/05/16/Spring%20Boot(6)-%E6%B5%8B%E8%AF%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/05/16/Spring%20Boot(6)-%E6%B5%8B%E8%AF%95/" itemprop="url">Spring Boot(6)-测试</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-16T00:00:00+08:00">
+                2019-05-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/05/16/Spring%20Boot(6)-%E6%B5%8B%E8%AF%95/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/16/Spring%20Boot(6)-%E6%B5%8B%E8%AF%95/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/05/16/Spring%20Boot(6)-%E6%B5%8B%E8%AF%95/" class="leancloud_visitors" data-flag-title="Spring Boot(6)-测试">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="http://www.spring4all.com/article/252" target="_blank" rel="noopener">本文转自http://www.spring4all.com/article/252</a></p>
+<h3 id="集成测试自动配置"><a href="#集成测试自动配置" class="headerlink" title="集成测试自动配置"></a>集成测试自动配置</h3><ul>
+<li><p>@SpringJUini4ClassRunner</p>
+<p>  开启了Spring集成测试的支持。<br>  自Spring 2.5开始，集成测试支持的形式就变成了SpringJUini4ClassRunner。这是一个Junit测试类运行器，会为Junit测试加载Spring上下文，并为测试类自动织入所需要的Bean。</p>
+</li>
+<li><p>SpringRunner</p>
+<p>  SpringRunner继承了SpringJUini4ClassRunner，但是没有扩展任何的接口，只是名字简短了，所以它跟SpringJUini4ClassRunner左右是一样的，没有区别。</p>
+</li>
+<li><p>@ContextConfiguration</p>
+<p>  指定了如何加载应用上下文。</p>
+</li>
+<li><p>@SpringApplicationConfiguration</p>
+<p>  不仅加载应用上下文，还会开启日志/加载外部属性(application.properties等)以及其它的Spring Boot特性。大多数情况下，我们会用@SpringApplicationConfiguration代替@ContextConfiguration。</p>
+</li>
+</ul>
+<ul>
+<li><p>@SpringBootTest</p>
+<p>  不仅加载应用上下文，还会开启日志/加载外部属性(application.properties等)以及其它的Spring Boot特性。较新版本的Spring Boot取消了@SpringApplicationConfiguration，改用@SpringBootTest就可以了.</p>
+</li>
+</ul>
+<pre><code>@RunWith(SpringRunner.class)
+@SpringBootTest(classes = SpringBootDemoApplication.class)
+public class HelloWorldTest {
+
+    @Autowired
+    private HelloWorldService helloWorldService;
+
+    @Test
+    public void testSayHello() {
+        Assert.assertEquals(helloWorldService.sayHello(), &quot;Hello World!&quot;);
+    }
+
+}</code></pre><h3 id="测试Web应用程序"><a href="#测试Web应用程序" class="headerlink" title="测试Web应用程序"></a>测试Web应用程序</h3><p>要恰当的测试Web应用程序，需要使用一些真实的HTTP请求，测试我们的程序可以正确的处理这些请求。Spring Boot为我们提供了两种方案来实现这类测试。</p>
+<ul>
+<li><p>Spring Mock MVC</p>
+<p>  能在一个近似真实的模拟Servlet容器里测试控制器，而不用实际启动应用服务器。</p>
+</li>
+<li><p>Web集成测试</p>
+<p>  在嵌入式Servlet容器里（如Tomcat、Jetty）启动应用程序，在真实的应用服务器里执行测试。</p>
+</li>
+</ul>
+<h4 id="Spring-Mock-MVC"><a href="#Spring-Mock-MVC" class="headerlink" title="Spring Mock MVC"></a>Spring Mock MVC</h4><p>要在测试里使用Mock MVC，可以使用MockMVCbuilders,该类提供了两个静态方法：</p>
+<ul>
+<li><p>standaloneSetup（）</p>
+<p>  构建一个Mock MVC，提供一个或多个手工创建并配置的控制器。</p>
+</li>
+<li><p>webAppContextSetup（）</p>
+<p>  使用Spring应用上下文（WebApplicationcontext）来构建MVC，上下文里可以包含一个或多个配置号的控制器。</p>
+</li>
+</ul>
+<p>两者的区别是，standaloneSetup（）希望我们手工初始化并注入我们测试的控制器，而webAppContextSetup（）基于一个WebApplicationContext的实例，由Spring加载。前者可能只想让它专注于单一控制器的测试，而后者让Spring加载控制器及依赖。</p>
+<pre><code>@RunWith(SpringRunner.class)
+@SpringBootTest(classes = DemoApplication.class)
+public class UserControllerTest {
+
+    @Autowired
+    private WebApplicationContext applicationContext;
+
+    private MockMvc mockMvc;
+
+    @Before
+    public void setUp() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(applicationContext).build();
+    }
+
+    @Test
+    public void whenQuerySuccess() throws Exception {
+        String result = mockMvc.perform(get(&quot;/user&quot;)
+                .param(&quot;username&quot;, &quot;richey&quot;)
+                .param(&quot;age&quot;, &quot;18&quot;)
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath(&quot;$.length()&quot;).value(3))
+                .andReturn().getResponse().getContentAsString();
+        System.out.println(result);
+    }
+
+
+
+    @Test
+    public void whenCreateSuccess() throws Exception {
+        Date date = new Date();
+        System.out.println(date.getTime());
+        String content = &quot;{\&quot;id\&quot;:null,\&quot;userName\&quot;:\&quot;richey\&quot;,\&quot;password\&quot;:null,\&quot;birthday\&quot;:&quot; + date.getTime() + &quot;}&quot;;
+        String result = mockMvc.perform(post(&quot;/user&quot;).contentType(MediaType.APPLICATION_JSON_UTF8).content(content))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath(&quot;$.id&quot;).value(&quot;1&quot;))
+                .andReturn().getResponse().getContentAsString();
+        System.out.println(result);
+    }
+
+
+
+}</code></pre><h4 id="测试Web安全"><a href="#测试Web安全" class="headerlink" title="测试Web安全"></a>测试Web安全</h4><p>应用程序里使用了Spring Security的测试模块后，需要创建MockMVC实例运行时的Spring Security配置器。</p>
+<p>//TODO</p>
+<h4 id="测试运行中的应用程序"><a href="#测试运行中的应用程序" class="headerlink" title="测试运行中的应用程序"></a>测试运行中的应用程序</h4><p>Spring Boot支持Tomcat或Jetty这样的嵌入式Servlet容器作为运行中应用程序的一部分，而且可以用相同的机制在测试的过程中用嵌入式Servlet容器来启动应用程序。</p>
+<ul>
+<li><p>@WebIntegrationTest</p>
+<p>  启动一个嵌入式的Servlet容器，默认是8080端口。一旦应用程序运行在嵌入式容器中，就可以发真实的HTTP请求（比如使用RestTemplate），断言结果了。</p>
+</li>
+<li><p>使用随机端口启动服务器</p>
+<p>  将server.port属性设置为0，让Spring Boot选一个随机的端口。@WebIntegrationTest的value属性支持一个String数组，数组中的每项都是键值对，形如name=value用来设置测试中使用的属性，如：</p>
+<pre><code>@WebIntegrationTest(value={&quot;server.port=0&quot;})</code></pre><p>  @WebIntegrationTest还提供了一个randomPort属性，更明确的表示让服务器在随机的端口上启动。</p>
+<p>  Spring Boot将local.server.port值设置为了选中的端口，所以我们使用的时候将该属性注入即可：</p>
+<pre><code>@Value(&quot;$local.server.port&quot;)
+private int port;</code></pre></li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/05/15/Spring%20Boot(%EF%BC%95)-%E5%B8%B8%E7%94%A8%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/05/15/Spring%20Boot(%EF%BC%95)-%E5%B8%B8%E7%94%A8%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE/" itemprop="url">Spring Boot(５)-常用属性配置</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-15T00:00:00+08:00">
+                2019-05-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/05/15/Spring%20Boot(%EF%BC%95)-%E5%B8%B8%E7%94%A8%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/15/Spring%20Boot(%EF%BC%95)-%E5%B8%B8%E7%94%A8%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/05/15/Spring%20Boot(%EF%BC%95)-%E5%B8%B8%E7%94%A8%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE/" class="leancloud_visitors" data-flag-title="Spring Boot(５)-常用属性配置">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="日志配置"><a href="#日志配置" class="headerlink" title="日志配置"></a>日志配置</h3><p>默认Spring Boot会用Logback来记录日志，并用INFO级别输出到控制台。</p>
+<h5 id="使用其它日志实现替换Logback"><a href="#使用其它日志实现替换Logback" class="headerlink" title="使用其它日志实现替换Logback"></a>使用其它日志实现替换Logback</h5><p>一般来说我们不需要切换日志实现，但是如果我们决定使用Log4j或Log4j2，那么只需要修改依赖，引入相应日志的起步依赖，同时排除掉Logback。</p>
+<pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter&lt;/artifactId&gt;
+    &lt;exclusions&gt;
+        &lt;exclusion&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-logging&lt;/artifactId&gt;
+        &lt;/exclusion&gt;
+    &lt;/exclusions&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-log4j&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre><h5 id="logback-xml"><a href="#logback-xml" class="headerlink" title="logback.xml"></a>logback.xml</h5><p>要完全掌握日志配置可以在Classpath的根目录(src/min/resources)里创建logback.xml文件。具体配置可以参考Logback文档。</p>
+<p>除了日志格式外，加lockback.xml配置和不加该配置文件的默认配置差不多。</p>
+<p>实际上，我们对日配置最常做的改动就是修改日志级别和指定日志输出文件，使用了Spring Boot的配置属性后，我们可以在不创建logback文件的情况下修改这些配置：</p>
+<pre><code>logging.level.root=warn
+logging.level.top.evolutionary=debug
+logging.path=/var/logs
+logging.file=evolutionary.log
+# 默认情况下，日志文件的大小达到１０Ｍ会切分一次
+logging.file.max-size=20M</code></pre><h3 id="配置数据源"><a href="#配置数据源" class="headerlink" title="配置数据源"></a>配置数据源</h3><p>只需要通过属性配置数据库的URL和身份信息等就可以了。</p>
+<pre><code># 数据源
+spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+spring.datasource.url=jdbc:mysql://localhost:3306/evolutionary_security?useUnicode=true&amp;characterEncoding=utf8
+spring.datasource.username=root
+spring.datasource.password=root</code></pre><p>在自动配置DataSource Bean的时候，Spring Boot 会使用这里的连接数据。DataSource Bean是一个连接池，如果Classpath里有Tomcat的连接池DataSource，那么会使用这个连接池，否则Spring Boot会在Classpath下找以下连接池:</p>
+<ul>
+<li>HikariCP</li>
+<li>Commons DBCP</li>
+<li>Commons DBCP2</li>
+</ul>
+<p>这里列出的只是自动配置支持的连接池，我们还可以自己配DataSource Bean,用我们喜欢的各种连接池。</p>
+<pre><code># 从jndi里查找DataSource
+#spring.datasource.jndi-name=</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/05/14/Spring%20Boot(4)-%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE%E4%BB%8B%E7%BB%8D/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1279,299 +2387,6 @@ public class SpringBootDemoApplication {
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/" itemprop="url">Mysql（8）-搞定Mysql字符集及校对规则</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-06T00:00:00+08:00">
-                2019-04-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/DB/" itemprop="url" rel="index">
-                    <span itemprop="name">DB</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/" class="leancloud_visitors" data-flag-title="Mysql（8）-搞定Mysql字符集及校对规则">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="MySQL的字符集（Character-Set"><a href="#MySQL的字符集（Character-Set" class="headerlink" title="MySQL的字符集（Character Set)"></a>MySQL的字符集（Character Set)</h1><p>关于字符集，之前转载了一篇文章讲的非常好——<a href="">关于字符编码，你所需要知道的（ASCII,Unicode,Utf-8,GB2312…）</a></p>
-<p>常见字符集：</p>
-<ul>
-<li>ASCII字符集：基于罗马字母表的一套字符集，它采用1个字节的低7位表示字符，高位始终为0。</li>
-<li>LATIN1字符集：相对于ASCII字符集做了扩展，仍然使用一个字节表示字符，但启用了高位，扩展了字符集的表示范围。</li>
-<li>GBK字符集：支持中文，字符有一字节编码和两字节编码方式。</li>
-<li>UTF8字符集：Unicode字符集的一种，是计算机科学领域里的一项业界标准，支持了所有国家的文字字符，utf8采用1-4个字节表示字符。</li>
-</ul>
-<h1 id="MySQL与字符集"><a href="#MySQL与字符集" class="headerlink" title="MySQL与字符集"></a>MySQL与字符集</h1><p>查看NySQL系统变量：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| Variable_name            | Value                      |</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| character_set_client     | utf8                       |</span><br><span class="line">| character_set_connection | utf8                       |</span><br><span class="line">| character_set_database   | latin1                     |</span><br><span class="line">| character_set_filesystem | binary                     |</span><br><span class="line">| character_set_results    | utf8                       |</span><br><span class="line">| character_set_server     | latin1                     |</span><br><span class="line">| character_set_system     | utf8                       |</span><br><span class="line">| character_sets_dir       | &#x2F;usr&#x2F;share&#x2F;mysql&#x2F;charsets&#x2F; |</span><br><span class="line">+--------------------------+----------------------------+</span><br></pre></td></tr></table></figure>
-<p>正确使用字符集</p>
-<table>
-<thead>
-<tr>
-<th>参数名</th>
-<th>变量作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>character_set_client</td>
-<td>客户端来源数据使用的字符集</td>
-</tr>
-<tr>
-<td>character_set_connection</td>
-<td>连接层字符集</td>
-</tr>
-<tr>
-<td>character_set_database</td>
-<td>当前选中数据库的默认字符集</td>
-</tr>
-<tr>
-<td>character_set_results</td>
-<td>查询结果字符集</td>
-</tr>
-<tr>
-<td>character_set_server</td>
-<td>默认的内部操作字符集</td>
-</tr>
-<tr>
-<td>character_set_system</td>
-<td>数据元数据（字段名等）字符集</td>
-</tr>
-</tbody></table>
-<p>这些字符集参数的作用说明：</p>
-<ol>
-<li>设置库、表、列字符集<ul>
-<li>建库时，若未明确指定字符集，则采用character_set_server指定的字符集。</li>
-<li>建表时，若未明确指定字符集，则采用当前库所采用的字符集。</li>
-<li>新增时，修改表字段时，若未明确指定字符集，则采用当前表所采用的字符集。</li>
-</ul>
-</li>
-<li>更新查询涉及的字符集变量<ul>
-<li>更新流程字符集转换过程：character_set_client–&gt;character_set_connection–&gt;表字符集。</li>
-<li>查询流程字符集转换过程：表字符集–&gt;character_set_result</li>
-</ul>
-</li>
-<li>character_set_database<ul>
-<li>当前默认数据库的字符集，比如执行use xxx后，当前数据库变为xxx，若xxx的字符集为utf8，那么此变量值就变为utf8(供系统设置，无需人工设置)。</li>
-</ul>
-</li>
-</ol>
-<h1 id="MySQL客户端与字符集"><a href="#MySQL客户端与字符集" class="headerlink" title="MySQL客户端与字符集"></a>MySQL客户端与字符集</h1><p>1.对于输入来说：</p>
-<p>客户端使用的字符集必须通过character_set_client、character_set_connection体现出来：</p>
-<ul>
-<li>在客户端对数据进行编码（Linux：utf8、windows：gbk）</li>
-<li>MySQL接到SQL语句后(比如insert)，发现有字符，询问客户端通过什么方式对字符编码：客户端通过character_set_client参数告知MySQL客户端的编码方式(所以此参数需要正确反映客户端对应的编码)</li>
-<li>当MySQL发现客户端的client所传输的字符集与自己的connection不一样时，会将client的字符集转换为connection的字符集</li>
-<li>MySQL将转换后的编码存储到MySQL表的列上，在存储的时候再判断编码是否与内部存储字符集（按照优先级判断字符集类型）上的编码一致，如果不一致需要再次转换</li>
-</ul>
-<p>2.对于查询来说：</p>
-<p>客户端使用的字符集必须通过character_set_results来体现，服务器询问客户端字符集，通过character_set_results将结果转换为与客户端相同的字符集传递给客户端。(character_set_results默认等于character_set_client)</p>
-<h1 id="字符集常见处理操作"><a href="#字符集常见处理操作" class="headerlink" title="字符集常见处理操作"></a>字符集常见处理操作</h1><p>查看字符集编码设置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br></pre></td></tr></table></figure>
-
-<p>运行时设置字符集编码</p>
-<p>运行时修改（重启后会失效，如果想要重启后保持不变，需要写进配置文件里）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; set names &#39;utf8&#39;;</span><br><span class="line"></span><br><span class="line">相当于同时：</span><br><span class="line"></span><br><span class="line">set character_set_client &#x3D; utf8;</span><br><span class="line">set character_set_results &#x3D; utf8;</span><br><span class="line">set character_set_connection &#x3D; utf8;</span><br></pre></td></tr></table></figure>
-<p>修改数据库字符集</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; alter database database_name character set xxx;</span><br></pre></td></tr></table></figure>
-<p>只修改库的字符集，影响后续创建的表的默认定义；对于已创建的表的字符集不受影响。（一般在数据库实现字符集即可，表和列都默认采用数据库的字符集）</p>
-<p>修改表的字符集</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-- 只修改表的字符集，影响后续该表新增列的默认定义，已有列的字符集不受影响。</span><br><span class="line">mysql&gt; alter table table_name character set xxx；</span><br><span class="line"></span><br><span class="line">-- 同时修改表字符集和已有列字符集，并将已有数据进行字符集编码转换。</span><br><span class="line">mysql&gt; alter table table_name convert to character set xxx;</span><br></pre></td></tr></table></figure>
-<p>修改列的字符集</p>
-<p>格式：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE table_name MODIFY</span><br><span class="line">column_name &#123;CHAR | VARCHAR | TEXT&#125; (column_length)</span><br><span class="line">    [CHARACTER SET charset_name]</span><br><span class="line">    [COLLATE collation_name]</span><br><span class="line">mysql&gt; alter table table_name modify col_name varchar(col_length) character set xxx;</span><br></pre></td></tr></table></figure>
-<p>启动服务时指定字符集</p>
-<p>可以在MySQL服务启动时，指定server字符集、字符序。如不指定，默认的字符序分别为latin1、latin1_swedish_ci</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1 \</span><br><span class="line">       --collation-server&#x3D;latin1_swedish_ci</span><br></pre></td></tr></table></figure>
-<p>单独指定server字符集，此时，server字符序为latin1的默认字符序latin1_swedish_ci。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1</span><br></pre></td></tr></table></figure>
-<p>配置文件指定字符集</p>
-<p>除了在命令行参数里指定，也可以在配置文件里指定，如下所示。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysql]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">collation-server &#x3D; utf8_unicode_ci</span><br><span class="line">init-connect&#x3D;&#39;SET NAMES utf8&#39;</span><br><span class="line">character-set-server &#x3D; utf8</span><br></pre></td></tr></table></figure>
-<p>字符集的正确实践<br>MySQL软件工具本身是没有字符集的，主要是因为工具所在的OS的字符集（Windows：gbk、Linux：utf8），所以字符集的正确实践非常重要：</p>
-<ol>
-<li>对于insert来说，character_set_client、character_set_connection相同，而且正确反映客户端使用的字符集</li>
-<li>对于select来说，character_set_results正确反映客户端字符集</li>
-<li>数据库字符集取决于我们要存储的字符类型</li>
-<li>字符集转换最多发生一次，这就要求character_set_client、character_set_connection相同</li>
-<li>所有的字符集转换都发生在数据库端</li>
-</ol>
-<p>综述：</p>
-<ol>
-<li>建立数据库的时候注意字符集（gbk、utf8）；</li>
-<li>连接数据库以后，无论是执行dml还是select，只要涉及到varchar、char列，就需要设置正确的字符集参数。</li>
-</ol>
-<h1 id="MySQL的校对规则"><a href="#MySQL的校对规则" class="headerlink" title="MySQL的校对规则"></a>MySQL的校对规则</h1><p>字符集是一套符号和对应的编号</p>
-<ol start="4">
-<li><p>查看数据库支持的所有字符集(charset)：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show character set;</span><br></pre></td></tr></table></figure>
-<p>校对规则(collation)是在字符集内用于字符比较和排序的一套规则，比如有的规则区分大小写，有的则无视。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create table t1(id int,name varchar(20)); -- t1建表没有指定校对规则</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    1 | A    |</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
-<p>查看数据库支持的校对规则</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show collation;</span><br></pre></td></tr></table></figure>
-<p>查看当前字符集和校对规则设置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; mysql&gt; show variables like &#39;collation_%&#39;;</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| Variable_name        | Value             |</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| collation_connection | utf8_general_ci   |</span><br><span class="line">| collation_database   | utf8_general_ci   |</span><br><span class="line">| collation_server     | latin1_swedish_ci |</span><br><span class="line">+----------------------+-------------------+</span><br></pre></td></tr></table></figure>
-<p>校对规则特征：</p>
-</li>
-<li><p>两个不同的字符集不能有相同的校对规则；</p>
-</li>
-<li><p>每个字符集有一个默认校对规则；</p>
-</li>
-<li><p>存在校对规则命名约定：以其相关的字符集名开始，中间包括一个语言名，并且以_ci（大小写不敏感）、_cs（大小写敏感）或_bin（二元）结束。<br>注意：</p>
-</li>
-</ol>
-<p>系统使用utf8字符集，若使用utf8_bin校对规则执行SQL查询时区分大小写，使用utf8_general_ci不区分大小写(默认的utf8字符集对应的校对规则是utf8_general_ci)。</p>
-<p>示例：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create table t2(id int,name varchar(20)) character set&#x3D;utf8 collate&#x3D;utf8_bin;</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line"></span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
-<p>相关连接</p>
-<p><a href="https://www.cnblogs.com/chyingp/p/mysql-character-set-collation.html" target="_blank" rel="noopener">再见乱码：5分钟读懂MySQL字符集设置</a></p>
-<p><a href="https://www.cnblogs.com/geaozhang/p/6724393.html" target="_blank" rel="noopener">MySQL字符集及校对规则的理解</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/04/06/Redis02-%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1887,830 +2702,11 @@ hgetall(key)：返回名称为key的hash中所有的键（field）及其对应�
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/04/06/maven%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/04/06/maven%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A/" itemprop="url">maven必知必会</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-06T00:00:00+08:00">
-                2019-04-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/ci-cd/" itemprop="url" rel="index">
-                    <span itemprop="name">ci/cd</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/04/06/maven%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/04/06/maven%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/04/06/maven%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A/" class="leancloud_visitors" data-flag-title="maven必知必会">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="仓库"><a href="#仓库" class="headerlink" title="仓库"></a>仓库</h1><p>对于Maven来说，仓库只分为两类：本地仓库和远程仓库。当Maven需要根据坐标寻找构件的时候，它首先会查找本地仓库，如果本地仓库有此构件，则直接使用；</p>
-<p>如果本地仓库没有此构件或许需要查看此构件是否有更新版本Maven会去远程仓库查找，发现需要的构件后，会先下载到本地仓库再使用。如果本地仓库和远程仓库都没有找到需要的构件，则Maven会报错。</p>
-<iframe id="embed_dom" name="embed_dom" frameborder="0" style="display:block;width:525px; height:245px;" src="https://www.processon.com/embed/5ca8497de4b0ec8ff3663e7d"></iframe>
-
-<h1 id="远程仓库"><a href="#远程仓库" class="headerlink" title="远程仓库"></a>远程仓库</h1><h2 id="中央仓库"><a href="#中央仓库" class="headerlink" title="中央仓库"></a>中央仓库</h2><p>中央仓库是默认的远程仓库，Maven安装文件中自带的超级POM中自带了中央仓库的配置，所有的Maven项目都会继承Maven的这个超级POM.</p>
-<p>超级POM中的中央仓库配置：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repositories</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;<span class="name">repository</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span> central<span class="tag">&lt;/<span class="name">id</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span> Maven Repository Switchboard<span class="tag">&lt;/<span class="name">name</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">layout</span>&gt;</span> default<span class="tag">&lt;/<span class="name">layout</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span> http://repo1.maven.org/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">      <span class="comment">&lt;!-- 不从该仓库下载快照版本的构件 --&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">enabled</span>&gt;</span> false<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;/<span class="name">repository</span>&gt;</span>        </span><br><span class="line"><span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>覆盖中央仓库的默认地址</p>
-<p>在setting.xml里面配置：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">settings</span>&gt;</span>        </span><br><span class="line">…        </span><br><span class="line">  <span class="tag">&lt;<span class="name">mirrors</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">mirror</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span> maven-net-cn<span class="tag">&lt;/<span class="name">id</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">name</span>&gt;</span> Maven China Mirror<span class="tag">&lt;/<span class="name">name</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">url</span>&gt;</span> http://maven.net.cn/content/groups/public/<span class="tag">&lt;/<span class="name">url</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">mirrorOf</span>&gt;</span> central<span class="tag">&lt;/<span class="name">mirrorOf</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;/<span class="name">mirror</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;/<span class="name">mirrors</span>&gt;</span>        </span><br><span class="line">…        </span><br><span class="line"><span class="tag">&lt;/<span class="name">settings</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>central表示只为central仓库做镜像，如果想为所有的仓库做镜像可以将central改为： *</p>
-<h2 id="配置远程仓库"><a href="#配置远程仓库" class="headerlink" title="配置远程仓库"></a>配置远程仓库</h2><p>在repositories元素下，可以使用repository子元素声明一个或多个远程仓库。</p>
-<p>作用于当先项目</p>
-<p>添加如下配置到pom的第一层（xml），只作用于当前项目</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 可添加多个 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>jboss<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>JBoss Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 仓库地址 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://repository.jboss.com/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 是否下载该仓库的release类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">updatePolicy</span>&gt;</span>daily<span class="tag">&lt;/<span class="name">updatePolicy</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">checksumPolicy</span>&gt;</span>ignore<span class="tag">&lt;/<span class="name">checksumPolicy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 是否下载该仓库的snapshots类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">           <span class="comment">&lt;!-- Maven从远程仓库检查的频率，默认是daily --&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">updatePolicy</span>&gt;</span>daily<span class="tag">&lt;/<span class="name">updatePolicy</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">checksumPolicy</span>&gt;</span>ignore<span class="tag">&lt;/<span class="name">checksumPolicy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h2 id="snapshots和releases元素的子元素："><a href="#snapshots和releases元素的子元素：" class="headerlink" title="snapshots和releases元素的子元素："></a>snapshots和releases元素的子元素：</h2><ul>
-<li><p>updatePolicy</p>
-<p>Maven从远程仓库检查的频率，默认是daily，表示Maven每天检查一次。其它可用的值包括：never——从不检查更新；<br>always——每次构建都检查更新；X——每隔X分钟检查一次（X为任意整数）。</p>
-</li>
-<li><p>checksumPolicy<br>用来配置Mavne校验和文件的策略。当部署构件到仓库时会同时部署校验和文件。下载构件时Maven会验证校验和文件。如果验证失败，怎么办？<br>当checksumPolicy的值为默认的warn时，Maven会在执行构建时输出警告信息，其它可能的值包括：fail——验证不通过时，让构建失败；ignore——使<br>Maven完全忽略验证错误。</p>
-</li>
-<li><p>作用于全局</p>
-<p>在settings文件中添加配置，添加profiles后，mirrors可以省略</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">profiles</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">profile</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>besttop_nexus<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 激活此profile --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">activation</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">activeByDefault</span>&gt;</span>true<span class="tag">&lt;/<span class="name">activeByDefault</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">activation</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--all requests to nexus via the mirror --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 可添加多个 --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">id</span>&gt;</span>jboss<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">name</span>&gt;</span>JBoss Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 仓库地址 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://repository.jboss.com/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 是否下载该仓库的release类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 是否下载该仓库的snapshots类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">profile</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">profiles</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h2 id="远程仓库的认证"><a href="#远程仓库的认证" class="headerlink" title="远程仓库的认证"></a>远程仓库的认证</h2><p>大部分远程仓库无需认证就可以访问，但有时候出于安全方面的考虑，我们需要提供认证信息才能访问一些仓库。比如组织内部的私有仓库。</p>
-</li>
-</ul>
-<p>仓库信息可以配置子啊POM中，但是认证信息必须配置在setting.xml文件中。</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">servers</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">server</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span>my-proj<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">username</span>&gt;</span>admin<span class="tag">&lt;/<span class="name">username</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">password</span>&gt;</span>pwd<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">server</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">servers</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>注意：</p>
-<p>这里的关键是id，这里的id必须要与POM中需要认证的repository元素的id完全一致。换句话说，正是这个id将认证信息与仓库联系在一起。</p>
-<p>部署至远程仓库<br>私服的一大作用就是部署第三方构件，包括组织内部生成的构件及一些无法从外部仓库直接获取的构件。<br>无论是日常开发中生成的构件，还是正式版本发布的构件，都需要部署到仓库中，供其它团队成员使用。</p>
-<p>配置distributionManagement元素：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">distributionManagement</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 发布版本的构件仓库 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">repository</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">uniqueVersion</span>&gt;</span>false<span class="tag">&lt;/<span class="name">uniqueVersion</span>&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- id是仓库的唯一标识 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>corp1<span class="tag">&lt;/<span class="name">id</span>&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- name是为了方便人阅读 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>Corporate Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- 表示该仓库的地址 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span>scp://repo/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">layout</span>&gt;</span>default<span class="tag">&lt;/<span class="name">layout</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;/<span class="name">repository</span>&gt;</span>  </span><br><span class="line">  <span class="comment">&lt;!-- 快照版本的构件仓库 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">snapshotRepository</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">uniqueVersion</span>&gt;</span>true<span class="tag">&lt;/<span class="name">uniqueVersion</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>propSnap<span class="tag">&lt;/<span class="name">id</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>Propellors Snapshots<span class="tag">&lt;/<span class="name">name</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span>sftp://propellers.net/maven<span class="tag">&lt;/<span class="name">url</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;/<span class="name">snapshotRepository</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;/<span class="name">distributionManagement</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>Maven的快照版本，在发布的过程中会自动打上时间戳，有了时间戳，Maven就能找到相同快照版本的最新文件。<br>当我们下载某一个版本的快照时，Maven会从远程仓库检查该构件是否有更新，有的话会先下载更新到本地仓库。<br>注意Maven并不会每次都去检查，默认会每天检查一次（根据updatePolicy配置），我们可以使用-U命令，让Maven强制更新，比如：mvn clean install -U.</p>
-<p>其它Maven配置详解</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">settings</span> <span class="attr">xmlns</span>=<span class="string">"http://maven.apache.org/POM/4.0.0"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://maven.apache.org/POM/4.0.0</span></span></span><br><span class="line"><span class="tag"><span class="string">                               http://maven.apache.org/xsd/settings-1.0.0.xsd"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">localRepository</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">interactiveMode</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">usePluginRegistry</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">offline</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">pluginGroups</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">servers</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">mirrors</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">proxies</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">profiles</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">activeProfiles</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">settings</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>localRepository</p>
-<p>表示本地库的保存位置，也就是maven2主要的jar保存位置，默认在${user.dir}/.m2/repository，如果需要另外设置，就换成其他的路径。</p>
-</li>
-<li><p>offline</p>
-<p>设置为true后，不会每次编译，都去查找远程中心库。当然前提是你已经下载了必须的依赖包。实际开发过程中迭代频繁的情况下，构件经常变动，不建议设置为true。</p>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/04/05/Redis01-%E5%85%A5%E9%97%A8%E5%8F%8A%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/04/05/Redis01-%E5%85%A5%E9%97%A8%E5%8F%8A%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url">Redis01-入门及基础数据结构</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-05T00:00:00+08:00">
-                2019-04-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/DB/" itemprop="url" rel="index">
-                    <span itemprop="name">DB</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/04/05/Redis01-%E5%85%A5%E9%97%A8%E5%8F%8A%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/04/05/Redis01-%E5%85%A5%E9%97%A8%E5%8F%8A%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/04/05/Redis01-%E5%85%A5%E9%97%A8%E5%8F%8A%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="leancloud_visitors" data-flag-title="Redis01-入门及基础数据结构">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="一、安装"><a href="#一、安装" class="headerlink" title="一、安装"></a>一、安装</h1><ol>
-<li>使用 Docker 安装。</li>
-<li>通过 Github 源码编译。</li>
-<li>直接安装 apt-get install(Ubuntu)、yum install(RedHat) 或者 brew install(Mac)。</li>
-</ol>
-<h2 id="Docker-方式"><a href="#Docker-方式" class="headerlink" title="Docker 方式"></a>Docker 方式</h2><pre><code># 拉取 redis 镜像
-&gt; docker pull redis
-# 运行 redis 容器
-&gt; docker run --name myredis -d -p6379:6379 redis
-# 执行容器中的 redis-cli，可以直接使用命令行操作 redis
-&gt; docker exec -it myredis redis-cli
-Github 源码编译方式</code></pre><h2 id="下载源码"><a href="#下载源码" class="headerlink" title="下载源码"></a>下载源码</h2><pre><code>&gt; git clone --branch 2.8 --depth 1 git@github.com:antirez/redis.git
-&gt; cd redis
-# 编译
-&gt; make
-&gt; cd src
-# 运行服务器，daemonize表示在后台运行
-&gt; ./redis-server --daemonize yes
-# 运行命令行
-&gt; ./redis-cli</code></pre><h2 id="直接安装方式"><a href="#直接安装方式" class="headerlink" title="直接安装方式"></a>直接安装方式</h2><pre><code># mac
-&gt; brew install redis
-# ubuntu
-&gt; apt-get install redis
-# redhat
-&gt; yum install redis
-# 运行客户端
-&gt; redis-cli...</code></pre><h1 id="二、Redis基础数据结构"><a href="#二、Redis基础数据结构" class="headerlink" title="二、Redis基础数据结构"></a>二、Redis基础数据结构</h1><ol>
-<li>string(字符串)</li>
-<li>list(列表)</li>
-<li>set(集合)</li>
-<li>hash(哈系)</li>
-<li>zset(有序集合)</li>
-</ol>
-<p>Redis 所有的数据结构都是以唯一的 key 字符串作为名称，然后通过这个唯一 key 值来获取相应的 value 数据。不同类型的数据结构的差异就在于 value 的结构不一样。</p>
-<h2 id="string-字符串"><a href="#string-字符串" class="headerlink" title="string(字符串)"></a>string(字符串)</h2><p>字符串结构使用非常广泛，一个常见的用途就是缓存用户信息。</p>
-<ul>
-<li><p>键值对    </p>
-<pre><code>[richey@192 ~]$ redis-cli
-127.0.0.1:6379&gt; set name richey
-OK
-127.0.0.1:6379&gt; get name
-&quot;richey&quot;
-127.0.0.1:6379&gt; exists name
-(integer) 1
-127.0.0.1:6379&gt; EXISTS name
-(integer) 1
-127.0.0.1:6379&gt; DEL name
-(integer) 1
-127.0.0.1:6379&gt;</code></pre></li>
-<li><p>批量键值对</p>
-<pre><code>127.0.0.1:6379&gt; set name1 richey
-OK
-127.0.0.1:6379&gt; set name2 kelly
-OK
-127.0.0.1:6379&gt; MGET name1 name2 name3
-1) &quot;richey&quot;
-2) &quot;kelly&quot;
-3) (nil)</code></pre></li>
-</ul>
-<pre><code>127.0.0.1:6379&gt; mset name1 aoo name2 boo name3 coo
-OK
-127.0.0.1:6379&gt; mget name1 name2 name3
-1) &quot;aoo&quot;
-2) &quot;boo&quot;</code></pre><ul>
-<li><p>过期和set命令扩展</p>
-<pre><code>127.0.0.1:6379&gt; set name richey
-OK
-127.0.0.1:6379&gt; get name
-&quot;richey&quot;
-127.0.0.1:6379&gt; EXPIRE name 5
-(integer) 1
-... wait for 5s
-127.0.0.1:6379&gt; get name
-(nil)</code></pre></li>
-</ul>
-<pre><code>127.0.0.1:6379&gt; SETEX name 5 richey # 设置name并在5s后过期 相当于set+expire
-OK
-127.0.0.1:6379&gt; get name
-&quot;richey&quot;
-127.0.0.1:6379&gt; get name
-(nil)
-
-127.0.0.1:6379&gt; SETNX name richey # 如果name不存在就执行set创建
-(integer) 1
-127.0.0.1:6379&gt; get name
-&quot;richey&quot;
-127.0.0.1:6379&gt; SETNX name kelly # 因为name已经存在所以执行set创建不成功
-(integer) 0
-127.0.0.1:6379&gt; get name
-&quot;richey&quot;</code></pre><ul>
-<li><p>计数</p>
-<p>  如果 value 值是一个整数，还可以对它进行自增操作。自增是有范围的，它的范围是 signed long 的最大最小值，超过了这个值，Redis 会报错。</p>
-<pre><code>127.0.0.1:6379&gt; set age 18
-OK
-127.0.0.1:6379&gt; INCR age
-(integer) 19
-127.0.0.1:6379&gt; INCRBY age 5
-(integer) 24
-127.0.0.1:6379&gt; INCRBY age -5
-(integer) 19
-127.0.0.1:6379&gt; set maxInteger 9223372036854775807 # Long.Max
-OK
-127.0.0.1:6379&gt; INCR maxInteger
-(error) ERR increment or decrement would overflow</code></pre></li>
-</ul>
-<h2 id="list-列表"><a href="#list-列表" class="headerlink" title="list(列表)"></a>list(列表)</h2><p>Redis的列表相当于java的LinkedList,是链表.</p>
-<ul>
-<li><p>右边进左边出(或左边进右边出):队列</p>
-<pre><code>27.0.0.1:6379&gt; LPOP books
-&quot;java&quot;
-127.0.0.1:6379&gt; LPUSH movies m1 m2 m3
-(integer) 3
-127.0.0.1:6379&gt; RPOP movies
-&quot;m1&quot;
-127.0.0.1:6379&gt; RPOP movies
-&quot;m2&quot;
-127.0.0.1:6379&gt; RPOP movies
-&quot;m3&quot;
-127.0.0.1:6379&gt; RPOP movies
-(nil)</code></pre></li>
-<li><p>右边进右边出(或左边进左边出):栈</p>
-<pre><code>127.0.0.1:6379&gt; LPUSH book java python go
-(integer) 3
-127.0.0.1:6379&gt; LPOP book
-&quot;go&quot;</code></pre></li>
-<li><p>慢操作</p>
-<pre><code>127.0.0.1:6379&gt; RPUSH books java go python
-(integer) 3
-127.0.0.1:6379&gt; LINDEX books 1 #相当于get(int index)
-&quot;go&quot;
-127.0.0.1:6379&gt; LRANGE books 0 -1 # -1表示倒数第一个元素
-1) &quot;java&quot;
-2) &quot;go&quot;
-3) &quot;python&quot;
-127.0.0.1:6379&gt; LTRIM books 1 -1 #保留第2个到最后一个元素
-OK
-127.0.0.1:6379&gt; LRANGE books 0 -1 #获取所有元素
-1) &quot;go&quot;
-2) &quot;python&quot;
-
-127.0.0.1:6379&gt; LTRIM books 1 0 # 相当于清空真个列表,因为区间长度为负
-OK
-127.0.0.1:6379&gt; LLEN books
-(integer) 0</code></pre></li>
-</ul>
-<h2 id="hash-字典"><a href="#hash-字典" class="headerlink" title="hash(字典)"></a>hash(字典)</h2><p>Redis的字典相当于java的HashMap,它是无序字典.</p>
-<p>hash也可以用来存储用户信息,不同于字符串一次性需要序列化整个对象,hash可以对用户结构中的每个字段单独存储.这样当我们需要获取用户的信息时可以单独获取.而以字符串的形式存储就只能一次性全部读取,这样会比较浪费网络流量.</p>
-<p>hash也有缺点,hash的存储消耗要高于单个字符串,到底要用hash还是字符串要根据具体情况分析权衡.</p>
-<pre><code>127.0.0.1:6379&gt; HSET books java &quot;think in java&quot;
-(integer) 1
-127.0.0.1:6379&gt; HSET books go &quot;concurrency in go&quot;
-(integer) 1
-127.0.0.1:6379&gt; HSET books python &quot;python cookbook&quot;
-(integer) 1
-127.0.0.1:6379&gt; HGETALL books
-1) &quot;java&quot;
-2) &quot;think in java&quot;
-3) &quot;go&quot;
-4) &quot;concurrency in go&quot;
-5) &quot;python&quot;
-6) &quot;python cookbook&quot;
-127.0.0.1:6379&gt; HLEN books
-(integer) 3
-127.0.0.1:6379&gt; HGET books go
-&quot;concurrency in go&quot;
-127.0.0.1:6379&gt; HMSET books java &quot;effective java&quot; python &quot;learning python&quot; go &quot;modern golang&quot;
-OK
-127.0.0.1:6379&gt; HGETALL books
-1) &quot;java&quot;
-2) &quot;effective java&quot;
-3) &quot;go&quot;
-4) &quot;modern golang&quot;
-5) &quot;python&quot;
-6) &quot;learning python&quot;    </code></pre><ul>
-<li><p>计数</p>
-<p>  hash结构中的单个子key的value也可以计数</p>
-<pre><code>127.0.0.1:6379&gt; HINCRBY richey age 1
-(integer) 1
-127.0.0.1:6379&gt; HGET richey age
-&quot;1&quot;
-127.0.0.1:6379&gt; HINCRBY richey age 2
-(integer) 3
-127.0.0.1:6379&gt; HGET richey age
-&quot;3&quot;</code></pre></li>
-</ul>
-<h2 id="set-集合"><a href="#set-集合" class="headerlink" title="set(集合)"></a>set(集合)</h2><p>Redis中的集合相当于java中的HashSet,它内部的键值对是无序的唯一的.</p>
-<pre><code>127.0.0.1:6379&gt; SADD books java
-(integer) 1
-127.0.0.1:6379&gt; SADD books java # 重复加不进去
-(integer) 0
-127.0.0.1:6379&gt; SADD books java python
-(integer) 1
-127.0.0.1:6379&gt; SADD books golang
-(integer) 1
-127.0.0.1:6379&gt; SMEMBERS books # 注意顺序跟加进去的顺序不一致,是无序的
-1) &quot;python&quot;
-2) &quot;golang&quot;
-3) &quot;java&quot;
-127.0.0.1:6379&gt; SISMEMBER books java #查询某个value是否存在
-(integer) 1
-127.0.0.1:6379&gt; SISMEMBER books js
-(integer) 0
-127.0.0.1:6379&gt; SCARD books # 获取集合长度
-(integer) 3
-127.0.0.1:6379&gt; SPOP books # 弹出一个
-&quot;java&quot;
-127.0.0.1:6379&gt;</code></pre><h2 id="zset-有序集合"><a href="#zset-有序集合" class="headerlink" title="zset(有序集合)"></a>zset(有序集合)</h2><p>zset类似与java中的SortedSEt和HashMap的结合.一方便它是一个set,保证了内部value的唯一性,另一个方面它可以给每个value赋予一个score,代表这个value的排序权重.</p>
-<p>zset可以用来存储学生的成绩,value值是学生的id,score是他的考试成绩.可以根据成绩进行排序.</p>
-<pre><code>127.0.0.1:6379&gt; ZADD books 9.0 &quot;think in java&quot;
-(integer) 1
-127.0.0.1:6379&gt; ZADD books 8.5 &quot;java concurrency&quot;
-(integer) 1
-127.0.0.1:6379&gt; ZADD books 8.1 &quot;java cookbook&quot;
-(integer) 1
-127.0.0.1:6379&gt; ZRANGE books 0 -1  # 按score排序列出,参数区间为排名范围
-1) &quot;java cookbook&quot;
-2) &quot;java concurrency&quot;
-3) &quot;think in java&quot;
-127.0.0.1:6379&gt; ZREVRANGE books 0 -1 # 逆序
-1) &quot;think in java&quot;
-2) &quot;java concurrency&quot;
-3) &quot;java cookbook&quot;
-127.0.0.1:6379&gt; ZCARD books # 相当于count()
-(integer) 3
-127.0.0.1:6379&gt; ZSCORE books &quot;think in java&quot; # 获取指定value的score
-&quot;9&quot;
-127.0.0.1:6379&gt; ZRANK books &quot;java concurrency&quot; #排名
-(integer) 1
-127.0.0.1:6379&gt; ZRANK books &quot;think in java&quot;
-(integer) 2
-127.0.0.1:6379&gt; ZRANGEBYSCORE books 0 8.91 # 根据分数区间遍历zset
-1) &quot;java cookbook&quot;
-2) &quot;java concurrency&quot;
-127.0.0.1:6379&gt; ZRANGEBYSCORE books -inf 8.91 # 根据分数区间遍历zset inf代表infinite,无穷大的意思
-1) &quot;java cookbook&quot;
-2) &quot;java concurrency&quot;
-127.0.0.1:6379&gt; ZREM books &quot;think in java&quot; # 删除
-(integer) 1
-127.0.0.1:6379&gt; ZRANGE books 0 -1
-1) &quot;java cookbook&quot;
-2) &quot;java concurrency&quot;</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/04/02/Mysql%EF%BC%887%EF%BC%89-Mysql%E9%94%81/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/04/02/Mysql%EF%BC%887%EF%BC%89-Mysql%E9%94%81/" itemprop="url">Mysql（7）-Mysql锁</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-02T00:00:00+08:00">
-                2019-04-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/DB/" itemprop="url" rel="index">
-                    <span itemprop="name">DB</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/04/02/Mysql%EF%BC%887%EF%BC%89-Mysql%E9%94%81/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/04/02/Mysql%EF%BC%887%EF%BC%89-Mysql%E9%94%81/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/04/02/Mysql%EF%BC%887%EF%BC%89-Mysql%E9%94%81/" class="leancloud_visitors" data-flag-title="Mysql（7）-Mysql锁">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/mysql%E9%94%81.jpg" alt="Mysql锁"></p>
-<p>数据库锁设计的初衷是处理并发问题。</p>
-<p>Mysql加锁范围分类</p>
-<h1 id="全局锁"><a href="#全局锁" class="headerlink" title="全局锁"></a>全局锁</h1><p>全局锁就是对整个数据库实例加锁。MySQL 提供了一个加全局读锁的方法，命令是 Flush tables with read lock (FTWRL)。</p>
-<p>全局锁的典型使用场景是，做全库逻辑备份。也就是把整库每个表都 select 出来存成文本。</p>
-<p>官方自带的逻辑备份工具是mysqldump。当 mysqldump使用参数–single-transaction 的时候，导数据之前就会启动一个事务，来确保拿到一致性视图。而由于 MVCC的支持，这个过程中数据是可以正常更新的。</p>
-<p>single-transaction方法只适用于所有的表使用事务引擎的库。对于 MyISAM 这种不支持事务的引擎，如果备份过程中有更新，总是只能取到最新的数据，那么就破坏了备份的一致性。这时，我们就需要使用 FTWRL 命令了。</p>
-<p>既然要全库只读，为什么不使用 set global readonly=true 的方式呢？</p>
-<p>确实，readonly方式也可以让全库进入只读状态，但还是会建议使用 FTWRL 方式，主要有两个原因：</p>
-<p>一是，在有些系统中，readonly 的值会被用来做其他逻辑，比如用来判断一个库是主库还是备库。因此，修改 global 变量的方式影响面更大，我不建议你使用。</p>
-<p>二是，在异常处理机制上有差异。如果执行 FTWRL命令之后由于客户端发生异常断开，那么 MySQL 会自动释放这个全局锁，整个库回到可以正常更新的状态。而将整个库设置为 readonly 之后，如果客户端发生异常，则数据库就会一直保持 readonly 状态，这样会导致整个库长时间处于不可写状态，风险较高。</p>
-<h1 id="表级锁"><a href="#表级锁" class="headerlink" title="表级锁"></a>表级锁</h1><h2 id="表锁"><a href="#表锁" class="headerlink" title="表锁"></a>表锁</h2><p>表锁的语法是 lock tables … read/write。与 FTWRL 类似，可以用 unlock tables主动释放锁，也可以在客户端断开的时候自动释放。</p>
-<h2 id="元数据锁（meta-data-lock，MDL"><a href="#元数据锁（meta-data-lock，MDL" class="headerlink" title="元数据锁（meta data lock，MDL)"></a>元数据锁（meta data lock，MDL)</h2><p>MDL 不需要显式使用，在访问一个表的时候会被自动加上。MDL的作用是，保证读写的正确性。</p>
-<p>在 MySQL 5.5 版本中引入了 MDL，当对一个表做增删改查操作的时候，加 MDL读锁；当要对表做结构变更操作的时候，加 MDL 写锁。</p>
-<p>读锁之间不互斥，因此你可以有多个线程同时对一张表增删改查。</p>
-<p>读写锁之间、写锁之间是互斥的，用来保证变更表结构操作的安全性。因此，如果有两个线程要同时给一个表加字段，其中一个要等另一个执行完才能开始执行。</p>
-<p>事务中的 MDL锁，在语句执行开始时申请，但是语句结束后并不会马上释放，而会等到整个事务提交后再释放。</p>
-<p>如何安全地给小表加字段？</p>
-<p>首先我们要解决长事务，事务不提交，就会一直占着 MDL 锁。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-- 在 MySQL 的 information_schema 库的 innodb_trx表中，你可以查到当前执行中的事务</span><br></pre></td></tr></table></figure>
-<p>如果你要做DDL变更的表刚好有长事务在执行，要考虑先暂停DDL，或者kill掉这个长事务。</p>
-<p>如果你要变更的表是一个热点表，虽然数据量不大，但是上面的请求很频繁，而你不得不加个字段，你该怎么做呢？</p>
-<p>这时候kill可能未必管用，因为新的请求马上就来了。比较理想的机制是，在 alter table语句里面设定等待时间，如果在这个指定的等待时间里面能够拿到 MDL 写锁最好，拿不到也不要阻塞后面的业务语句，先放弃。之后开发人员或者DBA再通过重试命令重复这个过程。</p>
-<p>MariaDB 已经合并了AliSQL的这个功能，所以这两个开源分支目前都支持 DDL NOWAIT/WAIT n 这个语法。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE tbl_name NOWAIT add column ...</span><br><span class="line">ALTER TABLE tbl_name WAIT N add column ...</span><br></pre></td></tr></table></figure>
-<h2 id="行锁"><a href="#行锁" class="headerlink" title="行锁"></a>行锁</h2><p>MySQL 的行锁是在引擎层由各个引擎自己实现的。但并不是所有的引擎都支持行锁，比如 MyISAM 引擎就不支持行锁。</p>
-<p>InnoDB 支持行锁，这也是 MyISAM 被 InnoDB 替代的重要原因之一。</p>
-<h2 id="InnoDB-的行锁"><a href="#InnoDB-的行锁" class="headerlink" title="InnoDB 的行锁"></a>InnoDB 的行锁</h2><p>两阶段锁</p>
-<p>在 InnoDB 事务中，行锁是在需要的时候才加上的，但并不是不需要了就立刻释放，而是要等到事务结束时才释放。这个就是两阶段锁协议。</p>
-<p>如果你的事务中需要锁多个行，要把最可能造成锁冲突、最可能影响并发度的锁尽量往后放。</p>
-<h2 id="死锁和死锁检测"><a href="#死锁和死锁检测" class="headerlink" title="死锁和死锁检测"></a>死锁和死锁检测</h2><p>当并发系统中不同线程出现循环资源依赖，涉及的线程都在等待别的线程释放资源时，就会导致这几个线程都进入无限等待的状态，称为死锁。</p>
-<p>当出现死锁以后，有两种策略：</p>
-<ul>
-<li>一种策略是，直接进入等待，直到超时。这个超时时间可以通过参数 innodb_lock_wait_timeout 来设置。在 InnoDB 中，innodb_lock_wait_timeout 的默认值是 50s.</li>
-<li>另一种策略是，发起死锁检测，发现死锁后，主动回滚死锁链条中的某一个事务，让其他事务得以继续执行。将参数 innodb_deadlock_detect 设置为 on，表示开启这个逻辑。<br>正常情况下我们还是要采用第二种策略，即：主动死锁检测，而且 innodb_deadlock_detect 的默认值本身就是 on。主动死锁检测在发生死锁的时候，是能够快速发现并进行处理的，但是它也是有额外负担的。</li>
-</ul>
-<p>主动死锁监测：</p>
-<p>当一个事务被锁的时候，就要看看它所依赖的线程有没有被别人锁住，如此循环，最后判断是否出现了循环等待，也就是死锁。</p>
-<p>每个新来的被堵住的线程，都要判断会不会由于自己的加入导致了死锁，这是一个时间复杂度是 O(n) 的操作。假设有 1000 个并发线程要同时更新同一行，那么死锁检测操作就是 100 万这个量级的。虽然最终检测的结果是没有死锁，但是这期间要消耗大量的 CPU 资源。因此，你就会看到 CPU 利用率很高，但是每秒却执行不了几个事务。</p>
-<p>怎么解决由这种热点行更新导致的性能问题呢？问题的症结在于，死锁检测要耗费大量的 CPU 资源.<br>。</p>
-<ul>
-<li><p>如果你能确保这个业务一定不会出现死锁，可以临时把死锁检测关掉。</p>
-</li>
-<li><p>另一个思路是控制并发度。一个直接的想法就是，在客户端做并发控制。但是，你会很快发现这个方法不太可行，因为客户端很多。<br>因此，这个并发控制要做在数据库服务端。基本思路就是，对于相同行的更新，在进入引擎之前排队。这样在 InnoDB 内部就不会有大量的死锁检测工作了。在中间件或者Mysql 源码中修。</p>
-</li>
-<li><p>通过业务层面实现。</p>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/5/">&lt;i class&#x3D;&quot;fa fa-angle-left&quot;&gt;&lt;&#x2F;i&gt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/7/">&lt;i class&#x3D;&quot;fa fa-angle-right&quot;&gt;&lt;&#x2F;i&gt;</a>
+    <a class="extend prev" rel="prev" href="/page/5/">&lt;i class&#x3D;&quot;fa fa-angle-left&quot;&gt;&lt;&#x2F;i&gt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/7/">&lt;i class&#x3D;&quot;fa fa-angle-right&quot;&gt;&lt;&#x2F;i&gt;</a>
   </nav>
 
 
@@ -2760,7 +2756,7 @@ OK
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">110</span>
+                  <span class="site-state-item-count">114</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2782,7 +2778,7 @@ OK
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-count">39</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

@@ -288,7 +288,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/06/Spring%20Security%EF%BC%886%EF%BC%89%EF%BC%8D%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Richey Liu">
@@ -307,7 +307,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/" itemprop="url">Mysql（11）-有意思的Mysql问题</a></h1>
+                <a class="post-title-link" href="/2019/06/06/Spring%20Security%EF%BC%886%EF%BC%89%EF%BC%8D%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/" itemprop="url">Spring Security（6）－图片验证码</a></h1>
         
 
         <div class="post-meta">
@@ -319,8 +319,398 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-03T00:00:00+08:00">
-                2019-06-03
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-06T00:00:00+08:00">
+                2019-06-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/06/06/Spring%20Security%EF%BC%886%EF%BC%89%EF%BC%8D%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/06/Spring%20Security%EF%BC%886%EF%BC%89%EF%BC%8D%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/06/06/Spring%20Security%EF%BC%886%EF%BC%89%EF%BC%8D%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/" class="leancloud_visitors" data-flag-title="Spring Security（6）－图片验证码">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>概要：</p>
+<ul>
+<li>根据随机数生成图片</li>
+<li>将随机数存到Session中</li>
+<li>将生成的图片写到接口的响应中</li>
+</ul>
+<h2 id="1、配置google-kaptcha"><a href="#1、配置google-kaptcha" class="headerlink" title="1、配置google kaptcha"></a>1、配置google kaptcha</h2><p>这里我们用google kaptcha生成验证码：</p>
+<pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;com.github.penggle&lt;/groupId&gt;
+    &lt;artifactId&gt;kaptcha&lt;/artifactId&gt;
+    &lt;version&gt;2.3.2&lt;/version&gt;
+&lt;/dependency&gt;
+
+
+@Configuration
+public class GoogleKaptchaConfig {
+
+    @Bean
+    public DefaultKaptcha getDefaultKaptcha() {
+        DefaultKaptcha defaultKaptcha = new DefaultKaptcha();
+        Properties properties = new Properties();
+        properties.setProperty(&quot;kaptcha.border&quot;, &quot;yes&quot;);
+        properties.setProperty(&quot;kaptcha.border.color&quot;, &quot;105,179,90&quot;);
+        properties.setProperty(&quot;kaptcha.textproducer.font.color&quot;, &quot;blue&quot;);
+        properties.setProperty(&quot;kaptcha.image.width&quot;, &quot;125&quot;);
+        properties.setProperty(&quot;kaptcha.image.height&quot;, &quot;45&quot;);
+        properties.setProperty(&quot;kaptcha.textproducer.font.size&quot;, &quot;45&quot;);
+        properties.setProperty(&quot;kaptcha.session.key&quot;, &quot;code&quot;);
+        properties.setProperty(&quot;kaptcha.textproducer.char.length&quot;, &quot;4&quot;);
+        properties.setProperty(&quot;kaptcha.textproducer.font.names&quot;, &quot;宋体,楷体,微软雅黑&quot;);
+        Config config = new Config(properties);
+        defaultKaptcha.setConfig(config);
+        return defaultKaptcha;
+    }
+
+}</code></pre><h2 id="2、生成验证码"><a href="#2、生成验证码" class="headerlink" title="2、生成验证码"></a>2、生成验证码</h2><p>生成验证码，并将验证码放到session中</p>
+<p>验证码类：</p>
+<pre><code>/**
+ * @author richey
+ * 验证码
+ */
+public class ImageCode {
+
+    private BufferedImage image;
+
+    private String code;
+
+    /**
+     * 过期时间
+     */
+    private LocalDateTime expireTime;
+
+    public ImageCode() {
+    }
+
+    public ImageCode(BufferedImage image, String code, LocalDateTime expireTime) {
+        this.image = image;
+        this.code = code;
+        this.expireTime = expireTime;
+    }
+
+    /**
+     * @param image
+     * @param code
+     * @param expireIn 秒数，在x秒后过期
+     */
+    public ImageCode(BufferedImage image, String code, int expireIn) {
+        this.image = image;
+        this.code = code;
+        this.expireTime = LocalDateTime.now().plusSeconds(expireIn);
+    }
+
+
+    public BufferedImage getImage() {
+        return image;
+    }
+
+    public void setImage(BufferedImage image) {
+        this.image = image;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public LocalDateTime getExpireTime() {
+        return expireTime;
+    }
+
+    public void setExpireTime(LocalDateTime expireTime) {
+        this.expireTime = expireTime;
+    }
+
+    public boolean isExpired() {
+        return this.expireTime == null || this.expireTime.isBefore(LocalDateTime.now());
+    }
+}</code></pre><p>验证码校验异常类：</p>
+<pre><code>public class ValidateCodeException extends AuthenticationException {
+
+    public ValidateCodeException(String msg) {
+        super(msg);
+    }
+}</code></pre><p>验证码接口</p>
+<pre><code>@RestController
+public class ValidateCodeController {
+
+    public static final String SESSION_KEY = &quot;SESSION_KEY_IMAGE_CODE&quot;;
+
+    private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
+
+    @Autowired
+    private DefaultKaptcha captchaProducer = null;
+
+    @GetMapping(&quot;/code/image&quot;)
+    public void createCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        ImageCode imageCode = createImageCode();
+        sessionStrategy.setAttribute(new ServletWebRequest(request), SESSION_KEY, imageCode);
+        ImageIO.write(imageCode.getImage(), &quot;JPEG&quot;, response.getOutputStream());
+    }
+
+    private ImageCode createImageCode() {
+        String code = captchaProducer.createText();
+        return new ImageCode(captchaProducer.createImage(code), code, 60);
+    }
+}</code></pre><h2 id="3、前台传递验证码"><a href="#3、前台传递验证码" class="headerlink" title="3、前台传递验证码"></a>3、前台传递验证码</h2><pre><code>&lt;td&gt;验证码&lt;/td&gt;
+&lt;td&gt;
+    &lt;input type=&quot;text&quot; name=&quot;imageCode&quot; id=&quot;imageCode&quot;/&gt;
+    &lt;img src=&quot;/code/image&quot;&gt;
+    &lt;a href=&quot;javascript:changeKaptcha()&quot;&gt;看不清，换一张&lt;/a&gt;
+&lt;/td&gt;</code></pre><h2 id="4、配置校验验证码的过滤器"><a href="#4、配置校验验证码的过滤器" class="headerlink" title="4、配置校验验证码的过滤器"></a>4、配置校验验证码的过滤器</h2><pre><code>public class ValidateCodeFilter extends OncePerRequestFilter {
+
+    @Autowired
+    private AuthenticationFailureHandler authenticationFailureHandler;
+
+    @Autowired
+    private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        if (StringUtils.equals(&quot;/authentication/form&quot;, request.getRequestURI()) &amp;&amp;
+                StringUtils.equalsIgnoreCase(request.getMethod(), &quot;post&quot;)) {
+            try {
+                validate(new ServletWebRequest(request));
+            } catch (ValidateCodeException e) {
+                authenticationFailureHandler.onAuthenticationFailure(request, response, e);
+                return;
+            }
+        }
+        filterChain.doFilter(request, response);
+    }
+
+    private void validate(ServletWebRequest request) throws ServletRequestBindingException {
+        ImageCode codeInSession = (ImageCode) sessionStrategy.getAttribute(request, ValidateCodeController.SESSION_KEY);
+        String codeInRequest = ServletRequestUtils.getStringParameter(request.getRequest(), &quot;imageCode&quot;);
+
+        if (StringUtils.isBlank(codeInRequest)) {
+            throw new ValidateCodeException(&quot;验证码的值不能为空&quot;);
+        }
+
+        if (codeInSession == null) {
+            throw new ValidateCodeException(&quot;验证码不存在&quot;);
+        }
+
+        if (codeInSession.isExpired()) {
+            sessionStrategy.removeAttribute(request, ValidateCodeController.SESSION_KEY);
+            throw new ValidateCodeException(&quot;验证码已过期&quot;);
+        }
+
+        if (!StringUtils.equalsIgnoreCase(codeInRequest, codeInSession.getCode())) {
+            throw new ValidateCodeException(&quot;验证码不匹配&quot;);
+        }
+
+        sessionStrategy.removeAttribute(request, ValidateCodeController.SESSION_KEY);
+    }
+
+
+    public AuthenticationFailureHandler getAuthenticationFailureHandler() {
+        return authenticationFailureHandler;
+    }
+
+    public void setAuthenticationFailureHandler(AuthenticationFailureHandler authenticationFailureHandler) {
+        this.authenticationFailureHandler = authenticationFailureHandler;
+    }
+}</code></pre><p>将验证码过滤器配置在UsernamePasswordAuthenticationFilter之前：</p>
+<pre><code>@Configuration
+public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private SecurityProperties securityProperties;
+
+    @Autowired
+    private EvolutionaryAuthenticationSuccessHandler evolutionaryAuthenticationHandler;
+
+    @Autowired
+    private EvolutionaryAuthenticationFailureHandler evolutionaryAuthenticationFailureHandler;
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        ValidateCodeFilter validateCodeFilter = new ValidateCodeFilter();
+        validateCodeFilter.setAuthenticationFailureHandler(evolutionaryAuthenticationFailureHandler);
+
+        http.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class)
+                .formLogin()  //表单登录
+                .loginPage(&quot;/authentication/require&quot;) //如果需要身份认证则跳转到这里
+                .loginProcessingUrl(&quot;/authentication/form&quot;)//登录请求的url
+                .successHandler(evolutionaryAuthenticationHandler)
+                .failureHandler(evolutionaryAuthenticationFailureHandler)
+                .and()
+                .authorizeRequests()
+                .antMatchers(&quot;/authentication/require&quot;,
+                        securityProperties.getBrower().getLoginPage(),
+                        &quot;/code/image&quot;)
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+                .and().csrf().disable();
+
+    }
+}</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/" itemprop="url">Mysql（12）-Mysql事务隔离是如何实现的</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-05T00:00:00+08:00">
+                2019-06-05
               </time>
             
 
@@ -360,8 +750,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/" itemprop="commentCount"></span>
+                <a href="/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -369,7 +759,7 @@
 
           
           
-             <span id="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/" class="leancloud_visitors" data-flag-title="Mysql（11）-有意思的Mysql问题">
+             <span id="/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/" class="leancloud_visitors" data-flag-title="Mysql（12）-Mysql事务隔离是如何实现的">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -402,33 +792,620 @@
       
         
           
-            <ol>
-<li>当备库用–single-transaciton做逻辑备份的时候,如果主库的binlog传来一个DDL语句会怎样？</li>
+            <h1 id="事务的启动时机。"><a href="#事务的启动时机。" class="headerlink" title="事务的启动时机。"></a>事务的启动时机。</h1><p>begin/start transaction 命令并不是一个事务的起点，在执行到它们之后的第一个操作 InnoDB 表的语句，事务才真正启动。如果你想要马上启动一个事务，可以使用 start transaction with consistent snapshot 这个命令。</p>
+<p>第一种启动方式，一致性视图是在第执行第一个快照读语句时创建的；<br>第二种启动方式，一致性视图是在执行 start transaction with consistent snapshot 时创建的。</p>
+<h1 id="在-MySQL-里，有两个“视图”的概念"><a href="#在-MySQL-里，有两个“视图”的概念" class="headerlink" title="在 MySQL 里，有两个“视图”的概念"></a>在 MySQL 里，有两个“视图”的概念</h1><p>一个是 view。它是一个用查询语句定义的虚拟表，在调用的时候执行查询语句并生成结果。创建视图的语法是 create view … ，而它的查询方法与表一样。</p>
+<p>另一个是 InnoDB 在实现 MVCC 时用到的一致性读视图，即 consistent read view，用于支持 RC（Read Committed，读提交）和 RR（Repeatable Read，可重复读）隔离级别的实现。</p>
+<h1 id="“快照”在-MVCC-里是怎么工作的？"><a href="#“快照”在-MVCC-里是怎么工作的？" class="headerlink" title="“快照”在 MVCC 里是怎么工作的？"></a>“快照”在 MVCC 里是怎么工作的？</h1><p>在可重复读隔离级别下，事务在启动的时候就“拍了个快照”。注意，这个快照是基于整库的。</p>
+<p>InnoDB 里面每个事务有一个唯一的事务 ID，叫作 transaction id。它是在事务开始的时候向 InnoDB 的事务系统申请的，是按申请顺序严格递增的。</p>
+<p>而每行数据也都是有多个版本的。每次事务更新数据的时候，都会生成一个新的数据版本，并且把 transaction id 赋值给这个数据版本的事务 ID，记为 row trx_id。同时，旧的数据版本要保留，并且在新的数据版本中，能够有信息可以直接拿到它。</p>
+<p>也就是说，数据表中的一行记录，其实可能有多个版本 (row)，每个版本有自己的 row trx_id。</p>
+<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg" alt="Mysql数据MVVC"></p>
+<p>中的三个虚线箭头，就是 undo log；而 V1、V2、V3 并不是物理上真实存在的，而是每次需要的时候根据当前版本和 undo log 计算出来的。比如，需要 V2 的时候，就是通过 V4 依次执行 U3、U2 算出来。</p>
+<p>可重复读的定义：一个事务启动的时候，能够看到所有已经提交的事务结果。但是之后，这个事务执行期间，其他事务的更新对它不可见。</p>
+<p>因此，一个事务只需要在启动的时候声明说，“以我启动的时刻为准，如果一个数据版本是在我启动之前生成的，就认；如果是我启动以后才生成的，我就不认，我必须要找到它的上一个版本”。</p>
+<p>一个数据版本，对于一个事务视图来说，除了自己的更新总是可见以外，有三种情况：</p>
+<ol>
+<li>版本未提交，不可见；</li>
+<li>版本已提交，但是是在视图创建后提交的，不可见；</li>
+<li>版本已提交，而且是在视图创建前提交的，可见。</li>
 </ol>
-<p>备份操作是一个过程，DDL从主库传过来时，备份过程可能处于不同的阶段，所以DDL对备份的影响也不同。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Q1:SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;</span><br><span class="line">Q2:START TRANSACTION  WITH CONSISTENT SNAPSHOT；</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br><span class="line">Q3:SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 1 *&#x2F;</span><br><span class="line">Q4:show create table &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 2 *&#x2F;</span><br><span class="line">Q5:SELECT * FROM &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 3 *&#x2F;</span><br><span class="line">Q6:ROLLBACK TO SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 4 *&#x2F;</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br></pre></td></tr></table></figure>
-<p>在备份开始的时候，为了确保 RR（可重复读）隔离级别，再设置一次 RR 隔离级别 (Q1);</p>
-<p>启动事务，这里用 WITH CONSISTENT SNAPSHOT 确保这个语句执行完就可以得到一个一致性视图（Q2)；</p>
-<p>设置一个保存点，这个很重要（Q3）；</p>
-<p>show create 是为了拿到表结构 (Q4)，然后正式导数据 （Q5），回滚到 SAVEPOINT sp，在这里的作用是释放 t1 的 MDL 锁 （Q6）。当然这部分属于“超纲”，上文正文里面都没提到。</p>
-<p>答案如下：</p>
+<p>更新数据都是先读后写的，而这个读，只能读当前的值，称为“当前读”（current read）。</p>
+<p>这里我们提到了一个概念，叫作当前读。其实，除了 update 语句外，select 语句如果加锁，也是当前读。</p>
+<h1 id="事务的可重复读的能力是怎么实现的？"><a href="#事务的可重复读的能力是怎么实现的？" class="headerlink" title="事务的可重复读的能力是怎么实现的？"></a>事务的可重复读的能力是怎么实现的？</h1><p>可重复读的核心就是一致性读（consistent read）；而事务更新数据的时候，只能用当前读。如果当前的记录的行锁被其他事务占用的话，就需要进入锁等待。</p>
+<h1 id="读提交的逻辑和可重复读的区别"><a href="#读提交的逻辑和可重复读的区别" class="headerlink" title="读提交的逻辑和可重复读的区别"></a>读提交的逻辑和可重复读的区别</h1><p>在可重复读隔离级别下，只需要在事务开始的时候创建一致性视图，之后事务里的其他查询都共用这个一致性视图；</p>
+<p>在读提交隔离级别下，每一个语句执行前都会重新算出一个新的视图。</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>InnoDB 的行数据有多个版本，每个数据版本有自己的 row trx_id，每个事务或者语句有自己的一致性视图。普通查询语句是一致性读，一致性读会根据 row trx_id 和一致性视图确定数据版本的可见性。</p>
 <ul>
-<li><p>如果在 Q4 语句执行之前到达，现象：没有影响，备份拿到的是 DDL 后的表结构。</p>
-</li>
-<li><p>如果在“时刻 2”到达，则表结构被改过，Q5 执行的时候，报 Table definition has changed, please retry transaction，现象：mysqldump 终止；</p>
-</li>
-<li><p>如果在“时刻 2”和“时刻 3”之间到达，mysqldump 占着 t1 的 MDL 读锁，binlog 被阻塞，现象：主从延迟，直到 Q6 执行完成。</p>
-</li>
-<li><p>从“时刻 4”开始，mysqldump 释放了 MDL 读锁，现象：没有影响，备份拿到的是 DDL 前的表结构。</p>
-</li>
+<li>对于可重复读，查询只承认在事务启动前就已经提交完成的数据；</li>
+<li>对于读提交，查询只承认在语句启动前就已经提交完成的数据；</li>
+<li>而当前读，总是读取已经提交完成的最新版本。</li>
 </ul>
-<p>总结就是在拿到表结构之前到达，没影响；在拿到表结构之后，备份数据之前到，会报错；在备份后到达，主从延迟</p>
-<ol start="2">
-<li>Mysql选错索引的一个案例分析<br>//todo 待分析</li>
-</ol>
-<p>在生产上遇见了一个非常经典的Mysql选错索引的问题，简述如下：有一张日志表，id是自增主键，假设还有一个字段是code，code字段也有索引；</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE IF NOT EXISTS &#96;log_test&#96;(</span><br><span class="line">  &#96;id&#96; INT  AUTO_INCREMENT,</span><br><span class="line">  &#96;key&#96; VARCHAR(100) NOT NULL,</span><br><span class="line">  PRIMARY KEY (&#96;id&#96;),</span><br><span class="line">  index idx_key(&#96;key&#96;)</span><br><span class="line">)ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_unicode_ci;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">delimiter ;;</span><br><span class="line">create procedure idata()</span><br><span class="line">begin</span><br><span class="line">  declare i int;</span><br><span class="line">  set i&#x3D;1;</span><br><span class="line">  while(i&lt;&#x3D;100000)do</span><br><span class="line">    insert into log_test values(i, i);</span><br><span class="line">    set i&#x3D;i+1;</span><br><span class="line">  end while;</span><br><span class="line">end;;</span><br><span class="line">delimiter ;</span><br><span class="line">call idata();</span><br></pre></td></tr></table></figure>
 
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/05/Spring%20Security%EF%BC%885%EF%BC%89%EF%BC%8D%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/05/Spring%20Security%EF%BC%885%EF%BC%89%EF%BC%8D%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3/" itemprop="url">Spring Security（5）－认证流程源码详解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-05T00:00:00+08:00">
+                2019-06-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/06/05/Spring%20Security%EF%BC%885%EF%BC%89%EF%BC%8D%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/05/Spring%20Security%EF%BC%885%EF%BC%89%EF%BC%8D%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/06/05/Spring%20Security%EF%BC%885%EF%BC%89%EF%BC%8D%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3/" class="leancloud_visitors" data-flag-title="Spring Security（5）－认证流程源码详解">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>概要：</p>
+<ul>
+<li>认证处理流程说明</li>
+<li>认证结果如何在多个请求间共享</li>
+<li>获取认证用户信息</li>
+</ul>
+<h2 id="认证处理流程说明"><a href="#认证处理流程说明" class="headerlink" title="认证处理流程说明"></a>认证处理流程说明</h2><p><img src="http://ogiythg18.bkt.clouddn.com/Spring%20Security%E8%AE%A4%E8%AF%81%E8%BF%87%E7%A8%8B.png" alt="image"></p>
+<pre><code>public class UsernamePasswordAuthenticationFilter extends
+        AbstractAuthenticationProcessingFilter {
+
+        public Authentication attemptAuthentication(HttpServletRequest request,
+            HttpServletResponse response) throws AuthenticationException {
+        if (postOnly &amp;&amp; !request.getMethod().equals(&quot;POST&quot;)) {
+            throw new AuthenticationServiceException(
+                    &quot;Authentication method not supported: &quot; + request.getMethod());
+        }
+
+        String username = obtainUsername(request);
+        String password = obtainPassword(request);
+
+        if (username == null) {
+            username = &quot;&quot;;
+        }
+
+        if (password == null) {
+            password = &quot;&quot;;
+        }
+
+        username = username.trim();
+
+        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
+                username, password);
+
+        // Allow subclasses to set the &quot;details&quot; property
+        setDetails(request, authRequest);
+
+        return this.getAuthenticationManager().authenticate(authRequest);
+    }
+}</code></pre><p>表单登录通过UsernamePasswordAuthenticationFilter处理认证逻辑，可以这里拿到用户名和密码，并以此创建了一个UsernamePasswordAuthenticationToken对象</p>
+<pre><code>public UsernamePasswordAuthenticationToken(Object principal, Object credentials) {
+        super(null);
+        this.principal = principal;
+        this.credentials = credentials;
+        setAuthenticated(false);
+    }</code></pre><p>UsernamePasswordAuthenticationToken其实就是Authentication的实现类，用来表示用户的认证信息。这里先调用了父类的构造，但是传了一个null进去，我们看一下它的父类构造：</p>
+<pre><code>//父类构造的入参是权限集合
+public AbstractAuthenticationToken(Collection&lt;? extends GrantedAuthority&gt; authorities)</code></pre><p>显然这里还并为进行认证和授权所以传了一个空值进去，再看下面setAuthenticated(false);也是赋值说明当前是未认证的。所以这里只是初始化了一个Authenticatyion对象，并将请求中的一些信息放了进去。</p>
+<pre><code>setDetails(request, authRequest); //这里也是设置了一些请求信息到Authentication对象</code></pre><p>看最后一句：</p>
+<pre><code>this.getAuthenticationManager().authenticate(authRequest);</code></pre><p>这里先是取到了AuthenticationManager对象，该对象维护了许多的AuthenticationProvider，这些AuthenticationProvider分别用来认证不同类型的请求，比如表单认证，第三方认证等等。</p>
+<p>我们来看一下AuthenticationManager的authenticate方法：</p>
+<pre><code>public Authentication authenticate(Authentication authentication)
+            throws AuthenticationException {
+        Class&lt;? extends Authentication&gt; toTest = authentication.getClass();
+        AuthenticationException lastException = null;
+        Authentication result = null;
+        boolean debug = logger.isDebugEnabled();
+
+        for (AuthenticationProvider provider : getProviders()) {
+            if (!provider.supports(toTest)) {
+                continue;
+            }
+
+            result = provider.authenticate(authentication);
+
+                if (result != null) {
+                    copyDetails(authentication, result);
+                    break;
+                }
+
+            try {
+
+            }
+
+        }
+
+        ...
+    }</code></pre><p>可以看出这里遍历了所有的AuthenticationProvider，并找到对应的provider进行了认证：</p>
+<pre><code>result = provider.authenticate(authentication);</code></pre><p>看一下provider的authentication方法,这里我会只保留重要的几行代码：</p>
+<pre><code>public Authentication authenticate(Authentication authentication)
+        throws AuthenticationException {
+
+
+    // Determine username
+    String username = (authentication.getPrincipal() == null) ? &quot;NONE_PROVIDED&quot;
+            : authentication.getName();
+
+    boolean cacheWasUsed = true;
+    UserDetails user = this.userCache.getUserFromCache(username);
+
+    user = retrieveUser(username,
+                    (UsernamePasswordAuthenticationToken) authentication);
+    try {
+        preAuthenticationChecks.check(user);
+        additionalAuthenticationChecks(user,
+                (UsernamePasswordAuthenticationToken) authentication);
+    }
+
+
+    postAuthenticationChecks.check(user);
+
+
+    return createSuccessAuthentication(principalToReturn, authentication, user);
+}</code></pre><p>这里的retrieveUser方法根据用户名和包含了登录信息的Authentication对象处理得到了UserDetail对象：</p>
+<pre><code>protected final UserDetails retrieveUser(String username,
+        UsernamePasswordAuthenticationToken authentication)
+        throws AuthenticationException {
+    UserDetails loadedUser;
+
+    try {
+        loadedUser = this.getUserDetailsService().loadUserByUsername(username);
+    }
+
+    return loadedUser;
+}</code></pre><p>这里就调用了loadUserByUsername方法，该方法大家应该比较熟悉了，我们实现UserDetailsService接口并在该方法中认证并返回用户信息。</p>
+<p>经过retrieveUser方法返回的信息是进行了认证的用户信息，至于有没人认证通过就要看下面的三个方法的校验了</p>
+<pre><code>preAuthenticationChecks.check(user);
+additionalAuthenticationChecks(user,
+                (UsernamePasswordAuthenticationToken) authentication);
+postAuthenticationChecks.check(user);</code></pre><p>前置校验校验了用户是否冻结、是否删除、帐号是否过期<br>额外的校验校验了用户名密码；<br>后置校验检查密码是否过期；</p>
+<p>然后返回了一个认证过的Authentication信息。</p>
+<p>接下来调用了AbstractAuthenticationProcessingFilter.successfulAuthentication,这里大家也比较熟悉了，我们复写了改方法，用来处理登录成功后的逻辑。</p>
+<h2 id="认证结果如何在多个请求间共享"><a href="#认证结果如何在多个请求间共享" class="headerlink" title="认证结果如何在多个请求间共享"></a>认证结果如何在多个请求间共享</h2><p>在多个请求中共享我们首先想到的是放到了Session中，那么Spring Security是什么时候把什么东西放到了Session中呢？什么时候又从Sesion中读出来的？</p>
+<pre><code>protected void successfulAuthentication(HttpServletRequest request,
+        HttpServletResponse response, FilterChain chain, Authentication authResult)
+        throws IOException, ServletException {
+
+
+    SecurityContextHolder.getContext().setAuthentication(authResult);
+
+    rememberMeServices.loginSuccess(request, response, authResult);
+
+    // Fire event
+    if (this.eventPublisher != null) {
+        eventPublisher.publishEvent(new InteractiveAuthenticationSuccessEvent(
+                authResult, this.getClass()));
+    }
+
+    successHandler.onAuthenticationSuccess(request, response, authResult);
+}</code></pre><p>这里可以看出Spring Security在认证成功且调用我们自定义的认证成功处理组件之前执行了下面的代码：</p>
+<pre><code>SecurityContextHolder.getContext().setAuthentication(authResult);</code></pre><p>显然是将认证成的额那个Authentication对象放到了SecurityContext中，SecutityContext非常简单，就是包装了一个Authentication对象，并重写了equalts和hashCode方法。</p>
+<p>同时Spring Security用SecurityContextHolder（用ThreadLocal的封装的）保存了SecurityContext。</p>
+<p>那问题来了，这里只是把认证过的Authentication对象放到了SecurityContextHolder中，最多也就只能做到认证结果的单请求同线程共享，如果要多请求共享还是要放到session中，而且每个请求过来的时候都要从session中取一次，这么分析下来感觉用一个Filter处理上述的操作很合适。没错，Spring Security提供了这样一个过滤器，而且是其过滤器链上的第一个过滤器：SecurityContextPersistenceFilter。</p>
+<p><img src="http://ogiythg18.bkt.clouddn.com/Spring%20Security%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86.png" alt="image"></p>
+<p>该过滤器的作用就是当请求过来的时候，检查session中有没有SecurityContext，有的话放到SecurityContextHolder中，这样当前线程在任何地方都可以获取到SecurityContext信息；当请求返回的时候，会检查SecurityContextHolder中是否有SecurityContext信息，有的话就将其放到session中，这样就实现了认证信息在多个请求间的共享。</p>
+<h2 id="获取认证用户信息"><a href="#获取认证用户信息" class="headerlink" title="获取认证用户信息"></a>获取认证用户信息</h2><p>通过前面的分析，获取认证用户信息对我们来说已经不是事了，相信你也已经理解了。</p>
+<pre><code>@GetMapping(&quot;/me&quot;)
+public Object getCurrentUser(Authentication authentication) {
+    //return SecurityContextHolder.getContext().getAuthentication();
+    return authentication;
+}
+
+@GetMapping(&quot;/meToo&quot;)
+public Object getCurrentUserToo(@AuthenticationPrincipal UserDetails userDetails) {
+    return userDetails;
+}</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/04/Spring%20Security%EF%BC%884%EF%BC%89%EF%BC%8D%E4%B8%AA%E6%80%A7%E5%8C%96%E7%94%A8%E6%88%B7%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%EF%BC%88%E4%BA%8C%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/04/Spring%20Security%EF%BC%884%EF%BC%89%EF%BC%8D%E4%B8%AA%E6%80%A7%E5%8C%96%E7%94%A8%E6%88%B7%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%EF%BC%88%E4%BA%8C%EF%BC%89/" itemprop="url">Spring Security（4）－个性化用户认证流程（二）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-04T00:00:00+08:00">
+                2019-06-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/06/04/Spring%20Security%EF%BC%884%EF%BC%89%EF%BC%8D%E4%B8%AA%E6%80%A7%E5%8C%96%E7%94%A8%E6%88%B7%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%EF%BC%88%E4%BA%8C%EF%BC%89/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/04/Spring%20Security%EF%BC%884%EF%BC%89%EF%BC%8D%E4%B8%AA%E6%80%A7%E5%8C%96%E7%94%A8%E6%88%B7%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%EF%BC%88%E4%BA%8C%EF%BC%89/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/06/04/Spring%20Security%EF%BC%884%EF%BC%89%EF%BC%8D%E4%B8%AA%E6%80%A7%E5%8C%96%E7%94%A8%E6%88%B7%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%EF%BC%88%E4%BA%8C%EF%BC%89/" class="leancloud_visitors" data-flag-title="Spring Security（4）－个性化用户认证流程（二）">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>概要：</p>
+<ul>
+<li>自定义登录页面</li>
+<li>自定义登录成功处理</li>
+<li>自定义登录失败处理</li>
+</ul>
+<p>上一篇我们讲了自定义登录页面，本篇我们来看一下自定义登录成功和失败的处理。</p>
+<h2 id="自定义登录成功处理"><a href="#自定义登录成功处理" class="headerlink" title="自定义登录成功处理"></a>自定义登录成功处理</h2><p>默认情况下Spring Security登录成功后会跳到之前引发登录的请求。但是目前前端很多情况下是SPA模式的，登录本身可能不是一个表单提交的同步方式，而是一个ajax请求，我们希望返回的是json格式的登录用户信息而不是跳转。</p>
+<p>那么我们就需要自定义成功处理逻辑，在Spring security中我们只需要实现AuthenticationSuccessHandler接口就可以了。该接口只有一个方法：</p>
+<pre><code>onAuthenticationSuccess(HttpServletRequest request,
+                        HttpServletResponse response,
+                        Authentication authentication)</code></pre><p>其中参数Authentication也是Spring security的一个核心接口，用来封装我们的认证信息，包括发起的认证请求里的一些信息，比如请求ip、session以及认证通过后认证通过后userDetail中的用户信息也是包装在Authentication中的。</p>
+<pre><code>@Component(&quot;evolutionaryAuthenticationHandler&quot;)
+public class EvolutionaryAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
+    /**
+     * spring MVC 启动的时候会为我们注册一个objectMapper
+     */
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private SecurityProperties securityProperties;
+
+    /**
+     * 登录成功会调用该方法
+     * @param request
+     * @param response
+     * @param authentication
+     * @throws IOException
+     * @throws ServletException
+     */
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        Authentication authentication) throws IOException, ServletException {
+        logger.info(&quot;登录成功！&quot;);
+        if (LoginInType.JSON.equals(securityProperties.getBrower().getLoginInType())) {
+            response.setContentType(&quot;application/json;charset=UTF-8&quot;);
+            response.getWriter().write(objectMapper.writeValueAsString(authentication));
+        }else{
+            super.onAuthenticationSuccess(request, response, authentication);
+        }
+
+    }
+}</code></pre><p>然后我们需要配置一下，登录成功的处理方式。</p>
+<pre><code>@Configuration
+public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private SecurityProperties securityProperties;
+
+    @Autowired
+    private EvolutionaryAuthenticationSuccessHandler evolutionaryAuthenticationHandler;
+
+    @Autowired
+    private EvolutionaryAuthenticationFailureHandler evolutionaryAuthenticationFailureHandler;
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.formLogin()  //表单登录
+                .loginPage(&quot;/authentication/require&quot;) //如果需要身份认证则跳转到这里
+                .loginProcessingUrl(&quot;/authentication/form&quot;)
+                .successHandler(evolutionaryAuthenticationHandler)
+                .failureHandler(evolutionaryAuthenticationFailureHandler)
+                .and()
+                .authorizeRequests()
+                .antMatchers(&quot;/authentication/require&quot;, securityProperties.getBrower().getLoginPage())
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+                .and().csrf().disable();
+
+    }
+}</code></pre><h2 id="自定义登录失败处理"><a href="#自定义登录失败处理" class="headerlink" title="自定义登录失败处理"></a>自定义登录失败处理</h2><p>登录失败后的处理逻辑是一样的，实现AuthenticationFailureHandler接口进行相应的处理。</p>
+<pre><code>@Component
+public class EvolutionaryAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private SecurityProperties securityProperties;
+
+    @Override
+    public void onAuthenticationFailure(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        AuthenticationException exception) throws IOException, ServletException {
+        logger.info(&quot;登录失败！&quot;);
+        if (LoginInType.JSON.equals(securityProperties.getBrower().getLoginInType())) {
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setContentType(&quot;application/json;charset=UTF-8&quot;);
+            response.getWriter().write(objectMapper.writeValueAsString(exception));
+        } else {
+            super.onAuthenticationFailure(request, response, exception);
+        }
+
+    }
+}</code></pre>
           
         
       
@@ -743,6 +1720,194 @@ public class BrowerProperties {
 
 evolutionary.security.brower.loginPage = /demo-signIn.html
 evolutionary.security.brower.loginInType=REDIRECT</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/" itemprop="url">Mysql（11）-有意思的Mysql问题</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-03T00:00:00+08:00">
+                2019-06-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/DB/" itemprop="url" rel="index">
+                    <span itemprop="name">DB</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/" class="leancloud_visitors" data-flag-title="Mysql（11）-有意思的Mysql问题">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <ol>
+<li>当备库用–single-transaciton做逻辑备份的时候,如果主库的binlog传来一个DDL语句会怎样？</li>
+</ol>
+<p>备份操作是一个过程，DDL从主库传过来时，备份过程可能处于不同的阶段，所以DDL对备份的影响也不同。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Q1:SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;</span><br><span class="line">Q2:START TRANSACTION  WITH CONSISTENT SNAPSHOT；</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br><span class="line">Q3:SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 1 *&#x2F;</span><br><span class="line">Q4:show create table &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 2 *&#x2F;</span><br><span class="line">Q5:SELECT * FROM &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 3 *&#x2F;</span><br><span class="line">Q6:ROLLBACK TO SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 4 *&#x2F;</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br></pre></td></tr></table></figure>
+<p>在备份开始的时候，为了确保 RR（可重复读）隔离级别，再设置一次 RR 隔离级别 (Q1);</p>
+<p>启动事务，这里用 WITH CONSISTENT SNAPSHOT 确保这个语句执行完就可以得到一个一致性视图（Q2)；</p>
+<p>设置一个保存点，这个很重要（Q3）；</p>
+<p>show create 是为了拿到表结构 (Q4)，然后正式导数据 （Q5），回滚到 SAVEPOINT sp，在这里的作用是释放 t1 的 MDL 锁 （Q6）。当然这部分属于“超纲”，上文正文里面都没提到。</p>
+<p>答案如下：</p>
+<ul>
+<li><p>如果在 Q4 语句执行之前到达，现象：没有影响，备份拿到的是 DDL 后的表结构。</p>
+</li>
+<li><p>如果在“时刻 2”到达，则表结构被改过，Q5 执行的时候，报 Table definition has changed, please retry transaction，现象：mysqldump 终止；</p>
+</li>
+<li><p>如果在“时刻 2”和“时刻 3”之间到达，mysqldump 占着 t1 的 MDL 读锁，binlog 被阻塞，现象：主从延迟，直到 Q6 执行完成。</p>
+</li>
+<li><p>从“时刻 4”开始，mysqldump 释放了 MDL 读锁，现象：没有影响，备份拿到的是 DDL 前的表结构。</p>
+</li>
+</ul>
+<p>总结就是在拿到表结构之前到达，没影响；在拿到表结构之后，备份数据之前到，会报错；在备份后到达，主从延迟</p>
+<ol start="2">
+<li>Mysql选错索引的一个案例分析<br>//todo 待分析</li>
+</ol>
+<p>在生产上遇见了一个非常经典的Mysql选错索引的问题，简述如下：有一张日志表，id是自增主键，假设还有一个字段是code，code字段也有索引；</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE IF NOT EXISTS &#96;log_test&#96;(</span><br><span class="line">  &#96;id&#96; INT  AUTO_INCREMENT,</span><br><span class="line">  &#96;key&#96; VARCHAR(100) NOT NULL,</span><br><span class="line">  PRIMARY KEY (&#96;id&#96;),</span><br><span class="line">  index idx_key(&#96;key&#96;)</span><br><span class="line">)ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_unicode_ci;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">delimiter ;;</span><br><span class="line">create procedure idata()</span><br><span class="line">begin</span><br><span class="line">  declare i int;</span><br><span class="line">  set i&#x3D;1;</span><br><span class="line">  while(i&lt;&#x3D;100000)do</span><br><span class="line">    insert into log_test values(i, i);</span><br><span class="line">    set i&#x3D;i+1;</span><br><span class="line">  end while;</span><br><span class="line">end;;</span><br><span class="line">delimiter ;</span><br><span class="line">call idata();</span><br></pre></td></tr></table></figure>
+
           
         
       
@@ -1621,1119 +2786,11 @@ mysqldump -h localhost -uroot -p --no-data --no-create-info --routines --all-dat
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/05/20/Spring%20MVC/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/05/20/Spring%20MVC/" itemprop="url">Spring MVC</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-20T00:00:00+08:00">
-                2019-05-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/05/20/Spring%20MVC/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/20/Spring%20MVC/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/05/20/Spring%20MVC/" class="leancloud_visitors" data-flag-title="Spring MVC">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="一、Spring-MVC-Quick-Start"><a href="#一、Spring-MVC-Quick-Start" class="headerlink" title="一、Spring MVC Quick Start"></a>一、Spring MVC Quick Start</h1><h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h3><pre><code>&lt;dependency&gt;
-    &lt;groupId&gt;javax.servlet&lt;/groupId&gt;
-    &lt;artifactId&gt;javax.servlet-api&lt;/artifactId&gt;
-&lt;/dependency&gt;
-&lt;dependency&gt;
-    &lt;groupId&gt;org.springframework&lt;/groupId&gt;
-    &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;
-&lt;/dependency&gt;</code></pre><h3 id="Spring-MVC最简单的配置"><a href="#Spring-MVC最简单的配置" class="headerlink" title="Spring MVC最简单的配置"></a>Spring MVC最简单的配置</h3><ol>
-<li><p>在web.xml中配置Servlet</p>
-<p> Spring MVC的本质就是一个Servlet</p>
-<pre><code>&lt;!-- spring mvc 配置开始 --&gt;
-&lt;!-- Spring MVC本质上就是一个Servlet --&gt;
-&lt;servlet&gt;
-    &lt;servlet-name&gt;springMVC&lt;/servlet-name&gt;
-    &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
-    &lt;!--  contextConfigLocation参数来指定Spring MVC配置文件的位置，默认为WEB-INF/[Servlet-Name]-servlet.xml文件  --&gt;
-    &lt;!--  &lt;init-param&gt;
-          &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
-          &lt;param-value&gt;&lt;/param-value&gt;
-      &lt;/init-param&gt;--&gt;
-    &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
-&lt;/servlet&gt;
-&lt;servlet-mapping&gt;
-    &lt;servlet-name&gt;springMVC&lt;/servlet-name&gt;
-    &lt;url-pattern&gt;/&lt;/url-pattern&gt;
-&lt;/servlet-mapping&gt;
-&lt;!-- spring mvc 配置结束 --&gt;</code></pre></li>
-<li><p>创建Spring MVC的xml配置文件</p>
- <!--
-         mvc:annotation-driven是 Spring MVC提供的一键式配置方法
-         配置此标签后Spring MVC会帮我们自动做一些注册组件之类的事情
-     -->
-<pre><code>&lt;mvc:annotation-driven/&gt;
-&lt;!--扫描通过注解配置的类--&gt;
-&lt;context:component-scan base-package=&quot;top.richpeople&quot;&gt;
-    &lt;!--如果使用了spring,可以用context:include-filter设置只扫描@Controller别的交给Spring容器去管理--&gt;
-    &lt;!--&lt;context:include-filter type=&quot;annotation&quot; expression=&quot;org.springframework.stereotype.Controller&quot;/&gt;--&gt;
-&lt;/context:component-scan&gt;</code></pre></li>
-<li><p>创建Controller和view</p>
-<pre><code>/**
- * 处理HEAD类型的&quot;/&quot;请求
- * 此方法可以用来检测服务器的状态,因为它不返回body,所以笔GET请求更节省网络资源
- * @return
- */
-@RequestMapping(value = &quot;/&quot;, method = RequestMethod.HEAD)
-public String head() {
-    return &quot;go.jsp&quot;;
-}
-
-/**
- * 处理GET类型的&quot;/index&quot;和&quot;/&quot;请求
- */
-@RequestMapping(value = {&quot;/index&quot;, &quot;/&quot;}, method = RequestMethod.GET)
-public String testMapPathUri(Model model) {
-
-    model.addAttribute(&quot;msg&quot;, &quot;Go Go Go!&quot;);
-    return &quot;go.jsp&quot;;
-}</code></pre><p> 如果没有配置ViewResolver，Spring MVC将默认使用org.springframework.web.servlet.view.InternalResourcViewResolver作为ViewResolver，而且prefix和suffix都为空</p>
-</li>
-</ol>
-<h1 id="二、Spring-MVC-架构分析"><a href="#二、Spring-MVC-架构分析" class="headerlink" title="二、Spring MVC 架构分析"></a>二、Spring MVC 架构分析</h1><p><img src="http://ogiythg18.bkt.clouddn.com/DispatcherServlet.png" alt="DispatcherServlet"></p>
-<p>XXXAware在Spring中表示对XXX可感知，通俗点讲就是：如果在某个类里想用Spring的某个东西，就实现相应的XXXAware接口，Spring看到后就会给你送过来。</p>
-<h3 id="Spring中3个类的具体创建过程"><a href="#Spring中3个类的具体创建过程" class="headerlink" title="Spring中3个类的具体创建过程"></a>Spring中3个类的具体创建过程</h3><p>//TODO  这里要撸源码进行分析</p>
-<ul>
-<li><p>HttpServletBean</p>
-<p>  没有参与实际请求的处理</p>
-</li>
-<li><p>FrameworkServlet</p>
-<p>  将不同的请求合并到了processRequest方法统一处理，processRequest方法中做了三件事：</p>
-<ul>
-<li>调用了doService模板方法具体处理请求</li>
-<li>将当请求的LocaleContext和ServletRequestAttributes在处理请求前设置到了LocaleContextHolder和RequestContextHolder,并在请求处理完后恢复。</li>
-<li>请求完后发布了ServletRequestHandledEvent消息</li>
-</ul>
-</li>
-<li><p>DispatcherServlet</p>
-<p>  doService方法给request设置了一些属性并将请求交给doDispatch方法具体处理</p>
-</li>
-</ul>
-<h1 id="三、Spring-MVC组件分析"><a href="#三、Spring-MVC组件分析" class="headerlink" title="三、Spring MVC组件分析"></a>三、Spring MVC组件分析</h1><p>这里的组件指的是DispatcherServlet中直接初始化的那九个组件，不同的组件内部可能还会用到一些子组件。</p>
-<h3 id="1、-HandlerMapping"><a href="#1、-HandlerMapping" class="headerlink" title="1、 HandlerMapping"></a>1、 HandlerMapping</h3><p>它的作用是根据request找到相应的处理器Handler和Interceptors，该接口只有一个方法：</p>
-<pre><code>HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception;</code></pre><p>HandlerMapping编写出来后要注册到Spring MVC的容器里面才可以使用，注册和那简单，只需要在配置文件里配置一个Bean就可以了（或者使用注解）。</p>
-<p>如果有多个HandlerMapping匹配到了同一个处理器Hander，这时就要设置HandlerMapping的顺序。HandlerMapping的顺序通过实现Order接口设置order属性来定义。</p>
-<p>查找Handler是按顺序遍历所有的HandlerMapping，当找到一个HandlerMapping后立即停止并返回。</p>
-<h3 id="2、HandlerAdapter"><a href="#2、HandlerAdapter" class="headerlink" title="2、HandlerAdapter"></a>2、HandlerAdapter</h3><p>可以理解为使用处理器Handler干活的人</p>
-<p>为什么使用handlerAdapter?</p>
-<pre><code>Spring MVC没有对处理器Handler做任何的限制，处理器可以是任何合理的方式，可以是类、方法或者别的合理的方式，所以我们要用不用的Adapter去使用这些Handler</code></pre><p>我们自定义Adapter只需要实现HandlerAdapter，完成相应的逻辑就可以了，同样可以实现Order接口，默认使用第一个按顺序找到的Adapter。HandlerAdapter同样需要注册到Spring MVC容器中，只需要配置一个Bean就可以了。</p>
-<h3 id="3、HandlerExceptionResolver"><a href="#3、HandlerExceptionResolver" class="headerlink" title="3、HandlerExceptionResolver"></a>3、HandlerExceptionResolver</h3><p>此组件的作用是根据异常设置ModelAndView，之后再交给render方法去渲染。</p>
-<h3 id="4、ViewResolver"><a href="#4、ViewResolver" class="headerlink" title="4、ViewResolver"></a>4、ViewResolver</h3><p>用来将String类型的视图名（有地方也叫逻辑视图，都是同一个东西）和Locale解析为View类型的视图。</p>
-<p>一般情况下我们只需要根据视图名找到视图，然后进行渲染，并不需要对不同的区域使用不同的视图。</p>
-<p>View是用来渲染页面的，通俗点将就是将程序返回的参数填入到模板里，生成html（或者是其它类型）的文件。这里有两个关键的问题：</p>
-<ul>
-<li>使用什么模板</li>
-<li>用什么技术或规则填入参数</li>
-</ul>
-<p>这起是就是ViewResolver要做的工作。</p>
-<pre><code>View resolveViewName(String viewName, Locale locale) throws Exception;</code></pre><ul>
-<li><p>UrlBasedViewResolver系列解析器都是针对单一视图类型进行解析的</p>
-<ul>
-<li>InternalResourceViewResolver 只解析jsp类型的视图</li>
-<li>FreeMarkerViewResolver只针对FreeMarker</li>
-<li>VelocityViewResolver只针对Velocity</li>
-</ul>
-</li>
-<li><p>ResourceBundleViewResolver、XmlViewResolver、BeanNameViewResolver等解析器可以同时解析多种类型的视图。</p>
-</li>
-</ul>
-<p>ViewResolver的使用需要注册到Spring MVC容器里，默认使用的是org.springframework.web.servlet.view.InternalResourceViewResolver。</p>
-<h3 id="5、RequestToViewNameTranslator"><a href="#5、RequestToViewNameTranslator" class="headerlink" title="5、RequestToViewNameTranslator"></a>5、RequestToViewNameTranslator</h3><p>ViewResolver是根据viewName查找View，但是有的Handler处理完后没有这只View也没有设置viewName，这时需要从request中获取viewName，而如何从request中获取viewName就是RequestToViewNameTranslator要做的事情。</p>
-<pre><code>String getViewName(HttpServletRequest request) throws Exception;</code></pre><p>具体的处理逻辑需要我们自己实现，要注意的是RequestToViewNameTranslator在Spring MVC容器中只能配置一个，所有的request到viewName的转换都要在一个Rranslator中实现。</p>
-<h3 id="6、LocaleResolver"><a href="#6、LocaleResolver" class="headerlink" title="6、LocaleResolver"></a>6、LocaleResolver</h3><p>视图的解析需要两个参数，一个是视图名，一个是Locale，视图名是从Handler返回的（或者是使用RequestToViewNameTranslator解析的默认视图名），而Locale是LocaleResolver从request中解析出来的。</p>
-<pre><code>Locale resolveLocale(HttpServletRequest request);
-
-void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale);</code></pre><p>org.springframework.web.servlet.i18n.LocaleChangeInterceptor拦截器为我么那提供了默认修改Locale的便捷方式。</p>
-<h3 id="7、ThemeResolver"><a href="#7、ThemeResolver" class="headerlink" title="7、ThemeResolver"></a>7、ThemeResolver</h3><h3 id="8、MultipartResolver"><a href="#8、MultipartResolver" class="headerlink" title="8、MultipartResolver"></a>8、MultipartResolver</h3><p>MultipartResolver用于处理上传请求，处理方法就是将普通的request包装成HttpServletRequest，后者可以直接调用getFile方法获取到File，如果上传多个文件，还可以调用getFileMap得到fileName-File结构的Map。</p>
-<p>其实如果上传请求不用MutipartResolver封装成HttpServletRequest，直接用原来的request也是可以的，所以Spring MVC中没有为此组件提供默认值。</p>
-<h3 id="9、FlashMapManager"><a href="#9、FlashMapManager" class="headerlink" title="9、FlashMapManager"></a>9、FlashMapManager</h3>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/05/18/Spring%20Boot(7)-Spring%20Boot%20%E4%B8%A4%E7%A7%8D%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E9%85%8D%E7%BD%AE%EF%BC%9AJdbcTemplate%E3%80%81Spring-data-jpa/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/05/18/Spring%20Boot(7)-Spring%20Boot%20%E4%B8%A4%E7%A7%8D%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E9%85%8D%E7%BD%AE%EF%BC%9AJdbcTemplate%E3%80%81Spring-data-jpa/" itemprop="url">Spring Boot(7)-Spring Boot 两种多数据源配置：JdbcTemplate、Spring-data-jpa</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-18T00:00:00+08:00">
-                2019-05-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/05/18/Spring%20Boot(7)-Spring%20Boot%20%E4%B8%A4%E7%A7%8D%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E9%85%8D%E7%BD%AE%EF%BC%9AJdbcTemplate%E3%80%81Spring-data-jpa/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/18/Spring%20Boot(7)-Spring%20Boot%20%E4%B8%A4%E7%A7%8D%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E9%85%8D%E7%BD%AE%EF%BC%9AJdbcTemplate%E3%80%81Spring-data-jpa/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/05/18/Spring%20Boot(7)-Spring%20Boot%20%E4%B8%A4%E7%A7%8D%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E9%85%8D%E7%BD%AE%EF%BC%9AJdbcTemplate%E3%80%81Spring-data-jpa/" class="leancloud_visitors" data-flag-title="Spring Boot(7)-Spring Boot 两种多数据源配置：JdbcTemplate、Spring-data-jpa">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在单数据源的情况下，spring Boot的数据源配置非常简单，只要在applicatrion.properties中配置连接参数即可。但是随着业务的发展我们常常会对数据库拆分或者引入其它的数据库，从而需要配置多个数据源。下面我们就基于JdbcTemplate和Spring-data-jap介绍配置多数据源的方式。</p>
-<h2 id="多数据源配置"><a href="#多数据源配置" class="headerlink" title="多数据源配置"></a>多数据源配置</h2><p>创建一个Spring配置类，定义两个DataSource用来读取application.properties中的不同配置。如下例子中，主数据源配置为spring.datasource.primary开头的配置，第二数据源配置为spring.datasource.secondary开头的配置。</p>
-<pre><code>/**
- * 多数据源配置
- */
-@Configuration
-public class DataSourceConfig {
-
-    @Bean(name = &quot;primaryDataSource&quot;)
-    @Primary
-    @ConfigurationProperties(prefix=&quot;spring.datasource.primary&quot;)
-    public DataSource primaryDataSource() {
-        return DataSourceBuilder.create().build();
-    }
-
-    @Bean(name = &quot;secondaryDataSource&quot;)
-    @ConfigurationProperties(prefix=&quot;spring.datasource.secondary&quot;)
-    public DataSource secondaryDataSource() {
-        return DataSourceBuilder.create().build();
-    }
-
-
-}</code></pre><p>对应application.properties中的配置如下：</p>
-<pre><code># 多数据源配置
-spring.datasource.primary.url=jdbc:mysql://localhost:3306/spring-boot-db1?useUnicode=true&amp;characterEncoding=utf8
-spring.datasource.primary.username=root
-spring.datasource.primary.password=root
-spring.datasource.primary.driver-class-name=com.mysql.jdbc.Driver
-
-spring.datasource.secondary.url=jdbc:mysql://localhost:3306/spring-boot-db2?useUnicode=true&amp;characterEncoding=utf8
-spring.datasource.secondary.username=root
-spring.datasource.secondary.password=root
-spring.datasource.secondary.driver-class-name=com.mysql.jdbc.Driver</code></pre><h2 id="JdbcTemplate配置多数据源"><a href="#JdbcTemplate配置多数据源" class="headerlink" title="JdbcTemplate配置多数据源"></a>JdbcTemplate配置多数据源</h2><p>为JdbcTemplate配置多数据源比较简单，只要为其注入不同的Datasource即可，如下：</p>
-<pre><code>/**
- * JdbcTemplate支持多数据源
- */
-@Configuration
-public class JdbcTemplateConfig {
-
-    @Bean(name = &quot;primaryJdbcTemplate&quot;)
-    public JdbcTemplate primaryJdbcTemplate(
-            @Qualifier(&quot;primaryDataSource&quot;) DataSource dataSource) {
-        return new JdbcTemplate(dataSource);
-    }
-
-    @Bean(name = &quot;secondaryJdbcTemplate&quot;)
-    public JdbcTemplate secondaryJdbcTemplate(
-            @Qualifier(&quot;secondaryDataSource&quot;) DataSource dataSource) {
-        return new JdbcTemplate(dataSource);
-    }
-
-}</code></pre><h2 id="测试JdbcTemplate多数据源"><a href="#测试JdbcTemplate多数据源" class="headerlink" title="测试JdbcTemplate多数据源"></a>测试JdbcTemplate多数据源</h2><pre><code>@RunWith(SpringRunner.class)
-@SpringBootTest(classes = SpringBootDemoApplication.class)
-public class MultipleDatasource4JdbcTemplateTest {
-
-    @Autowired
-    @Qualifier(&quot;primaryJdbcTemplate&quot;)
-    protected JdbcTemplate jdbcTemplate1;
-
-    @Autowired
-    @Qualifier(&quot;secondaryJdbcTemplate&quot;)
-    protected JdbcTemplate jdbcTemplate2;
-
-    @Before
-    public void setUp() {
-        jdbcTemplate1.update(&quot;delete from user &quot;);
-        jdbcTemplate2.update(&quot;delete from user &quot;);
-    }
-
-
-    @Test
-    public void test() throws Exception {
-
-        // 往第一个数据源中插入两条数据
-        jdbcTemplate1.update(&quot;insert into user(id,name,age) values(?, ?, ?)&quot;, 1, &quot;aaa&quot;, 20);
-        jdbcTemplate1.update(&quot;insert into user(id,name,age) values(?, ?, ?)&quot;, 2, &quot;bbb&quot;, 30);
-
-        // 往第二个数据源中插入一条数据，若插入的是第一个数据源，则会主键冲突报错
-        jdbcTemplate2.update(&quot;insert into user(id,name,age) values(?, ?, ?)&quot;, 1, &quot;aaa&quot;, 20);
-
-        // 查一下第一个数据源中是否有两条数据，验证插入是否成功
-        Assert.assertEquals(&quot;2&quot;, jdbcTemplate1.queryForObject(&quot;select count(1) from user&quot;, String.class));
-
-        // 查一下第一个数据源中是否有两条数据，验证插入是否成功
-        Assert.assertEquals(&quot;1&quot;, jdbcTemplate2.queryForObject(&quot;select count(1) from user&quot;, String.class));
-
-    }
-
-}</code></pre><h2 id="Spring-data-jpa配置多数据源"><a href="#Spring-data-jpa配置多数据源" class="headerlink" title="Spring-data-jpa配置多数据源"></a>Spring-data-jpa配置多数据源</h2><p>对于数据源的配置可以沿用上例中DataSourceConfig的实现。</p>
-<p>配置Spring-data-jpa多数据源时要注意，需要指定数据源对应的Entity实体和Repository定义位置。用@Primary区分主数据源。</p>
-<p>配置第一数据源：</p>
-<pre><code>@Configuration
-@EnableTransactionManagement
-@EnableJpaRepositories(entityManagerFactoryRef = &quot;entityManagerFactoryPrimary&quot;,
-        transactionManagerRef=&quot;transactionManagerPrimary&quot;,
-        basePackages=&quot;top.evolutionary.springbootdemo.repository.primary&quot;//设置Repository所在位置
-)
-public class SpringDataJpaPrimaryConfig {
-
-    @Autowired
-    @Qualifier(&quot;primaryDataSource&quot;)
-    private DataSource primaryDataSource;
-
-    @Primary
-    @Bean(name = &quot;entityManagerPrimary&quot;)
-    public EntityManager entityManager(EntityManagerFactoryBuilder builder) {
-        return entityManagerFactoryPrimary(builder).getObject().createEntityManager();
-    }
-
-
-    @Primary
-    @Bean(name = &quot;entityManagerFactoryPrimary&quot;)
-    public LocalContainerEntityManagerFactoryBean entityManagerFactoryPrimary (EntityManagerFactoryBuilder builder) {
-        return builder
-                .dataSource(primaryDataSource)
-                .properties(getVendorProperties(primaryDataSource))
-                .packages(&quot;top.evolutionary.springbootdemo.dto.primary&quot;) //设置实体类所在位置
-                .persistenceUnit(&quot;primaryPersistenceUnit&quot;)
-                .build();
-    }
-
-
-    @Autowired
-    private JpaProperties jpaProperties;
-
-    private Map&lt;String, String&gt; getVendorProperties(DataSource dataSource) {
-        return jpaProperties.getHibernateProperties(dataSource);
-    }
-
-    @Primary
-    @Bean(name = &quot;transactionManagerPrimary&quot;)
-    public PlatformTransactionManager transactionManagerPrimary(EntityManagerFactoryBuilder builder) {
-        return new JpaTransactionManager(entityManagerFactoryPrimary(builder).getObject());
-    }
-
-}</code></pre><p>配置第二数据源：</p>
-<p>@Configuration<br>@EnableTransactionManagement<br>@EnableJpaRepositories(entityManagerFactoryRef = “entityManagerFactorySecondary”,<br>        transactionManagerRef=”transactionManagerSecondary”,<br>        basePackages=”top.evolutionary.springbootdemo.repository.secdary”//设置Repository所在位置<br>)<br>public class SpringDataJpaSecdaryConfig {</p>
-<pre><code>@Autowired
-@Qualifier(&quot;secondaryDataSource&quot;)
-private DataSource primaryDataSource;
-
-@Bean(name = &quot;entityManagerSecondary&quot;)
-public EntityManager entityManager(EntityManagerFactoryBuilder builder) {
-    return entityManagerFactoryPrimary(builder).getObject().createEntityManager();
-}
-
-
-@Bean(name = &quot;entityManagerFactorySecondary&quot;)
-public LocalContainerEntityManagerFactoryBean entityManagerFactoryPrimary (EntityManagerFactoryBuilder builder) {
-    return builder
-            .dataSource(primaryDataSource)
-            .properties(getVendorProperties(primaryDataSource))
-            .packages(&quot;top.evolutionary.springbootdemo.dto.secdary&quot;) //设置实体类所在位置
-            .persistenceUnit(&quot;secondaryPersistenceUnit&quot;)
-            .build();
-}
-
-
-@Autowired
-private JpaProperties jpaProperties;
-
-private Map&lt;String, String&gt; getVendorProperties(DataSource dataSource) {
-    return jpaProperties.getHibernateProperties(dataSource);
-}
-
-@Bean(name = &quot;transactionManagerSecondary&quot;)
-public PlatformTransactionManager transactionManagerPrimary(EntityManagerFactoryBuilder builder) {
-    return new JpaTransactionManager(entityManagerFactoryPrimary(builder).getObject());
-}</code></pre><p>}</p>
-<h2 id="测试Spring-data-jpa多数据源"><a href="#测试Spring-data-jpa多数据源" class="headerlink" title="测试Spring-data-jpa多数据源"></a>测试Spring-data-jpa多数据源</h2><pre><code>@RunWith(SpringRunner.class)
-@SpringBootTest(classes = SpringBootDemoApplication.class)
-public class MultipleDatasource4JpaTest {
-
-    @Autowired
-    private StaffRepository staffRepository;
-    @Autowired
-    private CompanyRepository companyRepository;
-
-    @Before
-    public void delete() {
-        staffRepository.deleteAll();
-        companyRepository.deleteAll();
-    }
-
-
-    @Test
-    public void test() throws Exception{
-        staffRepository.save(new Staff(&quot;richey1&quot;,18));
-        staffRepository.save(new Staff(&quot;richey2&quot;,19));
-        staffRepository.save(new Staff(&quot;richey3&quot;,20));
-
-        Assert.assertEquals(3, staffRepository.findAll().size());
-
-        companyRepository.save(new Company(&quot;company1&quot;, &quot;add1&quot;));
-        companyRepository.save(new Company(&quot;company2&quot;, &quot;add2&quot;));
-
-        Assert.assertEquals(2, companyRepository.findAll().size());
-
-
-    }
-
-}</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/05/16/Spring%20Boot(6)-%E6%B5%8B%E8%AF%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/05/16/Spring%20Boot(6)-%E6%B5%8B%E8%AF%95/" itemprop="url">Spring Boot(6)-测试</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-16T00:00:00+08:00">
-                2019-05-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/05/16/Spring%20Boot(6)-%E6%B5%8B%E8%AF%95/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/16/Spring%20Boot(6)-%E6%B5%8B%E8%AF%95/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/05/16/Spring%20Boot(6)-%E6%B5%8B%E8%AF%95/" class="leancloud_visitors" data-flag-title="Spring Boot(6)-测试">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="http://www.spring4all.com/article/252" target="_blank" rel="noopener">本文转自http://www.spring4all.com/article/252</a></p>
-<h3 id="集成测试自动配置"><a href="#集成测试自动配置" class="headerlink" title="集成测试自动配置"></a>集成测试自动配置</h3><ul>
-<li><p>@SpringJUini4ClassRunner</p>
-<p>  开启了Spring集成测试的支持。<br>  自Spring 2.5开始，集成测试支持的形式就变成了SpringJUini4ClassRunner。这是一个Junit测试类运行器，会为Junit测试加载Spring上下文，并为测试类自动织入所需要的Bean。</p>
-</li>
-<li><p>SpringRunner</p>
-<p>  SpringRunner继承了SpringJUini4ClassRunner，但是没有扩展任何的接口，只是名字简短了，所以它跟SpringJUini4ClassRunner左右是一样的，没有区别。</p>
-</li>
-<li><p>@ContextConfiguration</p>
-<p>  指定了如何加载应用上下文。</p>
-</li>
-<li><p>@SpringApplicationConfiguration</p>
-<p>  不仅加载应用上下文，还会开启日志/加载外部属性(application.properties等)以及其它的Spring Boot特性。大多数情况下，我们会用@SpringApplicationConfiguration代替@ContextConfiguration。</p>
-</li>
-</ul>
-<ul>
-<li><p>@SpringBootTest</p>
-<p>  不仅加载应用上下文，还会开启日志/加载外部属性(application.properties等)以及其它的Spring Boot特性。较新版本的Spring Boot取消了@SpringApplicationConfiguration，改用@SpringBootTest就可以了.</p>
-</li>
-</ul>
-<pre><code>@RunWith(SpringRunner.class)
-@SpringBootTest(classes = SpringBootDemoApplication.class)
-public class HelloWorldTest {
-
-    @Autowired
-    private HelloWorldService helloWorldService;
-
-    @Test
-    public void testSayHello() {
-        Assert.assertEquals(helloWorldService.sayHello(), &quot;Hello World!&quot;);
-    }
-
-}</code></pre><h3 id="测试Web应用程序"><a href="#测试Web应用程序" class="headerlink" title="测试Web应用程序"></a>测试Web应用程序</h3><p>要恰当的测试Web应用程序，需要使用一些真实的HTTP请求，测试我们的程序可以正确的处理这些请求。Spring Boot为我们提供了两种方案来实现这类测试。</p>
-<ul>
-<li><p>Spring Mock MVC</p>
-<p>  能在一个近似真实的模拟Servlet容器里测试控制器，而不用实际启动应用服务器。</p>
-</li>
-<li><p>Web集成测试</p>
-<p>  在嵌入式Servlet容器里（如Tomcat、Jetty）启动应用程序，在真实的应用服务器里执行测试。</p>
-</li>
-</ul>
-<h4 id="Spring-Mock-MVC"><a href="#Spring-Mock-MVC" class="headerlink" title="Spring Mock MVC"></a>Spring Mock MVC</h4><p>要在测试里使用Mock MVC，可以使用MockMVCbuilders,该类提供了两个静态方法：</p>
-<ul>
-<li><p>standaloneSetup（）</p>
-<p>  构建一个Mock MVC，提供一个或多个手工创建并配置的控制器。</p>
-</li>
-<li><p>webAppContextSetup（）</p>
-<p>  使用Spring应用上下文（WebApplicationcontext）来构建MVC，上下文里可以包含一个或多个配置号的控制器。</p>
-</li>
-</ul>
-<p>两者的区别是，standaloneSetup（）希望我们手工初始化并注入我们测试的控制器，而webAppContextSetup（）基于一个WebApplicationContext的实例，由Spring加载。前者可能只想让它专注于单一控制器的测试，而后者让Spring加载控制器及依赖。</p>
-<pre><code>@RunWith(SpringRunner.class)
-@SpringBootTest(classes = DemoApplication.class)
-public class UserControllerTest {
-
-    @Autowired
-    private WebApplicationContext applicationContext;
-
-    private MockMvc mockMvc;
-
-    @Before
-    public void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(applicationContext).build();
-    }
-
-    @Test
-    public void whenQuerySuccess() throws Exception {
-        String result = mockMvc.perform(get(&quot;/user&quot;)
-                .param(&quot;username&quot;, &quot;richey&quot;)
-                .param(&quot;age&quot;, &quot;18&quot;)
-                .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath(&quot;$.length()&quot;).value(3))
-                .andReturn().getResponse().getContentAsString();
-        System.out.println(result);
-    }
-
-
-
-    @Test
-    public void whenCreateSuccess() throws Exception {
-        Date date = new Date();
-        System.out.println(date.getTime());
-        String content = &quot;{\&quot;id\&quot;:null,\&quot;userName\&quot;:\&quot;richey\&quot;,\&quot;password\&quot;:null,\&quot;birthday\&quot;:&quot; + date.getTime() + &quot;}&quot;;
-        String result = mockMvc.perform(post(&quot;/user&quot;).contentType(MediaType.APPLICATION_JSON_UTF8).content(content))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath(&quot;$.id&quot;).value(&quot;1&quot;))
-                .andReturn().getResponse().getContentAsString();
-        System.out.println(result);
-    }
-
-
-
-}</code></pre><h4 id="测试Web安全"><a href="#测试Web安全" class="headerlink" title="测试Web安全"></a>测试Web安全</h4><p>应用程序里使用了Spring Security的测试模块后，需要创建MockMVC实例运行时的Spring Security配置器。</p>
-<p>//TODO</p>
-<h4 id="测试运行中的应用程序"><a href="#测试运行中的应用程序" class="headerlink" title="测试运行中的应用程序"></a>测试运行中的应用程序</h4><p>Spring Boot支持Tomcat或Jetty这样的嵌入式Servlet容器作为运行中应用程序的一部分，而且可以用相同的机制在测试的过程中用嵌入式Servlet容器来启动应用程序。</p>
-<ul>
-<li><p>@WebIntegrationTest</p>
-<p>  启动一个嵌入式的Servlet容器，默认是8080端口。一旦应用程序运行在嵌入式容器中，就可以发真实的HTTP请求（比如使用RestTemplate），断言结果了。</p>
-</li>
-<li><p>使用随机端口启动服务器</p>
-<p>  将server.port属性设置为0，让Spring Boot选一个随机的端口。@WebIntegrationTest的value属性支持一个String数组，数组中的每项都是键值对，形如name=value用来设置测试中使用的属性，如：</p>
-<pre><code>@WebIntegrationTest(value={&quot;server.port=0&quot;})</code></pre><p>  @WebIntegrationTest还提供了一个randomPort属性，更明确的表示让服务器在随机的端口上启动。</p>
-<p>  Spring Boot将local.server.port值设置为了选中的端口，所以我们使用的时候将该属性注入即可：</p>
-<pre><code>@Value(&quot;$local.server.port&quot;)
-private int port;</code></pre></li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/05/15/Spring%20Boot(%EF%BC%95)-%E5%B8%B8%E7%94%A8%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/05/15/Spring%20Boot(%EF%BC%95)-%E5%B8%B8%E7%94%A8%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE/" itemprop="url">Spring Boot(５)-常用属性配置</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-15T00:00:00+08:00">
-                2019-05-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/05/15/Spring%20Boot(%EF%BC%95)-%E5%B8%B8%E7%94%A8%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/15/Spring%20Boot(%EF%BC%95)-%E5%B8%B8%E7%94%A8%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/05/15/Spring%20Boot(%EF%BC%95)-%E5%B8%B8%E7%94%A8%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE/" class="leancloud_visitors" data-flag-title="Spring Boot(５)-常用属性配置">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="日志配置"><a href="#日志配置" class="headerlink" title="日志配置"></a>日志配置</h3><p>默认Spring Boot会用Logback来记录日志，并用INFO级别输出到控制台。</p>
-<h5 id="使用其它日志实现替换Logback"><a href="#使用其它日志实现替换Logback" class="headerlink" title="使用其它日志实现替换Logback"></a>使用其它日志实现替换Logback</h5><p>一般来说我们不需要切换日志实现，但是如果我们决定使用Log4j或Log4j2，那么只需要修改依赖，引入相应日志的起步依赖，同时排除掉Logback。</p>
-<pre><code>&lt;dependency&gt;
-    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-    &lt;artifactId&gt;spring-boot-starter&lt;/artifactId&gt;
-    &lt;exclusions&gt;
-        &lt;exclusion&gt;
-            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-            &lt;artifactId&gt;spring-boot-starter-logging&lt;/artifactId&gt;
-        &lt;/exclusion&gt;
-    &lt;/exclusions&gt;
-&lt;/dependency&gt;
-&lt;dependency&gt;
-    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-    &lt;artifactId&gt;spring-boot-starter-log4j&lt;/artifactId&gt;
-&lt;/dependency&gt;</code></pre><h5 id="logback-xml"><a href="#logback-xml" class="headerlink" title="logback.xml"></a>logback.xml</h5><p>要完全掌握日志配置可以在Classpath的根目录(src/min/resources)里创建logback.xml文件。具体配置可以参考Logback文档。</p>
-<p>除了日志格式外，加lockback.xml配置和不加该配置文件的默认配置差不多。</p>
-<p>实际上，我们对日配置最常做的改动就是修改日志级别和指定日志输出文件，使用了Spring Boot的配置属性后，我们可以在不创建logback文件的情况下修改这些配置：</p>
-<pre><code>logging.level.root=warn
-logging.level.top.evolutionary=debug
-logging.path=/var/logs
-logging.file=evolutionary.log
-# 默认情况下，日志文件的大小达到１０Ｍ会切分一次
-logging.file.max-size=20M</code></pre><h3 id="配置数据源"><a href="#配置数据源" class="headerlink" title="配置数据源"></a>配置数据源</h3><p>只需要通过属性配置数据库的URL和身份信息等就可以了。</p>
-<pre><code># 数据源
-spring.datasource.driver-class-name=com.mysql.jdbc.Driver
-spring.datasource.url=jdbc:mysql://localhost:3306/evolutionary_security?useUnicode=true&amp;characterEncoding=utf8
-spring.datasource.username=root
-spring.datasource.password=root</code></pre><p>在自动配置DataSource Bean的时候，Spring Boot 会使用这里的连接数据。DataSource Bean是一个连接池，如果Classpath里有Tomcat的连接池DataSource，那么会使用这个连接池，否则Spring Boot会在Classpath下找以下连接池:</p>
-<ul>
-<li>HikariCP</li>
-<li>Commons DBCP</li>
-<li>Commons DBCP2</li>
-</ul>
-<p>这里列出的只是自动配置支持的连接池，我们还可以自己配DataSource Bean,用我们喜欢的各种连接池。</p>
-<pre><code># 从jndi里查找DataSource
-#spring.datasource.jndi-name=</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/">&lt;i class&#x3D;&quot;fa fa-angle-left&quot;&gt;&lt;&#x2F;i&gt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/6/">&lt;i class&#x3D;&quot;fa fa-angle-right&quot;&gt;&lt;&#x2F;i&gt;</a>
+    <a class="extend prev" rel="prev" href="/page/4/">&lt;i class&#x3D;&quot;fa fa-angle-left&quot;&gt;&lt;&#x2F;i&gt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/6/">&lt;i class&#x3D;&quot;fa fa-angle-right&quot;&gt;&lt;&#x2F;i&gt;</a>
   </nav>
 
 
@@ -2783,7 +2840,7 @@ spring.datasource.password=root</code></pre><p>在自动配置DataSource Bean的
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">110</span>
+                  <span class="site-state-item-count">114</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2805,7 +2862,7 @@ spring.datasource.password=root</code></pre><p>在自动配置DataSource Bean的
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-count">39</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

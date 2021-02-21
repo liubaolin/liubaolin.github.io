@@ -1,6 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>jupyter环境搭建</title>
+    <url>/2021/02/20/jupyter%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</url>
+    <content><![CDATA[<ol>
+<li>安装anaconda</li>
+<li>pycharm中新建项目配置环境变量为conda</li>
+<li>安装必要的包</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip3 install -i https:&#x2F;&#x2F;pypi.doubanio.com&#x2F;simple pandas jupyter xlrd openpyxl pillow matplotlib seaborn</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Phthon</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Kafka重平衡（Rebalance）</title>
+    <url>/2021/02/20/Kafka%E9%87%8D%E5%B9%B3%E8%A1%A1%EF%BC%88Rebalance%EF%BC%89/</url>
+    <content><![CDATA[<h1 id="什么是Rebalance"><a href="#什么是Rebalance" class="headerlink" title="什么是Rebalance"></a>什么是Rebalance</h1><p>首先要搞清楚，为什么要Rebalance：由于消费者组订阅了topic，因topic partition数和消费者组成员个数不同而存在的分配机制。</p>
+<p>Rebalance是让Consumer Group下所有的Consumer重新分配Topic的每个分区的过程。</p>
+<p>Rebalance过程所有的consumer都会参与，在协调者组件（Coordinator）的帮助下，完成主题分区的分配。</p>
+<p>整个Rebalance过程，所有Consumer都不能消费，而且这个过程比较慢。</p>
+<h1 id="什么时候会Rebalance"><a href="#什么时候会Rebalance" class="headerlink" title="什么时候会Rebalance"></a>什么时候会Rebalance</h1><p>有三种情况会触发Rebalance：</p>
+<ol>
+<li><p>有新的Consumer加入Consumer Group</p>
+</li>
+<li><p>Consumer Group订阅的主题数量发生变化</p>
+</li>
+<li><p>Consumer Group订阅的主题的数量发生变化</p>
+</li>
+</ol>
+<p>Rebalance时Consumer Group内所有的consumer都会参与。</p>
+<h1 id="如何避免Rebalance"><a href="#如何避免Rebalance" class="headerlink" title="如何避免Rebalance"></a>如何避免Rebalance</h1><p>上面说了有三种情况会发生Rebalance，只要这三种情况的任一情况发生，都必然会产生Rebalance。这三种情况有些是计划内的，比如增加一个Consumer，调整分区数，添加或减少<br>某个主题的订阅。</p>
+<p>我们只能尽量避免那些必不要的Rebalance，比如某些情况Consumer被Coordinator错误的认为已停止，从而被提出Consumer Group。</p>
+<ul>
+<li><p>Coordinator什么情况会认为Consumer已停止？</p>
+<p>Consumer会定时往Coordinator发送心跳，证明它还活着。如果Consumer不能及时的发送这个心跳请求，就会被Coordinator认为已经死了，从而将其从Group中移除，然后进行Rebalance。<br>Consumer端的参数session.timeout.ms决定了Consumer存活性的时间间隔，默认10s，即Coordinator如果10s内没有收到Consuner的心跳请求，即认为Consumer死亡。</p>
+<p>Consumer参数heartbeat.interval.ms 控制的是Consumer端发送心跳请求的间隔。这个值越小心跳频次发送的越高，占用带宽越多，但是可以更快的知道是否需要Rebalance，<br>因为Coordinator通知各个Consumer机型Rabalance的方式就是将 REBALANCE_NEEDED 标志封装进心跳请求的响应体中。</p>
+<p>Consumer参数 max.poll.interval.ms 限定了Consumer端两次调用poll方法的最大时间间隔，默认5分钟。即如果在5分钟内无法完成poll方法返回的消息，则Consumer会主动发起离开组的请求，Coorditator也会开始新一轮的Rabalance.也可以修改max.poll.records参数，减少一次poll拉取的消息数，从而减少消费时间。</p>
+<p>Consumer参数说明：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">session.timeout.ms 决定了 Consumer 存活性的时间间隔</span><br><span class="line">heartbeat.interval.ms 控制的是Consumer端发送心跳请求的间隔</span><br><span class="line">max.poll.interval.ms 限定了Consumer端两次调用poll方法的最大时间间隔（即是处理一次poll方法返回消息的最大允许时间）</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Consumer未及时发送心跳导致的Rebalance</p>
+<p>上面我们说了Consumer发送的心跳频次的参数和Coordinator认为Consumer死亡时间的参数。所以为了避免Coordinator错误的判断Consumer死亡的发生，我们要在较短的时间内，较多的发送请求。推荐参数</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 在Coordinator认为Consumer死亡之前（6s内），发送三次心跳请求</span><br><span class="line">session.timeout.ms &#x3D; 6s</span><br><span class="line">heartbeat.interval.ms &#x3D; 2s</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Consumer消费时间过长导致的Rebalance</p>
+<p>上面说了max.poll.interval.ms时间内Consumer没有消费完上次poll拉取的消息，则Consumber会主动请求离开组，然后Coordinator进行Rebalance。<br>所以需要了解业务处理时间，合理的设置max.poll.interval.ms</p>
+</li>
+</ul>
+<ul>
+<li><p>频繁Full GC引起的Rebalance</p>
+<p>Full GC导致的长时间停顿，导致业务没有在正常时间内处理完，触发max.poll.interval.ms超时时间，产生Rebalance。</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>MQ</category>
+      </categories>
+      <tags>
+        <tag>kafka</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python库-Pandas说明</title>
+    <url>/2021/02/19/Python%E5%BA%93-Pandas%E8%AF%B4%E6%98%8E/</url>
+    <content><![CDATA[<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p><a href="https://pandas.pydata.org/docs/index.html" target="_blank" rel="noopener">pandas官网</a><br>pandas 是用来做数据分析的一个工具库，为Python编程语言提供高性能、易用的数据结构和数据分析工具</p>
+<p>也可以简单的认为pandans是Python中的excel表</p>
+<h1 id="对比列表-numpy-pandas"><a href="#对比列表-numpy-pandas" class="headerlink" title="对比列表/numpy/pandas"></a>对比列表/numpy/pandas</h1><ul>
+<li><p>列表里的元素可以是python中的任意对象，使用方便，但是存在性能问题</p>
+</li>
+<li><p>numpy 是一个多维的数组结构，区别于列表，numpy只能保存同一类型的数据，通常为数值型，numpy大大提高了对于数据类型的计算效率</p>
+</li>
+<li><p>pandas 构建在numpy之上，继承了numpy的高效，同时又更易于使用</p>
+<p><img src="https://blog-pic-1254088127.picsh.myqcloud.com/python-list-nunpy-pandas.png" alt="list-numpy-pandas"></p>
+</li>
+</ul>
+<p>易用性示例：</p>
+<p>  <img src="https://blog-pic-1254088127.picsh.myqcloud.com/pandas02.png" alt="pandas"></p>
+<h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><p>pandas 没有3维及以上数据结构</p>
+<ol>
+<li><p>Seris</p>
+<p>一维数据</p>
+</li>
+<li><p>DataFrame</p>
+<p>二维数据,DataFrame中的每一列都是Seris</p>
+<p>read_excel</p>
+<p>to_excel</p>
+<p>append() 上下拼接多个表格</p>
+<p>join（） 左右拼接两个表格</p>
+<p>concat() 通过设置axis参数，上下或左右拼接多个表格</p>
+<p>merge() 相当于excel中的vlookup，通过同一列相同的元素把两个表格合并在一起</p>
+<p>pivot_table 相当于excel中的透视操作</p>
+<p>rolling() 固定窗口滚动操作</p>
+<p>expanding() 扩展窗口操作</p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Phthon</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>python基础</title>
     <url>/2021/01/30/python%E5%9F%BA%E7%A1%80/</url>
     <content><![CDATA[<h1 id="数据类型和数据结构"><a href="#数据类型和数据结构" class="headerlink" title="数据类型和数据结构"></a>数据类型和数据结构</h1><h2 id="基础数据类型"><a href="#基础数据类型" class="headerlink" title="基础数据类型"></a>基础数据类型</h2><ol>
@@ -260,6 +367,59 @@
       </tags>
   </entry>
   <entry>
+    <title>K8s基本概念</title>
+    <url>/2020/10/17/K8s%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</url>
+    <content><![CDATA[<h1 id="kubectl"><a href="#kubectl" class="headerlink" title="kubectl"></a>kubectl</h1><p><a href="https://kubernetes.io/zh/docs/reference/kubectl/overview/" target="_blank" rel="noopener">kubectl 是kubernetes命令行工具</a></p>
+<p>如果我们打算在笔记本电脑（本地）上运行 Kubernetes 集群，则需要首先安装 minikube 等工具.</p>
+<p><a href="https://kubernetes.io/zh/docs/tasks/" target="_blank" rel="noopener">文档</a></p>
+<h1 id="k8s-命令"><a href="#k8s-命令" class="headerlink" title="k8s 命令"></a>k8s 命令</h1><ul>
+<li>获取运行的默认集群名称空间的所有Pod的列表</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl get pods</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查看在pod内运行的容器的输出</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl logs [pod name]</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>查看服务详细信息</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl describe svc some-app</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>集群配置上下文</li>
+</ul>
+<blockquote>
+<p>Kubernetes使用配置文件config来查找连接到集群所需的信息。该文件位于主机主文件夹的：~/.kube/config。上下文是该配置文件中的一个元素，它包含对集群，名称空间和用户的引用。如果要访问或运行单个群集，则配置文件中将只有一个上下文。我们可以定义多个指向不同集群的上下文。</p>
+</blockquote>
+<p>使用kubectl config命令可以查看这些上下文并在它们之间切换。</p>
+<h1 id="k8s常用概念"><a href="#k8s常用概念" class="headerlink" title="k8s常用概念"></a>k8s常用概念</h1><ul>
+<li>k8s集群</li>
+</ul>
+<p>K8S集群是运行容器化应用程序所需的一组物理或虚拟机以及其他基础结构资源。</p>
+<ul>
+<li>节点</li>
+</ul>
+<p>K8S集群中的每台机器都称为一个节点。每个K8S集群中有两种类型的节点：</p>
+<p>主节点：承载Kubernetes控制平面并管理集群</p>
+<p>工作节点：运行容器化应用程序</p>
+<ul>
+<li>Pods</li>
+</ul>
+<p>Pod是Kubernetes中最常见的资源之一。它们是一个或多个容器的集合。Pod中的容器共享网络和存储，同一Pod中的任何容器都可以通过localhost进行相互通信。</p>
+<p>Pod创建后，会被分配一个唯一的IP地址。pod内的容器可以监听不同的端口。要访问容器，可以使用容器的IP地址。</p>
+<p>但是，如果想在容器之间进行交互，可以使用localhost:port</p>
+<p>如果Pod重启，就会分配另一个IP地址。因此，不能依赖于IP地址。通过IP直接与Pod进行通讯可能会有问题。</p>
+<p>可以与Pod进行通信的抽象称为K8S服务。K8S服务为我们提供稳定的IP地址和DNS名称</p>
+]]></content>
+      <categories>
+        <category>容器</category>
+      </categories>
+      <tags>
+        <tag>K8s</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Linux开启ssh端口服务（22）</title>
     <url>/2020/08/31/Linux%E5%BC%80%E5%90%AFssh%E7%AB%AF%E5%8F%A3%E6%9C%8D%E5%8A%A1%EF%BC%8822%EF%BC%89/</url>
     <content><![CDATA[<h1 id="OpenSSH"><a href="#OpenSSH" class="headerlink" title="OpenSSH"></a>OpenSSH</h1><p>OpenSSH是SSH(Secure SHell)协议的免费开源实现。SSH协议族可以用来进行远程控制。</p>
@@ -282,6 +442,50 @@
       </categories>
       <tags>
         <tag>分布式锁</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mysql（14）-Mysql位（bit）数据类型</title>
+    <url>/2020/06/07/Mysql%EF%BC%8814%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/</url>
+    <content><![CDATA[<p>最近在线上碰到了一个诡异的问题，线上有个业务模块突然查询不出数据。问题反馈的时候是上午，前一天晚上进行了上线操作，基本可以判断跟上线有关系。</p>
+<h1 id="问题定位"><a href="#问题定位" class="headerlink" title="问题定位"></a>问题定位</h1><p>先看日志，没有任何报错，接口都能正常返回。并且此处没有降级机制，arthas跟踪到数据库查询确实没有返回。</p>
+<p>拿到具体的生产查询sql，直接在生产数据库查询，没有结果。但是同样的sql放到beta可以查询出结果。</p>
+<p>这里基本可以定位到是sql查询的问题了。</p>
+<p>先分析了下sql，简单的单表查询，where里有四个查询条件，其中一个字段引起了注意，如下：</p>
+<p>select * from table_staff where companyId = ‘demo-companyId’ and isDelete = ‘0’;</p>
+<p>isDelte在业务中是一个boolean类型，对应数据库中用的是位数据类型：bit(1)，首先尝试将查询条件isDelete=’0’改为isDelete=0或者isDelete=false，<br>可以在生产数据库查出结果。</p>
+<p>进一步比对生产和beta环境该表的DDL，发现isDelete字段的数据类型是一致的，但是生产比beta数据库多了一个索引 idx_companId_isDelete(companyId和isDelete的一个联合索引，而且不是唯一索引)，<br>基本确认索引问题导致。</p>
+<p>此时运维确认这个索引是前天晚上上线，为了提高跑批效率手动在生产加上去的，删掉idx_companId_isDelete索引后问题解决。</p>
+<h1 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h1><p>首先肯定是走了索引，导致数据查询不出来</p>
+<p>数据库中isDelete数据类型是bit(1),查询该类型的知识点：</p>
+<blockquote>
+<p>MySQL有少数几种存储类型使用紧凑的位存储数据。所有这些位类型，不管底层存储格式和处理方式如何，从技术上来说都是字符串类型。<br>MySQL把bit类型当作字符串类型，而不是数字类型。当检索BIT(1)的值时，结果是一个包含二进制0或者1值的字符串，而不是ASCII码的“0”或者“1”。<br>–《高性能MySQL》 P123 4.1.5-位数据类型</p>
+</blockquote>
+<p>MySQL把bit类型当作字符串类型，所以上例中当我们加了一个字符串索引，并且查询条件也使用的字符串查询时（isDelete=’0’），命中索引。而当我们把引号去掉或者使用false时（isDelete=0或isDelete=false）索引失效，进行了全表扫描。</p>
+<p>问题在于，正常字符串索引即便是查询中使用了数字，也无非就是索引失效走全表扫描，不会查不出数据，这里明显是bit(1)数据类型的问题。</p>
+<h1 id="场景还原"><a href="#场景还原" class="headerlink" title="场景还原"></a>场景还原</h1><p>在uat库加了跟生产同样的索引，还原了数据查询不出来的场景。</p>
+<p>Explain 看了下命中索引是的执行计划，Extra中看到这样的描述</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Impossible WHERE noticed after reading const tables</span><br></pre></td></tr></table></figure>
+
+<p>走了常量表，查询mysql Manual，发现了对这段描述的解释：</p>
+<p>![Mysql-extra-impossible](<a href="http://blog-pic-1254088127.picsh.myqcloud.com/mysql-impossible-const.png）" target="_blank" rel="noopener">http://blog-pic-1254088127.picsh.myqcloud.com/mysql-impossible-const.png）</a></p>
+<p>但是，上例中的查询并不符合这段解释中的要求</p>
+<p>![Mysql索引常量](<a href="http://blog-pic-1254088127.picsh.myqcloud.com/mysql-index-const.png）" target="_blank" rel="noopener">http://blog-pic-1254088127.picsh.myqcloud.com/mysql-index-const.png）</a></p>
+<h1 id="实践和结论"><a href="#实践和结论" class="headerlink" title="实践和结论"></a>实践和结论</h1><p>MySQL官方文档及其它资料中找不到合理的解释，这里给个实践结论。</p>
+<p>对bit类型的字段的查询：</p>
+<ul>
+<li>不使用索引<br>查询bit的参数值是无论是数值还是字符，mysql都会进行类型转化,将字符转换为数值，并比较数值对应的ascii码</li>
+<li>使用索引<br>检索BIT(1)列的值, 索引存的结果是一个字符串且内容是二进制位0或1, 而不是ASCII值”0″或”1″. 这就导致了为什么我们使用ASCII值”0”没有查询出结果。</li>
+</ul>
+<p>简言之：bit类型索引里存的是二进制类型的值（位类型bit），我们查询参数给的是ASCII码值</p>
+<p>结论：<br>1、定义为text和image和bit数据类型的列不应该增加索引<br>2、加完索引一定要explain看一下<br>3、使用unsigned tinyint代替bit(1) 来表示是否<br>   @Column(columnDefinition= “TINYINT”,length = 1)    暂未验证</p>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
+        <tag>索引</tag>
       </tags>
   </entry>
   <entry>
@@ -341,50 +545,6 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">mysql&gt; select 0 is false, &#39;0&#39; is false ,&#39;123&#39; is false;</span><br><span class="line">+------------+--------------+----------------+</span><br><span class="line">| 0 is false | &#39;0&#39; is false | &#39;123&#39; is false |</span><br><span class="line">+------------+--------------+----------------+</span><br><span class="line">|          1 |            1 |              0 |</span><br><span class="line">+------------+--------------+----------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; select 1 is true,2 is true ,&#39;1&#39; is true,&#39;123&#39; is true,-1 is true;</span><br><span class="line">+-----------+-----------+-------------+---------------+------------+</span><br><span class="line">| 1 is true | 2 is true | &#39;1&#39; is true | &#39;123&#39; is true | -1 is true |</span><br><span class="line">+-----------+-----------+-------------+---------------+------------+</span><br><span class="line">|         1 |         1 |           1 |             1 |          1 |</span><br><span class="line">+-----------+-----------+-------------+---------------+------------+</span><br><span class="line"></span><br><span class="line">mysql&gt; select 1 !&#x3D; 0,2 !&#x3D;0 ,&#39;1&#39; !&#x3D; 0,&#39;123&#39; !&#x3D; 0,-1 !&#x3D; 0;</span><br><span class="line">+--------+-------+----------+------------+---------+</span><br><span class="line">| 1 !&#x3D; 0 | 2 !&#x3D;0 | &#39;1&#39; !&#x3D; 0 | &#39;123&#39; !&#x3D; 0 | -1 !&#x3D; 0 |</span><br><span class="line">+--------+-------+----------+------------+---------+</span><br><span class="line">|      1 |     1 |        1 |          1 |       1 |</span><br><span class="line">+--------+-------+----------+------------+---------+</span><br></pre></td></tr></table></figure>
 
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>综上，在mysql中不要使用bit(1)表示boolean类型，实际上不建议在任何场景使用bit类型的字段。查询会造成不必要的困扰和麻烦，令人难以理解。</p>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-        <tag>索引</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Mysql（14）-Mysql位（bit）数据类型</title>
-    <url>/2020/06/07/Mysql%EF%BC%8814%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/</url>
-    <content><![CDATA[<p>最近在线上碰到了一个诡异的问题，线上有个业务模块突然查询不出数据。问题反馈的时候是上午，前一天晚上进行了上线操作，基本可以判断跟上线有关系。</p>
-<h1 id="问题定位"><a href="#问题定位" class="headerlink" title="问题定位"></a>问题定位</h1><p>先看日志，没有任何报错，接口都能正常返回。并且此处没有降级机制，arthas跟踪到数据库查询确实没有返回。</p>
-<p>拿到具体的生产查询sql，直接在生产数据库查询，没有结果。但是同样的sql放到beta可以查询出结果。</p>
-<p>这里基本可以定位到是sql查询的问题了。</p>
-<p>先分析了下sql，简单的单表查询，where里有四个查询条件，其中一个字段引起了注意，如下：</p>
-<p>select * from table_staff where companyId = ‘demo-companyId’ and isDelete = ‘0’;</p>
-<p>isDelte在业务中是一个boolean类型，对应数据库中用的是位数据类型：bit(1)，首先尝试将查询条件isDelete=’0’改为isDelete=0或者isDelete=false，<br>可以在生产数据库查出结果。</p>
-<p>进一步比对生产和beta环境该表的DDL，发现isDelete字段的数据类型是一致的，但是生产比beta数据库多了一个索引 idx_companId_isDelete(companyId和isDelete的一个联合索引，而且不是唯一索引)，<br>基本确认索引问题导致。</p>
-<p>此时运维确认这个索引是前天晚上上线，为了提高跑批效率手动在生产加上去的，删掉idx_companId_isDelete索引后问题解决。</p>
-<h1 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h1><p>首先肯定是走了索引，导致数据查询不出来</p>
-<p>数据库中isDelete数据类型是bit(1),查询该类型的知识点：</p>
-<blockquote>
-<p>MySQL有少数几种存储类型使用紧凑的位存储数据。所有这些位类型，不管底层存储格式和处理方式如何，从技术上来说都是字符串类型。<br>MySQL把bit类型当作字符串类型，而不是数字类型。当检索BIT(1)的值时，结果是一个包含二进制0或者1值的字符串，而不是ASCII码的“0”或者“1”。<br>–《高性能MySQL》 P123 4.1.5-位数据类型</p>
-</blockquote>
-<p>MySQL把bit类型当作字符串类型，所以上例中当我们加了一个字符串索引，并且查询条件也使用的字符串查询时（isDelete=’0’），命中索引。而当我们把引号去掉或者使用false时（isDelete=0或isDelete=false）索引失效，进行了全表扫描。</p>
-<p>问题在于，正常字符串索引即便是查询中使用了数字，也无非就是索引失效走全表扫描，不会查不出数据，这里明显是bit(1)数据类型的问题。</p>
-<h1 id="场景还原"><a href="#场景还原" class="headerlink" title="场景还原"></a>场景还原</h1><p>在uat库加了跟生产同样的索引，还原了数据查询不出来的场景。</p>
-<p>Explain 看了下命中索引是的执行计划，Extra中看到这样的描述</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Impossible WHERE noticed after reading const tables</span><br></pre></td></tr></table></figure>
-
-<p>走了常量表，查询mysql Manual，发现了对这段描述的解释：</p>
-<p>![Mysql-extra-impossible](<a href="http://blog-pic-1254088127.picsh.myqcloud.com/mysql-impossible-const.png）" target="_blank" rel="noopener">http://blog-pic-1254088127.picsh.myqcloud.com/mysql-impossible-const.png）</a></p>
-<p>但是，上例中的查询并不符合这段解释中的要求</p>
-<p>![Mysql索引常量](<a href="http://blog-pic-1254088127.picsh.myqcloud.com/mysql-index-const.png）" target="_blank" rel="noopener">http://blog-pic-1254088127.picsh.myqcloud.com/mysql-index-const.png）</a></p>
-<h1 id="实践和结论"><a href="#实践和结论" class="headerlink" title="实践和结论"></a>实践和结论</h1><p>MySQL官方文档及其它资料中找不到合理的解释，这里给个实践结论。</p>
-<p>对bit类型的字段的查询：</p>
-<ul>
-<li>不使用索引<br>查询bit的参数值是无论是数值还是字符，mysql都会进行类型转化,将字符转换为数值，并比较数值对应的ascii码</li>
-<li>使用索引<br>检索BIT(1)列的值, 索引存的结果是一个字符串且内容是二进制位0或1, 而不是ASCII值”0″或”1″. 这就导致了为什么我们使用ASCII值”0”没有查询出结果。</li>
-</ul>
-<p>简言之：bit类型索引里存的是二进制类型的值（位类型bit），我们查询参数给的是ASCII码值</p>
-<p>结论：<br>1、定义为text和image和bit数据类型的列不应该增加索引<br>2、加完索引一定要explain看一下<br>3、使用unsigned tinyint代替bit(1) 来表示是否<br>   @Column(columnDefinition= “TINYINT”,length = 1)    暂未验证</p>
 ]]></content>
       <categories>
         <category>DB</category>
@@ -513,24 +673,6 @@
       </tags>
   </entry>
   <entry>
-    <title>安装zookeeper</title>
-    <url>/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/</url>
-    <content><![CDATA[<h1 id="安装zookeeper"><a href="#安装zookeeper" class="headerlink" title="安装zookeeper"></a>安装zookeeper</h1><h2 id="单机服务"><a href="#单机服务" class="headerlink" title="单机服务"></a>单机服务</h2><p>从apache.org下载zookeeper,这里下载的是zookeeper-3.4.14.tar</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#tar -zxf zookeeper-3.4.14.tar.gz</span><br><span class="line">#mv zookeeper-3.4.14 &#x2F;usr&#x2F;local&#x2F;zookeeper</span><br><span class="line">#cat &gt; &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;conf&#x2F;zoo.cfg &lt;&lt; EOF</span><br><span class="line">&gt; tickTime&#x3D;2000</span><br><span class="line">&gt; dataDir&#x3D;&#x2F;var&#x2F;lib&#x2F;zookeeper</span><br><span class="line">&gt; clientPort&#x3D;2181</span><br><span class="line">&gt; EOF</span><br><span class="line">#&#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh start</span><br><span class="line">ZooKeeper JMX enabled by default</span><br><span class="line">Using config: &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;..&#x2F;conf&#x2F;zoo.cfg</span><br><span class="line">Starting zookeeper ... STARTED</span><br><span class="line">#</span><br></pre></td></tr></table></figure>
-
-<p>现在可以连接到zookeeper端口上，通过发送四字命令srvr来验证zookeeper是否安装正确。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#telnet localhost 2181</span><br><span class="line">Trying ::1...</span><br><span class="line">Connected to localhost.</span><br><span class="line">Escape character is &#39;^]&#39;.</span><br><span class="line">srvr</span><br><span class="line">Zookeeper version: 3.4.14-4c25d480e66aadd371de8bd2fd8da255ac140bcf, built on 03&#x2F;06&#x2F;2019 16:18 GMT</span><br><span class="line">Latency min&#x2F;avg&#x2F;max: 0&#x2F;0&#x2F;0</span><br><span class="line">Received: 1</span><br><span class="line">Sent: 0</span><br><span class="line">Connections: 1</span><br><span class="line">Outstanding: 0</span><br><span class="line">Zxid: 0x0</span><br><span class="line">Mode: standalone</span><br><span class="line">Node count: 4</span><br><span class="line">Connection closed by foreign host.</span><br></pre></td></tr></table></figure>
-
-<h2 id="Zookeeper群组"><a href="#Zookeeper群组" class="headerlink" title="Zookeeper群组"></a>Zookeeper群组</h2><p>Zookeeper集群被称为Zookeeper群组，Zookeeper使用的是一致性协议，所以每个群组里应该包含奇数个节点。因为只有群组里的大多数节点处于可用状态，zookeeper才能处理外部请求。</p>
-]]></content>
-      <categories>
-        <category>架构</category>
-      </categories>
-      <tags>
-        <tag>zookeeper</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>安装配置Kafka Broker</title>
     <url>/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/</url>
     <content><![CDATA[<h1 id="安装Kafka-Broker"><a href="#安装Kafka-Broker" class="headerlink" title="安装Kafka Broker"></a>安装Kafka Broker</h1><p>需要先安装号java和Zookeeper</p>
@@ -569,6 +711,24 @@
       </categories>
       <tags>
         <tag>kafka</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>安装zookeeper</title>
+    <url>/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/</url>
+    <content><![CDATA[<h1 id="安装zookeeper"><a href="#安装zookeeper" class="headerlink" title="安装zookeeper"></a>安装zookeeper</h1><h2 id="单机服务"><a href="#单机服务" class="headerlink" title="单机服务"></a>单机服务</h2><p>从apache.org下载zookeeper,这里下载的是zookeeper-3.4.14.tar</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#tar -zxf zookeeper-3.4.14.tar.gz</span><br><span class="line">#mv zookeeper-3.4.14 &#x2F;usr&#x2F;local&#x2F;zookeeper</span><br><span class="line">#cat &gt; &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;conf&#x2F;zoo.cfg &lt;&lt; EOF</span><br><span class="line">&gt; tickTime&#x3D;2000</span><br><span class="line">&gt; dataDir&#x3D;&#x2F;var&#x2F;lib&#x2F;zookeeper</span><br><span class="line">&gt; clientPort&#x3D;2181</span><br><span class="line">&gt; EOF</span><br><span class="line">#&#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh start</span><br><span class="line">ZooKeeper JMX enabled by default</span><br><span class="line">Using config: &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;..&#x2F;conf&#x2F;zoo.cfg</span><br><span class="line">Starting zookeeper ... STARTED</span><br><span class="line">#</span><br></pre></td></tr></table></figure>
+
+<p>现在可以连接到zookeeper端口上，通过发送四字命令srvr来验证zookeeper是否安装正确。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#telnet localhost 2181</span><br><span class="line">Trying ::1...</span><br><span class="line">Connected to localhost.</span><br><span class="line">Escape character is &#39;^]&#39;.</span><br><span class="line">srvr</span><br><span class="line">Zookeeper version: 3.4.14-4c25d480e66aadd371de8bd2fd8da255ac140bcf, built on 03&#x2F;06&#x2F;2019 16:18 GMT</span><br><span class="line">Latency min&#x2F;avg&#x2F;max: 0&#x2F;0&#x2F;0</span><br><span class="line">Received: 1</span><br><span class="line">Sent: 0</span><br><span class="line">Connections: 1</span><br><span class="line">Outstanding: 0</span><br><span class="line">Zxid: 0x0</span><br><span class="line">Mode: standalone</span><br><span class="line">Node count: 4</span><br><span class="line">Connection closed by foreign host.</span><br></pre></td></tr></table></figure>
+
+<h2 id="Zookeeper群组"><a href="#Zookeeper群组" class="headerlink" title="Zookeeper群组"></a>Zookeeper群组</h2><p>Zookeeper集群被称为Zookeeper群组，Zookeeper使用的是一致性协议，所以每个群组里应该包含奇数个节点。因为只有群组里的大多数节点处于可用状态，zookeeper才能处理外部请求。</p>
+]]></content>
+      <categories>
+        <category>架构</category>
+      </categories>
+      <tags>
+        <tag>zookeeper</tag>
       </tags>
   </entry>
   <entry>
@@ -1471,6 +1631,21 @@ public class EvolutionaryExpiredSessionStrategy implements SessionInformationExp
       </tags>
   </entry>
   <entry>
+    <title>使用jdk自带工具jvisualvm查看.hprof文件</title>
+    <url>/2019/06/10/%E4%BD%BF%E7%94%A8jdk%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7jvisualvm%E6%9F%A5%E7%9C%8B.hprof%E6%96%87%E4%BB%B6/</url>
+    <content><![CDATA[<p>使用jdk自带的jvisualvm.exe程序来查看内存溢出文件</p>
+<p>位置：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$JAVA_HOME&#x2F;bin&#x2F;jvisualvm</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>JVM</category>
+      </categories>
+      <tags>
+        <tag>JVM</tag>
+        <tag>工具</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Spring Security（10）－短信登录开发</title>
     <url>/2019/06/10/Spring%20Security%EF%BC%8810%EF%BC%89%EF%BC%8D%E7%9F%AD%E4%BF%A1%E7%99%BB%E5%BD%95%E5%BC%80%E5%8F%91/</url>
     <content><![CDATA[<p>Spring Security默认没有支持基于短信的认证方式，我们先回顾一下Spring Security开发基于表单的认流程：</p>
@@ -1500,21 +1675,6 @@ http.authenticationProvider(smsCodeAuthenticationProvider)
       </categories>
       <tags>
         <tag>Spring-Security</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用jdk自带工具jvisualvm查看.hprof文件</title>
-    <url>/2019/06/10/%E4%BD%BF%E7%94%A8jdk%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7jvisualvm%E6%9F%A5%E7%9C%8B.hprof%E6%96%87%E4%BB%B6/</url>
-    <content><![CDATA[<p>使用jdk自带的jvisualvm.exe程序来查看内存溢出文件</p>
-<p>位置：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$JAVA_HOME&#x2F;bin&#x2F;jvisualvm</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>JVM</category>
-      </categories>
-      <tags>
-        <tag>JVM</tag>
-        <tag>工具</tag>
       </tags>
   </entry>
   <entry>
@@ -1844,6 +2004,28 @@ public class DemoImageCodeGenerator implements ValidateCodeGenerator {
       </tags>
   </entry>
   <entry>
+    <title>适配器模式</title>
+    <url>/2019/06/06/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p>
+<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/spring%E9%85%8D%E7%BD%AE%E4%BD%BF%E7%94%A8%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8Fdemo.jpg" alt="spring适配器模式demo"></p>
+<h1 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h1><p>将一个类的接口，转换成客户期望的另一个接口。适配器让原本不兼容的接口可以合作无间。</p>
+<h1 id="对象适配器"><a href="#对象适配器" class="headerlink" title="对象适配器"></a>对象适配器</h1><ul>
+<li>采用组合模式</li>
+<li>不仅可以适配某类，还可以适配该类的任何子类。</li>
+</ul>
+<h1 id="类适配器"><a href="#类适配器" class="headerlink" title="类适配器"></a>类适配器</h1><ul>
+<li>采用继承模式</li>
+<li>不需要重新实现整个被适配者，必要的时候可以覆盖被适配者的行为。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Spring Security（6）－图片验证码</title>
     <url>/2019/06/06/Spring%20Security%EF%BC%886%EF%BC%89%EF%BC%8D%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/</url>
     <content><![CDATA[<p>概要：</p>
@@ -2083,25 +2265,44 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
       </tags>
   </entry>
   <entry>
-    <title>适配器模式</title>
-    <url>/2019/06/06/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/</url>
-    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p>
-<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/spring%E9%85%8D%E7%BD%AE%E4%BD%BF%E7%94%A8%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8Fdemo.jpg" alt="spring适配器模式demo"></p>
-<h1 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h1><p>将一个类的接口，转换成客户期望的另一个接口。适配器让原本不兼容的接口可以合作无间。</p>
-<h1 id="对象适配器"><a href="#对象适配器" class="headerlink" title="对象适配器"></a>对象适配器</h1><ul>
-<li>采用组合模式</li>
-<li>不仅可以适配某类，还可以适配该类的任何子类。</li>
-</ul>
-<h1 id="类适配器"><a href="#类适配器" class="headerlink" title="类适配器"></a>类适配器</h1><ul>
-<li>采用继承模式</li>
-<li>不需要重新实现整个被适配者，必要的时候可以覆盖被适配者的行为。</li>
+    <title>Mysql（12）-Mysql事务隔离是如何实现的</title>
+    <url>/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/</url>
+    <content><![CDATA[<h1 id="事务的启动时机。"><a href="#事务的启动时机。" class="headerlink" title="事务的启动时机。"></a>事务的启动时机。</h1><p>begin/start transaction 命令并不是一个事务的起点，在执行到它们之后的第一个操作 InnoDB 表的语句，事务才真正启动。如果你想要马上启动一个事务，可以使用 start transaction with consistent snapshot 这个命令。</p>
+<p>第一种启动方式，一致性视图是在第执行第一个快照读语句时创建的；<br>第二种启动方式，一致性视图是在执行 start transaction with consistent snapshot 时创建的。</p>
+<h1 id="在-MySQL-里，有两个“视图”的概念"><a href="#在-MySQL-里，有两个“视图”的概念" class="headerlink" title="在 MySQL 里，有两个“视图”的概念"></a>在 MySQL 里，有两个“视图”的概念</h1><p>一个是 view。它是一个用查询语句定义的虚拟表，在调用的时候执行查询语句并生成结果。创建视图的语法是 create view … ，而它的查询方法与表一样。</p>
+<p>另一个是 InnoDB 在实现 MVCC 时用到的一致性读视图，即 consistent read view，用于支持 RC（Read Committed，读提交）和 RR（Repeatable Read，可重复读）隔离级别的实现。</p>
+<h1 id="“快照”在-MVCC-里是怎么工作的？"><a href="#“快照”在-MVCC-里是怎么工作的？" class="headerlink" title="“快照”在 MVCC 里是怎么工作的？"></a>“快照”在 MVCC 里是怎么工作的？</h1><p>在可重复读隔离级别下，事务在启动的时候就“拍了个快照”。注意，这个快照是基于整库的。</p>
+<p>InnoDB 里面每个事务有一个唯一的事务 ID，叫作 transaction id。它是在事务开始的时候向 InnoDB 的事务系统申请的，是按申请顺序严格递增的。</p>
+<p>而每行数据也都是有多个版本的。每次事务更新数据的时候，都会生成一个新的数据版本，并且把 transaction id 赋值给这个数据版本的事务 ID，记为 row trx_id。同时，旧的数据版本要保留，并且在新的数据版本中，能够有信息可以直接拿到它。</p>
+<p>也就是说，数据表中的一行记录，其实可能有多个版本 (row)，每个版本有自己的 row trx_id。</p>
+<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg" alt="Mysql数据MVVC"></p>
+<p>中的三个虚线箭头，就是 undo log；而 V1、V2、V3 并不是物理上真实存在的，而是每次需要的时候根据当前版本和 undo log 计算出来的。比如，需要 V2 的时候，就是通过 V4 依次执行 U3、U2 算出来。</p>
+<p>可重复读的定义：一个事务启动的时候，能够看到所有已经提交的事务结果。但是之后，这个事务执行期间，其他事务的更新对它不可见。</p>
+<p>因此，一个事务只需要在启动的时候声明说，“以我启动的时刻为准，如果一个数据版本是在我启动之前生成的，就认；如果是我启动以后才生成的，我就不认，我必须要找到它的上一个版本”。</p>
+<p>一个数据版本，对于一个事务视图来说，除了自己的更新总是可见以外，有三种情况：</p>
+<ol>
+<li>版本未提交，不可见；</li>
+<li>版本已提交，但是是在视图创建后提交的，不可见；</li>
+<li>版本已提交，而且是在视图创建前提交的，可见。</li>
+</ol>
+<p>更新数据都是先读后写的，而这个读，只能读当前的值，称为“当前读”（current read）。</p>
+<p>这里我们提到了一个概念，叫作当前读。其实，除了 update 语句外，select 语句如果加锁，也是当前读。</p>
+<h1 id="事务的可重复读的能力是怎么实现的？"><a href="#事务的可重复读的能力是怎么实现的？" class="headerlink" title="事务的可重复读的能力是怎么实现的？"></a>事务的可重复读的能力是怎么实现的？</h1><p>可重复读的核心就是一致性读（consistent read）；而事务更新数据的时候，只能用当前读。如果当前的记录的行锁被其他事务占用的话，就需要进入锁等待。</p>
+<h1 id="读提交的逻辑和可重复读的区别"><a href="#读提交的逻辑和可重复读的区别" class="headerlink" title="读提交的逻辑和可重复读的区别"></a>读提交的逻辑和可重复读的区别</h1><p>在可重复读隔离级别下，只需要在事务开始的时候创建一致性视图，之后事务里的其他查询都共用这个一致性视图；</p>
+<p>在读提交隔离级别下，每一个语句执行前都会重新算出一个新的视图。</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>InnoDB 的行数据有多个版本，每个数据版本有自己的 row trx_id，每个事务或者语句有自己的一致性视图。普通查询语句是一致性读，一致性读会根据 row trx_id 和一致性视图确定数据版本的可见性。</p>
+<ul>
+<li>对于可重复读，查询只承认在事务启动前就已经提交完成的数据；</li>
+<li>对于读提交，查询只承认在语句启动前就已经提交完成的数据；</li>
+<li>而当前读，总是读取已经提交完成的最新版本。</li>
 </ul>
 ]]></content>
       <categories>
-        <category>设计模式</category>
+        <category>DB</category>
       </categories>
       <tags>
-        <tag>设计模式</tag>
+        <tag>Mysql</tag>
+        <tag>事务</tag>
       </tags>
   </entry>
   <entry>
@@ -2270,47 +2471,6 @@ public Object getCurrentUserToo(@AuthenticationPrincipal UserDetails userDetails
       </tags>
   </entry>
   <entry>
-    <title>Mysql（12）-Mysql事务隔离是如何实现的</title>
-    <url>/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/</url>
-    <content><![CDATA[<h1 id="事务的启动时机。"><a href="#事务的启动时机。" class="headerlink" title="事务的启动时机。"></a>事务的启动时机。</h1><p>begin/start transaction 命令并不是一个事务的起点，在执行到它们之后的第一个操作 InnoDB 表的语句，事务才真正启动。如果你想要马上启动一个事务，可以使用 start transaction with consistent snapshot 这个命令。</p>
-<p>第一种启动方式，一致性视图是在第执行第一个快照读语句时创建的；<br>第二种启动方式，一致性视图是在执行 start transaction with consistent snapshot 时创建的。</p>
-<h1 id="在-MySQL-里，有两个“视图”的概念"><a href="#在-MySQL-里，有两个“视图”的概念" class="headerlink" title="在 MySQL 里，有两个“视图”的概念"></a>在 MySQL 里，有两个“视图”的概念</h1><p>一个是 view。它是一个用查询语句定义的虚拟表，在调用的时候执行查询语句并生成结果。创建视图的语法是 create view … ，而它的查询方法与表一样。</p>
-<p>另一个是 InnoDB 在实现 MVCC 时用到的一致性读视图，即 consistent read view，用于支持 RC（Read Committed，读提交）和 RR（Repeatable Read，可重复读）隔离级别的实现。</p>
-<h1 id="“快照”在-MVCC-里是怎么工作的？"><a href="#“快照”在-MVCC-里是怎么工作的？" class="headerlink" title="“快照”在 MVCC 里是怎么工作的？"></a>“快照”在 MVCC 里是怎么工作的？</h1><p>在可重复读隔离级别下，事务在启动的时候就“拍了个快照”。注意，这个快照是基于整库的。</p>
-<p>InnoDB 里面每个事务有一个唯一的事务 ID，叫作 transaction id。它是在事务开始的时候向 InnoDB 的事务系统申请的，是按申请顺序严格递增的。</p>
-<p>而每行数据也都是有多个版本的。每次事务更新数据的时候，都会生成一个新的数据版本，并且把 transaction id 赋值给这个数据版本的事务 ID，记为 row trx_id。同时，旧的数据版本要保留，并且在新的数据版本中，能够有信息可以直接拿到它。</p>
-<p>也就是说，数据表中的一行记录，其实可能有多个版本 (row)，每个版本有自己的 row trx_id。</p>
-<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg" alt="Mysql数据MVVC"></p>
-<p>中的三个虚线箭头，就是 undo log；而 V1、V2、V3 并不是物理上真实存在的，而是每次需要的时候根据当前版本和 undo log 计算出来的。比如，需要 V2 的时候，就是通过 V4 依次执行 U3、U2 算出来。</p>
-<p>可重复读的定义：一个事务启动的时候，能够看到所有已经提交的事务结果。但是之后，这个事务执行期间，其他事务的更新对它不可见。</p>
-<p>因此，一个事务只需要在启动的时候声明说，“以我启动的时刻为准，如果一个数据版本是在我启动之前生成的，就认；如果是我启动以后才生成的，我就不认，我必须要找到它的上一个版本”。</p>
-<p>一个数据版本，对于一个事务视图来说，除了自己的更新总是可见以外，有三种情况：</p>
-<ol>
-<li>版本未提交，不可见；</li>
-<li>版本已提交，但是是在视图创建后提交的，不可见；</li>
-<li>版本已提交，而且是在视图创建前提交的，可见。</li>
-</ol>
-<p>更新数据都是先读后写的，而这个读，只能读当前的值，称为“当前读”（current read）。</p>
-<p>这里我们提到了一个概念，叫作当前读。其实，除了 update 语句外，select 语句如果加锁，也是当前读。</p>
-<h1 id="事务的可重复读的能力是怎么实现的？"><a href="#事务的可重复读的能力是怎么实现的？" class="headerlink" title="事务的可重复读的能力是怎么实现的？"></a>事务的可重复读的能力是怎么实现的？</h1><p>可重复读的核心就是一致性读（consistent read）；而事务更新数据的时候，只能用当前读。如果当前的记录的行锁被其他事务占用的话，就需要进入锁等待。</p>
-<h1 id="读提交的逻辑和可重复读的区别"><a href="#读提交的逻辑和可重复读的区别" class="headerlink" title="读提交的逻辑和可重复读的区别"></a>读提交的逻辑和可重复读的区别</h1><p>在可重复读隔离级别下，只需要在事务开始的时候创建一致性视图，之后事务里的其他查询都共用这个一致性视图；</p>
-<p>在读提交隔离级别下，每一个语句执行前都会重新算出一个新的视图。</p>
-<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>InnoDB 的行数据有多个版本，每个数据版本有自己的 row trx_id，每个事务或者语句有自己的一致性视图。普通查询语句是一致性读，一致性读会根据 row trx_id 和一致性视图确定数据版本的可见性。</p>
-<ul>
-<li>对于可重复读，查询只承认在事务启动前就已经提交完成的数据；</li>
-<li>对于读提交，查询只承认在语句启动前就已经提交完成的数据；</li>
-<li>而当前读，总是读取已经提交完成的最新版本。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-        <tag>事务</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Spring Security（4）－个性化用户认证流程（二）</title>
     <url>/2019/06/04/Spring%20Security%EF%BC%884%EF%BC%89%EF%BC%8D%E4%B8%AA%E6%80%A7%E5%8C%96%E7%94%A8%E6%88%B7%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%EF%BC%88%E4%BA%8C%EF%BC%89/</url>
     <content><![CDATA[<p>概要：</p>
@@ -2425,44 +2585,6 @@ public class EvolutionaryAuthenticationFailureHandler extends SimpleUrlAuthentic
       </categories>
       <tags>
         <tag>Spring-Security</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Mysql（11）-有意思的Mysql问题</title>
-    <url>/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/</url>
-    <content><![CDATA[<ol>
-<li>当备库用–single-transaciton做逻辑备份的时候,如果主库的binlog传来一个DDL语句会怎样？</li>
-</ol>
-<p>备份操作是一个过程，DDL从主库传过来时，备份过程可能处于不同的阶段，所以DDL对备份的影响也不同。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Q1:SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;</span><br><span class="line">Q2:START TRANSACTION  WITH CONSISTENT SNAPSHOT；</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br><span class="line">Q3:SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 1 *&#x2F;</span><br><span class="line">Q4:show create table &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 2 *&#x2F;</span><br><span class="line">Q5:SELECT * FROM &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 3 *&#x2F;</span><br><span class="line">Q6:ROLLBACK TO SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 4 *&#x2F;</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br></pre></td></tr></table></figure>
-<p>在备份开始的时候，为了确保 RR（可重复读）隔离级别，再设置一次 RR 隔离级别 (Q1);</p>
-<p>启动事务，这里用 WITH CONSISTENT SNAPSHOT 确保这个语句执行完就可以得到一个一致性视图（Q2)；</p>
-<p>设置一个保存点，这个很重要（Q3）；</p>
-<p>show create 是为了拿到表结构 (Q4)，然后正式导数据 （Q5），回滚到 SAVEPOINT sp，在这里的作用是释放 t1 的 MDL 锁 （Q6）。当然这部分属于“超纲”，上文正文里面都没提到。</p>
-<p>答案如下：</p>
-<ul>
-<li><p>如果在 Q4 语句执行之前到达，现象：没有影响，备份拿到的是 DDL 后的表结构。</p>
-</li>
-<li><p>如果在“时刻 2”到达，则表结构被改过，Q5 执行的时候，报 Table definition has changed, please retry transaction，现象：mysqldump 终止；</p>
-</li>
-<li><p>如果在“时刻 2”和“时刻 3”之间到达，mysqldump 占着 t1 的 MDL 读锁，binlog 被阻塞，现象：主从延迟，直到 Q6 执行完成。</p>
-</li>
-<li><p>从“时刻 4”开始，mysqldump 释放了 MDL 读锁，现象：没有影响，备份拿到的是 DDL 前的表结构。</p>
-</li>
-</ul>
-<p>总结就是在拿到表结构之前到达，没影响；在拿到表结构之后，备份数据之前到，会报错；在备份后到达，主从延迟</p>
-<ol start="2">
-<li>Mysql选错索引的一个案例分析<br>//todo 待分析</li>
-</ol>
-<p>在生产上遇见了一个非常经典的Mysql选错索引的问题，简述如下：有一张日志表，id是自增主键，假设还有一个字段是code，code字段也有索引；</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CREATE TABLE IF NOT EXISTS &#96;log_test&#96;(</span><br><span class="line">  &#96;id&#96; INT  AUTO_INCREMENT,</span><br><span class="line">  &#96;key&#96; VARCHAR(100) NOT NULL,</span><br><span class="line">  PRIMARY KEY (&#96;id&#96;),</span><br><span class="line">  index idx_key(&#96;key&#96;)</span><br><span class="line">)ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_unicode_ci;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">delimiter ;;</span><br><span class="line">create procedure idata()</span><br><span class="line">begin</span><br><span class="line">  declare i int;</span><br><span class="line">  set i&#x3D;1;</span><br><span class="line">  while(i&lt;&#x3D;100000)do</span><br><span class="line">    insert into log_test values(i, i);</span><br><span class="line">    set i&#x3D;i+1;</span><br><span class="line">  end while;</span><br><span class="line">end;;</span><br><span class="line">delimiter ;</span><br><span class="line">call idata();</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-        <tag>面试</tag>
       </tags>
   </entry>
   <entry>
@@ -2626,6 +2748,44 @@ evolutionary.security.brower.loginInType=REDIRECT</code></pre>]]></content>
       </categories>
       <tags>
         <tag>Spring-Security</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mysql（11）-有意思的Mysql问题</title>
+    <url>/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<ol>
+<li>当备库用–single-transaciton做逻辑备份的时候,如果主库的binlog传来一个DDL语句会怎样？</li>
+</ol>
+<p>备份操作是一个过程，DDL从主库传过来时，备份过程可能处于不同的阶段，所以DDL对备份的影响也不同。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Q1:SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;</span><br><span class="line">Q2:START TRANSACTION  WITH CONSISTENT SNAPSHOT；</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br><span class="line">Q3:SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 1 *&#x2F;</span><br><span class="line">Q4:show create table &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 2 *&#x2F;</span><br><span class="line">Q5:SELECT * FROM &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 3 *&#x2F;</span><br><span class="line">Q6:ROLLBACK TO SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 4 *&#x2F;</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br></pre></td></tr></table></figure>
+<p>在备份开始的时候，为了确保 RR（可重复读）隔离级别，再设置一次 RR 隔离级别 (Q1);</p>
+<p>启动事务，这里用 WITH CONSISTENT SNAPSHOT 确保这个语句执行完就可以得到一个一致性视图（Q2)；</p>
+<p>设置一个保存点，这个很重要（Q3）；</p>
+<p>show create 是为了拿到表结构 (Q4)，然后正式导数据 （Q5），回滚到 SAVEPOINT sp，在这里的作用是释放 t1 的 MDL 锁 （Q6）。当然这部分属于“超纲”，上文正文里面都没提到。</p>
+<p>答案如下：</p>
+<ul>
+<li><p>如果在 Q4 语句执行之前到达，现象：没有影响，备份拿到的是 DDL 后的表结构。</p>
+</li>
+<li><p>如果在“时刻 2”到达，则表结构被改过，Q5 执行的时候，报 Table definition has changed, please retry transaction，现象：mysqldump 终止；</p>
+</li>
+<li><p>如果在“时刻 2”和“时刻 3”之间到达，mysqldump 占着 t1 的 MDL 读锁，binlog 被阻塞，现象：主从延迟，直到 Q6 执行完成。</p>
+</li>
+<li><p>从“时刻 4”开始，mysqldump 释放了 MDL 读锁，现象：没有影响，备份拿到的是 DDL 前的表结构。</p>
+</li>
+</ul>
+<p>总结就是在拿到表结构之前到达，没影响；在拿到表结构之后，备份数据之前到，会报错；在备份后到达，主从延迟</p>
+<ol start="2">
+<li>Mysql选错索引的一个案例分析<br>//todo 待分析</li>
+</ol>
+<p>在生产上遇见了一个非常经典的Mysql选错索引的问题，简述如下：有一张日志表，id是自增主键，假设还有一个字段是code，code字段也有索引；</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CREATE TABLE IF NOT EXISTS &#96;log_test&#96;(</span><br><span class="line">  &#96;id&#96; INT  AUTO_INCREMENT,</span><br><span class="line">  &#96;key&#96; VARCHAR(100) NOT NULL,</span><br><span class="line">  PRIMARY KEY (&#96;id&#96;),</span><br><span class="line">  index idx_key(&#96;key&#96;)</span><br><span class="line">)ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_unicode_ci;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">delimiter ;;</span><br><span class="line">create procedure idata()</span><br><span class="line">begin</span><br><span class="line">  declare i int;</span><br><span class="line">  set i&#x3D;1;</span><br><span class="line">  while(i&lt;&#x3D;100000)do</span><br><span class="line">    insert into log_test values(i, i);</span><br><span class="line">    set i&#x3D;i+1;</span><br><span class="line">  end while;</span><br><span class="line">end;;</span><br><span class="line">delimiter ;</span><br><span class="line">call idata();</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
+        <tag>面试</tag>
       </tags>
   </entry>
   <entry>
@@ -3611,149 +3771,6 @@ public class SpringBootDemoApplication {
       </tags>
   </entry>
   <entry>
-    <title>Mysql（8）-搞定Mysql字符集及校对规则</title>
-    <url>/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/</url>
-    <content><![CDATA[<h1 id="MySQL的字符集（Character-Set"><a href="#MySQL的字符集（Character-Set" class="headerlink" title="MySQL的字符集（Character Set)"></a>MySQL的字符集（Character Set)</h1><p>关于字符集，之前转载了一篇文章讲的非常好——<a href="">关于字符编码，你所需要知道的（ASCII,Unicode,Utf-8,GB2312…）</a></p>
-<p>常见字符集：</p>
-<ul>
-<li>ASCII字符集：基于罗马字母表的一套字符集，它采用1个字节的低7位表示字符，高位始终为0。</li>
-<li>LATIN1字符集：相对于ASCII字符集做了扩展，仍然使用一个字节表示字符，但启用了高位，扩展了字符集的表示范围。</li>
-<li>GBK字符集：支持中文，字符有一字节编码和两字节编码方式。</li>
-<li>UTF8字符集：Unicode字符集的一种，是计算机科学领域里的一项业界标准，支持了所有国家的文字字符，utf8采用1-4个字节表示字符。</li>
-</ul>
-<h1 id="MySQL与字符集"><a href="#MySQL与字符集" class="headerlink" title="MySQL与字符集"></a>MySQL与字符集</h1><p>查看NySQL系统变量：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| Variable_name            | Value                      |</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| character_set_client     | utf8                       |</span><br><span class="line">| character_set_connection | utf8                       |</span><br><span class="line">| character_set_database   | latin1                     |</span><br><span class="line">| character_set_filesystem | binary                     |</span><br><span class="line">| character_set_results    | utf8                       |</span><br><span class="line">| character_set_server     | latin1                     |</span><br><span class="line">| character_set_system     | utf8                       |</span><br><span class="line">| character_sets_dir       | &#x2F;usr&#x2F;share&#x2F;mysql&#x2F;charsets&#x2F; |</span><br><span class="line">+--------------------------+----------------------------+</span><br></pre></td></tr></table></figure>
-<p>正确使用字符集</p>
-<table>
-<thead>
-<tr>
-<th>参数名</th>
-<th>变量作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>character_set_client</td>
-<td>客户端来源数据使用的字符集</td>
-</tr>
-<tr>
-<td>character_set_connection</td>
-<td>连接层字符集</td>
-</tr>
-<tr>
-<td>character_set_database</td>
-<td>当前选中数据库的默认字符集</td>
-</tr>
-<tr>
-<td>character_set_results</td>
-<td>查询结果字符集</td>
-</tr>
-<tr>
-<td>character_set_server</td>
-<td>默认的内部操作字符集</td>
-</tr>
-<tr>
-<td>character_set_system</td>
-<td>数据元数据（字段名等）字符集</td>
-</tr>
-</tbody></table>
-<p>这些字符集参数的作用说明：</p>
-<ol>
-<li>设置库、表、列字符集<ul>
-<li>建库时，若未明确指定字符集，则采用character_set_server指定的字符集。</li>
-<li>建表时，若未明确指定字符集，则采用当前库所采用的字符集。</li>
-<li>新增时，修改表字段时，若未明确指定字符集，则采用当前表所采用的字符集。</li>
-</ul>
-</li>
-<li>更新查询涉及的字符集变量<ul>
-<li>更新流程字符集转换过程：character_set_client–&gt;character_set_connection–&gt;表字符集。</li>
-<li>查询流程字符集转换过程：表字符集–&gt;character_set_result</li>
-</ul>
-</li>
-<li>character_set_database<ul>
-<li>当前默认数据库的字符集，比如执行use xxx后，当前数据库变为xxx，若xxx的字符集为utf8，那么此变量值就变为utf8(供系统设置，无需人工设置)。</li>
-</ul>
-</li>
-</ol>
-<h1 id="MySQL客户端与字符集"><a href="#MySQL客户端与字符集" class="headerlink" title="MySQL客户端与字符集"></a>MySQL客户端与字符集</h1><p>1.对于输入来说：</p>
-<p>客户端使用的字符集必须通过character_set_client、character_set_connection体现出来：</p>
-<ul>
-<li>在客户端对数据进行编码（Linux：utf8、windows：gbk）</li>
-<li>MySQL接到SQL语句后(比如insert)，发现有字符，询问客户端通过什么方式对字符编码：客户端通过character_set_client参数告知MySQL客户端的编码方式(所以此参数需要正确反映客户端对应的编码)</li>
-<li>当MySQL发现客户端的client所传输的字符集与自己的connection不一样时，会将client的字符集转换为connection的字符集</li>
-<li>MySQL将转换后的编码存储到MySQL表的列上，在存储的时候再判断编码是否与内部存储字符集（按照优先级判断字符集类型）上的编码一致，如果不一致需要再次转换</li>
-</ul>
-<p>2.对于查询来说：</p>
-<p>客户端使用的字符集必须通过character_set_results来体现，服务器询问客户端字符集，通过character_set_results将结果转换为与客户端相同的字符集传递给客户端。(character_set_results默认等于character_set_client)</p>
-<h1 id="字符集常见处理操作"><a href="#字符集常见处理操作" class="headerlink" title="字符集常见处理操作"></a>字符集常见处理操作</h1><p>查看字符集编码设置</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br></pre></td></tr></table></figure>
-
-<p>运行时设置字符集编码</p>
-<p>运行时修改（重启后会失效，如果想要重启后保持不变，需要写进配置文件里）</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; set names &#39;utf8&#39;;</span><br><span class="line"></span><br><span class="line">相当于同时：</span><br><span class="line"></span><br><span class="line">set character_set_client &#x3D; utf8;</span><br><span class="line">set character_set_results &#x3D; utf8;</span><br><span class="line">set character_set_connection &#x3D; utf8;</span><br></pre></td></tr></table></figure>
-<p>修改数据库字符集</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; alter database database_name character set xxx;</span><br></pre></td></tr></table></figure>
-<p>只修改库的字符集，影响后续创建的表的默认定义；对于已创建的表的字符集不受影响。（一般在数据库实现字符集即可，表和列都默认采用数据库的字符集）</p>
-<p>修改表的字符集</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-- 只修改表的字符集，影响后续该表新增列的默认定义，已有列的字符集不受影响。</span><br><span class="line">mysql&gt; alter table table_name character set xxx；</span><br><span class="line"></span><br><span class="line">-- 同时修改表字符集和已有列字符集，并将已有数据进行字符集编码转换。</span><br><span class="line">mysql&gt; alter table table_name convert to character set xxx;</span><br></pre></td></tr></table></figure>
-<p>修改列的字符集</p>
-<p>格式：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ALTER TABLE table_name MODIFY</span><br><span class="line">column_name &#123;CHAR | VARCHAR | TEXT&#125; (column_length)</span><br><span class="line">    [CHARACTER SET charset_name]</span><br><span class="line">    [COLLATE collation_name]</span><br><span class="line">mysql&gt; alter table table_name modify col_name varchar(col_length) character set xxx;</span><br></pre></td></tr></table></figure>
-<p>启动服务时指定字符集</p>
-<p>可以在MySQL服务启动时，指定server字符集、字符序。如不指定，默认的字符序分别为latin1、latin1_swedish_ci</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1 \</span><br><span class="line">       --collation-server&#x3D;latin1_swedish_ci</span><br></pre></td></tr></table></figure>
-<p>单独指定server字符集，此时，server字符序为latin1的默认字符序latin1_swedish_ci。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1</span><br></pre></td></tr></table></figure>
-<p>配置文件指定字符集</p>
-<p>除了在命令行参数里指定，也可以在配置文件里指定，如下所示。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysql]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">collation-server &#x3D; utf8_unicode_ci</span><br><span class="line">init-connect&#x3D;&#39;SET NAMES utf8&#39;</span><br><span class="line">character-set-server &#x3D; utf8</span><br></pre></td></tr></table></figure>
-<p>字符集的正确实践<br>MySQL软件工具本身是没有字符集的，主要是因为工具所在的OS的字符集（Windows：gbk、Linux：utf8），所以字符集的正确实践非常重要：</p>
-<ol>
-<li>对于insert来说，character_set_client、character_set_connection相同，而且正确反映客户端使用的字符集</li>
-<li>对于select来说，character_set_results正确反映客户端字符集</li>
-<li>数据库字符集取决于我们要存储的字符类型</li>
-<li>字符集转换最多发生一次，这就要求character_set_client、character_set_connection相同</li>
-<li>所有的字符集转换都发生在数据库端</li>
-</ol>
-<p>综述：</p>
-<ol>
-<li>建立数据库的时候注意字符集（gbk、utf8）；</li>
-<li>连接数据库以后，无论是执行dml还是select，只要涉及到varchar、char列，就需要设置正确的字符集参数。</li>
-</ol>
-<h1 id="MySQL的校对规则"><a href="#MySQL的校对规则" class="headerlink" title="MySQL的校对规则"></a>MySQL的校对规则</h1><p>字符集是一套符号和对应的编号</p>
-<ol start="4">
-<li><p>查看数据库支持的所有字符集(charset)：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show character set;</span><br></pre></td></tr></table></figure>
-<p>校对规则(collation)是在字符集内用于字符比较和排序的一套规则，比如有的规则区分大小写，有的则无视。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; create table t1(id int,name varchar(20)); -- t1建表没有指定校对规则</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    1 | A    |</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
-<p>查看数据库支持的校对规则</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show collation;</span><br></pre></td></tr></table></figure>
-<p>查看当前字符集和校对规则设置</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; mysql&gt; show variables like &#39;collation_%&#39;;</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| Variable_name        | Value             |</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| collation_connection | utf8_general_ci   |</span><br><span class="line">| collation_database   | utf8_general_ci   |</span><br><span class="line">| collation_server     | latin1_swedish_ci |</span><br><span class="line">+----------------------+-------------------+</span><br></pre></td></tr></table></figure>
-<p>校对规则特征：</p>
-</li>
-<li><p>两个不同的字符集不能有相同的校对规则；</p>
-</li>
-<li><p>每个字符集有一个默认校对规则；</p>
-</li>
-<li><p>存在校对规则命名约定：以其相关的字符集名开始，中间包括一个语言名，并且以_ci（大小写不敏感）、_cs（大小写敏感）或_bin（二元）结束。<br>注意：</p>
-</li>
-</ol>
-<p>系统使用utf8字符集，若使用utf8_bin校对规则执行SQL查询时区分大小写，使用utf8_general_ci不区分大小写(默认的utf8字符集对应的校对规则是utf8_general_ci)。</p>
-<p>示例：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; create table t2(id int,name varchar(20)) character set&#x3D;utf8 collate&#x3D;utf8_bin;</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line"></span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
-<p>相关连接</p>
-<p><a href="https://www.cnblogs.com/chyingp/p/mysql-character-set-collation.html" target="_blank" rel="noopener">再见乱码：5分钟读懂MySQL字符集设置</a></p>
-<p><a href="https://www.cnblogs.com/geaozhang/p/6724393.html" target="_blank" rel="noopener">MySQL字符集及校对规则的理解</a></p>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-        <tag>编码</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Redis02-命令速查</title>
     <url>/2019/04/06/Redis02-%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/</url>
     <content><![CDATA[<h1 id="过期时间"><a href="#过期时间" class="headerlink" title="过期时间"></a>过期时间</h1><pre><code>127.0.0.1:6379&gt; SET expirecode foo
@@ -3984,6 +4001,149 @@ hgetall(key)：返回名称为key的hash中所有的键（field）及其对应�
       </categories>
       <tags>
         <tag>maven</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mysql（8）-搞定Mysql字符集及校对规则</title>
+    <url>/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/</url>
+    <content><![CDATA[<h1 id="MySQL的字符集（Character-Set"><a href="#MySQL的字符集（Character-Set" class="headerlink" title="MySQL的字符集（Character Set)"></a>MySQL的字符集（Character Set)</h1><p>关于字符集，之前转载了一篇文章讲的非常好——<a href="">关于字符编码，你所需要知道的（ASCII,Unicode,Utf-8,GB2312…）</a></p>
+<p>常见字符集：</p>
+<ul>
+<li>ASCII字符集：基于罗马字母表的一套字符集，它采用1个字节的低7位表示字符，高位始终为0。</li>
+<li>LATIN1字符集：相对于ASCII字符集做了扩展，仍然使用一个字节表示字符，但启用了高位，扩展了字符集的表示范围。</li>
+<li>GBK字符集：支持中文，字符有一字节编码和两字节编码方式。</li>
+<li>UTF8字符集：Unicode字符集的一种，是计算机科学领域里的一项业界标准，支持了所有国家的文字字符，utf8采用1-4个字节表示字符。</li>
+</ul>
+<h1 id="MySQL与字符集"><a href="#MySQL与字符集" class="headerlink" title="MySQL与字符集"></a>MySQL与字符集</h1><p>查看NySQL系统变量：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| Variable_name            | Value                      |</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| character_set_client     | utf8                       |</span><br><span class="line">| character_set_connection | utf8                       |</span><br><span class="line">| character_set_database   | latin1                     |</span><br><span class="line">| character_set_filesystem | binary                     |</span><br><span class="line">| character_set_results    | utf8                       |</span><br><span class="line">| character_set_server     | latin1                     |</span><br><span class="line">| character_set_system     | utf8                       |</span><br><span class="line">| character_sets_dir       | &#x2F;usr&#x2F;share&#x2F;mysql&#x2F;charsets&#x2F; |</span><br><span class="line">+--------------------------+----------------------------+</span><br></pre></td></tr></table></figure>
+<p>正确使用字符集</p>
+<table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>变量作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>character_set_client</td>
+<td>客户端来源数据使用的字符集</td>
+</tr>
+<tr>
+<td>character_set_connection</td>
+<td>连接层字符集</td>
+</tr>
+<tr>
+<td>character_set_database</td>
+<td>当前选中数据库的默认字符集</td>
+</tr>
+<tr>
+<td>character_set_results</td>
+<td>查询结果字符集</td>
+</tr>
+<tr>
+<td>character_set_server</td>
+<td>默认的内部操作字符集</td>
+</tr>
+<tr>
+<td>character_set_system</td>
+<td>数据元数据（字段名等）字符集</td>
+</tr>
+</tbody></table>
+<p>这些字符集参数的作用说明：</p>
+<ol>
+<li>设置库、表、列字符集<ul>
+<li>建库时，若未明确指定字符集，则采用character_set_server指定的字符集。</li>
+<li>建表时，若未明确指定字符集，则采用当前库所采用的字符集。</li>
+<li>新增时，修改表字段时，若未明确指定字符集，则采用当前表所采用的字符集。</li>
+</ul>
+</li>
+<li>更新查询涉及的字符集变量<ul>
+<li>更新流程字符集转换过程：character_set_client–&gt;character_set_connection–&gt;表字符集。</li>
+<li>查询流程字符集转换过程：表字符集–&gt;character_set_result</li>
+</ul>
+</li>
+<li>character_set_database<ul>
+<li>当前默认数据库的字符集，比如执行use xxx后，当前数据库变为xxx，若xxx的字符集为utf8，那么此变量值就变为utf8(供系统设置，无需人工设置)。</li>
+</ul>
+</li>
+</ol>
+<h1 id="MySQL客户端与字符集"><a href="#MySQL客户端与字符集" class="headerlink" title="MySQL客户端与字符集"></a>MySQL客户端与字符集</h1><p>1.对于输入来说：</p>
+<p>客户端使用的字符集必须通过character_set_client、character_set_connection体现出来：</p>
+<ul>
+<li>在客户端对数据进行编码（Linux：utf8、windows：gbk）</li>
+<li>MySQL接到SQL语句后(比如insert)，发现有字符，询问客户端通过什么方式对字符编码：客户端通过character_set_client参数告知MySQL客户端的编码方式(所以此参数需要正确反映客户端对应的编码)</li>
+<li>当MySQL发现客户端的client所传输的字符集与自己的connection不一样时，会将client的字符集转换为connection的字符集</li>
+<li>MySQL将转换后的编码存储到MySQL表的列上，在存储的时候再判断编码是否与内部存储字符集（按照优先级判断字符集类型）上的编码一致，如果不一致需要再次转换</li>
+</ul>
+<p>2.对于查询来说：</p>
+<p>客户端使用的字符集必须通过character_set_results来体现，服务器询问客户端字符集，通过character_set_results将结果转换为与客户端相同的字符集传递给客户端。(character_set_results默认等于character_set_client)</p>
+<h1 id="字符集常见处理操作"><a href="#字符集常见处理操作" class="headerlink" title="字符集常见处理操作"></a>字符集常见处理操作</h1><p>查看字符集编码设置</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br></pre></td></tr></table></figure>
+
+<p>运行时设置字符集编码</p>
+<p>运行时修改（重启后会失效，如果想要重启后保持不变，需要写进配置文件里）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; set names &#39;utf8&#39;;</span><br><span class="line"></span><br><span class="line">相当于同时：</span><br><span class="line"></span><br><span class="line">set character_set_client &#x3D; utf8;</span><br><span class="line">set character_set_results &#x3D; utf8;</span><br><span class="line">set character_set_connection &#x3D; utf8;</span><br></pre></td></tr></table></figure>
+<p>修改数据库字符集</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; alter database database_name character set xxx;</span><br></pre></td></tr></table></figure>
+<p>只修改库的字符集，影响后续创建的表的默认定义；对于已创建的表的字符集不受影响。（一般在数据库实现字符集即可，表和列都默认采用数据库的字符集）</p>
+<p>修改表的字符集</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-- 只修改表的字符集，影响后续该表新增列的默认定义，已有列的字符集不受影响。</span><br><span class="line">mysql&gt; alter table table_name character set xxx；</span><br><span class="line"></span><br><span class="line">-- 同时修改表字符集和已有列字符集，并将已有数据进行字符集编码转换。</span><br><span class="line">mysql&gt; alter table table_name convert to character set xxx;</span><br></pre></td></tr></table></figure>
+<p>修改列的字符集</p>
+<p>格式：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ALTER TABLE table_name MODIFY</span><br><span class="line">column_name &#123;CHAR | VARCHAR | TEXT&#125; (column_length)</span><br><span class="line">    [CHARACTER SET charset_name]</span><br><span class="line">    [COLLATE collation_name]</span><br><span class="line">mysql&gt; alter table table_name modify col_name varchar(col_length) character set xxx;</span><br></pre></td></tr></table></figure>
+<p>启动服务时指定字符集</p>
+<p>可以在MySQL服务启动时，指定server字符集、字符序。如不指定，默认的字符序分别为latin1、latin1_swedish_ci</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1 \</span><br><span class="line">       --collation-server&#x3D;latin1_swedish_ci</span><br></pre></td></tr></table></figure>
+<p>单独指定server字符集，此时，server字符序为latin1的默认字符序latin1_swedish_ci。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1</span><br></pre></td></tr></table></figure>
+<p>配置文件指定字符集</p>
+<p>除了在命令行参数里指定，也可以在配置文件里指定，如下所示。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysql]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">collation-server &#x3D; utf8_unicode_ci</span><br><span class="line">init-connect&#x3D;&#39;SET NAMES utf8&#39;</span><br><span class="line">character-set-server &#x3D; utf8</span><br></pre></td></tr></table></figure>
+<p>字符集的正确实践<br>MySQL软件工具本身是没有字符集的，主要是因为工具所在的OS的字符集（Windows：gbk、Linux：utf8），所以字符集的正确实践非常重要：</p>
+<ol>
+<li>对于insert来说，character_set_client、character_set_connection相同，而且正确反映客户端使用的字符集</li>
+<li>对于select来说，character_set_results正确反映客户端字符集</li>
+<li>数据库字符集取决于我们要存储的字符类型</li>
+<li>字符集转换最多发生一次，这就要求character_set_client、character_set_connection相同</li>
+<li>所有的字符集转换都发生在数据库端</li>
+</ol>
+<p>综述：</p>
+<ol>
+<li>建立数据库的时候注意字符集（gbk、utf8）；</li>
+<li>连接数据库以后，无论是执行dml还是select，只要涉及到varchar、char列，就需要设置正确的字符集参数。</li>
+</ol>
+<h1 id="MySQL的校对规则"><a href="#MySQL的校对规则" class="headerlink" title="MySQL的校对规则"></a>MySQL的校对规则</h1><p>字符集是一套符号和对应的编号</p>
+<ol start="4">
+<li><p>查看数据库支持的所有字符集(charset)：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show character set;</span><br></pre></td></tr></table></figure>
+<p>校对规则(collation)是在字符集内用于字符比较和排序的一套规则，比如有的规则区分大小写，有的则无视。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; create table t1(id int,name varchar(20)); -- t1建表没有指定校对规则</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    1 | A    |</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
+<p>查看数据库支持的校对规则</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show collation;</span><br></pre></td></tr></table></figure>
+<p>查看当前字符集和校对规则设置</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; mysql&gt; show variables like &#39;collation_%&#39;;</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| Variable_name        | Value             |</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| collation_connection | utf8_general_ci   |</span><br><span class="line">| collation_database   | utf8_general_ci   |</span><br><span class="line">| collation_server     | latin1_swedish_ci |</span><br><span class="line">+----------------------+-------------------+</span><br></pre></td></tr></table></figure>
+<p>校对规则特征：</p>
+</li>
+<li><p>两个不同的字符集不能有相同的校对规则；</p>
+</li>
+<li><p>每个字符集有一个默认校对规则；</p>
+</li>
+<li><p>存在校对规则命名约定：以其相关的字符集名开始，中间包括一个语言名，并且以_ci（大小写不敏感）、_cs（大小写敏感）或_bin（二元）结束。<br>注意：</p>
+</li>
+</ol>
+<p>系统使用utf8字符集，若使用utf8_bin校对规则执行SQL查询时区分大小写，使用utf8_general_ci不区分大小写(默认的utf8字符集对应的校对规则是utf8_general_ci)。</p>
+<p>示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; create table t2(id int,name varchar(20)) character set&#x3D;utf8 collate&#x3D;utf8_bin;</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line"></span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
+<p>相关连接</p>
+<p><a href="https://www.cnblogs.com/chyingp/p/mysql-character-set-collation.html" target="_blank" rel="noopener">再见乱码：5分钟读懂MySQL字符集设置</a></p>
+<p><a href="https://www.cnblogs.com/geaozhang/p/6724393.html" target="_blank" rel="noopener">MySQL字符集及校对规则的理解</a></p>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
+        <tag>编码</tag>
       </tags>
   </entry>
   <entry>
@@ -4297,6 +4457,28 @@ OK
       </tags>
   </entry>
   <entry>
+    <title>Mysql（5）-数据库索引（必知必会）</title>
+    <url>/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/</url>
+    <content><![CDATA[<h2 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h2><p>二级索引已经“覆盖了”我们的查询需求，不需要再回表查整行记录，我们称为覆盖索引。</p>
+<p>覆盖索引可以减少树的搜索次数，显著提升查询性能，所以使用覆盖索引是一个常用的性能优化手段。</p>
+<h2 id="最左前缀原则"><a href="#最左前缀原则" class="headerlink" title="最左前缀原则"></a>最左前缀原则</h2><p>索引项是按照索引定义里面出现的字段顺序排序的。正因为如此根据最左前缀，我们找到第一条数据位置，然后遍历到最后一条匹配到最左前缀的就可以了（因为按照顺序相同最左前缀的都排在一块）。</p>
+<p>不只是索引的全部定义，只要满足最左前缀，就可以利用索引来加速检索。这个最左前缀可以是联合索引的最左 N 个字段，也可以是字符串索引的最左 M 个字符。</p>
+<h3 id="在建立联合索引的时候，如何安排索引内的字段顺序。"><a href="#在建立联合索引的时候，如何安排索引内的字段顺序。" class="headerlink" title="在建立联合索引的时候，如何安排索引内的字段顺序。"></a>在建立联合索引的时候，如何安排索引内的字段顺序。</h3><p>第一原则是，如果通过调整顺序，可以少维护一个索引，那么这个顺序往往就是需要优先考虑采用的。提高索引的复用能力，比如根据最左前缀原则，当已经有了 (a,b)这个联合索引后，一般就不需要单独在 a 上建立索引了。</p>
+<p>第二原则，考虑的是空间。</p>
+<p>如果a，b要建联合索引，且单查a或b的时候都要走索引，那么就要再a或b上再加一个索引，此时就要考虑空间。比如a字段b字段更占空间那就建一个（a，b）的联合索引和一个b的索引。</p>
+<h2 id="索引下推"><a href="#索引下推" class="headerlink" title="索引下推"></a>索引下推</h2><p>MySQL 5.6引入的索引下推优化（index condition pushdown)，可以在索引遍历过程中，对索引中包含的字段先做判断，直接过滤掉不满足条件的记录，减少回表次数。</p>
+<h2 id="重建索引"><a href="#重建索引" class="headerlink" title="重建索引"></a>重建索引</h2><p>索引可能因为删除，或者页分裂等原因，导致数据页有空洞，重建索引的过程会创建一个新的索引，把数据按顺序插入，这样页面的利用率最高，也就是索引更紧凑、更省空间。</p>
+<h3 id="重建二级索引索引"><a href="#重建二级索引索引" class="headerlink" title="重建二级索引索引"></a>重建二级索引索引</h3><p>alter table T drop index k;<br>alter table T add index(k);</p>
+<h3 id="重建主键索引："><a href="#重建主键索引：" class="headerlink" title="重建主键索引："></a>重建主键索引：</h3><p>alter table T engine=InnoDB</p>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Mysql（6）-数据库索引（数据结构）</title>
     <url>/2019/03/28/Mysql%EF%BC%886%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%89/</url>
     <content><![CDATA[<h2 id="索引的作用"><a href="#索引的作用" class="headerlink" title="索引的作用"></a>索引的作用</h2><p>索引是为了提高数据库的查询效率。</p>
@@ -4339,28 +4521,6 @@ OK
 <li>该索引是唯一索引</li>
 </ol>
 <p>就是典型的 KV 场景。由于没有其他索引，所以也就不用考虑其他索引的叶子节点大小的问题。</p>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Mysql（5）-数据库索引（必知必会）</title>
-    <url>/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/</url>
-    <content><![CDATA[<h2 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h2><p>二级索引已经“覆盖了”我们的查询需求，不需要再回表查整行记录，我们称为覆盖索引。</p>
-<p>覆盖索引可以减少树的搜索次数，显著提升查询性能，所以使用覆盖索引是一个常用的性能优化手段。</p>
-<h2 id="最左前缀原则"><a href="#最左前缀原则" class="headerlink" title="最左前缀原则"></a>最左前缀原则</h2><p>索引项是按照索引定义里面出现的字段顺序排序的。正因为如此根据最左前缀，我们找到第一条数据位置，然后遍历到最后一条匹配到最左前缀的就可以了（因为按照顺序相同最左前缀的都排在一块）。</p>
-<p>不只是索引的全部定义，只要满足最左前缀，就可以利用索引来加速检索。这个最左前缀可以是联合索引的最左 N 个字段，也可以是字符串索引的最左 M 个字符。</p>
-<h3 id="在建立联合索引的时候，如何安排索引内的字段顺序。"><a href="#在建立联合索引的时候，如何安排索引内的字段顺序。" class="headerlink" title="在建立联合索引的时候，如何安排索引内的字段顺序。"></a>在建立联合索引的时候，如何安排索引内的字段顺序。</h3><p>第一原则是，如果通过调整顺序，可以少维护一个索引，那么这个顺序往往就是需要优先考虑采用的。提高索引的复用能力，比如根据最左前缀原则，当已经有了 (a,b)这个联合索引后，一般就不需要单独在 a 上建立索引了。</p>
-<p>第二原则，考虑的是空间。</p>
-<p>如果a，b要建联合索引，且单查a或b的时候都要走索引，那么就要再a或b上再加一个索引，此时就要考虑空间。比如a字段b字段更占空间那就建一个（a，b）的联合索引和一个b的索引。</p>
-<h2 id="索引下推"><a href="#索引下推" class="headerlink" title="索引下推"></a>索引下推</h2><p>MySQL 5.6引入的索引下推优化（index condition pushdown)，可以在索引遍历过程中，对索引中包含的字段先做判断，直接过滤掉不满足条件的记录，减少回表次数。</p>
-<h2 id="重建索引"><a href="#重建索引" class="headerlink" title="重建索引"></a>重建索引</h2><p>索引可能因为删除，或者页分裂等原因，导致数据页有空洞，重建索引的过程会创建一个新的索引，把数据按顺序插入，这样页面的利用率最高，也就是索引更紧凑、更省空间。</p>
-<h3 id="重建二级索引索引"><a href="#重建二级索引索引" class="headerlink" title="重建二级索引索引"></a>重建二级索引索引</h3><p>alter table T drop index k;<br>alter table T add index(k);</p>
-<h3 id="重建主键索引："><a href="#重建主键索引：" class="headerlink" title="重建主键索引："></a>重建主键索引：</h3><p>alter table T engine=InnoDB</p>
 ]]></content>
       <categories>
         <category>DB</category>
@@ -5176,47 +5336,6 @@ echo $PATH  //记录命令的搜索路径</code></pre></li>
       </categories>
   </entry>
   <entry>
-    <title>Linux使用私钥公钥(Public key)登录 - 免密码登录</title>
-    <url>/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/</url>
-    <content><![CDATA[<p>为了更安全、方便的登录Linux服务器，可以取消密码登录，使用私钥公钥的方式来登录，更方便也更安全。</p>
-<h1 id="生成密钥（客户端机器）"><a href="#生成密钥（客户端机器）" class="headerlink" title="生成密钥（客户端机器）"></a>生成密钥（客户端机器）</h1><pre><code>ssh-keygen -t [rsa|dsa] -P &apos;&apos;</code></pre><p>直接ssh-keygen然后三次回车就可以了。<br>-P表示密码，-P ‘’ 就表示空密码，也可以不用-P参数，这样就要三车回车，用-P就一次回车。<br>它在/home/chenlb下生成.ssh目录，.ssh下有id_rsa和id_rsa.pub这样一对公私钥。</p>
-<h1 id="上传公钥到服务器端"><a href="#上传公钥到服务器端" class="headerlink" title="上传公钥到服务器端"></a>上传公钥到服务器端</h1><p>先在服务器对应用户目录下创建~/.ssh/authorized_keys目录（如果目录已存在，这一步会被略过）</p>
-<p>ssh richey@host mkdir -p .ssh/authorized_keys</p>
-<p>把客户端的公钥_rsa.pub复制到服务器端机器的.ssh/authorized_keys文件里</p>
-<pre><code>* 可以用scp复制到服务器，然后再从服务器中把从客户端复制的id_rsa.pub添加到.ssh/authorzied_keys文件里。
-
-    scp .ssh/id_rsa.pub  richey@45.xx.xx.16:/home/richey/id_rsa.pub
-
-* 或者
-
-    cat .ssh/id_rsa.pub | ssh richey@hostB &apos;cat &gt;&gt; .ssh/authorized_keys&apos;</code></pre><ul>
-<li><p>上述的创建目录并复制的操作也可以通过一个 ssh-copy-id 命令一步完成：    </p>
-<pre><code>ssh-copy-id -i ~/.ssh/id_rsa.pub aliceB@hostB</code></pre></li>
-<li><p>authorized_keys的权限要是600。</p>
-<pre><code>chmod 600 .ssh/authorized_keys</code></pre></li>
-</ul>
-<h1 id="修改SSH的配置文件"><a href="#修改SSH的配置文件" class="headerlink" title="修改SSH的配置文件"></a>修改SSH的配置文件</h1><p>配置文件位置</p>
-<pre><code>/etc/ssh/sshd_config :
-
-#RSAAuthentication yes
-#PubkeyAuthentication yes
-#AuthorizedKeysFile .ssh/authorized_keys</code></pre><p>去调上面3行前面的#，保存后重启SSH服务。</p>
-<pre><code>使用SYSVINIT初始化系统的Linux系统：service sshd restart
-使用SYSTEMD初始化系统的Linux系统：systemctl restart sshd</code></pre><p>至此服务器端已经支持使用SSH私钥证书登录。</p>
-<h1 id="关闭root用户使用密码登陆"><a href="#关闭root用户使用密码登陆" class="headerlink" title="关闭root用户使用密码登陆"></a>关闭root用户使用密码登陆</h1><p>在使用SSH Key登录验证成功后，还是为了安全，建议关闭root用户使用密码登陆，关闭的方法如下：</p>
-<p>修改SSH的配置文件/etc/ssh/sshd_config，找到下面1行：</p>
-<pre><code>PasswordAuthentication yes</code></pre><p>修改为：</p>
-<pre><code>PasswordAuthentication no</code></pre><p>保存后重启SSH服务。</p>
-<pre><code>service sshd restart</code></pre><p>好了，至此只要你保存好你的私钥（为安全，建议删除服务器端的私钥），你的服务器相比原来使用root用户加密码登陆来说已经安全多了。</p>
-]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
-      <tags>
-        <tag>ssh</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Linux常用命令</title>
     <url>/2019/03/12/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
     <content><![CDATA[<h4 id="1、查找文件"><a href="#1、查找文件" class="headerlink" title="1、查找文件"></a>1、查找文件</h4><pre><code>find . -name &quot;*.xml&quot; 递归查找所有的xml文件
@@ -5262,6 +5381,47 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
       <categories>
         <category>Linux</category>
       </categories>
+  </entry>
+  <entry>
+    <title>Linux使用私钥公钥(Public key)登录 - 免密码登录</title>
+    <url>/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/</url>
+    <content><![CDATA[<p>为了更安全、方便的登录Linux服务器，可以取消密码登录，使用私钥公钥的方式来登录，更方便也更安全。</p>
+<h1 id="生成密钥（客户端机器）"><a href="#生成密钥（客户端机器）" class="headerlink" title="生成密钥（客户端机器）"></a>生成密钥（客户端机器）</h1><pre><code>ssh-keygen -t [rsa|dsa] -P &apos;&apos;</code></pre><p>直接ssh-keygen然后三次回车就可以了。<br>-P表示密码，-P ‘’ 就表示空密码，也可以不用-P参数，这样就要三车回车，用-P就一次回车。<br>它在/home/chenlb下生成.ssh目录，.ssh下有id_rsa和id_rsa.pub这样一对公私钥。</p>
+<h1 id="上传公钥到服务器端"><a href="#上传公钥到服务器端" class="headerlink" title="上传公钥到服务器端"></a>上传公钥到服务器端</h1><p>先在服务器对应用户目录下创建~/.ssh/authorized_keys目录（如果目录已存在，这一步会被略过）</p>
+<p>ssh richey@host mkdir -p .ssh/authorized_keys</p>
+<p>把客户端的公钥_rsa.pub复制到服务器端机器的.ssh/authorized_keys文件里</p>
+<pre><code>* 可以用scp复制到服务器，然后再从服务器中把从客户端复制的id_rsa.pub添加到.ssh/authorzied_keys文件里。
+
+    scp .ssh/id_rsa.pub  richey@45.xx.xx.16:/home/richey/id_rsa.pub
+
+* 或者
+
+    cat .ssh/id_rsa.pub | ssh richey@hostB &apos;cat &gt;&gt; .ssh/authorized_keys&apos;</code></pre><ul>
+<li><p>上述的创建目录并复制的操作也可以通过一个 ssh-copy-id 命令一步完成：    </p>
+<pre><code>ssh-copy-id -i ~/.ssh/id_rsa.pub aliceB@hostB</code></pre></li>
+<li><p>authorized_keys的权限要是600。</p>
+<pre><code>chmod 600 .ssh/authorized_keys</code></pre></li>
+</ul>
+<h1 id="修改SSH的配置文件"><a href="#修改SSH的配置文件" class="headerlink" title="修改SSH的配置文件"></a>修改SSH的配置文件</h1><p>配置文件位置</p>
+<pre><code>/etc/ssh/sshd_config :
+
+#RSAAuthentication yes
+#PubkeyAuthentication yes
+#AuthorizedKeysFile .ssh/authorized_keys</code></pre><p>去调上面3行前面的#，保存后重启SSH服务。</p>
+<pre><code>使用SYSVINIT初始化系统的Linux系统：service sshd restart
+使用SYSTEMD初始化系统的Linux系统：systemctl restart sshd</code></pre><p>至此服务器端已经支持使用SSH私钥证书登录。</p>
+<h1 id="关闭root用户使用密码登陆"><a href="#关闭root用户使用密码登陆" class="headerlink" title="关闭root用户使用密码登陆"></a>关闭root用户使用密码登陆</h1><p>在使用SSH Key登录验证成功后，还是为了安全，建议关闭root用户使用密码登陆，关闭的方法如下：</p>
+<p>修改SSH的配置文件/etc/ssh/sshd_config，找到下面1行：</p>
+<pre><code>PasswordAuthentication yes</code></pre><p>修改为：</p>
+<pre><code>PasswordAuthentication no</code></pre><p>保存后重启SSH服务。</p>
+<pre><code>service sshd restart</code></pre><p>好了，至此只要你保存好你的私钥（为安全，建议删除服务器端的私钥），你的服务器相比原来使用root用户加密码登陆来说已经安全多了。</p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>ssh</tag>
+      </tags>
   </entry>
   <entry>
     <title>Linux下iptables 禁止端口和开放端口</title>
@@ -5325,31 +5485,24 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
       </tags>
   </entry>
   <entry>
-    <title>Java基础</title>
-    <url>/2019/03/08/Java%E5%9F%BA%E7%A1%80/</url>
-    <content><![CDATA[<h1 id="HashMap、Hashtable、ConcurrentHashMap的原理与区别"><a href="#HashMap、Hashtable、ConcurrentHashMap的原理与区别" class="headerlink" title="HashMap、Hashtable、ConcurrentHashMap的原理与区别"></a>HashMap、Hashtable、ConcurrentHashMap的原理与区别</h1><h2 id="简述HashMap实现原理"><a href="#简述HashMap实现原理" class="headerlink" title="简述HashMap实现原理"></a>简述HashMap实现原理</h2><p>HashMap的底层是通过数组和链表实现的。其实就是维护了一个数组，put操作的时候根据key的哈希值和数组的长度（具体看源码）算出下标，判断该位置有没有对象，没有的话直接创建一个Entry对象（该对象保存了key，hash，value，下标等属性），如果有对象则判断是否有hash冲突（不同的key，但是hash值相同），有冲突则则该闻之用链表存储。</p>
-<p>todo：源码分析</p>
-<p>注意：</p>
-<ul>
-<li>HashMap的key和value都允许是null；</li>
-<li>当put后数量大于等于当前容量*加载因子的时候，就需要扩容，扩容需要数组复制，是非常耗时的，所以如果我们已经预知HashMap中元素的个数，那么预设元素的个数能够有效的提高HashMap的性能；</li>
+    <title>hexo命令</title>
+    <url>/2019/03/08/hexo%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<ul>
+<li><p>hexo g 生成静态文件</p>
+</li>
+<li><p>hexo s 启动本地服务</p>
+</li>
+<li><p>hexo clean 清除缓存文件(db.json)和已生成的静态文件(public)</p>
+</li>
+<li><p>hexo g -d 生成文件并部署到github</p>
+</li>
 </ul>
-<p>思考：<br>如果我们创建HashMap的时候指定了初始大小等于我们希望放入对象的数量，是不是就不会产生扩容？（如果不修改加载因子，仍会产生扩容）</p>
-<h2 id="HashTale与HashMap的区别"><a href="#HashTale与HashMap的区别" class="headerlink" title="HashTale与HashMap的区别"></a>HashTale与HashMap的区别</h2><ul>
-<li>HashTable同HashMap的实现差别不大，  同样是基于哈希表通过数组和链表实现的，同样每个元素是一个key-value对，其内部也是通过单链表解决冲突问题，容量不足（超过了阀值）时，同样会自动增长。</li>
-</ul>
-<h2 id="HashTable与ConcurrentHashMap的区别"><a href="#HashTable与ConcurrentHashMap的区别" class="headerlink" title="HashTable与ConcurrentHashMap的区别"></a>HashTable与ConcurrentHashMap的区别</h2><ul>
-<li>不同点在于HashTable是线程安全的，因为它每个方法中都加入了Synchronize。</li>
-<li>ConcurrentHashMap是HashTable的代替，底层采用分段的数组+链表实现，线程安全。</li>
-<li>通过把整个Map分为N个Segment，可以提供相同的线程安全，但是效率提升N倍，默认提升16倍。(读操作不加锁，由于HashEntry的value变量是 volatile的，也能保证读取到最新的值。)</li>
-</ul>
-<h1 id="volatile的作用"><a href="#volatile的作用" class="headerlink" title="volatile的作用"></a>volatile的作用</h1><h1 id="Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的"><a href="#Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的" class="headerlink" title="Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的"></a>Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的</h1><h1 id="Atomic类如何保证原子操作（CAS操作）"><a href="#Atomic类如何保证原子操作（CAS操作）" class="headerlink" title="Atomic类如何保证原子操作（CAS操作）"></a>Atomic类如何保证原子操作（CAS操作）</h1><h1 id="synchronized和Lock的区别"><a href="#synchronized和Lock的区别" class="headerlink" title="synchronized和Lock的区别"></a>synchronized和Lock的区别</h1><h1 id="ThreadLocal的原理和实现"><a href="#ThreadLocal的原理和实现" class="headerlink" title="ThreadLocal的原理和实现"></a>ThreadLocal的原理和实现</h1><h1 id="为什么要使用线程池"><a href="#为什么要使用线程池" class="headerlink" title="为什么要使用线程池"></a>为什么要使用线程池</h1><h1 id="核心线程池ThreadPoolExecutor的参数"><a href="#核心线程池ThreadPoolExecutor的参数" class="headerlink" title="核心线程池ThreadPoolExecutor的参数"></a>核心线程池ThreadPoolExecutor的参数</h1><h1 id="ThreadPoolExecutor的工作流程"><a href="#ThreadPoolExecutor的工作流程" class="headerlink" title="ThreadPoolExecutor的工作流程"></a>ThreadPoolExecutor的工作流程</h1><h1 id="如何控制线程池线程的优先级"><a href="#如何控制线程池线程的优先级" class="headerlink" title="如何控制线程池线程的优先级"></a>如何控制线程池线程的优先级</h1><h1 id="线程之间如何通信"><a href="#线程之间如何通信" class="headerlink" title="线程之间如何通信"></a>线程之间如何通信</h1><h1 id="Jdk1-8和1-7都分别新增了哪些特性"><a href="#Jdk1-8和1-7都分别新增了哪些特性" class="headerlink" title="Jdk1.8和1.7都分别新增了哪些特性"></a>Jdk1.8和1.7都分别新增了哪些特性</h1><h1 id="Exception-和-Error"><a href="#Exception-和-Error" class="headerlink" title="Exception 和 Error"></a>Exception 和 Error</h1><h1 id="Object类内的方法"><a href="#Object类内的方法" class="headerlink" title="Object类内的方法"></a>Object类内的方法</h1><p>Mysql 一句查询操作的执行流程</p>
 ]]></content>
       <categories>
-        <category>Java 基础</category>
+        <category>其它</category>
       </categories>
       <tags>
-        <tag>lambda</tag>
+        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -5568,24 +5721,31 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
       </tags>
   </entry>
   <entry>
-    <title>hexo命令</title>
-    <url>/2019/03/08/hexo%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<ul>
-<li><p>hexo g 生成静态文件</p>
-</li>
-<li><p>hexo s 启动本地服务</p>
-</li>
-<li><p>hexo clean 清除缓存文件(db.json)和已生成的静态文件(public)</p>
-</li>
-<li><p>hexo g -d 生成文件并部署到github</p>
-</li>
+    <title>Java基础</title>
+    <url>/2019/03/08/Java%E5%9F%BA%E7%A1%80/</url>
+    <content><![CDATA[<h1 id="HashMap、Hashtable、ConcurrentHashMap的原理与区别"><a href="#HashMap、Hashtable、ConcurrentHashMap的原理与区别" class="headerlink" title="HashMap、Hashtable、ConcurrentHashMap的原理与区别"></a>HashMap、Hashtable、ConcurrentHashMap的原理与区别</h1><h2 id="简述HashMap实现原理"><a href="#简述HashMap实现原理" class="headerlink" title="简述HashMap实现原理"></a>简述HashMap实现原理</h2><p>HashMap的底层是通过数组和链表实现的。其实就是维护了一个数组，put操作的时候根据key的哈希值和数组的长度（具体看源码）算出下标，判断该位置有没有对象，没有的话直接创建一个Entry对象（该对象保存了key，hash，value，下标等属性），如果有对象则判断是否有hash冲突（不同的key，但是hash值相同），有冲突则则该闻之用链表存储。</p>
+<p>todo：源码分析</p>
+<p>注意：</p>
+<ul>
+<li>HashMap的key和value都允许是null；</li>
+<li>当put后数量大于等于当前容量*加载因子的时候，就需要扩容，扩容需要数组复制，是非常耗时的，所以如果我们已经预知HashMap中元素的个数，那么预设元素的个数能够有效的提高HashMap的性能；</li>
 </ul>
+<p>思考：<br>如果我们创建HashMap的时候指定了初始大小等于我们希望放入对象的数量，是不是就不会产生扩容？（如果不修改加载因子，仍会产生扩容）</p>
+<h2 id="HashTale与HashMap的区别"><a href="#HashTale与HashMap的区别" class="headerlink" title="HashTale与HashMap的区别"></a>HashTale与HashMap的区别</h2><ul>
+<li>HashTable同HashMap的实现差别不大，  同样是基于哈希表通过数组和链表实现的，同样每个元素是一个key-value对，其内部也是通过单链表解决冲突问题，容量不足（超过了阀值）时，同样会自动增长。</li>
+</ul>
+<h2 id="HashTable与ConcurrentHashMap的区别"><a href="#HashTable与ConcurrentHashMap的区别" class="headerlink" title="HashTable与ConcurrentHashMap的区别"></a>HashTable与ConcurrentHashMap的区别</h2><ul>
+<li>不同点在于HashTable是线程安全的，因为它每个方法中都加入了Synchronize。</li>
+<li>ConcurrentHashMap是HashTable的代替，底层采用分段的数组+链表实现，线程安全。</li>
+<li>通过把整个Map分为N个Segment，可以提供相同的线程安全，但是效率提升N倍，默认提升16倍。(读操作不加锁，由于HashEntry的value变量是 volatile的，也能保证读取到最新的值。)</li>
+</ul>
+<h1 id="volatile的作用"><a href="#volatile的作用" class="headerlink" title="volatile的作用"></a>volatile的作用</h1><h1 id="Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的"><a href="#Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的" class="headerlink" title="Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的"></a>Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的</h1><h1 id="Atomic类如何保证原子操作（CAS操作）"><a href="#Atomic类如何保证原子操作（CAS操作）" class="headerlink" title="Atomic类如何保证原子操作（CAS操作）"></a>Atomic类如何保证原子操作（CAS操作）</h1><h1 id="synchronized和Lock的区别"><a href="#synchronized和Lock的区别" class="headerlink" title="synchronized和Lock的区别"></a>synchronized和Lock的区别</h1><h1 id="ThreadLocal的原理和实现"><a href="#ThreadLocal的原理和实现" class="headerlink" title="ThreadLocal的原理和实现"></a>ThreadLocal的原理和实现</h1><h1 id="为什么要使用线程池"><a href="#为什么要使用线程池" class="headerlink" title="为什么要使用线程池"></a>为什么要使用线程池</h1><h1 id="核心线程池ThreadPoolExecutor的参数"><a href="#核心线程池ThreadPoolExecutor的参数" class="headerlink" title="核心线程池ThreadPoolExecutor的参数"></a>核心线程池ThreadPoolExecutor的参数</h1><h1 id="ThreadPoolExecutor的工作流程"><a href="#ThreadPoolExecutor的工作流程" class="headerlink" title="ThreadPoolExecutor的工作流程"></a>ThreadPoolExecutor的工作流程</h1><h1 id="如何控制线程池线程的优先级"><a href="#如何控制线程池线程的优先级" class="headerlink" title="如何控制线程池线程的优先级"></a>如何控制线程池线程的优先级</h1><h1 id="线程之间如何通信"><a href="#线程之间如何通信" class="headerlink" title="线程之间如何通信"></a>线程之间如何通信</h1><h1 id="Jdk1-8和1-7都分别新增了哪些特性"><a href="#Jdk1-8和1-7都分别新增了哪些特性" class="headerlink" title="Jdk1.8和1.7都分别新增了哪些特性"></a>Jdk1.8和1.7都分别新增了哪些特性</h1><h1 id="Exception-和-Error"><a href="#Exception-和-Error" class="headerlink" title="Exception 和 Error"></a>Exception 和 Error</h1><h1 id="Object类内的方法"><a href="#Object类内的方法" class="headerlink" title="Object类内的方法"></a>Object类内的方法</h1><p>Mysql 一句查询操作的执行流程</p>
 ]]></content>
       <categories>
-        <category>其它</category>
+        <category>Java 基础</category>
       </categories>
       <tags>
-        <tag>hexo</tag>
+        <tag>lambda</tag>
       </tags>
   </entry>
   <entry>
@@ -6370,23 +6530,6 @@ docker inspect --format=&apos;{{ .NetworkSettings.IPAddress }}&apos; containner_
       </tags>
   </entry>
   <entry>
-    <title>15、React：React 常用开发调试工具</title>
-    <url>/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/</url>
-    <content><![CDATA[<p>主要介绍ESLint、Prettier、React DevTool、Redux DevTool</p>
-<h1 id="ESLink"><a href="#ESLink" class="headerlink" title="ESLink"></a>ESLink</h1><p>javascript语法检查和一致性保证的标准</p>
-<h1 id="Prettier"><a href="#Prettier" class="headerlink" title="Prettier"></a>Prettier</h1><p>facebook出的用于格式化代码的工具：</p>
-<h1 id="格式化代码"><a href="#格式化代码" class="headerlink" title="格式化代码"></a>格式化代码</h1><p>保证更容易写出风格一致的代码</p>
-<h1 id="React-DevTool"><a href="#React-DevTool" class="headerlink" title="React DevTool"></a>React DevTool</h1><p>用来调试React的chrome插件</p>
-<h1 id="Redux-DevTool"><a href="#Redux-DevTool" class="headerlink" title="Redux DevTool"></a>Redux DevTool</h1><p>用来调试Redux的chrome插件</p>
-]]></content>
-      <categories>
-        <category>前端</category>
-      </categories>
-      <tags>
-        <tag>React</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>React：最佳实践</title>
     <url>/2019/01/15/React%EF%BC%9A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/</url>
     <content><![CDATA[<h1 id="零碎知识点"><a href="#零碎知识点" class="headerlink" title="零碎知识点"></a>零碎知识点</h1><p>在 React 中另一个不同点是你不能通过返回 false的方式阻止默认行为。你必须显式的使用 preventDefault.</p>
@@ -6405,6 +6548,23 @@ docker inspect --format=&apos;{{ .NetworkSettings.IPAddress }}&apos; containner_
 <h2 id="向事件处理程序传递参数"><a href="#向事件处理程序传递参数" class="headerlink" title="向事件处理程序传递参数"></a>向事件处理程序传递参数</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;button onClick&#x3D;&#123;(e) &#x3D;&gt; this.deleteRow(id, e)&#125;&gt;Delete Row&lt;&#x2F;button&gt;</span><br><span class="line">&lt;button onClick&#x3D;&#123;this.deleteRow.bind(this, id)&#125;&gt;Delete Row&lt;&#x2F;button&gt;</span><br></pre></td></tr></table></figure>
 
 <h1 id="表单"><a href="#表单" class="headerlink" title="表单"></a>表单</h1>]]></content>
+      <categories>
+        <category>前端</category>
+      </categories>
+      <tags>
+        <tag>React</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>15、React：React 常用开发调试工具</title>
+    <url>/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/</url>
+    <content><![CDATA[<p>主要介绍ESLint、Prettier、React DevTool、Redux DevTool</p>
+<h1 id="ESLink"><a href="#ESLink" class="headerlink" title="ESLink"></a>ESLink</h1><p>javascript语法检查和一致性保证的标准</p>
+<h1 id="Prettier"><a href="#Prettier" class="headerlink" title="Prettier"></a>Prettier</h1><p>facebook出的用于格式化代码的工具：</p>
+<h1 id="格式化代码"><a href="#格式化代码" class="headerlink" title="格式化代码"></a>格式化代码</h1><p>保证更容易写出风格一致的代码</p>
+<h1 id="React-DevTool"><a href="#React-DevTool" class="headerlink" title="React DevTool"></a>React DevTool</h1><p>用来调试React的chrome插件</p>
+<h1 id="Redux-DevTool"><a href="#Redux-DevTool" class="headerlink" title="Redux DevTool"></a>Redux DevTool</h1><p>用来调试Redux的chrome插件</p>
+]]></content>
       <categories>
         <category>前端</category>
       </categories>
