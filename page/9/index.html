@@ -402,25 +402,15 @@
       
         
           
-            <h1 id="HashMap、Hashtable、ConcurrentHashMap的原理与区别"><a href="#HashMap、Hashtable、ConcurrentHashMap的原理与区别" class="headerlink" title="HashMap、Hashtable、ConcurrentHashMap的原理与区别"></a>HashMap、Hashtable、ConcurrentHashMap的原理与区别</h1><h2 id="简述HashMap实现原理"><a href="#简述HashMap实现原理" class="headerlink" title="简述HashMap实现原理"></a>简述HashMap实现原理</h2><p>HashMap的底层是通过数组和链表实现的。其实就是维护了一个数组，put操作的时候根据key的哈希值和数组的长度（具体看源码）算出下标，判断该位置有没有对象，没有的话直接创建一个Entry对象（该对象保存了key，hash，value，下标等属性），如果有对象则判断是否有hash冲突（不同的key，但是hash值相同），有冲突则则该闻之用链表存储。</p>
-<p>todo：源码分析</p>
-<p>注意：</p>
-<ul>
-<li>HashMap的key和value都允许是null；</li>
-<li>当put后数量大于等于当前容量*加载因子的时候，就需要扩容，扩容需要数组复制，是非常耗时的，所以如果我们已经预知HashMap中元素的个数，那么预设元素的个数能够有效的提高HashMap的性能；</li>
-</ul>
-<p>思考：<br>如果我们创建HashMap的时候指定了初始大小等于我们希望放入对象的数量，是不是就不会产生扩容？（如果不修改加载因子，仍会产生扩容）</p>
-<h2 id="HashTale与HashMap的区别"><a href="#HashTale与HashMap的区别" class="headerlink" title="HashTale与HashMap的区别"></a>HashTale与HashMap的区别</h2><ul>
-<li>HashTable同HashMap的实现差别不大，  同样是基于哈希表通过数组和链表实现的，同样每个元素是一个key-value对，其内部也是通过单链表解决冲突问题，容量不足（超过了阀值）时，同样会自动增长。</li>
-</ul>
-<h2 id="HashTable与ConcurrentHashMap的区别"><a href="#HashTable与ConcurrentHashMap的区别" class="headerlink" title="HashTable与ConcurrentHashMap的区别"></a>HashTable与ConcurrentHashMap的区别</h2><ul>
-<li>不同点在于HashTable是线程安全的，因为它每个方法中都加入了Synchronize。</li>
-<li>ConcurrentHashMap是HashTable的代替，底层采用分段的数组+链表实现，线程安全。</li>
-<li>通过把整个Map分为N个Segment，可以提供相同的线程安全，但是效率提升N倍，默认提升16倍。(读操作不加锁，由于HashEntry的value变量是 volatile的，也能保证读取到最新的值。)</li>
-</ul>
-<h1 id="volatile的作用"><a href="#volatile的作用" class="headerlink" title="volatile的作用"></a>volatile的作用</h1><h1 id="Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的"><a href="#Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的" class="headerlink" title="Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的"></a>Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的</h1><h1 id="Atomic类如何保证原子操作（CAS操作）"><a href="#Atomic类如何保证原子操作（CAS操作）" class="headerlink" title="Atomic类如何保证原子操作（CAS操作）"></a>Atomic类如何保证原子操作（CAS操作）</h1><h1 id="synchronized和Lock的区别"><a href="#synchronized和Lock的区别" class="headerlink" title="synchronized和Lock的区别"></a>synchronized和Lock的区别</h1><h1 id="ThreadLocal的原理和实现"><a href="#ThreadLocal的原理和实现" class="headerlink" title="ThreadLocal的原理和实现"></a>ThreadLocal的原理和实现</h1><h1 id="为什么要使用线程池"><a href="#为什么要使用线程池" class="headerlink" title="为什么要使用线程池"></a>为什么要使用线程池</h1><h1 id="核心线程池ThreadPoolExecutor的参数"><a href="#核心线程池ThreadPoolExecutor的参数" class="headerlink" title="核心线程池ThreadPoolExecutor的参数"></a>核心线程池ThreadPoolExecutor的参数</h1><h1 id="ThreadPoolExecutor的工作流程"><a href="#ThreadPoolExecutor的工作流程" class="headerlink" title="ThreadPoolExecutor的工作流程"></a>ThreadPoolExecutor的工作流程</h1><h1 id="如何控制线程池线程的优先级"><a href="#如何控制线程池线程的优先级" class="headerlink" title="如何控制线程池线程的优先级"></a>如何控制线程池线程的优先级</h1><h1 id="线程之间如何通信"><a href="#线程之间如何通信" class="headerlink" title="线程之间如何通信"></a>线程之间如何通信</h1><h1 id="Jdk1-8和1-7都分别新增了哪些特性"><a href="#Jdk1-8和1-7都分别新增了哪些特性" class="headerlink" title="Jdk1.8和1.7都分别新增了哪些特性"></a>Jdk1.8和1.7都分别新增了哪些特性</h1><h1 id="Exception-和-Error"><a href="#Exception-和-Error" class="headerlink" title="Exception 和 Error"></a>Exception 和 Error</h1><h1 id="Object类内的方法"><a href="#Object类内的方法" class="headerlink" title="Object类内的方法"></a>Object类内的方法</h1><p>Mysql 一句查询操作的执行流程</p>
-
-          
+          HashMap、Hashtable、ConcurrentHashMap的原理与区别简述HashMap实现原理HashMap的底层是通过数组和链表实现的。其实就是维护了一个数组，put操作的时候根据key的哈希值和数组的长度（具体看源码）算出下标，判断该位置有没有对象，没有的话直接创建一个Entry对
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/08/Java%E5%9F%BA%E7%A1%80/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -581,71 +571,21 @@
       
         
           
-            <h1 id="数据库相关"><a href="#数据库相关" class="headerlink" title="数据库相关"></a>数据库相关</h1><h2 id="查看数据库版本"><a href="#查看数据库版本" class="headerlink" title="查看数据库版本"></a>查看数据库版本</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select version();</span><br></pre></td></tr></table></figure>
+          数据库相关查看数据库版本1select version();
 
-<h2 id="查看所有数据库"><a href="#查看所有数据库" class="headerlink" title="查看所有数据库"></a>查看所有数据库</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show databases;</span><br></pre></td></tr></table></figure>
+查看所有数据库1show databases;
 
-<h2 id="查看master数据库当前正在使用的二进制日志及当前执行二进制日志位置"><a href="#查看master数据库当前正在使用的二进制日志及当前执行二进制日志位置" class="headerlink" title="查看master数据库当前正在使用的二进制日志及当前执行二进制日志位置"></a>查看master数据库当前正在使用的二进制日志及当前执行二进制日志位置</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show master status;</span><br></pre></td></tr></table></figure>
+查看master数据库当前正在使用的二进制日志及当前执行二进制日志位置1show master status;
 
-<h2 id="查看数据库创建语句"><a href="#查看数据库创建语句" class="headerlink" title="查看数据库创建语句"></a>查看数据库创建语句</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show create database database_name;</span><br></pre></td></tr></table></figure>
-<h2 id="创建数据库"><a href="#创建数据库" class="headerlink" title="创建数据库"></a>创建数据库</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">CREATE DATABASE [IF NOT EXISTS] &lt;数据库名&gt;</span><br><span class="line">[[DEFAULT] CHARACTER SET &lt;字符集名&gt;] [[DEFAULT] COLLATE &lt;校对规则名&gt;];</span><br><span class="line"></span><br><span class="line">eg:</span><br><span class="line"></span><br><span class="line">CREATE DATABASE IF NOT EXISTS mysql_study</span><br><span class="line">DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;</span><br></pre></td></tr></table></figure>
-
-<h2 id="确定数据库大小"><a href="#确定数据库大小" class="headerlink" title="确定数据库大小"></a>确定数据库大小</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">SELECT</span><br><span class="line">    ROUND(SUM(data_length + index_length) &#x2F; 1024 &#x2F; 1024) AS total_mb,</span><br><span class="line">    ROUND(SUM(data_length) &#x2F; 1024 &#x2F; 1024) AS data_mb,</span><br><span class="line">    ROUND(SUM(index_length) &#x2F; 1024 &#x2F; 1024) AS index_mb</span><br><span class="line">FROM</span><br><span class="line">    INFORMATION_SCHEMA.tables;</span><br><span class="line">&#96;&#96;&#96;   </span><br><span class="line"></span><br><span class="line"># 表相关</span><br><span class="line"></span><br><span class="line">## 创建表(建表语句)</span><br><span class="line"></span><br><span class="line">&#96;&#96;&#96;mysql</span><br><span class="line">CREATE TABLE IF NOT EXISTS &#96;user_info&#96;(</span><br><span class="line">  &#96;id&#96; INT  AUTO_INCREMENT,</span><br><span class="line">  &#96;name&#96; VARCHAR(100) NOT NULL,</span><br><span class="line">  &#96;companyId&#96; VARCHAR(40) NOT NULL,</span><br><span class="line">  &#96;birthday&#96; DATE,</span><br><span class="line">  PRIMARY KEY (&#96;id&#96;),</span><br><span class="line">  index idx_companyId_name(&#96;id&#96;,&#96;name&#96;)</span><br><span class="line">)ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_unicode_ci;</span><br></pre></td></tr></table></figure>
-
-<h2 id="查看建表语句"><a href="#查看建表语句" class="headerlink" title="查看建表语句"></a>查看建表语句</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show create table table_name;</span><br></pre></td></tr></table></figure>
-
-<h2 id="查看表字段"><a href="#查看表字段" class="headerlink" title="查看表字段"></a>查看表字段</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">desc tb_books;</span><br><span class="line">or</span><br><span class="line">show columns from tb_books;</span><br></pre></td></tr></table></figure>
-
-<h2 id="修改列名"><a href="#修改列名" class="headerlink" title="修改列名"></a>修改列名</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alter table t1 modify name varchar(30) default null;</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="删除外键"><a href="#删除外键" class="headerlink" title="删除外键"></a>删除外键</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alter table vip drop foreign key FK1C81D1738DA76</span><br></pre></td></tr></table></figure>
-
-<h2 id="删除索引"><a href="#删除索引" class="headerlink" title="删除索引"></a>删除索引</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">alter table table_name drop index index_name ;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># How can I employ “if exists” for creating or dropping an index in MySQL?</span><br><span class="line">set @exist :&#x3D; (select count(*) from information_schema.statistics where table_name &#x3D; &#39;table&#39; and index_name &#x3D; &#39;index&#39; and table_schema &#x3D; database());</span><br><span class="line">set @sqlstmt :&#x3D; if( @exist &gt; 0, &#39;select &#39;&#39;INFO: Index already exists.&#39;&#39;&#39;, &#39;create index i_index on tablename ( columnname )&#39;);</span><br><span class="line">PREPARE stmt FROM @sqlstmt;</span><br><span class="line">EXECUTE stmt;</span><br></pre></td></tr></table></figure>
-
-<h2 id="删除主键"><a href="#删除主键" class="headerlink" title="删除主键"></a>删除主键</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alter table table_test drop primary key;</span><br></pre></td></tr></table></figure>
-
-<h2 id="增加主键"><a href="#增加主键" class="headerlink" title="增加主键"></a>增加主键</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alter table table_test add primary key(id);</span><br></pre></td></tr></table></figure>
-
-<h2 id="执行语句手动关闭安全更新模式"><a href="#执行语句手动关闭安全更新模式" class="headerlink" title="执行语句手动关闭安全更新模式"></a>执行语句手动关闭安全更新模式</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SET SQL_SAFE_UPDATES &#x3D; 0;</span><br></pre></td></tr></table></figure>
-
-<h1 id="用户相关"><a href="#用户相关" class="headerlink" title="用户相关"></a>用户相关</h1><h2 id="创建用户（CREATE-USER）"><a href="#创建用户（CREATE-USER）" class="headerlink" title="创建用户（CREATE USER）"></a>创建用户（CREATE USER）</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create user &#39;richey&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;!@#$1234Richey&#39;;</span><br></pre></td></tr></table></figure>
-
-<h2 id="给数据库用户授权（GRANT-PERMISSIONS）"><a href="#给数据库用户授权（GRANT-PERMISSIONS）" class="headerlink" title="给数据库用户授权（GRANT PERMISSIONS）"></a>给数据库用户授权（GRANT PERMISSIONS）</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; GRANT ALL ON mysql_study.* TO &#39;richey&#39;@&#39;localhost&#39;;</span><br></pre></td></tr></table></figure>
-
-<h2 id="刷新权限-（FLUSH-PRIVILEGES-Tell-the-server-to-reload-the-grant-tables）"><a href="#刷新权限-（FLUSH-PRIVILEGES-Tell-the-server-to-reload-the-grant-tables）" class="headerlink" title="刷新权限 （FLUSH PRIVILEGES, Tell the server to reload the grant tables）"></a>刷新权限 （FLUSH PRIVILEGES, Tell the server to reload the grant tables）</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; FLUSH PRIVILEGES;</span><br></pre></td></tr></table></figure>
-
-<h1 id="系统表"><a href="#系统表" class="headerlink" title="系统表"></a>系统表</h1><h2 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">select * from information_schema.processlist</span><br><span class="line">select * from information_schema.innodb_trx; ## 当前运行的所有事务</span><br><span class="line">select * from information_schema.innodb_locks; ## 当前出现的锁</span><br><span class="line">select * from information_schema.innodb_lock_waits; ## 锁等待的对应关系</span><br></pre></td></tr></table></figure>
-<h2 id="日志"><a href="#日志" class="headerlink" title="日志"></a>日志</h2><h3 id="查看binglog文件列表"><a href="#查看binglog文件列表" class="headerlink" title="查看binglog文件列表"></a>查看binglog文件列表</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show binary logs;</span><br><span class="line">报错：</span><br><span class="line">ERROR 1381 (HY000): You are not using binary logging</span><br><span class="line">mysql&gt; show mysql&gt; show variables like &#39;log_bin&#39;;</span><br><span class="line">发现二进制文件没有开启</span><br><span class="line">+---------------+-------+</span><br><span class="line">| Variable_name | Value |</span><br><span class="line">+---------------+-------+</span><br><span class="line">| log_bin       | OFF   |</span><br><span class="line">+---------------+-------+</span><br><span class="line"></span><br><span class="line">Linux下MySQL的配置文件是my.cnf,一般会放在&#x2F;etc&#x2F;my.cnf,&#x2F;etc&#x2F;mysql&#x2F;my.cnf。</span><br><span class="line"></span><br><span class="line">在mysqld配置项下面加上log_bin&#x3D;mysql_bin</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">log_bin &#x3D; mysql_bin</span><br><span class="line"></span><br><span class="line">重启mysql</span><br><span class="line">systemctl restart mysql</span><br></pre></td></tr></table></figure>
-
-<h3 id="查看在写入的binlog文件"><a href="#查看在写入的binlog文件" class="headerlink" title="查看在写入的binlog文件"></a>查看在写入的binlog文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show master status；</span><br></pre></td></tr></table></figure>
-
-<h3 id="查看指定binlog文件的内容"><a href="#查看指定binlog文件的内容" class="headerlink" title="查看指定binlog文件的内容"></a>查看指定binlog文件的内容</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show binlog events [in &#39;log_name&#39;] [FROM pos] [limit [offset,] row_count]</span><br></pre></td></tr></table></figure>
-<h3 id="mysqlbinlog查看binlog文件内容"><a href="#mysqlbinlog查看binlog文件内容" class="headerlink" title="mysqlbinlog查看binlog文件内容"></a>mysqlbinlog查看binlog文件内容</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqlbinlog binlog文件</span><br></pre></td></tr></table></figure>
-
-<h3 id="输出指定position位置的binlog日志"><a href="#输出指定position位置的binlog日志" class="headerlink" title="输出指定position位置的binlog日志"></a>输出指定position位置的binlog日志</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqlbinlog --start-position&#x3D;&quot;指定开始位置&quot; --stop-position&#x3D;&quot;指定结束位置&quot; binlog文件</span><br></pre></td></tr></table></figure>
-<h3 id="输出指定position位置的binlog日志到指定文件中"><a href="#输出指定position位置的binlog日志到指定文件中" class="headerlink" title="输出指定position位置的binlog日志到指定文件中"></a>输出指定position位置的binlog日志到指定文件中</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqlbinlog --start-position&#x3D;&quot;指定开始位置&quot; --stop-position&#x3D;&quot;指定结束位置&quot; binlog文件 &gt; 输出文件名</span><br></pre></td></tr></table></figure>
-<h3 id="输出指定开始时间的binlog日志"><a href="#输出指定开始时间的binlog日志" class="headerlink" title="输出指定开始时间的binlog日志"></a>输出指定开始时间的binlog日志</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqlbinlog --start-datetime&#x3D;&quot;yyyy-MM-dd HH:mm:ss&quot; binlog文件</span><br></pre></td></tr></table></figure>
-<h1 id="时间处理"><a href="#时间处理" class="headerlink" title="时间处理"></a>时间处理</h1><p>获取当前日期+时间</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select now();</span><br><span class="line">+---------------------+</span><br><span class="line">| now()               |</span><br><span class="line">+---------------------+</span><br><span class="line">| 2019-06-05 21:30:43 |</span><br><span class="line">+---------------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
-<p>获得当前时间戳函数：current_timestamp, current_timestamp()</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select current_timestamp, current_timestamp();</span><br><span class="line">+---------------------+---------------------+</span><br><span class="line">| current_timestamp   | current_timestamp() |</span><br><span class="line">+---------------------+---------------------+</span><br><span class="line">| 2019-06-05 21:31:36 | 2019-06-05 21:31:36 |</span><br><span class="line">+---------------------+---------------------+</span><br></pre></td></tr></table></figure>
-<p>日期/时间转换为字符串</p>
-<p>函数：date_format(date,format), time_format(time,format)能够把一个日期/时间转换成各种各样的字符串格式</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select date_format(&#39;2019-06-05 21:31:36&#39;,&#39;%Y%m%d%H%i%s&#39;);</span><br><span class="line">+---------------------------------------------------+</span><br><span class="line">| date_format(&#39;2019-06-05 21:31:36&#39;,&#39;%Y%m%d%H%i%s&#39;) |</span><br><span class="line">+---------------------------------------------------+</span><br><span class="line">| 20190605213136                                    |</span><br><span class="line">+---------------------------------------------------+</span><br></pre></td></tr></table></figure>
-<p>字符串转换为日期</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">函数：str_to_date(str, format)</span><br><span class="line"></span><br><span class="line">mysql&gt; select str_to_date(&#39;2019-06-05 21:31:36&#39;,&#39;%Y-%m-%d %H:%i:%s&#39;);</span><br><span class="line">+--------------------------------------------------------+</span><br><span class="line">| str_to_date(&#39;2019-06-05 21:31:36&#39;,&#39;%Y-%m-%d %H:%i:%s&#39;) |</span><br><span class="line">+--------------------------------------------------------+</span><br><span class="line">| 2019-06-05 21:31:36                                    |</span><br><span class="line">+--------------------------------------------------------+</span><br></pre></td></tr></table></figure>
-<p>Unix 时间戳、日期转换函数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">unix_timestamp(),</span><br><span class="line">unix_timestamp(date),</span><br><span class="line">from_unixtime(unix_timestamp),</span><br><span class="line">from_unixtime(unix_timestamp,format)</span><br><span class="line"></span><br><span class="line">mysql&gt; select unix_timestamp();</span><br><span class="line">+------------------+</span><br><span class="line">| unix_timestamp() |</span><br><span class="line">+------------------+</span><br><span class="line">|       1559742262 |</span><br><span class="line">+------------------+</span><br><span class="line"></span><br><span class="line">mysql&gt; mysql&gt; select unix_timestamp(&#39;2019-06-05&#39;);</span><br><span class="line">+------------------------------+</span><br><span class="line">| unix_timestamp(&#39;2019-06-05&#39;) |</span><br><span class="line">+------------------------------+</span><br><span class="line">|                   1559664000 |</span><br><span class="line">+------------------------------+</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; mysql&gt; select unix_timestamp(&#39;2019-06-05 21:31:36&#39;);</span><br><span class="line">+---------------------------------------+</span><br><span class="line">| unix_timestamp(&#39;2019-06-05 21:31:36&#39;) |</span><br><span class="line">+---------------------------------------+</span><br><span class="line">|                            1559741496 |</span><br><span class="line">+---------------------------------------+</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; select from_unixtime(1559742262);</span><br><span class="line">+---------------------------+</span><br><span class="line">| from_unixtime(1559742262) |</span><br><span class="line">+---------------------------+</span><br><span class="line">| 2019-06-05 21:44:22       |</span><br><span class="line">+---------------------------+</span><br><span class="line">1 row in set (0.01 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select from_unixtime(1559664000);</span><br><span class="line">+---------------------------+</span><br><span class="line">| from_unixtime(1559664000) |</span><br><span class="line">+---------------------------+</span><br><span class="line">| 2019-06-05 00:00:00       |</span><br><span class="line">+---------------------------+</span><br><span class="line"></span><br><span class="line">mysql&gt; select from_unixtime(1559741496);</span><br><span class="line">+---------------------------+</span><br><span class="line">| from_unixtime(1559741496) |</span><br><span class="line">+---------------------------+</span><br><span class="line">| 2019-06-05 21:31:36       |</span><br><span class="line">+---------------------------+</span><br></pre></td></tr></table></figure>
-<p>日期时间计算函数</p>
-<p>为日期增加一个时间间隔：date_add()</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">mysql&gt; select date_add(now(),interval 1 day);</span><br><span class="line">+--------------------------------+</span><br><span class="line">| date_add(now(),interval 1 day) |</span><br><span class="line">+--------------------------------+</span><br><span class="line">| 2019-06-06 21:52:50            |</span><br><span class="line">+--------------------------------+</span><br><span class="line"></span><br><span class="line">mysql&gt; select date_add(now(),interval 1 hour);</span><br><span class="line">mysql&gt; select date_add(now(),interval 1 minute);</span><br><span class="line">mysql&gt; select date_add(now(),interval 1 second);</span><br><span class="line">mysql&gt; select date_add(now(),interval 1 microsecond);</span><br><span class="line">mysql&gt; select date_add(now(),interval 1 week);</span><br><span class="line">mysql&gt; select date_add(now(),interval 1 month);</span><br><span class="line">mysql&gt; select date_add(now(),interval 1 quarter);</span><br><span class="line">mysql&gt; select date_add(now(),interval 1 year);</span><br><span class="line"></span><br><span class="line">select date_add(now(), interval -1 day);</span><br></pre></td></tr></table></figure>
-<p>为日期减去一个时间间隔：date_sub()</p>
-<p>时区（timezone）转换函数</p>
-<p>函数：convert_tz(dt,from_tz,to_tz)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select convert_tz(&#39;2019-06-05 12:00:00&#39;, &#39;+08:00&#39;, &#39;+00:00&#39;);</span><br><span class="line">+-------------------------------------------------------+</span><br><span class="line">| convert_tz(&#39;2019-06-05 12:00:00&#39;, &#39;+08:00&#39;, &#39;+00:00&#39;) |</span><br><span class="line">+-------------------------------------------------------+</span><br><span class="line">| 2019-06-05 04:00:00                                   |</span><br><span class="line">+-------------------------------------------------------+</span><br></pre></td></tr></table></figure>
-
-          
+查看数据库创建语句1show create database datab
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/06/Mysql%EF%BC%881%EF%BC%89-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -806,60 +746,24 @@
       
         
           
-            <ol>
-<li><p>let命令</p>
-<p> let声明的变量只在它所在的代码块有效。</p>
-<p> for循环的计数器,就很适合使用let命令.</p>
-<p> let不存在变量提升,即一定要在声明后使用，否则报错。</p>
-<p> let不允许在相同作用域内，重复声明同一个变量</p>
-<p> ES6 允许块级作用域的任意嵌套。</p>
-</li>
-<li><p>const命令</p>
-<p> const声明一个只读的常量。一旦声明，常量的值就不能改变。</p>
-<p> 这意味着，const一旦声明变量，就必须立即初始化，不能留到以后赋值。</p>
-<p> const的作用域与let命令相同：只在声明所在的块级作用域内有效。</p>
-</li>
-</ol>
-<ol start="3">
-<li><p>函数的扩展</p>
-<p> ES6 允许为函数的参数设置默认值，即直接写在参数定义的后面。</p>
-</li>
-</ol>
-<ol start="4">
-<li><p>箭头函数</p>
-<p> ES6 允许使用“箭头”（=&gt;）定义函数。</p>
-<p> 如果箭头函数不需要参数或需要多个参数，就使用一个圆括号代表参数部分。</p>
-<p> 由于大括号被解释为代码块，所以如果箭头函数直接返回一个对象，必须在对象外面加上括号，否则会报错。</p>
-<p> 箭头函数的一个用处是简化回调函数。</p>
-</li>
-</ol>
-<ol start="5">
-<li>数组的扩展</li>
-</ol>
-<ul>
-<li><p>Array.from()</p>
-<p>  Array.from方法用于将两类对象转为真正的数组：类似数组的对象（array-like object）和可遍历（iterable）的对象（包括ES6新增的数据结构Set和Map）。</p>
-<p>  只要是部署了Iterator接口的数据结构，Array.from都能将其转为数组</p>
-<p>  扩展运算符（…）也可以将某些数据结构转为数组.</p>
-<p>  Array.from方法则是还支持类似数组的对象。所谓类似数组的对象，本质特征只有一点，即必须有length属性。因此，任何有length属性的对象，都可以通过Array.from方法转为数组.</p>
-<p>  Array.from还可以接受第二个参数，作用类似于数组的map方法，用来对每个元素进行处理，将处理后的值放入返回的数组。</p>
-</li>
-<li><p>Array.of()</p>
-<p>  Array.of方法用于将一组值，转换为数组</p>
-</li>
-<li><p>数组实例的copyWithin()</p>
-<p>  数组实例的copyWithin方法，在当前数组内部，将指定位置的成员复制到其他位置（会覆盖原有成员），然后返回当前数组。也就是说，使用这个方法，会修改当前数组。</p>
-</li>
-<li><p>数组实例的find()和findIndex()</p>
-<p>  数组实例的find方法，用于找出第一个符合条件的数组成员。它的参数是一个回调函数，所有数组成员依次执行该回调函数，直到找出第一个返回值为true的成员，然后返回该成员。如果没有符合条件的成员，则返回undefined。</p>
-</li>
-<li><p>数组实例的fill()</p>
-<p>  fill方法使用给定值，填充一个数组。</p>
-<p>  fill方法还可以接受第二个和第三个参数，用于指定填充的起始位置和结束位置.</p>
-</li>
-</ul>
-
           
+let命令
+ let声明的变量只在它所在的代码块有效。
+ for循环的计数器,就很适合使用let命令.
+ let不存在变量提升,即一定要在声明后使用，否则报错。
+ let不允许在相同作用域内，重复声明同一个变量
+ ES6 允许块级作用域的任意嵌套。
+
+const命令
+ const声明一个只读的常量
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/02/08/ES6%E7%AC%94%E8%AE%B0/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1020,158 +924,18 @@
       
         
           
-            <h1 id="镜像"><a href="#镜像" class="headerlink" title="镜像"></a>镜像</h1><h2 id="1、列出镜像"><a href="#1、列出镜像" class="headerlink" title="1、列出镜像"></a>1、列出镜像</h2><pre><code>sudo docker images
+          镜像1、列出镜像sudo docker images
 
-sudo docker images fedora //列出指定镜像名（如fedora）的镜像</code></pre><ul>
-<li><p>镜像是从仓库中下载下来。镜像保存在仓库中，而仓库位于Register中。默认的Register式Docker公司提供的register服务，即Docker Hub</p>
-</li>
-<li><p>为了区分同一仓库中的不同镜像，Docker提供来一种称为标签（tag）的功能</p>
-</li>
-<li><p>运行一个带标签的镜像</p>
-<pre><code>sudo docker run -i -t --name new_container ubuntu:12.04 /bin/bash</code></pre></li>
-<li><p>一个镜像可以有多个标签，这使我们可以方便的对镜像进行打标签，并且很容器查找镜像</p>
-</li>
-<li><p>在构建容器时，==指定镜像的标签是一个很好的习惯==，可以准确的知道容器来源于哪里。</p>
-</li>
-<li><p>Docker Hub中有两种类型的仓库：==用户仓库==（user repository）和==顶层仓库==（top-level repository).</p>
-</li>
-<li><p>用户仓库的命名由用户名和仓库名两部分组成，如richey/my_repo</p>
-</li>
-</ul>
-<h2 id="2、拉取镜像"><a href="#2、拉取镜像" class="headerlink" title="2、拉取镜像"></a>2、拉取镜像</h2><ul>
-<li><p>用docker run 命令创建并启动一个容器的时候，如果指定的镜像不在本地，Docker会先从Docker Hub下载该镜像。如果没有指定具体的镜像标签，那么Docker会自动下载latest标签的镜像。</p>
-</li>
-<li><p>也可以通过docker pull命令先将镜像拉取到本地</p>
-<pre><code>sudo docker pull ubuntu:12.04</code></pre></li>
-</ul>
-<h2 id="3、查找镜像"><a href="#3、查找镜像" class="headerlink" title="3、查找镜像"></a>3、查找镜像</h2><ul>
-<li><p>可以通过docker search命令来查找所有Docker Hub上公共的可用镜像</p>
-<pre><code>sudo docker search fedora    </code></pre></li>
-<li><p>也可以在Docker Hub网站上在线查找可用镜像</p>
-</li>
-</ul>
-<h2 id="4、构建镜像"><a href="#4、构建镜像" class="headerlink" title="4、构建镜像"></a>4、构建镜像</h2><ul>
-<li><p>登录Docker Hub</p>
-<pre><code>docker login //登录
-
-docker logout //退出</code></pre></li>
-<li><p>登录后会将用户的个人信息保存到$HOME/.docker/config.json中</p>
-</li>
-</ul>
-<ul>
-<li><p>Docker 构建镜像有两种方法</p>
-<ul>
-<li>使用docker commit命令（不推荐）</li>
-<li>使用docker build命令和Dockerfile文件</li>
-</ul>
-</li>
-</ul>
-<h3 id="使用docker-commit-命令创建镜像"><a href="#使用docker-commit-命令创建镜像" class="headerlink" title="使用docker commit 命令创建镜像"></a>使用docker commit 命令创建镜像</h3><p>可以将此想象成我们往版本控制系统里提交变更。我们先创建一个容器，并在容器里作出修改，就像改代码一样，最后将修改提交为一个新的镜像。</p>
-<ol>
-<li><p>创建一个要进行修改的容器</p>
-<pre><code>sudo docker run -i -t ubuntu /bin/bash</code></pre></li>
-<li><p>安装apache软件包</p>
-<pre><code>apt-get -y update
-
-apt-get -y install apache2</code></pre></li>
-<li><p>exit从容器里退出后运行docker commit命令</p>
-<p> sudo docker commit -m “A new custom image” -a “Richey”  2c2224ec5ea3 richey/testrepo:test-commit</p>
-<ul>
-<li>-m 用来指定创建新镜像时的提交信息</li>
-<li>-a 镜像的作者信息</li>
-</ul>
-</li>
-</ol>
-<h3 id="用Dockerfile构建镜像"><a href="#用Dockerfile构建镜像" class="headerlink" title="用Dockerfile构建镜像"></a>用Dockerfile构建镜像</h3><p>推荐使用被成为Dockerfile的定义文件和docker build命令来构建镜像，因为这种方式更具备可重复性、透明性、幂等性。</p>
-<p>一有了Dockerfile，我们就可以用docker build命令基于该Dockerfile中的指令创建一个新的镜像。</p>
-<p>这里我们以创建一个包含简单的Web服务器的Docker镜像为例，说明如何使用Dockerfile文件构建镜像：</p>
-<ul>
-<li><p>创建一个目录，并在里面创建初始的Dockerfile文件；</p>
-<pre><code>mkdir static_web_context
-cd mkdir static_web_context
-touch Dockerfile    </code></pre></li>
-</ul>
-<pre><code>static_web_context目录：这就是我们的构建环境，Docker称此环境为上下文（context）或构建上下文（build context）。Docker在构建镜像时会将该上下文和上下文中的目录及文件上传到Docker守护进程。这样守护进程就能直接访问用户想在镜像中存储的任何代码、文件或其它数据。
-
-Dockerfile：这里我们创建了一个空的Dockerfile文件，Dockerfile文件由一系列的指令和参数组成，每条指令都必须时大写字母，且后面要跟一个参数。Dockerfile中的指令会按照顺序从上往下执行。
-
-    #version:0.0.1
-    FROM ubuntu:16.04
-    MAINTAINER Richey &quot;xx.xx@gmail.com&quot;
-    RUN apt-get update &amp;&amp; apt-get install -y nginx
-    RUN echo &apos;Hi,I am in your container&apos; &gt; /usr/share/nginx/html/index.html
-    EXPOSE 80
-
-每条指令都会创建一个镜像层并对镜像进行提交，所以当通过Dockerfile构建镜像时，即使由于某些原因（比如Dockerfile中的某条命令执行失败了），没有正常结束，我们仍然可以得到一个可用的镜像。这对调试非常的有作用，我们可以通过运行该镜像得到一个可以交互的容器，然后执行失败的命令，查看失败的具体原因，以此对Dockerfile文件中的指令进行修改等操作，调试完后通过新的Dockerfile文件重新构建镜像。
-
-Dockerfile文件支持注释，以#开头的行会被认为是注释
-
-每个Dockerfile文件的第一行必须时FROM，FROM用于指定一个已存在的镜像，后续指令都将基于该镜像执行，该镜像被成为基础镜像。
-
-MAINTAIN指令用来说明该镜像的作者及邮箱等信息
-
-RUN指令会在当前镜像中运行指定的命令，RUN指令可以有多条，每条RUN指令都会创建一个新的镜像层。默认情况下RUN指令会在shell里面使用命令包装器/bin/sh -c执行。如果在不支持shell的平台运行或不希望在shell中执行，也可以使用exec格式的RUN指令，如：
-
-    RUN [&quot;apt-get&quot;,&quot;install&quot;,&quot;-y&quot;,&quot;nginx&quot;]
-
-EXPOSE指令，这条命令告诉Docker，该容器向外部宿主机公开的端口，可以公开多个端口。但并非设置该参数后，就可以随意访问该容器的这些端口，Docker并不会自打开这些端口，需要用户使用docker run时来指定需要打开哪些端口。
-
-Docker也使用EXPOSE指令来帮助将多个容器链接，用户也可以在运行时在运行docker run 命令时通过--expose选项来指定对外公开的端口。</code></pre><ul>
-<li><p>基于Dockerfile构建新镜像</p>
-<p>  上面我们已经创建了一个简单的构建上下文环境（docker context）和Dockerfile文件,下面我们基于此构建一个新的镜像。</p>
-<p>  执行docker build命令时，Dockerfile中的所有指令都会被执行且提交，该命令执行成功后会得到一个新的镜像。</p>
-<pre><code>cd static_web_context/
-sudo docker build -t &quot;richey/static_web:v1&quot; .</code></pre><p>  -t参数为镜像设置了仓库和名称,以及标签v1，如果没有指定任何标签，Docker将为镜像设置一个latest标签。</p>
-<p>  上面命令后面的点（.）告诉Docker到本地目录中去寻找Dockerfile文件，也可以指定一个Git仓库的源地址来指定Dockerfile的位置，当然该Git仓库的根目录下面要存在Dockerfile文件。</p>
-<p>  自Docker1.5.0以后,也可以通过-f参数指定一个区别于标准Dockerfile构建源的位置，如：</p>
-<pre><code>docker build -t &quot;richey/static_web&quot; -f path/file</code></pre><p>  这个文件可以不必命名为Dockerfile，但是必须要位于构建上下文（build context）中。</p>
-<p>  在构建上下文目录中，可以设置.dockerignor文件来过滤匹配模式。</p>
-</li>
-</ul>
-<h3 id="Dockerfile和构建缓存"><a href="#Dockerfile和构建缓存" class="headerlink" title="Dockerfile和构建缓存"></a>Dockerfile和构建缓存</h3><p>由于每一步的构建过程都会将结果提交为镜像，所以Docker会将每一层的镜像看作缓存，比如当我们构建出错，修改后重新构建时，不会重新从地一层开始构建，会直接基于缓存从发生变化了的指令开始构建，这样会省很多时间.</p>
-<p>如果要确保不使用缓存可以用docker build的–nocache参数:</p>
-<pre><code>docker build --nocache -t &quot;richey/static_web&quot; .</code></pre><h3 id="基于构建缓存的Dockerfile模板"><a href="#基于构建缓存的Dockerfile模板" class="headerlink" title="基于构建缓存的Dockerfile模板"></a>基于构建缓存的Dockerfile模板</h3><p>可以通过在Dockerfile文件的顶部使用相同的人指令集模板,从而尽可能的确保缓存命中,例如:</p>
-<pre><code>FROM fedora:26
-MAINTAINER Richey &quot;brin.baolin@gmail.com&quot;
-ENV REFRESHED_AT 2017-01-08
-RUN dnf -q update</code></pre><p>这里通过ENV指令设置了一个环境变量REFRESHED_AT,用来记录该模板的最后更新时间.有了这个模板,如果我们要刷新构建,只需要更改ENV指令中的日期,Docker就会从ENV指令这行开始重置缓存.</p>
-<h3 id="从镜像中启动一个容器"><a href="#从镜像中启动一个容器" class="headerlink" title="从镜像中启动一个容器"></a>从镜像中启动一个容器</h3><pre><code>sudo docker run -i -t -d -p 80 --name my_static_web  richey/static_web:v1</code></pre><p>-d:以detached,分离的方式在后台运行<br>-p:控制Docker在运行时公开哪些网络端口给宿主机</p>
-<ul>
-<li>运行一个容器时,Docker可用通过两种方式来在宿主机上分配端口:<ul>
-<li>Docker可以在宿主上随机选择一个32768~61000的一个比较大的端口来映射到容器中的80端口上</li>
-<li>可以在Docker宿主机中指定一个具体的端口号来映射到容器的80端口上</li>
-</ul>
-</li>
-</ul>
-<h3 id="推送镜像"><a href="#推送镜像" class="headerlink" title="推送镜像"></a>推送镜像</h3><pre><code>docker push  NAME[:TAG] | [REGISTRY_HOST[:REGISTRY_PORT]/]NAME[:TAG]</code></pre><h3 id="docker-rmi-删除镜像"><a href="#docker-rmi-删除镜像" class="headerlink" title="docker rmi  删除镜像"></a>docker rmi  删除镜像</h3><h1 id="命令总结"><a href="#命令总结" class="headerlink" title="命令总结"></a>命令总结</h1><ul>
-<li><p>查看系统中的镜像</p>
-<pre><code>sudo docker images
-REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-richey/static_web   v1                  8cf769dd27de        26 hours ago        206 MB
-docker.io/ubuntu    16.04               00fd29ccc6f1        3 weeks ago         111 MB</code></pre></li>
-<li><p>列出指定镜像名（如fedora）的镜像</p>
-<pre><code>sudo docker images fedora</code></pre></li>
-</ul>
-<ul>
-<li><p>查看镜像详细信息</p>
-<pre><code>sudo docker inspect richey/testreps:test-commit</code></pre></li>
-<li><p>得到刚创建的容器的id</p>
-<pre><code>sudo docker ps -l -q</code></pre></li>
-</ul>
-<ul>
-<li><p>如果想探究镜像是如何被构建出来的,可以使用docker history命令</p>
-<pre><code>[richey@192 ~]$ sudo docker history 8cf769dd27de</code></pre></li>
-</ul>
-<ul>
-<li><p>运行一个带标签的镜像</p>
-<pre><code>sudo docker run -i -t --name new_container ubuntu:12.04 /bin/bash</code></pre></li>
-<li><p>拉去镜像(docker run 的时候,如果本地没有会自动从仓库拉取)</p>
-<pre><code>sudo docker pull ubuntu:12.04</code></pre></li>
-<li><p>查找镜像</p>
-<pre><code>sudo docker search fedora</code></pre></li>
-</ul>
-
-          
+sudo docker images fedora //列出指定镜像名（如fedora）的镜像
+镜像是从仓库中下载下来。镜像保存在仓库中，而仓库位于Register中。默认的Register式Docker公司提供的register服务，即Doc
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/02/07/Docker(5)%20-%20%E9%95%9C%E5%83%8F%E5%92%8C%E4%BB%93%E5%BA%93/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1332,106 +1096,20 @@ docker.io/ubuntu    16.04               00fd29ccc6f1        3 weeks ago         
       
         
           
-            <h1 id="启动和关闭守护进程"><a href="#启动和关闭守护进程" class="headerlink" title="启动和关闭守护进程"></a>启动和关闭守护进程</h1><h2 id="在Red-Hat系发行版中启动Docker守护进程"><a href="#在Red-Hat系发行版中启动Docker守护进程" class="headerlink" title="在Red Hat系发行版中启动Docker守护进程"></a>在Red Hat系发行版中启动Docker守护进程</h2><h3 id="在RHEL-6或CentOS-6中"><a href="#在RHEL-6或CentOS-6中" class="headerlink" title="在RHEL 6或CentOS 6中"></a>在RHEL 6或CentOS 6中</h3><ul>
-<li><p>启动/关闭Docker服务</p>
-<pre><code>sudo service docker start　　　　
-sudo service docker stop</code></pre></li>
-<li><p>确保在RHEL 6中开机启动Docker</p>
-<pre><code>sudo service docker enable</code></pre></li>
-</ul>
-<h3 id="在RHEL-7或Fedora中"><a href="#在RHEL-7或Fedora中" class="headerlink" title="在RHEL 7或Fedora中"></a>在RHEL 7或Fedora中</h3><ul>
-<li><p>启动/关闭Docker服务</p>
-<pre><code>sudo systemctl start docker
-sudo systemctl stop docker</code></pre></li>
-</ul>
-<ul>
-<li><p>在系统开机自动启动Docker服务</p>
-<pre><code>sudo systemctl enable docker</code></pre></li>
-<li><p>检查Docker是否正确安装</p>
-<pre><code>sudo docker info</code></pre></li>
-</ul>
-<h1 id="创建并启动容器"><a href="#创建并启动容器" class="headerlink" title="创建并启动容器"></a>创建并启动容器</h1><ul>
-<li><p>==docker run==命令提供了Docker容器的创建到启动的功能</p>
-<pre><code>docker run -i -t ubuntu /bin/bash</code></pre><ul>
-<li><p>-i 标志保证STDIN是开启的    </p>
-</li>
-<li><p>-t 则告诉Docker要为创建的容器分配一个伪tty终端。</p>
-</li>
-<li><p>若要在命令行下创建一个能与之进行交互的容，而不是一个运后台服务的容器，这两个参数是最基本的参数</p>
-</li>
-<li><p>ubuntu 告诉Docker我们要基于ubuntu镜像来创建容器(ubuntu镜像是一个常备镜像，也可以称之为“基础”镜像)。首先docker会检查本地是否有ubuntu镜像，如果没有的话就会去Docker Hub中找，找到后会下载并保存该镜像到本地宿主机中。</p>
-</li>
-<li><p>/bin/bash 告诉Docker在新容器中要运行什么命令</p>
-</li>
-</ul>
-</li>
-</ul>
-<h1 id="使用容器"><a href="#使用容器" class="headerlink" title="使用容器"></a>使用容器</h1><ul>
-<li><p>检查容器的主机名</p>
-<pre><code>homename //可以看到容器的主机名就是容器的ID</code></pre></li>
-<li><p>查看容器的/etc/hosts文件，发现Docker已经在hosts文件中为该容器的ip添加来一条主机配置项</p>
-</li>
-</ul>
-<h1 id="查看当前系统中的容器列表"><a href="#查看当前系统中的容器列表" class="headerlink" title="查看当前系统中的容器列表"></a>查看当前系统中的容器列表</h1><pre><code>docker ps -a //查看所有容器
-
-docker ps //只能看到正在运行的容器
-
-docker ps -l //列出最后一个运行的容器
-
-docker ps -n x //显示最后x个容器，不论这些容器正在运行还是已停止</code></pre><h1 id="容器命名"><a href="#容器命名" class="headerlink" title="容器命名"></a>容器命名</h1><ul>
-<li><p>Docker会为我们创建的每一个容器自动生成一个随机的名称</p>
-</li>
-<li><p>可以通过 –name 参数指定容器的名字</p>
-<pre><code>docker run --name my_container -i -t ubuntu /bin/bash</code></pre></li>
-</ul>
-<h1 id="删除已存在容器"><a href="#删除已存在容器" class="headerlink" title="删除已存在容器"></a>删除已存在容器</h1><pre><code>docker rm my_container
-
-docker rm &apos;sudo docker ps -a -q&apos;</code></pre><h1 id="重新启动已停止的容器"><a href="#重新启动已停止的容器" class="headerlink" title="重新启动已停止的容器"></a>重新启动已停止的容器</h1><pre><code>sudo docker start my_container
-
-sudo docker restart my_container //也可以重启一个容器</code></pre><h1 id="附着到容器上"><a href="#附着到容器上" class="headerlink" title="附着到容器上"></a>附着到容器上</h1><ul>
-<li><p>我们可以用docker attach命令，附着到容器的会话上</p>
-<pre><code>sudo docker attach my_container</code></pre></li>
-<li><p>注意：如果退出容器的shell，==容器会停止运行==</p>
-</li>
-</ul>
-<h1 id="创建守护式容器"><a href="#创建守护式容器" class="headerlink" title="创建守护式容器"></a>创建守护式容器</h1><ul>
-<li><p>守护式容器没有交互式会话，非常适合运行应用程序和服务</p>
-<pre><code>sudo docker run --name daemon_container -d ubuntu /bin/sh -c &quot;while true; do echo hello world; sleep 1; down&quot;</code></pre></li>
-<li><p>使用来-d参数，因此Docker会将容器放在后台运行。</p>
-</li>
-</ul>
-<h1 id="获取docker容器的日志"><a href="#获取docker容器的日志" class="headerlink" title="获取docker容器的日志"></a>获取docker容器的日志</h1><ul>
-<li><p>可以用docker logs命令来获取容器的日志</p>
-<pre><code>docker logs daemon_container //输出最后几条日志并返回
-
-docker logs -f daemon_container //类似于tail -f
-
-docker logs --tail 10 daemon_container //最后10行
-
-docker logs --tail 0 -f daemon_container //跟踪容器的最新日志
-
-docker logs -ft daemon_containner //-t 为日志加上时间戳</code></pre></li>
-</ul>
-<h1 id="查看容器内的进程"><a href="#查看容器内的进程" class="headerlink" title="查看容器内的进程"></a>查看容器内的进程</h1><pre><code>sudo docker top daemon_containner</code></pre><h1 id="Docker统计信息"><a href="#Docker统计信息" class="headerlink" title="Docker统计信息"></a>Docker统计信息</h1><pre><code>docker stats</code></pre><h1 id="在容器内部运行进程"><a href="#在容器内部运行进程" class="headerlink" title="在容器内部运行进程"></a>在容器内部运行进程</h1><ul>
-<li><p>可以通过docker exec命令在容器内部额外启动新进程</p>
-</li>
-<li><p>可以在容器中运行的进程有两种类型：后台任务和交互任务</p>
-<ul>
-<li><p>后台命令</p>
-<pre><code>sudo docker exec -d richey_ubuntu_container touch /etc/new_test_config_file</code></pre></li>
-<li><p>交互式命令</p>
-<pre><code>sudo docker exec -t -i richey_ubuntu_container /bin/bash</code></pre></li>
-</ul>
-</li>
-</ul>
-<h1 id="自动重启容器"><a href="#自动重启容器" class="headerlink" title="自动重启容器"></a>自动重启容器</h1><ul>
-<li><p>可以通过–restart标志自动重启容器</p>
-<pre><code>sudo docker run --restart=always --name daemon_container -d ubuntu /bin/sh -c &quot;while true; do echo hello world; sleep 1; down&quot;
-
-sudo docker run --restart=on-failure:5 --name daemon_container -d ubuntu /bin/sh -c &quot;while true; do echo hello world; sleep 1; down&quot;</code></pre></li>
-</ul>
-
-          
+          启动和关闭守护进程在Red Hat系发行版中启动Docker守护进程在RHEL 6或CentOS 6中
+启动/关闭Docker服务
+sudo service docker start　　　　
+sudo service docker stop
+确保在RHEL 6中开机启动Docker
+sudo ser
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/02/06/Docker%EF%BC%884%EF%BC%89-%20%E5%85%A5%E9%97%A8%EF%BC%88%E5%91%BD%E4%BB%A4%EF%BC%89/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1592,50 +1270,20 @@ sudo docker run --restart=on-failure:5 --name daemon_container -d ubuntu /bin/sh
       
         
           
-            <h1 id="Docker守护进程"><a href="#Docker守护进程" class="headerlink" title="Docker守护进程"></a>Docker守护进程</h1><ul>
-<li><p>Docker软件包安装完毕后，默认会立即启动Docker守护进程</p>
-</li>
-<li><p>守护进程监听/var/run/docker.sock这个Unix套接字文件，来获取来自客户端Docker的请求</p>
-</li>
-<li><p>如果系统中存在名为docker的用户组的话，Docker则会将该套接字文件的所有者设为该用户组，这样docker用户组的所有者就可以直接运行Docker，而无需使用Docker命令了。</p>
-</li>
-<li><p>安装完Docker后要确认Docker的守护进程是否运行</p>
-</li>
-<li><p>Docker进程是Docker守护进程的客户端程序</p>
-</li>
-<li><p>使用 ==docker daemon==命令控制Docker守护进程（该命令已经过时了，1.6后会被弃用）</p>
-</li>
-</ul>
-<h2 id="配置Docker守护进程"><a href="#配置Docker守护进程" class="headerlink" title="配置Docker守护进程"></a>配置Docker守护进程</h2><ul>
-<li><p>运行Docker守护进程时，可以用-H标志调整守护进程绑定监听接口的方式</p>
-</li>
-<li><p>使用-H标志指定不同的网络接口和端口配置</p>
-<pre><code>sudo docker daemon -H tcp:0.0.0.0:2375</code></pre></li>
-<li><p>如果把守护进程或端口改成4200，那么运行客户端时就必须指定</p>
-<pre><code>docker -H :4200</code></pre></li>
-<li><p>如果不想每次运行客户端都加上-H标志，可以设置DOCKER_HOST环境变量来省略此步骤</p>
-<pre><code>export DOCKER_HOST=&quot;tcp://0.0.0.0:2375&quot;</code></pre></li>
-<li><p>也能通过-H标志指定一个Unix套接字路径</p>
-<pre><code>sudo docker daemon -H unix://home/docker/docker.sock
+          Docker守护进程
+Docker软件包安装完毕后，默认会立即启动Docker守护进程
 
-sudo docker daemon -H tcp:0.0.0.0:2375 -H unix://home/docker/docker.sock</code></pre></li>
-<li><p>如果Docker运行在代理或者公司防火墙之后，也可以使用THHPS_PROXY、HTTP_PROX和NO_PROXY选项来控制守护进程如何连接</p>
-</li>
-<li><p>还可以用-D标志来输出Docker守护进程更详细的信息</p>
-<pre><code>sudo docker daemon -D</code></pre></li>
-</ul>
-<h2 id="检查Docker守护进程是否在运行"><a href="#检查Docker守护进程是否在运行" class="headerlink" title="检查Docker守护进程是否在运行"></a>检查Docker守护进程是否在运行</h2><h3 id="在Ubuntu中"><a href="#在Ubuntu中" class="headerlink" title="在Ubuntu中"></a>在Ubuntu中</h3><ul>
-<li><p>如果Docker是通过软件包安装的话，可以用Upstart的status命令来检查Docker守护进程是否在运行及启动停止Docker进程等操作</p>
-<pre><code>sudo status docker
+守护进程监听/var/run/docker.sock这个Unix套接字文件，来获取来自客户端Docker的请求
 
-sudo stop docker
-
-sudo start docker</code></pre></li>
-</ul>
-<h3 id="在Red-Hat和Fedora中启动和停止Docker"><a href="#在Red-Hat和Fedora中启动和停止Docker" class="headerlink" title="在Red Hat和Fedora中启动和停止Docker"></a>在Red Hat和Fedora中启动和停止Docker</h3><pre><code>sudo service docker stop
-
-sudo service docker start</code></pre>
-          
+如果系统中存在名为docker的用户组的话，Docker则会将该套接字文件的所有者设为该用户组，
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/02/05/Docker%EF%BC%883%EF%BC%89-%20%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1796,51 +1444,26 @@ sudo service docker start</code></pre>
       
         
           
-            <h1 id="安装Docker"><a href="#安装Docker" class="headerlink" title="安装Docker"></a>安装Docker</h1><ul>
-<li><p>目前Docker团队推荐在UBuntu、Debian或者RHEL系列（CentOS、Fedora等）宿主机中部署Docker。</p>
-</li>
-<li><p>Docker也支持一些云平台</p>
-</li>
-<li><p>Docker目前只能运行在64位CPU架构的计算机上</p>
-</li>
-<li><p>运行Linux3.8或更高版本的内核</p>
-</li>
-</ul>
-<h2 id="检查前提条件"><a href="#检查前提条件" class="headerlink" title="检查前提条件"></a>检查前提条件</h2><ul>
-<li><p>内核3.8及以上</p>
-<pre><code>uname -a</code></pre></li>
-</ul>
-<h2 id="在Ubuntu和Debian中安装Docker"><a href="#在Ubuntu和Debian中安装Docker" class="headerlink" title="在Ubuntu和Debian中安装Docker"></a>在Ubuntu和Debian中安装Docker</h2><h2 id="在Red-Hat和Red-Hat系发行办版中安装Docker"><a href="#在Red-Hat和Red-Hat系发行办版中安装Docker" class="headerlink" title="在Red Hat和Red Hat系发行办版中安装Docker"></a>在Red Hat和Red Hat系发行办版中安装Docker</h2><h3 id="1、在RHEL-6和CentOS-6中安装Docker"><a href="#1、在RHEL-6和CentOS-6中安装Docker" class="headerlink" title="1、在RHEL 6和CentOS 6中安装Docker"></a>1、在RHEL 6和CentOS 6中安装Docker</h3><h3 id="2、在RHEL-7中安装Docker"><a href="#2、在RHEL-7中安装Docker" class="headerlink" title="2、在RHEL 7中安装Docker"></a>2、在RHEL 7中安装Docker</h3><h3 id="3、在Fedora中安装Docker"><a href="#3、在Fedora中安装Docker" class="headerlink" title="3、在Fedora中安装Docker"></a>3、在Fedora中安装Docker</h3><ul>
-<li><p>在Fedora 19安装Docker</p>
-<pre><code>sudo yum -y install docker-io</code></pre></li>
-<li><p>在Fedora 20或更高版本中安装Docker</p>
-<pre><code>sudo yum -y install docker</code></pre></li>
-<li><p>在Fodora 21中，软件包名称又回退到了docker-io</p>
-<pre><code>sudo yum -y install docker-io</code></pre></li>
-<li><p>最后到了Fedora 22，软件包名称则又变回了docker</p>
-<pre><code>sudo dnf install docker</code></pre></li>
-</ul>
-<blockquote>
-<p>具体的安装文档可以在官方文档中找到</p>
-</blockquote>
-<p><a href="https://docs.docker.com/engine/installation/linux/docker-ee/oracle/" target="_blank" rel="noopener">在Linux上安装Docker的文档</a></p>
-<blockquote>
-<p>也可以直接从Docker官方网站下载RHEL、CentOS和Fedora用的罪行RPM包</p>
-</blockquote>
-<h2 id="Docker安装脚本"><a href="#Docker安装脚本" class="headerlink" title="Docker安装脚本"></a>Docker安装脚本</h2><ul>
-<li><p>使用远程安装脚本在宿主机上安装Docker，<a href="get.docker.com">get.docker.com</a>网站获取这个安装脚本</p>
-</li>
-<li><p>目前该脚本只支持在Ubuntu、Fedora、Debian和Gentoo中安装Docker</p>
-</li>
-</ul>
-<h3 id="首先要确认curl命令已经安装"><a href="#首先要确认curl命令已经安装" class="headerlink" title="首先要确认curl命令已经安装"></a>首先要确认curl命令已经安装</h3><pre><code>whereis curl</code></pre><h3 id="安装curl"><a href="#安装curl" class="headerlink" title="安装curl"></a>安装curl</h3><ul>
-<li><p>Ubuntu中安装     </p>
-<pre><code>sudo apt-get -y install curl</code></pre></li>
-<li><p>Fedora中安装curl</p>
-<pre><code>sudo dnf install curl</code></pre></li>
-</ul>
-<h3 id="利用安装脚本来安装Docker"><a href="#利用安装脚本来安装Docker" class="headerlink" title="利用安装脚本来安装Docker"></a>利用安装脚本来安装Docker</h3><pre><code>curl https://get.docker.com/ | sudo sh</code></pre>
-          
+          安装Docker
+目前Docker团队推荐在UBuntu、Debian或者RHEL系列（CentOS、Fedora等）宿主机中部署Docker。
+
+Docker也支持一些云平台
+
+Docker目前只能运行在64位CPU架构的计算机上
+
+运行Linux3.8或更高版本的内核
+
+
+检查前提条件
+内核3.
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/02/04/Docker%EF%BC%882%EF%BC%89-%20%E5%AE%89%E8%A3%85/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2001,67 +1624,22 @@ sudo service docker start</code></pre>
       
         
           
-            <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><ul>
-<li><p>虚拟机：通过中间层将一台或多台独立的机器运行在物理硬件之上</p>
-</li>
-<li><p>容器：直接运行在操作系统内核之上的空间</p>
-</li>
-<li><p>由于“客居”于操作系统，容器只能运行与底层宿主机相同或相似的操作系统</p>
-</li>
-<li><p>在自己的权限范围内，容器更像是一个完整的宿主机，对于Docker来说，容器和宿主机之间的隔离更加彻底，容器有独立的网络和存储栈，还拥有自己的资源管理能力，使得同一台宿主机中的多个容器可以友好的共存。</p>
-</li>
-<li><p>Docker是一个能够把开发的应用程序自动部署到容器中的开源引擎。</p>
-</li>
-<li><p>大多数Docker容器只需要不到１秒就可以启动</p>
-</li>
-<li><p>Docker推荐单个容器只运行一个应用程序或进程。</p>
-</li>
-</ul>
-<h1 id="Docker核心组件"><a href="#Docker核心组件" class="headerlink" title="Docker核心组件"></a>Docker核心组件</h1><ul>
-<li><p>Docker客户端和服务器，也称Docker引擎</p>
-</li>
-<li><p>Docker镜像</p>
-</li>
-<li><p>Registry</p>
-</li>
-<li><p>Docker容器</p>
-</li>
-</ul>
-<h1 id="Docker客户端和服务端"><a href="#Docker客户端和服务端" class="headerlink" title="Docker客户端和服务端"></a>Docker客户端和服务端</h1><ul>
-<li><p>Docker十一个客户端/服务端（C/S）架构的程序</p>
-</li>
-<li><p>Docker客戶端只需要向Docker服务器端或守护进程发送请求，服务器或守护进程将完成所有工作，并返回结果。</p>
-</li>
-<li><p>Docker守护进程有时候也称为Docker引擎</p>
-</li>
-<li><p>Docker提供了命令行工具docker以及一整套的RESTful API来与守护今年成进行交互。</p>
-</li>
-<li><p>Docker可以在同一台宿主机上运行守护进程和客户端，也可以从本地的Docker客户端连接到运行在另一台宿主机上的远程Docker守护进程。</p>
-</li>
-</ul>
-<p><img src="http://orybhlel7.bkt.clouddn.com/image/jpg/Docker-architecture.png" alt="image"></p>
-<h1 id="Docker镜像"><a href="#Docker镜像" class="headerlink" title="Docker镜像"></a>Docker镜像</h1><ul>
-<li><p>镜像是Docker世界的基石，用户基于镜像来运行自己的容器</p>
-</li>
-<li><p>也可以把镜像当作是容器的“源代码”，镜像体积很小，非常的“便携”，易于分享、存储和更新</p>
-</li>
-</ul>
-<h1 id="Registry"><a href="#Registry" class="headerlink" title="Registry"></a>Registry</h1><ul>
-<li><p>Docker用Registry来保存用户构建的镜像。</p>
-</li>
-<li><p>Registry分为共有和私有两种。Docker公司运营的公有Registry叫做Docker Hub。</p>
-</li>
-</ul>
-<h1 id="容器"><a href="#容器" class="headerlink" title="容器"></a>容器</h1><ul>
-<li><p>Docker可以帮助用户构建和部署容器，用户只要把自己的应用程序或服务打包放进容器即可。</p>
-</li>
-<li><p>容器是基于镜像启动的</p>
-</li>
-<li><p>镜像是Docker生命周期中的构建或打包阶段，而容器则是启动或执行阶段。</p>
-</li>
-</ul>
+          简介
+虚拟机：通过中间层将一台或多台独立的机器运行在物理硬件之上
 
-          
+容器：直接运行在操作系统内核之上的空间
+
+由于“客居”于操作系统，容器只能运行与底层宿主机相同或相似的操作系统
+
+在自己的权限范围内，容器更像是一个完整的宿主机，对于Docker来说，容器和宿主机之间的隔离更加彻底，容器有独立的网络
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/02/03/Docker%EF%BC%88%EF%BC%91%EF%BC%89-%20%E7%AE%80%E4%BB%8B/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2222,34 +1800,19 @@ sudo service docker start</code></pre>
       
         
           
-            <ol>
-<li>备份容器<br>首先，为了备份Docker中的容器，我们会想看看我们想要备份的容器列表。要达成该目的，我们需要在我们运行着Docker引擎，并已创建了容器的Linux机器中运行 docker ps 命令。</li>
-</ol>
-<h1 id="docker-ps"><a href="#docker-ps" class="headerlink" title="docker ps"></a>docker ps</h1><p>Docker Containers List</p>
-<p>在此之后，我们要选择我们想要备份的容器，然后去创建该容器的快照。我们可以使用 docker commit 命令来创建快照。</p>
-<h1 id="docker-commit-p-30b8f18f20b4-container-backup"><a href="#docker-commit-p-30b8f18f20b4-container-backup" class="headerlink" title="docker commit -p 30b8f18f20b4 container-backup"></a>docker commit -p 30b8f18f20b4 container-backup</h1><p>Docker Commit</p>
-<p>该命令会生成一个作为Docker镜像的容器快照，我们可以通过运行 docker images 命令来查看Docker镜像，如下。</p>
-<h1 id="docker-images"><a href="#docker-images" class="headerlink" title="docker images"></a>docker images</h1><p>Docker Images</p>
-<p>正如我们所看见的，上面做的快照已经作为Docker镜像保存了。现在，为了备份该快照，我们有两个选择，一个是我们可以登录进Docker注册中心，并推送该镜像；另一个是我们可以将Docker镜像打包成tar包备份，以供今后使用。</p>
-<p>如果我们想要在Docker注册中心上传或备份镜像，我们只需要运行 docker login 命令来登录进Docker注册中心，然后推送所需的镜像即可。</p>
-<h1 id="docker-login-172-16-101-192"><a href="#docker-login-172-16-101-192" class="headerlink" title="docker login 172.16.101.192"></a>docker login 172.16.101.192</h1><p>Docker Login</p>
-<h1 id="docker-tag-a25ddfec4d2a-arunpyasi-container-backup-test"><a href="#docker-tag-a25ddfec4d2a-arunpyasi-container-backup-test" class="headerlink" title="docker tag a25ddfec4d2a arunpyasi/container-backup:test"></a>docker tag a25ddfec4d2a arunpyasi/container-backup:test</h1><h1 id="docker-push-arunpyasi-container-backup"><a href="#docker-push-arunpyasi-container-backup" class="headerlink" title="docker push arunpyasi/container-backup"></a>docker push arunpyasi/container-backup</h1><p>Docker Push</p>
-<p>如果我们不想备份到docker注册中心，而是想要将此镜像保存在本地机器中，以供日后使用，那么我们可以将其作为tar包备份。要完成该操作，我们需要运行以下 docker save 命令。</p>
-<h1 id="docker-save-o-container-backup-tar-container-backup"><a href="#docker-save-o-container-backup-tar-container-backup" class="headerlink" title="docker save -o ~/container-backup.tar container-backup"></a>docker save -o ~/container-backup.tar container-backup</h1><p>taking tarball backup</p>
-<p>要验证tar包是否已经生成，我们只需要在保存tar包的目录中运行 ls 命令即可。</p>
-<ol start="2">
-<li>恢复容器<br>接下来，在我们成功备份了我们的Docker容器后，我们现在来恢复这些制作了Docker镜像快照的容器。如果我们已经在注册中心推送了这些Docker镜像，那么我们仅仅需要把那个Docker镜像拖回并直接运行即可。</li>
-</ol>
-<h1 id="docker-pull-arunpyasi-container-backup-test"><a href="#docker-pull-arunpyasi-container-backup-test" class="headerlink" title="docker pull arunpyasi/container-backup:test"></a>docker pull arunpyasi/container-backup:test</h1><p>Docker Pull</p>
-<p>但是，如果我们将这些Docker镜像作为tar包文件备份到了本地，那么我们只要使用 docker load 命令，后面加上tar包的备份路径，就可以加载该Docker镜像了。</p>
-<h1 id="docker-load-i-container-backup-tar"><a href="#docker-load-i-container-backup-tar" class="headerlink" title="docker load -i ~/container-backup.tar"></a>docker load -i ~/container-backup.tar</h1><p>现在，为了确保这些Docker镜像已经加载成功，我们来运行 docker images 命令。</p>
-<h1 id="docker-images-1"><a href="#docker-images-1" class="headerlink" title="docker images"></a>docker images</h1><p>在镜像被加载后，我们将用加载的镜像去运行Docker容器。</p>
-<h1 id="docker-run-d-p-80-80-container-backup"><a href="#docker-run-d-p-80-80-container-backup" class="headerlink" title="docker run -d -p 80:80 container-backup"></a>docker run -d -p 80:80 container-backup</h1><p>Restoring Docker Tarball</p>
-<ol start="3">
-<li>迁移Docker容器<br>迁移容器同时涉及到了上面两个操作，备份和恢复。我们可以将任何一个Docker容器从一台机器迁移到另一台机器。在迁移过程中，首先我们将把容器备份为Docker镜像快照。然后，该Docker镜像或者是被推送到了Docker注册中心，或者被作为tar包文件保存到了本地。如果我们将镜像推送到了Docker注册中心，我们简单地从任何我们想要的机器上使用 docker run 命令来恢复并运行该容器。但是，如果我们将镜像打包成tar包备份到了本地，我们只需要拷贝或移动该镜像到我们想要的机器上，加载该镜像并运行需要的容器即可。实施</li>
-</ol>
-
           
+备份容器首先，为了备份Docker中的容器，我们会想看看我们想要备份的容器列表。要达成该目的，我们需要在我们运行着Docker引擎，并已创建了容器的Linux机器中运行 docker ps 命令。
+
+docker psDocker Containers List
+在此之后，我们要选择我们想要备份的
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/02/02/Docker%20%E5%AE%9E%E6%88%98%E4%B9%8B%E5%AE%B9%E5%99%A8%E5%A4%87%E4%BB%BD%E3%80%81%E6%81%A2%E5%A4%8D%E3%80%81%E8%BF%81%E7%A7%BB/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2410,157 +1973,22 @@ sudo service docker start</code></pre>
       
         
           
-            <h1 id="Docker基本命令"><a href="#Docker基本命令" class="headerlink" title="Docker基本命令"></a>Docker基本命令</h1><ul>
-<li><p>查看基本信息</p>
-<pre><code>docker info  </code></pre></li>
-</ul>
-<p>是经常用来查看运行状态及版本信息的命令，是整个Docker Daemon守护进程运行状况的缩影，包括容器个数、镜像个数、Daemon版本、使用的存储驱动等信息。</p>
-<ul>
-<li><p>获取容器的主机名</p>
-<pre><code>hostname(这个是linux的基本命令)</code></pre><p>  容器的主机名就是该容器的id，Docker会默认在/etc/hosts中为该容器的ip地址添加一条主机的配置项目</p>
-</li>
-<li><p>列出所有docker容器</p>
-<pre><code>docker ps 会列出所有正在运行的docker容器
-docker ps -a 会列出所有docker容器，包括未运行的</code></pre></li>
-</ul>
-<h1 id="docker-run-命令"><a href="#docker-run-命令" class="headerlink" title="docker run 命令"></a>docker run 命令</h1><p>docker run 命令提供了Docker容器的创建到启动的功能</p>
-<ol>
-<li><p>端口映射</p>
-<p> 可以通过-P或者-p参数指定端口映射</p>
-<ul>
-<li><p>-P Docker 会随机映射一个 49000~49900 的端口到内部容器开放的网络端口。</p>
-</li>
-<li><p>-p（小写）则可以指定要映射的IP和端口，但是在一个指定端口上只可以绑定一个容器。支持的格式有hostPort:containerPort、ip:hostPort:containerPort、 ip::containerPort。</p>
-<ul>
-<li><p>hostPort:containerPort（映射所有接口地址）<br>将本地的 5000 端口映射到容器的 5000 端口，可以执行如下命令：<br>$ sudo docker run -d -p 5000:5000 training/webapp python app.py 此时默认会绑定本地所有接口上的所有地址。        </p>
-</li>
-<li><p>ip:hostPort:containerPort （映射指定地址的指定端口）<br>指定映射使用一个特定地址，比如 localhost 地址 127.0.0.1<br>$ sudo docker run -d -p 127.0.0.1:5000:5000 training/webapp python app.py</p>
-</li>
-<li><p>ip::containerPort （映射指定地址的任意端口）<br>绑定 localhost 的任意端口到容器的 5000 端口，本地主机会自动分配一个端口。<br>sudo docker run -d -p 127.0.0.1::5000 training/webapp python app.py<br>还可以使用 udp 标记来指定 udp 端口<br>$ sudo docker run -d -p 127.0.0.1:5000:5000/udp training/webapp python app.py</p>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
-<ol start="2">
-<li><p>-i 标志保证容器的STDIN是开启的，即表示启动一个可交互的容器；</p>
-</li>
-<li><p>-t 表示使用pseudo-TTY,关联到容器的stdin和stdout，即为创造的容器分配一个伪tty终端；</p>
-</li>
-<li><p>-d 让容器在后台运行，不关联到当前终端的shell上</p>
-</li>
-</ol>
-<ol start="5">
-<li><p>–name容器命名</p>
-</li>
-<li><p>–restart 设置自动重启容器</p>
-<p> –restart=always</p>
-<p> –restart=on-failure:5 //当容器退出码为非0的时候重启，最多重启5次</p>
-</li>
-</ol>
-<h1 id="docker-start"><a href="#docker-start" class="headerlink" title="docker start"></a>docker start</h1><pre><code>启动已经停止运行的容</code></pre><h1 id="images相关命令"><a href="#images相关命令" class="headerlink" title="images相关命令"></a>images相关命令</h1><ol>
-<li><p>docker iamges</p>
-<p> 查看本机镜像列表</p>
-<p> 为了区分同一个仓库中的不同镜像，Docker提供了标签（tag）功能，每个镜像在被列出来时都带有一个标签。</p>
-</li>
-<li><p>拉取镜像</p>
-<ul>
-<li><p>格式</p>
-<p>  [域名/][用户名/]镜像名[:版本号]</p>
-<p>  当指定了域名就会从该域名下载，否则就会从Docker Hub进行下载；</p>
-<p>  镜像名是必填项，版本号默认是latest</p>
-<pre><code>sudo docker pull ubuntu:12.04</code></pre></li>
-</ul>
-</li>
-</ol>
-<ol start="3">
-<li><p>查找Docker Hub镜像</p>
-<p> docker search</p>
-</li>
-<li><p>构建及发布镜像</p>
-<p> 具体查看《Docker(5) - 镜像和仓库》</p>
-<p> 在push镜像之前要首先tag镜像</p>
-</li>
-<li><p>删除服务器中无用的docker镜像命令</p>
-<pre><code>docker images | grep \&lt;none\&gt; | tr -s &quot; &quot; | cut -d &apos; &apos; -f 3 | xargs docker rmi</code></pre></li>
-</ol>
-<h1 id="docker-日志相关"><a href="#docker-日志相关" class="headerlink" title="docker 日志相关"></a>docker 日志相关</h1><p>日志分两类，一类是 Docker 引擎日志；另一类是 容器日志。</p>
-<ul>
-<li><p>Docker 引擎日志</p>
-<p>  Docker 引擎日志 一般是交给了 Upstart(Ubuntu 14.04) 或者 systemd (CentOS 7, Ubuntu 16.04)。前者一般位于 /var/log/upstart/docker.log 下，后者一般通过 jounarlctl -u docker 来读取。不同系统的位置都不一样，可以参考：</p>
-</li>
-</ul>
-<pre><code>系统 | 日志位置</code></pre><p>—|—<br>Ubuntu(14.04)|     /var/log/upstart/docker.log<br>Ubuntu(16.04)|     journalctl -u docker.service<br>CentOS 7/RHEL 7/Fedora|     journalctl -u docker.service<br>CoreOS|     journalctl -u docker.service<br>OpenSuSE|     journalctl -u docker.service<br>OSX    | ~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/log/d‌​ocker.log<br>Debian|  GNU/Linux 7    /var/log/daemon.log<br>Debian|  GNU/Linux 8    journalctl -u docker.service<br>Boot2Docker|     /var/log/docker.log</p>
-<ul>
-<li><p>容器的日志</p>
-<p>  则可以通过 docker logs 命令来访问，而且可以像 tail -f 一样，使用 docker logs -f 来实时查看。如果使用 Docker Compose，则可以通过 docker-compose logs &lt;服务名&gt; 来查看。</p>
-<p>  如果深究其日志位置，每个容器的日志默认都会以 json-file 的格式存储于 /var/lib/docker/containers/&lt;容器id&gt;/&lt;容器id&gt;-json.log 下，不过并不建议去这里直接读取内容，因为 Docker 提供了更完善地日志收集方式 - Docker 日志收集驱动。</p>
-</li>
-</ul>
-<ul>
-<li><p>找出当前 Docker 守护进程的默认日志驱动程序，运行 docker info 命令并在输出中找 Logging Driver。</p>
-<pre><code>$ docker info | grep &apos;Logging Driver&apos;</code></pre></li>
-<li><p>查看某容器使用的日志驱动程序</p>
-<pre><code>docker inspect -f &apos;{{.HostConfig.LogConfig.Type}}&apos; container_name</code></pre></li>
-<li><p>docker logs 获取容器的日志</p>
-<p>  docker logs -f container-name</p>
-<p>  docker logs -f –tail 200 container-name</p>
-<p>  docker logs -ft container-name //带时间戳是</p>
-</li>
-<li><p>查看容器日志大小</p>
-<p>  假设容器目录为/var/lib/docker/containers，那么执行如下命令</p>
-<pre><code>cd /var/lib/docker/containers  #进入默认容器空间目录
+          Docker基本命令
+查看基本信息
+docker info  
 
-du -sh *            #统计文件大小
+是经常用来查看运行状态及版本信息的命令，是整个Docker Daemon守护进程运行状况的缩影，包括容器个数、镜像个数、Daemon版本、使用的存储驱动等信息。
 
-2.4G  de92a5643f7ffb106f8abba21fc0f93996842917a52879153adc95a73312934a-json.log
-
-#以上这个代表容器de92a5643的日志大小为2.4G</code></pre></li>
-<li><p>–log-driver指定日志驱动</p>
-</li>
-</ul>
-<pre><code>驱动程序 | 描述
----|---
-none   |    容器没有日志可用,docker logs 什么都不返回
-json-file |    日志格式化为 JSON。这是 Docker 默认的日志驱动程序。
-syslog|    将日志消息写入 syslog 工具。syslog 守护程序必须在主机上运s行。
-journald|    将日志消息写入 journald。journald 守护程序必须在主机上运行。
-gelf|    将日志消息写入 Graylog Extended Log Format (GELF) 终端，例如 Graylog 或 Logstash。
-fluentd|    将日志消息写入 fluentd（forward input）。fluentd 守护程序必须在主机上运行。
-awslogs|    将日志消息写入 Amazon CloudWatch Logs。
-splunk|    Writes log messages to splunk using the HTTP Event Collector.
-etwlogs|    将日志消息写为 Windows 的 Event Tracing 事件。仅在Windows平台上可用。
-gcplogs    |将日志消息写入 Google Cloud Platform (GCP) Logging。
-logentries|ss    将日志消息写入 Rapid7 Logentries。</code></pre><ul>
-<li><p>增加日志参数</p>
-<p>  docker run增加如下参数，限制生成的json.log单个文件大小和保留文件个数：</p>
-<pre><code>--log-opt max-size=10m --log-opt max-file=3</code></pre></li>
-</ul>
-<h1 id="容器相关命令"><a href="#容器相关命令" class="headerlink" title="容器相关命令"></a>容器相关命令</h1><ul>
-<li><p>docker top 查看容器内的进程</p>
-<p>  docker top contain_name</p>
-</li>
-<li><p>docker stats 查看容器统计信息</p>
-<p>  docker stats可以查看一个或多个容器的统计信息,包括CPU、内存、网络I/O及存储I/O的性能和指标。这对快速监控一台主机上的一组容器非常有用。</p>
-<pre><code>docker stats container_name1 container_name1</code></pre></li>
-<li><p>docker inspect 获得更多容器信息</p>
-<pre><code>docker inspect container_name</code></pre><p>  可以配合-f或者–format标志来选定查看结果</p>
-</li>
-</ul>
-<pre><code>    docker inspect --format=&apos;{{ .State.Running }}&apos; containner_name //查看容器的运行状态
-
-docker inspect --format=&apos;{{ .NetworkSettings.IPAddress }}&apos; containner_name //查看容器的运行状态</code></pre><ul>
-<li><p>Docker镜像、容器及容器的配置目录</p>
-<p>  /var/lib/docker</p>
-</li>
-<li><p>docker rm 删除容器</p>
-<pre><code>sudo docker rm &apos;sudo docker ps -a -q&apos; //删除所有容器</code></pre><p>  -a 表示列出所有容器</p>
-<p>  -q 表示只返回容器的id而不返回容器的其它信息</p>
-</li>
-</ul>
-
-          
+获取容器的主机名
+hostname(这个是linux的基本命令)  容
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/02/01/Docker%20%E5%91%BD%E4%BB%A4/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>

@@ -402,11 +402,18 @@
       
         
           
-            <h1 id="React-16-3新特性-Context-API"><a href="#React-16-3新特性-Context-API" class="headerlink" title="React 16.3新特性:Context API"></a>React 16.3新特性:Context API</h1><p>要解决的还是组件间通讯的问题，有些全局的状态，很多组件都会去使用，但是如果所有的属性都是一层层的传递下来，非常麻烦。</p>
-<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/react-context-api.png" alt="image"></p>
-<p><a href="https://github.com/liubaolin/evolutionary/blob/master/JS/react-cli-demo/src/LocaleSample/LocaleSample.js" target="_blank" rel="noopener">代码片段</a></p>
+          React 16.3新特性:Context API要解决的还是组件间通讯的问题，有些全局的状态，很多组件都会去使用，但是如果所有的属性都是一层层的传递下来，非常麻烦。
+
+代码片段
 
           
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/01/06/6%E3%80%81React-%E6%96%B0%E7%9A%84Contet%20API%E5%8F%8A%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -567,26 +574,22 @@
       
         
           
-            <p>组件复用的另外两种形式:</p>
-<ol>
-<li>高阶组件（HOC）</li>
-<li>函数作为子组件</li>
-</ol>
-<h1 id="高阶组件"><a href="#高阶组件" class="headerlink" title="高阶组件"></a>高阶组件</h1><p>高阶组件实际是对已有组件的一个封装,来返回一个新的组件.新的组件会包含一些应用逻辑,这些新的逻辑会产生新的状态,这些状态会传给新的组件.</p>
-<p>高阶组件一般不会有额外的UI展现,只是为它封装的组件提供额外的功能或者数据.</p>
-<p>高阶组件可以自己去获取外部资源.</p>
-<ul>
-<li>创建一个高阶组件</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const EnhancedComponent &#x3D; highterOrderComponent(WrappedComponent);</span><br></pre></td></tr></table></figure>
+          组件复用的另外两种形式:
 
-<pre><code>高阶组件可以接受一个组件参数,并返回一个新的组件.</code></pre><h1 id="函数作为子组件"><a href="#函数作为子组件" class="headerlink" title="函数作为子组件"></a>函数作为子组件</h1><p>snippet:<br><a href="https://github.com/liubaolin/evolutionary/blob/master/JS/react-cli-demo/src/TabSelector/AdvanceTabSelector.js" target="_blank" rel="noopener">函数作为子组件</a></p>
-<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><ol>
-<li>高阶组件和函数子组件都是设计模式</li>
-<li>可以实现更多场景的组件复用</li>
-</ol>
+高阶组件（HOC）
+函数作为子组件
 
-          
+高阶组件高阶组件实际是对已有组件的一个封装,来返回一个新的组件.新的组件会包含一些应用逻辑,这些新的逻辑会产生新的状态,这些状态会传给新的组件.
+高阶组件一般不会有额外的UI展现,只是为它封装的组件提供额外的功能或者数据.
+高阶组件可
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/01/05/5%E3%80%81React%E9%AB%98%E9%98%B6%E7%BB%84%E4%BB%B6(HOC)%E5%92%8C%E5%87%BD%E6%95%B0%E4%BD%9C%E4%B8%BA%E5%AD%90%E7%BB%84%E4%BB%B6/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -747,15 +750,18 @@
       
         
           
-            <p>JSX的运行基础:Virtual DOM</p>
-<p>React组件在内部维护了一套虚拟DOM的状态,这套虚拟DOM的状态最终会映射到真实DOM的节点上,当虚拟DOM发生变化的时候,内部需要计算虚拟DOM的区别来产生一个diff,并不会刷新所有的真实DOM,只会更新diff的部份.</p>
-<h1 id="虚拟DOM是如何工作的"><a href="#虚拟DOM是如何工作的" class="headerlink" title="虚拟DOM是如何工作的"></a>虚拟DOM是如何工作的</h1><p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E8%99%9A%E6%8B%9FDOM%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84.png" alt="image"></p>
-<h1 id="虚拟DOM的两个假设"><a href="#虚拟DOM的两个假设" class="headerlink" title="虚拟DOM的两个假设"></a>虚拟DOM的两个假设</h1><ol>
-<li>组件的DOM结构是相对稳定的</li>
-<li>类型相同的兄节点可以被唯一标识</li>
-</ol>
-
-          
+          JSX的运行基础:Virtual DOM
+React组件在内部维护了一套虚拟DOM的状态,这套虚拟DOM的状态最终会映射到真实DOM的节点上,当虚拟DOM发生变化的时候,内部需要计算虚拟DOM的区别来产生一个diff,并不会刷新所有的真实DOM,只会更新diff的部份.
+虚拟DOM是如何工作的
+虚拟
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/01/04/4%E3%80%81React-%E7%90%86%E8%A7%A3Virtual%20DOM%E5%8F%8Akey%E5%B1%9E%E6%80%A7%E7%9A%84%E4%BD%9C%E7%94%A8/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -916,80 +922,26 @@
       
         
           
-            <h1 id="理解React组件"><a href="#理解React组件" class="headerlink" title="理解React组件"></a>理解React组件</h1><ol>
-<li>React组件一般不提供方法，而是提供某种状态机</li>
-<li>React组件可以理解为一个纯函数（接收的参数是什么，则输出的结果是确定的）</li>
-<li>单向数据绑定，数据变动同通过事件告诉外部</li>
-</ol>
-<h2 id="一个简单的React组件"><a href="#一个简单的React组件" class="headerlink" title="一个简单的React组件"></a>一个简单的React组件</h2><ol>
-<li><p>创建静态UI</p>
-</li>
-<li><p>考虑组件的状态组成</p>
-<p> 来自外部或者在内部维护</p>
-</li>
-<li><p>考虑组件的交互方式</p>
-</li>
-</ol>
-<h2 id="受控组件VS非受控组件"><a href="#受控组件VS非受控组件" class="headerlink" title="受控组件VS非受控组件"></a>受控组件VS非受控组件</h2><p>主用应用与form表单中</p>
-<ol>
-<li><p>受控组件</p>
-<p> 表单元素状态由使用者维护，必须指定value和onChange，<br> 即value的值是来自于外部的属性，而不是用户的输入。</p>
-</li>
-<li><p>非受控组件</p>
-<p> 表单元素状态DOM自身维护；</p>
-</li>
-</ol>
-<h2 id="创建React组件的几个原则"><a href="#创建React组件的几个原则" class="headerlink" title="创建React组件的几个原则"></a>创建React组件的几个原则</h2><ol>
-<li><p>单一职责原则</p>
-<ul>
-<li>每个组件只做一件事；</li>
-<li>如果组件变得负责，那么因该拆分成小组件</li>
-</ul>
-</li>
-<li><p>数据状态管理:DRY原则</p>
-<ul>
-<li>能计算得到的状态就不要单独存储</li>
-<li>组件尽量无状态，所需数据通过props获取</li>
-</ul>
-</li>
-</ol>
-<h1 id="React组件生命周期"><a href="#React组件生命周期" class="headerlink" title="React组件生命周期"></a>React组件生命周期</h1><p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/react-lifecycle-methods.png" alt="image"></p>
-<h1 id="constructor-NaN"><a href="#constructor-NaN" class="headerlink" title="constructor"></a>constructor</h1><ol>
-<li>用于初始化内部状态,很少使用</li>
-<li>唯一可以直接修改state的地方</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">this.state.xxx &#x3D; &#39;abc&#39;;</span><br></pre></td></tr></table></figure>
+          理解React组件
+React组件一般不提供方法，而是提供某种状态机
+React组件可以理解为一个纯函数（接收的参数是什么，则输出的结果是确定的）
+单向数据绑定，数据变动同通过事件告诉外部
 
-<h1 id="getDerivedStateFromProps"><a href="#getDerivedStateFromProps" class="headerlink" title="getDerivedStateFromProps"></a>getDerivedStateFromProps</h1><ol>
-<li>当state需要从props初始化时使用</li>
-<li>尽量不要使用:维护两者状态一致性会增加复杂度</li>
-<li>每次render都会调用</li>
-<li>典型场景:表单控件获取默认值</li>
-</ol>
-<h1 id="componentDidMount"><a href="#componentDidMount" class="headerlink" title="componentDidMount"></a>componentDidMount</h1><ol>
-<li>UI渲染完成后调用</li>
-<li>值执行一次</li>
-<li>典型场景:获取外部资源</li>
-</ol>
-<h1 id="componentWillUnmount"><a href="#componentWillUnmount" class="headerlink" title="componentWillUnmount"></a>componentWillUnmount</h1><ol>
-<li>组件移除时调用</li>
-<li>典型场景:资源释放</li>
-</ol>
-<h1 id="getSnapshotBeforeUpdate"><a href="#getSnapshotBeforeUpdate" class="headerlink" title="getSnapshotBeforeUpdate"></a>getSnapshotBeforeUpdate</h1><ol>
-<li>在页面render之前调用,state已更新</li>
-<li>典型场景:获取render之前的DOM状态</li>
-</ol>
-<h1 id="componentDisUpdate"><a href="#componentDisUpdate" class="headerlink" title="componentDisUpdate"></a>componentDisUpdate</h1><ol>
-<li>每次UI更新时被调用</li>
-<li>典型场景:页面需要根据props变化重新获取数据</li>
-</ol>
-<h1 id="shouldComponentUpdate"><a href="#shouldComponentUpdate" class="headerlink" title="shouldComponentUpdate"></a>shouldComponentUpdate</h1><ol>
-<li>决定Virtual DOM是否要重绘</li>
-<li>一般可以有PureComponent自动实现</li>
-<li>典型场景:性能优化</li>
-</ol>
+一个简单的React组件
+创建静态UI
 
-          
+考虑组件的状态组成
+ 来自外部或者在内部维护
+
+考虑组件的交互方式
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/01/03/3%E3%80%81React%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%85%B6%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1150,41 +1102,21 @@
       
         
           
-            <h1 id="JSX"><a href="#JSX" class="headerlink" title="JSX"></a>JSX</h1><p>不是模板语言,只是一种语法糖,其实就是在JavaScript代码中直接写HTML的标记.</p>
-<p>本质:动态创建组件的语法糖.</p>
-<h1 id="在JSX中使用表达式"><a href="#在JSX中使用表达式" class="headerlink" title="在JSX中使用表达式"></a>在JSX中使用表达式</h1><p>表达式是会返回值的一个javaScript语法</p>
-<ol>
-<li>JSX本身也是表达式</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const element &#x3D; &lt;h1&gt;Hello,world!&lt;&#x2F;h1&gt;;</span><br></pre></td></tr></table></figure>
-<ol start="2">
-<li>在属性中使用表达式</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;MyComponent foo&#x3D;&#123;1+2+3+4&#125;&#x2F;&gt;</span><br></pre></td></tr></table></figure>
+          JSX不是模板语言,只是一种语法糖,其实就是在JavaScript代码中直接写HTML的标记.
+本质:动态创建组件的语法糖.
+在JSX中使用表达式表达式是会返回值的一个javaScript语法
 
-<ol start="3">
-<li>延展属性</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">const props &#x3D; &#123;firstName:&#39;Ben&#39;,lastName:&#39;Hector&#39;&#125;;</span><br><span class="line">const greeting &#x3D; &lt;Greeting &#123;...props&#125; &#x2F;&gt;</span><br></pre></td></tr></table></figure>
+JSX本身也是表达式
 
-<ol start="4">
-<li>表达式作为资源素</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const element &#x3D; &lt;li&gt;&#123;props.message&#125;&lt;&#x2F;li&gt;;</span><br></pre></td></tr></table></figure>
-
-
-<h1 id="JSX优点"><a href="#JSX优点" class="headerlink" title="JSX优点"></a>JSX优点</h1><ol>
-<li>声明式创建界面的直观</li>
-<li>代码动态创建页面的灵活</li>
-<li>无需学习新的模板语言</li>
-</ol>
-<h1 id="约定"><a href="#约定" class="headerlink" title="约定"></a>约定</h1><ol>
-<li>React认为小写的tag是原生的DOM节点,如div</li>
-<li>大写字母开头的为自定义组件</li>
-<li>JSX标记可以直接使用属性语法,如&lt;menu.item /&gt;</li>
-</ol>
-
-          
+1const element &#x3D; &lt;h1&gt;Hello,wo
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/01/02/2%E3%80%81React-JSX/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1345,21 +1277,22 @@
       
         
           
-            <h2 id="相关技术栈"><a href="#相关技术栈" class="headerlink" title="相关技术栈"></a>相关技术栈</h2><ul>
-<li>Redux 用来做状态管理</li>
-<li>REACT/ROUTER 路由管理</li>
-<li>BABEL 最新JavaScript特性翻译成浏览器兼容的旧的JavaScript语法</li>
-<li>webpack 打包</li>
-<li>ESLint　语法检查</li>
-</ul>
-<h2 id="Create-React-App"><a href="#Create-React-App" class="headerlink" title="Create React App"></a>Create React App</h2><p>fackbook 推出的命令行工具，可以快速生成一个React Application项目</p>
-<p>整合了Babel/Webpack Config/Testing/ESLint…</p>
-<p>入门级的命令行工具，采取最简策略，只引入了必要的包</p>
-<h2 id="Rekit"><a href="#Rekit" class="headerlink" title="Rekit"></a>Rekit</h2><p>整合了Babel/Webpack Config/Testing/ESLint　＋　Redux/React Router/Less(Scss)/Feature oriented Architecture/Dedicated IDE</p>
-<h2 id="Codesandbox"><a href="#Codesandbox" class="headerlink" title="Codesandbox"></a>Codesandbox</h2><p>在线开发平台Codesandbox.io.</p>
-<p>开发者可以不用关心项目配置的细节，打包，部署，build．．．</p>
+          相关技术栈
+Redux 用来做状态管理
+REACT/ROUTER 路由管理
+BABEL 最新JavaScript特性翻译成浏览器兼容的旧的JavaScript语法
+webpack 打包
+ESLint　语法检查
 
-          
+Create React Appfackbook 推出的命令行工具，可以快速生成一个Re
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/01/01/1%E3%80%81React%E8%84%9A%E6%89%8B%E6%9E%B6/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1520,31 +1453,24 @@
       
         
           
-            <h1 id="远程连接"><a href="#远程连接" class="headerlink" title="远程连接"></a>远程连接</h1><ul>
-<li><p>remmina</p>
-<pre><code>sudo dnf install remmina</code></pre></li>
-</ul>
-<h1 id="浏览器"><a href="#浏览器" class="headerlink" title="浏览器"></a>浏览器</h1><ul>
-<li><p>chrome</p>
-<ul>
-<li><p>Fedora安装Chrom</p>
-<pre><code>cd /etc/yum.repos.d/    
+          远程连接
+remmina
+sudo dnf install remmina
+
+浏览器
+chrome
+
+Fedora安装Chrom
+cd /etc/yum.repos.d/    
 wget  http://repo.fdzh.org/chrome/google-chrome-mirrors.repo
-dnf install -y google-chrome-stable</code></pre></li>
-</ul>
-</li>
-</ul>
-<h1 id="shadowsocket-服务"><a href="#shadowsocket-服务" class="headerlink" title="shadowsocket 服务"></a>shadowsocket 服务</h1><h1 id="FZUG源"><a href="#FZUG源" class="headerlink" title="FZUG源"></a>FZUG源</h1><p>  <a href="https://github.com/FZUG/repo/wiki/%E6%B7%BB%E5%8A%A0-FZUG-%E6%BA%90" target="_blank" rel="noopener">安装 FZUG 源</a></p>
-<h1 id="UML工具"><a href="#UML工具" class="headerlink" title="UML工具"></a>UML工具</h1><p>  <a href="http://www.umlet.com/" target="_blank" rel="noopener">Umlet</a></p>
-<p>  <a href="http://staruml.io/" target="_blank" rel="noopener">Staruml</a></p>
-<h1 id="正则表达式工具"><a href="#正则表达式工具" class="headerlink" title="正则表达式工具"></a>正则表达式工具</h1><p>  <a href="http://www.regexbuddy.com/" target="_blank" rel="noopener">regexbuddy</a></p>
-<h1 id="端口管理"><a href="#端口管理" class="headerlink" title="端口管理"></a>端口管理</h1><pre><code>nmap</code></pre><h1 id="截图"><a href="#截图" class="headerlink" title="截图"></a>截图</h1><pre><code>flameshot
-
-添加到快捷键命令: flameshot gui</code></pre><h1 id="代码片段"><a href="#代码片段" class="headerlink" title="代码片段"></a>代码片段</h1><pre><code>Cacher</code></pre><h1 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h1><p>DBeaver</p>
-<h1 id="Atom插件"><a href="#Atom插件" class="headerlink" title="Atom插件"></a>Atom插件</h1><pre><code>列编辑插件
-
-sublime-style-column-selection</code></pre>
-          
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/08/10/%E6%88%91%E7%9A%84Linux%E5%B8%B8%E7%94%A8%E8%BD%AF%E4%BB%B6/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1705,10 +1631,17 @@ sublime-style-column-selection</code></pre>
       
         
           
-            <p>转自<a href="https://www.ibm.com/developerworks/cn/linux/1407_liuming_init1/index.html" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/linux/1407_liuming_init1/index.html</a></p>
-<p>该系列共有3部份内容<br>第 1 部分: sysvinit<br>第 2 部分: UpStart<br>第 3 部分: Systemd</p>
+          转自https://www.ibm.com/developerworks/cn/linux/1407_liuming_init1/index.html
+该系列共有3部份内容第 1 部分: sysvinit第 2 部分: UpStart第 3 部分: Systemd
 
           
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2015/09/03/%E6%B5%85%E6%9E%90Linux%E5%88%9D%E5%A7%8B%E5%8C%96init%E7%B3%BB%E7%BB%9F/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1869,15 +1802,16 @@ sublime-style-column-selection</code></pre>
       
         
           
-            <h1 id="驱动"><a href="#驱动" class="headerlink" title="驱动"></a>驱动</h1><p>log4j是一个日志系统。</p>
-<p>slf4j是一个日志系统的封装，对外提供统一的API使用slf4j需要下载： slf4j-api-x.x.x.jar（它提供对外一致的API接口，其本身不提供日志实现）。 假设我们选择log4j作为我们的日志实现，需要下载： log4j-x.x.x.jar 如果想把slf4j绑定log4j，则需要下载slf4j对log4j的相应驱动： slf4j-log4j12-x.x.x.jar （这样就可以使用slf4j提供的API，用log4j实现打日志了）。 所谓驱动，就是实现了slf4j的一些接口，用你喜欢的日志系统打日志。 slf4j还支持好多日志系统，并提供了相应的“驱动”包 例如：</p>
-<p>slf4j-jdk14-x.x.x.jar是为java.util.logging提供的驱动</p>
-<p>slf4j-simple-x.x.x.jar直接绑定System.err</p>
-<p>lf4j-jcl-x.x.x.jar是为commons-logging提供的驱动</p>
-<p>logback-classic-x.x.x.jar是为logback提供的驱动</p>
-<h1 id="桥接"><a href="#桥接" class="headerlink" title="桥接"></a>桥接</h1><p>如果你引入了一个第三方jar包或者你之前的工程（本身就是使用的第三方jar包）使用了commons-logging打日志。还有一些组建可能直接调用了 java.util.logging，你想换成slf4j，你不需要更改代码，你需要使用桥接,你可以引入jcl-over-slf4j.jar，同时去掉commons-logging.jar包，这样之前打的日志会自动切换到你的slf4j中来了。 同样还有log4j-over-slf4j.jar and jul-to-slf4j.jar等用于使用其它日志系统的应用自动切换到slf4j统一打日志。</p>
-
-          
+          驱动log4j是一个日志系统。
+slf4j是一个日志系统的封装，对外提供统一的API使用slf4j需要下载： slf4j-api-x.x.x.jar（它提供对外一致的API接口，其本身不提供日志实现）。 假设我们选择log4j作为我们的日志实现，需要下载： log4j-x.x.x.jar 如果想把s
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2015/06/26/java%E6%97%A5%E5%BF%97%EF%BC%882%EF%BC%89-%E6%97%A5%E5%BF%97%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2038,22 +1972,18 @@ sublime-style-column-selection</code></pre>
       
         
           
-            <h1 id="组合模式"><a href="#组合模式" class="headerlink" title="组合模式"></a>组合模式</h1><h2 id="slf4j-log4j组合使用模式"><a href="#slf4j-log4j组合使用模式" class="headerlink" title="slf4j+log4j组合使用模式"></a>slf4j+log4j组合使用模式</h2><p>slf4j-api-1.5.11.jar –提供对外一致的API接口</p>
-<p>slf4j-log4j12-1.5.11.jar –slf4j对应log4j相应的“驱动”（把slf4j绑定log4j）</p>
-<p>log4j-1.2.15.jar</p>
-<p>log4j.properties(也可以是 log4j.xml)</p>
-<h2 id="JCL-Log4J组合使用模式（即commons-logging-log4j）"><a href="#JCL-Log4J组合使用模式（即commons-logging-log4j）" class="headerlink" title="JCL+Log4J组合使用模式（即commons-logging+log4j）"></a>JCL+Log4J组合使用模式（即commons-logging+log4j）</h2><p>commons-logging-1.1.jar</p>
-<p>log4j-1.2.15.jar</p>
-<p>log4j.properties</p>
-<h1 id="不同的获取logger的方式"><a href="#不同的获取logger的方式" class="headerlink" title="不同的获取logger的方式"></a>不同的获取logger的方式</h1><h2 id="log4j"><a href="#log4j" class="headerlink" title="log4j"></a>log4j</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.log4j.Logger;</span><br><span class="line"></span><br><span class="line">Logger logger= Logger.getLogger(xx<span class="class">.<span class="keyword">class</span>)</span>;</span><br></pre></td></tr></table></figure>
-
-<h2 id="slf4j-log4j："><a href="#slf4j-log4j：" class="headerlink" title="slf4j+log4j："></a>slf4j+log4j：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.slf4j.Logger;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"></span><br><span class="line">Logger logger = LoggerFactory.getLogger(xx<span class="class">.<span class="keyword">class</span>)</span>;</span><br></pre></td></tr></table></figure>
-
-<h2 id="jcl-log4j"><a href="#jcl-log4j" class="headerlink" title="jcl+log4j"></a>jcl+log4j</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.commons.logging.Log;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.logging.LogFactory;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Log log = LogFactory.getLog(xx<span class="class">.<span class="keyword">class</span>)</span>;</span><br></pre></td></tr></table></figure>
-
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>总的来说，slf4j与commons-logging只是一个日志门面，实际还是要依赖真正的日志库log4j，虽然slf4j和commons-loggins自带了日志库，但是毕竟log4j才是最强大的。</p>
-
-          
+          组合模式slf4j+log4j组合使用模式slf4j-api-1.5.11.jar –提供对外一致的API接口
+slf4j-log4j12-1.5.11.jar –slf4j对应log4j相应的“驱动”（把slf4j绑定log4j）
+log4j-1.2.15.jar
+log4j.properties
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2015/06/25/java%E6%97%A5%E5%BF%97%EF%BC%883%EF%BC%89-sl4j%E9%A9%B1%E5%8A%A8%E5%92%8C%E6%A1%A5%E6%8E%A5/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>

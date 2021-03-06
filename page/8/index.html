@@ -402,54 +402,21 @@
       
         
           
-            <h2 id="Mysql基本架构是什么样子的（简述Mysql基本架构）"><a href="#Mysql基本架构是什么样子的（简述Mysql基本架构）" class="headerlink" title="Mysql基本架构是什么样子的（简述Mysql基本架构）"></a>Mysql基本架构是什么样子的（简述Mysql基本架构）</h2><p>Mysql由服务层（Service层）和存储引擎层构成。</p>
-<ul>
-<li><p>Service层涵盖Mysql的大多数核心功能，及所有的内置函数</p>
-<p>包含连接器、查询缓存、分析器、优化器、执行器；</p>
-<p>所有跨存储引擎的功能都在这一层实现；</p>
-</li>
-<li><p>存储引擎层，负责数据的存储和提取</p>
-<p>采用插件式设计，支持InnoDB、MYISAM、Memory等多个存储引擎；</p>
-<p>建表时，如果不制定引擎类型，会默认使用InnoDB</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#指定存储引擎</span><br><span class="line">create table foo（id int primary key,name var(10) not null）engine&#x3D;InnoDB;</span><br></pre></td></tr></table></figure>
-<p>不同的存储引擎共用一个service层</p>
-</li>
-</ul>
-<h2 id="Mysql由哪些组件组成-各个组件的作用是什么"><a href="#Mysql由哪些组件组成-各个组件的作用是什么" class="headerlink" title="Mysql由哪些组件组成,各个组件的作用是什么"></a>Mysql由哪些组件组成,各个组件的作用是什么</h2><h3 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h3><p>  负责跟客户端建立连接，获取权限，维持和管理连接；</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#mysql客户端工具连接</span><br><span class="line">mysql -h$ip -P$port -u$user -p</span><br></pre></td></tr></table></figure>
+          Mysql基本架构是什么样子的（简述Mysql基本架构）Mysql由服务层（Service层）和存储引擎层构成。
 
-<p>  客户端同服务端建立连接，在完成TCP握手后，连接器就开始认证身份，需要我们提供用户名密码；</p>
-<p>  认证通过后，连接器会到权限表里查出所有你拥有的权限，之后这个连接里的所有权限判断，都将依赖于此时读到的权限。也就是说连接成功后权限就不会改变了，如果修改了权限，需要重新连接。</p>
-<p>  关于连接的一些参数：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">show processlist; --查看所有链接状态</span><br><span class="line"></span><br><span class="line">-- 查看mysql參數</span><br><span class="line">show variables like &quot;%timeout%&quot;；</span><br><span class="line">-- wait_timeout：设置非交互连接（就是指那些连接池方式、非客户端方式连接的）的超时时间，默认是28800，就是8小时，超过这个时间，mysql服务器会主动切断那些已经连接的，但是状态是sleep的连接。</span><br><span class="line"></span><br><span class="line">-- interactive_timeout:交互链接超时时间;</span><br><span class="line"></span><br><span class="line">-- connection_timeout：“连接过程中”的等待时间</span><br></pre></td></tr></table></figure>
+Service层涵盖Mysql的大多数核心功能，及所有的内置函数
+包含连接器、查询缓存、分析器、优化器、执行器；
+所有跨存储引擎的功能都在这一层实现；
 
-<p>  建立连接的过程通常是比较复杂的，所以建议你在使用中要尽量减少建立连接的动作，也就是尽量使用长连接。</p>
-<p>  MySQL 在执行过程中临时使用的内存是管理在连接对象里面的。这些资源会在连接断开的时候才释放。所以如果长连接累积下来，可能导致内存占用太大，被系统强行杀掉（OOM），从现象看就是 MySQL 异常重启了。</p>
-<pre><code>解决：
-定期断开长连接。使用一段时间，或者程序里面判断执行过一个占用内存的大查询后，断开连接，之后要查询再重连。
-
-如果你用的是 MySQL 5.7 或更新版本，可以在每次执行一个比较大的操作后，通过执行 mysql_reset_connection 来重新初始化连接资源。这个过程不需要重连和重新做权限验证，但是会将连接恢复到刚刚创建完时的状态。</code></pre><h3 id="查询缓存"><a href="#查询缓存" class="headerlink" title="查询缓存"></a>查询缓存</h3><p>  键值对的形式，key是查询语句，valve是结果；</p>
-<p>  查询缓存的失效非常频繁，只要有对一个表的更新，这个表上所有的查询缓存都会被清空。</p>
-<p>  可以将参数 query_cache_type 设置成 DEMAND，这样对于默认的 SQL 语句都不使用查询缓存。</p>
-<p>  MySQL 8.0版本直接将查询缓存的整块功能删掉了，也就是说 8.0 开始彻底没有这个功能了。</p>
-<p>  如果命中查询缓存，会在查询缓存返回结果的时候，做权限验证。</p>
-<p>  关于查询缓存的一些参数：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">query_catche_size&#x3D;0; -- 最好设置为1024的倍数，参考值32M</span><br><span class="line">query_catch_type&#x3D;0; -- 0禁用 1缓存所有查询 2只缓存通过SQL_CACHE指定需要缓存的查询</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="分析器"><a href="#分析器" class="headerlink" title="分析器"></a>分析器</h3><p>  词法分析；</p>
-<pre><code>读取表定义，识别关键字及表和列信息等</code></pre><p>  语法分析；</p>
-<pre><code>ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &apos;elect * from t where ID=1&apos; at line 1</code></pre><h3 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h3><p>  查询会在优化器之前调用 precheck 验证权限；</p>
-<p>  选择索引，决定表的连接顺序。</p>
-<h3 id="执行器"><a href="#执行器" class="headerlink" title="执行器"></a>执行器</h3><p>  权限检查；</p>
-<p>  开表；</p>
-<p>  重复调用表定义的引擎接口，直到表的最后一行，拿到所有满足条件的接口，组成结果集返回给客户端；</p>
-<h2 id="Mysql权限是怎么控制的？"><a href="#Mysql权限是怎么控制的？" class="headerlink" title="Mysql权限是怎么控制的？"></a>Mysql权限是怎么控制的？</h2><p>  客户端通过认证后，会去权限表读取权限，此后所有的权限判断都基于此时读取的权限。除非重新连接，否则不会改变。</p>
-<p>  命中缓存后，返回结果前会校验权限；</p>
-<p>  优化器之前会调用precheck权限验证；</p>
-<p>  执行器开表前会进行权限验证。</p>
-
-          
+存储引擎层，负责数据的存储和提
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -610,85 +577,17 @@
       
         
           
-            <h2 id="本文转自http-www-imkevinyang-com"><a href="#本文转自http-www-imkevinyang-com" class="headerlink" title="本文转自http://www.imkevinyang.com"></a>本文转自<a href="http://www.imkevinyang.com" target="_blank" rel="noopener">http://www.imkevinyang.com</a></h2><p>字符编码的问题看似很小，经常被技术人员忽视，但是很容易导致一些莫名其妙的问题。这里总结了一下字符编码的一些普及性的知识，希望对大家有所帮助。</p>
-<p>还是得从ASCII码说起</p>
-<p>说到字符编码，不得不说ASCII码的简史。计算机一开始发明的时候是用来解决数字计算的问题，后来人们发现，计算机还可以做更多的事，例如文本处理。但由于计算机只识“数”，因此人们必须告诉计算机哪个数字来代表哪个特定字符，例如65代表字母‘A’，66代表字母‘B’，以此类推。但是计算机之间字符-数字的对应关系必须得一致，否则就会造成同一段数字在不同计算机上显示出来的字符不一样。因此美国国家标准协会ANSI制定了一个标准，规定了常用字符的集合以及每个字符对应的编号，这就是ASCII字符集（Character Set），也称ASCII码。</p>
-<p>当时的计算机普遍使用8比特字节作为最小的存储和处理单元，加之当时用到的字符也很少，26个大小写英文字母还有数字再加上其他常用符号，也不到100个，因此使用7个比特位就可以高效的存储和处理ASCII码，剩下最高位1比特被用作一些通讯系统的奇偶校验。</p>
-<p>注意，字节代表系统能够处理的最小单位，不一定是8比特。只是现代计算机的事实标准就是用8比特来代表一个字节。在很多技术规格文献中，为了避免产生歧义，更倾向于使用8位组（Octet）而不是字节（Byte）这个术语来强调8个比特的二进制流。下文中为了便于理解，我会延用大家熟悉的“字节”这个概念。</p>
-<p>ASCII字符集由95个可打印字符（0x20-0x7E）和33个控制字符（0x00-0x19，0x7F）组成。可打印字符用于显示在输出设备上，例如荧屏或者打印纸上，控制字符用于向计算机发出一些特殊指令，例如0x07会让计算机发出哔的一声，0x00通常用于指示字符串的结束，0x0D和0x0A用于指示打印机的打印针头退到行首（回车）并移到下一行（换行）。</p>
-<p>那时候的字符编解码系统非常简单，就是简单的查表过程。例如将字符序列编码为二进制流写入存储设备，只需要在ASCII字符集中依次找到字符对应的字节，然后直接将该字节写入存储设备即可。解码二进制流的过程也是类似。</p>
-<p>OEM字符集的衍生</p>
-<p>当计算机开始发展起来的时候，人们逐渐发现，ASCII字符集里那可怜的128个字符已经不能再满足他们的需求了。人们就在想，一个字节能够表示的数字（编号）有256个，而ASCII字符只用到了0x00~0x7F，也就是占用了前128个，后面128个数字不用白不用，因此很多人打起了后面这128个数字的主意。可是问题在于，很多人同时有这样的想法，但是大家对于0x80-0xFF这后面的128个数字分别对应什么样的字符，却有各自的想法。这就导致了当时销往世界各地的机器上出现了大量各式各样的OEM字符集。</p>
-<p>下面这张表是IBM-PC机推出的其中一个OEM字符集，字符集的前128个字符和ASCII字符集的基本一致（为什么说基本一致呢，是因为前32个控制字符在某些情况下会被IBM-PC机当作可打印字符解释），后面128个字符空间加入了一些欧洲国家用到的重音字符，以及一些用于画线条画的字符。</p>
-<p>事实上，大部分OEM字符集是兼容ASCII字符集的，也就是说，大家对于0x00<del>0x7F这个范围的解释基本是相同的，而对于后半部分0x80</del>0xFF的解释却不一定相同。甚至有时候同样的字符在不同OEM字符集中对应的字节也是不同的。</p>
-<p>不同的OEM字符集导致人们无法跨机器交流各种文档。例如职员甲发了一封简历résumés给职员乙，结果职员乙看到的却是r</p>
-<p>sum</p>
-<p>s，因为é字符在职员甲机器上的OEM字符集中对应的字节是0x82，而在职员乙的机器上，由于使用的OEM字符集不同，对0x82字节解码后得到的字符却是</p>
-<p>。</p>
-<p>多字节字符集（MBCS）和中文字符集</p>
-<p>上面我们提到的字符集都是基于单字节编码，也就是说，一个字节翻译成一个字符。这对于拉丁语系国家来说可能没有什么问题，因为他们通过扩展第8个比特，就可以得到256个字符了，足够用了。但是对于亚洲国家来说，256个字符是远远不够用的。因此这些国家的人为了用上电脑，又要保持和ASCII字符集的兼容，就发明了多字节编码方式，相应的字符集就称为多字节字符集。例如中国使用的就是双字节字符集编码（DBCS，Double Byte Character Set）。</p>
-<p>对于单字节字符集来说，代码页中只需要有一张码表即可，上面记录着256个数字代表的字符。程序只需要做简单的查表操作就可以完成编解码的过程。</p>
-<p>代码页是字符集编码的具体实现，你可以把他理解为一张“字符-字节”映射表，通过查表实现“字符-字节”的翻译。下面会有更详细的描述。</p>
-<p>而对于多字节字符集，代码页中通常会有很多码表。那么程序怎么知道该使用哪张码表去解码二进制流呢？答案是，根据第一个字节来选择不同的码表进行解析。</p>
-<p>例如目前最常用的中文字符集GB2312，涵盖了所有简体字符以及一部分其他字符；GBK（K代表扩展的意思）则在GB2312的基础上加入了对繁体字符等其他非简体字符（GB18030字符集不是双字节字符集，我们在讲Unicode的时候会提到）。这两个字符集的字符都是使用1-2个字节来表示。Windows系统采用936代码页来实现对GBK字符集的编解码。在解析字节流的时候，如果遇到字节的最高位是0的话，那么就使用936代码页中的第1张码表进行解码，这就和单字节字符集的编解码方式一致了。</p>
-<p>当字节的高位是1的时候，确切的说，当第一个字节位于0x81–0xFE之间时，根据第一个字节不同找到代码页中的相应的码表，例如当第一个字节是0x81，那么对应936中的下面这张码表：</p>
-<p>（关于936代码页中完整的码表信息，参见MSDN：<a href="http://msdn.microsoft.com/en-us/library/cc194913%28v=MSDN.10%29.aspx.）" target="_blank" rel="noopener">http://msdn.microsoft.com/en-us/library/cc194913%28v=MSDN.10%29.aspx.）</a></p>
-<p>按照936代码页的码表，当程序遇到连续字节流0x81 0x40的时候，就会解码为“丂”字符。</p>
-<p>ANSI标准、国家标准、ISO标准</p>
-<p>不同ASCII衍生字符集的出现，让文档交流变得非常困难，因此各种组织都陆续进行了标准化流程。例如美国ANSI组织制定了ANSI标准字符编码（注意，我们现在通常说到ANSI编码，通常指的是平台的默认编码，例如英文操作系统中是ISO-8859-1，中文系统是GBK），ISO组织制定的各种ISO标准字符编码，还有各国也会制定一些国家标准字符集，例如中国的GBK，GB2312和GB18030。</p>
-<p>操作系统在发布的时候，通常会往机器里预装这些标准的字符集还有平台专用的字符集，这样只要你的文档是使用标准字符集编写的，通用性就比较高了。例如你用GB2312字符集编写的文档，在中国大陆内的任何机器上都能正确显示。同时，我们也可以在一台机器上阅读多个国家不同语言的文档了，前提是本机必须安装该文档使用的字符集。</p>
-<p>Unicode的出现</p>
-<p>虽然通过使用不同字符集，我们可以在一台机器上查阅不同语言的文档，但是我们仍然无法解决一个问题：在一份文档中显示所有字符。为了解决这个问题，我们需要一个全人类达成共识的巨大的字符集，这就是Unicode字符集。</p>
-<p>Unicode字符集概述</p>
-<p>Unicode字符集涵盖了目前人类使用的所有字符，并为每个字符进行统一编号，分配唯一的字符码（Code Point）。Unicode字符集将所有字符按照使用上的频繁度划分为17个层面（Plane），每个层面上有216=65536个字符码空间。</p>
-<p>其中第0个层面BMP，基本涵盖了当今世界用到的所有字符。其他的层面要么是用来表示一些远古时期的文字，要么是留作扩展。我们平常用到的Unicode字符，一般都是位于BMP层面上的。目前Unicode字符集中尚有大量字符空间未使用。</p>
-<p>编码系统的变化</p>
-<p>在Unicode出现之前，所有的字符集都是和具体编码方案绑定在一起的，都是直接将字符和最终字节流绑定死了，例如ASCII编码系统规定使用7比特来编码ASCII字符集；GB2312以及GBK字符集，限定了使用最多2个字节来编码所有字符，并且规定了字节序。这样的编码系统通常用简单的查表，也就是通过代码页就可以直接将字符映射为存储设备上的字节流了。例如下面这个例子：</p>
-<p>这种方式的缺点在于，字符和字节流之间耦合得太紧密了，从而限定了字符集的扩展能力。假设以后火星人入住地球了，要往现有字符集中加入火星文就变得很难甚至不可能了，而且很容易破坏现有的编码规则。</p>
-<p>因此Unicode在设计上考虑到了这一点，将字符集和字符编码方案分离开。</p>
-<p>也就是说，虽然每个字符在Unicode字符集中都能找到唯一确定的编号（字符码，又称Unicode码），但是决定最终字节流的却是具体的字符编码。例如同样是对Unicode字符“A”进行编码，UTF-8字符编码得到的字节流是0x41，而UTF-16（大端模式）得到的是0x00 0x41。</p>
-<p>常见的Unicode编码</p>
-<p>UCS-2/UTF-16</p>
-<p>如果要我们来实现Unicode字符集中BMP字符的编码方案，我们会怎么实现？由于BMP层面上有216=65536个字符码，因此我们只需要两个字节就可以完全表示这所有的字符了。</p>
-<p>举个例子，“中”的Unicode字符码是0x4E2D(01001110 00101101)，那么我们可以编码为01001110 00101101（大端）或者00101101 01001110 （小端）。</p>
-<p>UCS-2和UTF-16对于BMP层面的字符均是使用2个字节来表示，并且编码得到的结果完全一致。不同之处在于，UCS-2最初设计的时候只考虑到BMP字符，因此使用固定2个字节长度，也就是说，他无法表示Unicode其他层面上的字符，而UTF-16为了解除这个限制，支持Unicode全字符集的编解码，采用了变长编码，最少使用2个字节，如果要编码BMP以外的字符，则需要4个字节结对，这里就不讨论那么远，有兴趣可以参考维基百科：UTF-16/UCS-2。</p>
-<p>Windows从NT时代开始就采用了UTF-16编码，很多流行的编程平台，例如.Net，Java，Qt还有Mac下的Cocoa等都是使用UTF-16作为基础的字符编码。例如代码中的字符串，在内存中相应的字节流就是用UTF-16编码过的。</p>
-<p>UTF-8</p>
-<p>UTF-8应该是目前应用最广泛的一种Unicode编码方案。由于UCS-2/UTF-16对于ASCII字符使用两个字节进行编码，存储和处理效率相对低下，并且由于ASCII字符经过UTF-16编码后得到的两个字节，高字节始终是0x00，很多C语言的函数都将此字节视为字符串末尾从而导致无法正确解析文本。因此一开始推出的时候遭到很多西方国家的抵触，大大影响了Unicode的推行。后来聪明的人们发明了UTF-8编码，解决了这个问题。</p>
-<p>UTF-8编码方案采用1-4个字节来编码字符，方法其实也非常简单。</p>
-<p>（上图中的x代表Unicode码的低8位，y代表高8位）</p>
-<p>对于ASCII字符的编码使用单字节，和ASCII编码一摸一样，这样所有原先使用ASCII编解码的文档就可以直接转到UTF-8编码了。对于其他字符，则使用2-4个字节来表示，其中，首字节前置1的数目代表正确解析所需要的字节数，剩余字节的高2位始终是10。例如首字节是1110yyyy，前置有3个1，说明正确解析总共需要3个字节，需要和后面2个以10开头的字节结合才能正确解析得到字符。</p>
-<p>关于UTF-8的更多信息，参考维基百科：UTF-8。</p>
-<p>GB18030</p>
-<p>任何能够将Unicode字符映射为字节流的编码都属于Unicode编码。中国的GB18030编码，覆盖了Unicode所有的字符，因此也算是一种Unicode编码。只不过他的编码方式并不像UTF-8或者UTF-16一样，将Unicode字符的编号通过一定的规则进行转换，而只能通过查表的手段进行编码。</p>
-<p>关于GB18030的更多信息，参考：GB18030。</p>
-<p>Unicode相关的常见问题</p>
-<p>Unicode是两个字节吗？</p>
-<p>Unicode只是定义了一个庞大的、全球通用的字符集，并为每个字符规定了唯一确定的编号，具体存储为什么样的字节流，取决于字符编码方案。推荐的Unicode编码是UTF-16和UTF-8。</p>
-<p>带签名的UTF-8指的是什么意思？</p>
-<p>带签名指的是字节流以BOM标记开始。很多软件会“智能”的探测当前字节流使用的字符编码，这种探测过程出于效率考虑，通常会提取字节流前面若干个字节，看看是否符合某些常见字符编码的编码规则。由于UTF-8和ASCII编码对于纯英文的编码是一样的，无法区分开来，因此通过在字节流最前面添加BOM标记可以告诉软件，当前使用的是Unicode编码，判别成功率就十分准确了。但是需要注意，不是所有软件或者程序都能正确处理BOM标记，例如PHP就不会检测BOM标记，直接把它当普通字节流解析了。因此如果你的PHP文件是采用带BOM标记的UTF-8进行编码的，那么有可能会出现问题。</p>
-<p>Unicode编码和以前的字符集编码有什么区别？</p>
-<p>早期字符编码、字符集和代码页等概念都是表达同一个意思。例如GB2312字符集、GB2312编码，936代码页，实际上说的是同个东西。但是对于Unicode则不同，Unicode字符集只是定义了字符的集合和唯一编号，Unicode编码，则是对UTF-8、UCS-2/UTF-16等具体编码方案的统称而已，并不是具体的编码方案。所以当需要用到字符编码的时候，你可以写gb2312，codepage936，utf-8，utf-16，但请不要写unicode（看过别人在网页的meta标签里头写charset=unicode，有感而发）。</p>
-<p>乱码问题</p>
-<p>乱码指的是程序显示出来的字符文本无法用任何语言去解读。一般情况下会包含大量</p>
-<p>或者?。乱码问题是所有计算机用户或多或少会遇到的问题。造成乱码的原因就是因为使用了错误的字符编码去解码字节流，因此当我们在思考任何跟文本显示有关的问题时，请时刻保持清醒：当前使用的字符编码是什么。只有这样，我们才能正确分析和处理乱码问题。</p>
-<p>例如最常见的网页乱码问题。如果你是网站技术人员，遇到这样的问题，需要检查以下原因：<br>服务器返回的响应头Content-Type没有指明字符编码<br>网页内是否使用META HTTP-EQUIV标签指定了字符编码<br>网页文件本身存储时使用的字符编码和网页声明的字符编码是否一致</p>
-<p>注意，网页解析的过程如果使用的字符编码不正确，还可能会导致脚本或者样式表出错。具体细节可以参考我以前写过的文章：文档字符集导致的脚本错误和Asp.Net页面的编码问题。</p>
-<p>不久前看到某技术论坛有人反馈，WinForm程序使用Clipboard类的GetData方法去访问剪切板中的HTML内容时会出现乱码的问题，我估计也是由于WinForm在获取HTML文本的时候没有用对正确的字符编码导致的。Windows剪贴板只支持UTF-8编码，也就是说你传入的文本都会被UTF-8编解码。这样一来，只要两个程序都是调用Windows剪切板API编程的话，那么复制粘贴的过程中不会出现乱码。除非一方在获取到剪贴板数据之后使用了错误的字符编码进行解码，才会得到乱码（我做了简单的WinForm剪切板编程实验，发现GetData使用的是系统默认编码，而不是UTF-8编码）。</p>
-<p>关于乱码中出现?或者?，这里需要额外提一下，当程序使用特定字符编码解析字节流的时候，一旦遇到无法解析的字节流时，就会用</p>
-<p>或者?来替代。因此，一旦你最终解析得到的文本包含这样的字符，而你又无法得到原始字节流的时候，说明正确的信息已经彻底丢失了，尝试任何字符编码都无法从这样的字符文本中还原出正确的信息来。</p>
-<p>必要的术语解释</p>
-<p>字符集（Character Set），字面上的理解就是字符的集合，例如ASCII字符集，定义了128个字符；GB2312定义了7445个字符。而计算机系统中提到的字符集准确来说，指的是已编号的字符的有序集合（不一定是连续）。</p>
-<p>字符码（Code Point）指的就是字符集中每个字符的数字编号。例如ASCII字符集用0-127这连续的128个数字分别表示128个字符；GBK字符集使用区位码的方式为每个字符编号，首先定义一个94X94的矩阵，行称为“区”，列称为“位”，然后将所有国标汉字放入矩阵当中，这样每个汉字就可以用唯一的“区位”码来标识了。例如“中”字被放到54区第48位，因此字符码就是5448。而Unicode中将字符集按照一定的类别划分到0~16这17个层面（Planes）中，每个层面中拥有216=65536个字符码，因此Unicode总共拥有的字符码，也即是Unicode的字符空间总共有17*65536=1114112。</p>
-<p>编码的过程是将字符转换成字节流。</p>
-<p>解码的过程是将字节流解析为字符。</p>
-<p>字符编码（Character Encoding）是将字符集中的字符码映射为字节流的一种具体实现方案。例如ASCII字符编码规定使用单字节中低位的7个比特去编码所有的字符。例如‘A’的编号是65，用单字节表示就是0x41，因此写入存储设备的时候就是b’01000001’。GBK编码则是将区位码（GBK的字符码）中的区码和位码的分别加上0xA0（160）的偏移（之所以要加上这样的偏移，主要是为了和ASCII码兼容），例如刚刚提到的“中”字，区位码是5448，十六进制是0x3630，区码和位码分别加上0xA0的偏移之后就得到0xD6D0，这就是“中”字的GBK编码结果。</p>
-<p>代码页（Code Page）一种字符编码具体形式。早期字符相对少，因此通常会使用类似表格的形式将字符直接映射为字节流，然后通过查表的方式来实现字符的编解码。现代操作系统沿用了这种方式。例如Windows使用936代码页、Mac系统使用EUC-CN代码页实现GBK字符集的编码，名字虽然不一样，但对于同一汉字的编码肯定是一样的。</p>
-<p>大小端的说法源自《格列佛游记》。我们知道，鸡蛋通常一端大一端小，小人国的人们对于剥蛋壳时应从哪一端开始剥起有着不一样的看法。同样，计算机界对于传输多字节字（由多个字节来共同表示一个数据类型）时，是先传高位字节（大端）还是先传低位字节（小端）也有着不一样的看法，这就是计算机里头大小端模式的由来了。无论是写文件还是网络传输，实际上都是往流设备进行写操作的过程，而且这个写操作是从流的低地址向高地址开始写（这很符合人的习惯），对于多字节字来说，如果先写入高位字节，则称作大端模式。反之则称作小端模式。也就是说，大端模式下，字节序和流设备的地址顺序是相反的，而小端模式则是相同的。一般网络协议都采用大端模式进行传输，windows操作系统采用Utf-16小端模式。</p>
-<p>——Kevin Yang</p>
-<p>参考链接：<br>The Absolute Minimum Every Software Developer Absolutely, Positively Must Know About Unicode and Character Sets (No Excuses!)<br><a href="http://developers.sun.com/dev/gadc/technicalpublications/articles/gb18030.html" target="_blank" rel="noopener">http://developers.sun.com/dev/gadc/technicalpublications/articles/gb18030.html</a><br><a href="http://en.wikipedia.org/wiki/Universal_Character_Set" target="_blank" rel="noopener">http://en.wikipedia.org/wiki/Universal_Character_Set</a><br><a href="http://en.wikipedia.org/wiki/Code_page" target="_blank" rel="noopener">http://en.wikipedia.org/wiki/Code_page</a></p>
-
-          
+          本文转自http://www.imkevinyang.com字符编码的问题看似很小，经常被技术人员忽视，但是很容易导致一些莫名其妙的问题。这里总结了一下字符编码的一些普及性的知识，希望对大家有所帮助。
+还是得从ASCII码说起
+说到字符编码，不得不说ASCII码的简史。计算机一开始发明的时候是用来解
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/23/%E5%85%B3%E4%BA%8E%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81%EF%BC%8C%E4%BD%A0%E6%89%80%E9%9C%80%E8%A6%81%E7%9F%A5%E9%81%93%E7%9A%84%EF%BC%88ASCII-Unicode-Utf-8-GB2312%E2%80%A6%EF%BC%89/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -849,23 +748,19 @@
       
         
           
-            <p>一、关闭SeLinux</p>
-<p>查看SELinux状态：</p>
-<p>1、/usr/sbin/sestatus -v      ##如果SELinux status参数为enabled即为开启状态</p>
-<p>SELinux status:                 enabled</p>
-<p>2、getenforce                 ##也可以用这个命令检查</p>
-<p>关闭SELinux：</p>
-<p>1、临时关闭（不用重启机器）：</p>
-<p>setenforce 0                  ##设置SELinux 成为permissive模式</p>
-<p>##setenforce 1 设置SELinux 成为enforcing模式</p>
-<p>2、修改配置文件需要重启机器：</p>
-<p>修改/etc/selinux/config 文件</p>
-<p>将SELINUX=enforcing改为SELINUX=disabled</p>
-<p>重启机器即可</p>
-<p>二、执行下面的命令</p>
-<p>setsebool -P httpd_can_network_connect 1</p>
-
-          
+          一、关闭SeLinux
+查看SELinux状态：
+1、/usr/sbin/sestatus -v      ##如果SELinux status参数为enabled即为开启状态
+SELinux status:                 enabled
+2、getenforce         
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/20/SeLinux/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1026,41 +921,20 @@
       
         
           
-            <h1 id="Nginx组成"><a href="#Nginx组成" class="headerlink" title="Nginx组成"></a>Nginx组成</h1><h2 id="Ngnix二进制可执行文件"><a href="#Ngnix二进制可执行文件" class="headerlink" title="Ngnix二进制可执行文件"></a>Ngnix二进制可执行文件</h2><p>由各模块源码编译出来的一个文件</p>
-<h2 id="Nginx配置文件"><a href="#Nginx配置文件" class="headerlink" title="Nginx配置文件"></a>Nginx配置文件</h2><p>控制Nginx的行为</p>
-<h2 id="access-log访问日志"><a href="#access-log访问日志" class="headerlink" title="access.log访问日志"></a>access.log访问日志</h2><p>记录每一条http请求信息，可以进行运营和运维分析</p>
-<h2 id="error-log错误日志"><a href="#error-log错误日志" class="headerlink" title="error.log错误日志"></a>error.log错误日志</h2><p>定位问题</p>
-<h1 id="默认安装位置"><a href="#默认安装位置" class="headerlink" title="默认安装位置"></a>默认安装位置</h1><pre><code>/usr/local/nginx</code></pre><h1 id="常用基本命令"><a href="#常用基本命令" class="headerlink" title="常用基本命令"></a>常用基本命令</h1><ul>
-<li><p>启动 nginx</p>
-<ul>
-<li>直接执行nginx二进制文件 /usr/local/nginx/sbin/nginx</li>
-<li>指定配置文件的启动方式 /usr/local/nginx/sbin/nginx -c /tmp/nginx.conf</li>
-<li>使用-p指定nginx的安装目录</li>
-<li>采用Systemd初始化系统的Linux系统：systemctl start nginx.service</li>
-<li>采用upstart初始化系统的Linux系统：initctl start nginx</li>
-<li>采用SYSVINIT初始化系统的Linux系统：service nginx start</li>
-</ul>
-</li>
-<li><p>关闭 ngixn</p>
-<p>  当nginx实例运行时，可以通过发送相应的信号来管理它：</p>
-<ul>
-<li><p>stop - 快速关闭<br>  二进制文件路径/nginx -s stop<br>  kill -s SIGTERM pid<br>  kill -s SIGINT pid</p>
-</li>
-<li><p>quit - 优雅关闭 (等待 worker 线程完成处理)<br>  二进制文件路径/nginx -s qeuit<br>  kill -s SIGQUIT <nginx master pid><br>  kill -s SIGQUIT <nginx worker pid>  如果只优雅的关闭一个worker进程</p>
-</li>
-<li><p>reload - 重载配置文件<br>  二进制文件路径/nginx -s reload<br>  kill -s SIGHUB <nginx master pid></p>
-</li>
-<li><p>reopen - 重新打开日志文件<br>  二进制文件路径/nginx -s reopen<br>  kill -s SIGUSR1 <nginx master pid></p>
-</li>
-</ul>
-</li>
-</ul>
-<h1 id="配置文件位置"><a href="#配置文件位置" class="headerlink" title="配置文件位置"></a>配置文件位置</h1><p>nginx 的配置文件，默认的位置包括：</p>
-<pre><code>/etc/nginx/nginx.conf,
-/usr/local/etc/nginx/nginx.conf
-/usr/local/nginx/conf/nginx.conf</code></pre><h1 id="处理请求"><a href="#处理请求" class="headerlink" title="处理请求"></a>处理请求</h1><p>在Nginx内部，你可以指定多个虚拟服务器，每个虚拟服务器用 server{} 上下文描述。</p>
-
-          
+          Nginx组成Ngnix二进制可执行文件由各模块源码编译出来的一个文件
+Nginx配置文件控制Nginx的行为
+access.log访问日志记录每一条http请求信息，可以进行运营和运维分析
+error.log错误日志定位问题
+默认安装位置/usr/local/nginx常用基本命令
+启动 ngin
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/20/Nginx-1%EF%BC%9A%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1221,351 +1095,29 @@
       
         
           
-            <h1 id="1、安装规划"><a href="#1、安装规划" class="headerlink" title="1、安装规划"></a>1、安装规划</h1><ul>
-<li><p>必须要有的两个分区为根分区和swap分区</p>
-</li>
-<li><p>交换分区是一个特殊的分区，相当于windows下的虚拟分区，一般设为物理内存的两倍，但是建议不要超过8GB</p>
-</li>
-</ul>
-<h1 id="2、用户"><a href="#2、用户" class="headerlink" title="2、用户"></a>2、用户</h1><ul>
-<li><p>确认自己的UID</p>
-<pre><code>id</code></pre></li>
-<li><p>确认自己所属的用户组</p>
-<pre><code>groups</code></pre></li>
-<li><p>查看用户信息</p>
-<pre><code>users、who、w</code></pre></li>
-<li><p>调查用户</p>
-<pre><code>finger richey</code></pre></li>
-<li><p>切换用户</p>
-<pre><code>su - //加-是用户环境一块切换
+          1、安装规划
+必须要有的两个分区为根分区和swap分区
 
-sudo  //不切换用户直接以root身份执行</code></pre></li>
-</ul>
-<blockquote>
-<p>在演示sudo命令前，首先要编辑/etc/sudoers这个配置文件<br>linux专门提供里visudo来编辑这个文件<br>添加 richey  ALL=(ALL)  ALL<br>richey  ALL=(ALL)  NOPASSWD:ALL  这样设置就不需要输密码了</p>
-</blockquote>
-<ul>
-<li><p>修改用户组</p>
-<p>  usermod -g root richey 将用户添加到用户组，即拥有root权限</p>
-</li>
-</ul>
-<h1 id="3、帐号管理"><a href="#3、帐号管理" class="headerlink" title="3、帐号管理"></a>3、帐号管理</h1><ul>
-<li><p>添加新用户</p>
-<pre><code>useradd</code></pre></li>
-<li><p>修改密码</p>
-<pre><code>passwd</code></pre></li>
-<li><p>删除用户</p>
-<pre><code>userdel</code></pre></li>
-<li><p>添加用户组</p>
-<pre><code>groupadd</code></pre></li>
-<li><p>删除用户组</p>
-<pre><code>groupdel</code></pre></li>
-</ul>
-<ul>
-<li><p>demo:添加一个用户richey，并且将其用户组改为root（即赋予root权限）</p>
-<p>  useradd richey</p>
-<p>  usermod -g root richey   执行该命令时可能需要先将richey添加到/etc/sudoers这个配置文件</p>
-</li>
-</ul>
-<h1 id="4、例行任务管理"><a href="#4、例行任务管理" class="headerlink" title="4、例行任务管理"></a>4、例行任务管理</h1><ul>
-<li><p>单一时刻执行一次任务：==at==</p>
-<pre><code>[richey@192 ~]$ at now +30 minutes  //从现在开始，30分钟后安排一个任务
-warning: commands will be executed using /bin/sh
-at&gt; /sbin/shutdown -h now  //到时间后执行关机操作
-at&gt; &lt;EOT&gt;   //这不是手输入的，而是组合键Ctrl+D，表示输入结束
-job 4 at Sun Aug 13 23:21:00 2017</code></pre></li>
-</ul>
-<pre><code>at 00:00 2017-08-13   //可以设置具体时间</code></pre><ul>
-<li>查看当前使用at命令调度的任务列表：atq</li>
-</ul>
-<ul>
-<li><p>atrm 删除任务</p>
-<pre><code>atrm 1 //删除标号为1的任务</code></pre></li>
-<li><p>周期性执行任务：cron</p>
-<ul>
-<li><p>首先确认crond进程在运行，如果没有，需要先运行该进程</p>
-<pre><code>service crond start</code></pre></li>
-</ul>
-</li>
-</ul>
-<h1 id="5、文件相关操作"><a href="#5、文件相关操作" class="headerlink" title="5、文件相关操作"></a>5、文件相关操作</h1><ul>
-<li><p>touch    </p>
-<p>  如果用touch命令创建文件的时候，当前目录中已经存在了这个文件，那么这个命令不会对当前文件造成影响。它不会修改文件的内容，但是会更新文件的创建时间属性。</p>
-<p>  在linux中文件也是一种目录，所以touch一个目录，这个目录的创建时间也会被更新</p>
-<p>  可利用touch的这种特性生成时间戳文件，进行差异化备份    </p>
-<pre><code>touch time_stamp</code></pre></li>
-<li><p>cat</p>
-<pre><code>cat foo.log
+交换分区是一个特殊的分区，相当于windows下的虚拟分区，一般设为物理内存的两倍，但是建议不要超过8GB
 
-cat -n foo.log   //加上-n参数可以显示行号</code></pre></li>
-</ul>
-<ul>
-<li><p>head 查看头文件</p>
-<pre><code>head foo.log   //默认显示10行内容
 
-head -n 20 foo.log  //-n 参数指定显示的行数</code></pre></li>
-</ul>
-<ul>
-<li><p>tail 查看文件尾    </p>
-<pre><code>tail foo.log   //默认显示10行内容
-
-tail -n 20 foo.log    //-n 参数指定显示的行数
-
-tail -f foo.log   //动态查看文件尾</code></pre></li>
-<li><p>dos2unix 文件格式转换</p>
-</li>
-</ul>
-<ul>
-<li><p>mkdir     </p>
-<pre><code>mkdir -p dir1/dir2  //-p参数一次性创建所有目录</code></pre></li>
-</ul>
-<ul>
-<li><p>lsattr 显示文件的隐藏属性</p>
-<pre><code>lsattr foo.log  //默认隐藏属性都是没有设置的</code></pre></li>
-<li><p>chattr 设置文件的隐藏属性    </p>
-<p>  常用隐藏属性</p>
-<ul>
-<li><p>a属性 拥有这种属性的文件只能在尾部增数据而不能被删除</p>
-<pre><code>chattr +a foo.log  //设置了a属性即便是root用户也不能删除它    </code></pre></li>
-<li><p>i属性 设置了这种权限的文件将无法写入、删除、改名，即使root用户也不行，这总属性常用于设置在系统或关键服务中的配置文件。</p>
-<pre><code>chattr +i foo.log</code></pre></li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>chmod 改变文件权限</p>
-<ul>
-<li><p>每个文件都定义了拥有者（user）、拥有组（group）、其他人（other）的权限  </p>
-</li>
-<li><p>r=4  w=2 x=1</p>
-</li>
-<li><p>-R 递归修改所有文件权限</p>
-</li>
-</ul>
-</li>
-</ul>
-<p><img src="http://orybhlel7.bkt.clouddn.com/image/jpg/weread_image_788589565193717.jpeg" alt="image"></p>
-<ul>
-<li><p>chown 改变文件拥有者（拥有组）</p>
-<pre><code>chown richey foo.log //将foo.log的所有者该为richey    
-
-chown :richey foo.log //将foo.log文件改为richey用户组
-
-chown richey:richey foo.log</code></pre></li>
-<li><p>chgrp 改变文件的拥有组</p>
-<pre><code>chgrp richey foo.log  //将foo.log文件的所属组改为richey</code></pre></li>
-</ul>
-<ul>
-<li><p>特殊文件属性SUID/SGID/Sticky</p>
-<p>  SUID : 设置了SUID权限的，意味着普通用户可以用root身份来执行这个命令，SUID权限只能用于二进制文件。</p>
-<pre><code>chmod u+s somefile</code></pre><p>  SGID : 如果某个二进制文件的用户组设置了SGID权限，那么该组的所有用户都可以用root身份执行该文件。</p>
-<pre><code>chmod g+s somefile</code></pre><p>  Sticky : Sticky权限只能设置在目录上，设置了这种权限的目录，任何用户都可以在该目录中创建和修改文件，但是只有文件的创建者和root用户可以删除自己的文件。</p>
-<pre><code>chmod o +t somedir //权限部分的最后是t</code></pre></li>
-<li><p>file 查看文件类型</p>
-<pre><code>file somefile</code></pre></li>
-<li><p>查找文件   </p>
-<ul>
-<li><p>一般查找：find    </p>
-<pre><code>find PATH -name FILENAME
-
-find / -name httpd.conf //查找一个名为httpd.conf的文件
-
-find / -name *.conf  //通配符查找    </code></pre></li>
-</ul>
-</li>
-</ul>
-<pre><code>    ![image](http://orybhlel7.bkt.clouddn.com/image/jpg/weread_image_879160622465831.jpeg)    
-
-* 数据库查找
-
-    updatedb //查询前可更新下数据库，但者不是必须的，系统每天会自动更新
-
-    locate httpd.conf    
-
-* 查找执行文件：which/whereis
-
-    which用于从系统PATH定义的目录中查找可执行文件的绝对路径    
-
-        which passwd
-
-    whereis也能查到路径，而且还能找到相关的man文件
-
-        whereis passwd</code></pre><ul>
-<li><p>文件压缩打包</p>
-<ul>
-<li><p>gzip/gunzip</p>
-<pre><code>gzip foo.log    
-
-gunzip foo.log.gz</code></pre></li>
-<li><p>tar 不但可以打包文件，还可以将真个目录中的文件合成一个包，这个合包的同时还可以用gzip命令进行压缩。</p>
-<p>  一般整合后的包习惯用.tar作为后缀    </p>
-<p>  使用gzip压缩后的文件则使用.gz作为后缀    </p>
-<p>  同时整合和压缩后的文件可以使用.tar.gz作为后缀，或者简写为.tgz    </p>
-<pre><code>tar -zcvf  boot.tgz /boot // -z 使用gzip压缩  -c创建压缩文件（create） -v显示当前被压缩的文件   -f 指定使用的文件名（boot.tgz)
-
-tar -zxvf boot.tgz
-
-tar -zxvf boot.tgz -C /tmp //-C 指定压缩后的目录存放位置</code></pre></li>
-<li><p>bzip2</p>
-<p>  使用bzip2压缩文件时默认会产生.bz扩展名结尾的文件</p>
-<p>  使用-z 参数进行压缩</p>
-<p>  使用-d 参数进行解压</p>
-</li>
-<li><p>cpio</p>
-<p>  该命令一般配合find命令一起使用，通过管道的方式进行压缩备份及还原</p>
-</li>
-</ul>
-</li>
-</ul>
-<h1 id="6、磁盘分区、创建文件系统、挂载"><a href="#6、磁盘分区、创建文件系统、挂载" class="headerlink" title="6、磁盘分区、创建文件系统、挂载"></a>6、磁盘分区、创建文件系统、挂载</h1><ul>
-<li><p>磁盘使用前要对其进行分割，这种操作被称为分区    </p>
-</li>
-<li><p>磁盘的分区分为两类：主分区和扩展分区</p>
-</li>
-<li><p>受限于磁盘分区表的大小（MBR512字节，其中分区表栈64字节），每个分区信息占用16字节，所以一块磁盘最多只能创建四个分区。（主分区+扩展分区不能超过四个）</p>
-</li>
-<li><p>完成分区后要创建文件系统，最后将分区挂载到系统中的某个挂载点才可以使用</p>
-</li>
-</ul>
-<h2 id="查看磁盘的使用情况以及文件系统被挂载的位置s"><a href="#查看磁盘的使用情况以及文件系统被挂载的位置s" class="headerlink" title="查看磁盘的使用情况以及文件系统被挂载的位置ｓ"></a>查看磁盘的使用情况以及文件系统被挂载的位置ｓ</h2><pre><code>df -l</code></pre><h2 id="创建文件系统：fdisk"><a href="#创建文件系统：fdisk" class="headerlink" title="创建文件系统：fdisk"></a>创建文件系统：fdisk</h2><pre><code>fdisk -l //显示当前设备的分区表
-
-fdisk -s /dev/sda1  //显示指定分区的大小
-
-fdisk -s /dev/sda   //显示设备所有分区大小的总和
-
-fdisk /dev/sda  创建分区</code></pre><h2 id="磁盘挂载"><a href="#磁盘挂载" class="headerlink" title="磁盘挂载"></a>磁盘挂载</h2><ul>
-<li><p>创建了文件系统的分区后，在Linux系统中要进行挂载后才能使用，挂载的命令时amount</p>
-<pre><code>mount DEVICE MOUNT_POINT //DEVICE指的时具体的设备
-
-mount /dev/sda1  /home/workbench
-
-mount //没有参数的mount会显所有的挂载</code></pre></li>
-</ul>
-<ul>
-<li><p>设置启动自动挂载    </p>
-<p>  使用mount挂的设备在计算机重启后就会消失，所以必须通过配置/etc/fstab使得系统在重启后进行自动挂载。这里只需要一条命令即可：     </p>
-<pre><code>echo &quot;/dev/sdb1 /root/newDisk ext3 defaults 00&quot; &gt;&gt; /etc/fstab</code></pre><p>  命令的意思：/dev/sdb1（第一部分） 挂载到 /root/newDisk（第二部分） ,文件系统是ext3（第三部分），使用系统默认额度挂载参数（第四部分），第五部分是dump命令在进行备份时是否要将这个分区存档，默认是0，第六部分是设定系统启动时是否对该设备进行fsck。</p>
-</li>
-</ul>
-<ul>
-<li><p>lvm卷不能挂载的问题</p>
-<pre><code>mount: 未知的文件系统类型“LVM2_member”    </code></pre><p>  解决办法：<a href="http://blog.csdn.net/pengyouchuan/article/details/17578189" target="_blank" rel="noopener">http://blog.csdn.net/pengyouchuan/article/details/17578189</a></p>
-</li>
-</ul>
-<h2 id="解除挂载"><a href="#解除挂载" class="headerlink" title="解除挂载"></a>解除挂载</h2><pre><code>umount /DEVICE/PATH
-
-或者
-
-unount MOUNT_POINT</code></pre><h2 id="硬链接和软链接"><a href="#硬链接和软链接" class="headerlink" title="硬链接和软链接"></a>硬链接和软链接</h2><ul>
-<li><p>硬链接</p>
-<p>  硬链接又称实际链接，是指通过索引节点进行链接。在Linux系统中每个文件都会有一个编号，称为inode，多个文件指向同一个索引节点是被允许的，这种链接就是硬链接</p>
-<p>  删除一个链接不会影响索引节点本身和其他链接</p>
-<p>  文件真正删除的前提条件是与之相关的所有硬链接均被删除</p>
-<p>  不允许给目录创建硬链接</p>
-<p>  只有同一个文件系统中的文件之间才能创建链接</p>
-<pre><code>mkdir hard
-
-cd hard
-
-touch hard01
-
-ls -li //i 参数可是显示文件的inode
-
-ln hard01 hard01_hlink //创建指向hard01的硬链接
-
-ls -li //inode值是一致的</code></pre></li>
-<li><p>软链接</p>
-<p>  软链接又称符号链接，是一个包含了另一个文件路径名的文件，可以指向任意文件或目录，可以可以跨不同的文件系统。类似于windows系统的快捷方式。</p>
-<pre><code>touch file01
-
-ln -s file01 file01_slink //使用-s参数创建软链接</code></pre></li>
-</ul>
-<h1 id="7、字符处理"><a href="#7、字符处理" class="headerlink" title="7、字符处理"></a>7、字符处理</h1><pre><code>//TODO</code></pre><h1 id="8、网路管理"><a href="#8、网路管理" class="headerlink" title="8、网路管理"></a>8、网路管理</h1><h2 id="网路接口和配置"><a href="#网路接口和配置" class="headerlink" title="网路接口和配置"></a>网路接口和配置</h2><ul>
-<li><p>使用ifconfig检查和配置网卡</p>
-<pre><code>ifconfig // 输出当前系统中所有处于活动状态的网络接口</code></pre></li>
-</ul>
-<h1 id="9、进程管理"><a href="#9、进程管理" class="headerlink" title="9、进程管理"></a>9、进程管理</h1><h2 id="查询进程打开的文件：lsof"><a href="#查询进程打开的文件：lsof" class="headerlink" title="查询进程打开的文件：lsof"></a>查询进程打开的文件：lsof</h2><p>lsof(list open files)是一个列出当前系统中所有打开文件的工具。</p>
-<p>Linux中一切皆文件，所以在系统中被打开的文件可以是普通文件、目录、网路文件系统中的文件、字符设备、管道、socket等</p>
-<pre><code>dnf install lsof
-
-lsof [options] filename
-
-lsof filename //显示打开指定文件的所有进程
-
-lsof -c string //显示COMMOND列中包含指定字符串的进程打开的所有文件
-
-lsof -u username //显示所属于user进程打开的文件
-
-lsof -g gid //显示属于gid的进程情况
-
-lsof +d /DIR/ //显示目录下被进程打开的文件
-
-lsof +D /DIR/ //同上，但是会搜索目录下的所有目录，时间相对较长
-
-lsof -i 显示符合条件的进程情况</code></pre><ul>
-<li><p>查找使用了某个端口的进程</p>
-<pre><code>lsof -i :8080</code></pre></li>
-<li><p>查看当前有什么进程正在使用某文件</p>
-<pre><code>lsof /var/log/messages</code></pre></li>
-<li><p>利用lsof恢复被删除的文件，但这是有条件的，必须是文件正在被某个进程使用，而且该进程未停止（也就是我们依然有打开文件的句柄）</p>
-</li>
-</ul>
-<h1 id="10、Shell编程"><a href="#10、Shell编程" class="headerlink" title="10、Shell编程"></a>10、Shell编程</h1><h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><h3 id="局部变量"><a href="#局部变量" class="headerlink" title="局部变量"></a>局部变量</h3><p>在某个shell中生效的变量，在其它shell中无效，随着shell的消失而消失</p>
-<h3 id="环境变量"><a href="#环境变量" class="headerlink" title="环境变量"></a>环境变量</h3><ul>
-<li><p>环境变量又称“全局变量”。在shell脚本中变量默认就是全局的，但是为了子Shell继当前Shell的变量，可以使用export内建命令，将其导出为环境变量。该命令的使用方式为：</p>
-<pre><code>export VAR=value  //VAR为变量名字，value为值，用等号相连，等号两边没有空格
-echo $VAR //打印环境变量VAR</code></pre></li>
-<li><p>环境变量可以用在创建环境变量的Shell和从该Shell派生的任意子Shell或进程中（使用export内建命令将变量导出为环境变量），因此环境变量又被称为全局变量。</p>
-</li>
-<li><p>环境变量被创建时所处的Shell被称为父Shell，如果在父Shell中再创建一个Shell，则该Shell被称作子Shell。</p>
-</li>
-<li><p>环境变量只能向下传递不能向上传递。</p>
-</li>
-<li><p>常用环境变量</p>
-<pre><code>echo $HOMETYPE  //展示主机的架构
-
-echo $LANG
-
-echo $PATH  //记录命令的搜索路径</code></pre></li>
-</ul>
-<pre><code>export PATH=/some/path:$PATH //重设PATH，增加/some/path至原来的PATH中</code></pre><ul>
-<li><p>设置环境变量方法，如想将一个路径加入到$PATH中，可以像下面这样做:    </p>
-<ul>
-<li><p>控制台中设置，不赞成这种方式，因为他只对当前的shell 起作用，换一个shell设置就无效了：    </p>
-<pre><code>$PATH=&quot;$PATH&quot;:/NEW_PATH  (关闭shell Path会还原为原来的path)</code></pre></li>
-<li><p>修改 /etc/profile文件如果你的计算机仅仅作为开发使用时推存使用这种方法，因为所有用户的shell都有权使用这个环境变量，可能会给系统带来安全性问题。这里是针对所有的用户的，所有的shell</p>
-<pre><code>在/etc/profile的最下面添加：  export  PATH=&quot;$PATH:/NEW_PATH&quot;    </code></pre><p>  注：修改文件后要想马上生效还要运行# ==source /etc/profile==不然只能在下次重进此用户时生效</p>
-</li>
-<li><p>修改bashrc文件，这种方法更为安全，它可以把使用这些环境变量的权限控制到用户级别，这里是针对某一特定的用户，如果你需要给某个用户权限使用这些环境变量，你只需要修改其个人用户主目录下的 .bashrc文件就可以了。</p>
-<pre><code>在下面添加：Export  PATH=&quot;$PATH:/NEW_PATH&quot;    </code></pre><p>  注：修改文件后要想马上生效还要运行$ source /home/richey/.bash_profile不然只能在下次重进此用户时生效</p>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>使用evn查看所有环境变量</p>
-<p>  env</p>
-</li>
-<li><p>使用unset删除指定的环境变量</p>
-<p>  unset VAR //删除环境变量VAR</p>
-</li>
-</ul>
-<ul>
-<li>demo</li>
-</ul>
-<ol>
-<li><p>永久修改，对所有用户有效    </p>
-<p> vi /etc/profile<br> //按键盘[Shift + g], 在profile文件最后添加下面的内容:<br> export JAVA_HOME = /home/myuser/jdk1.7.0_03<br> export PATH = $JAVA_HOME/bin:$PATH<br> export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar<br> [注]：修改文件后如果想马上生效，还要运行 #source /etc/profile</p>
-</li>
-<li><p>永久修改，对单一用户有效    </p>
-<p> //修改用户目录下的.bash_profile文件<br>  $ vi /home/myuser/.bash_profile<br> //在文件最后添加下面的内容<br>  export JAVA_HOME = /home/myuser/jdk1.7.0_03<br>  export PATH = $JAVA_HOME/bin:$PATH<br>  export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar<br>  [注]：修改文件后如果想马上生效，还要运行 #source /home/myuser/.bash_profile</p>
-</li>
-<li><p>只对当前bash /shell 生效    </p>
-<p> $ export JAVA_HOME = /home/myuser/jdk1.7.0_03<br> $ export PATH = $JAVA_HOME/bin:$PATH<br> $ export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar</p>
-</li>
-</ol>
-
-          
+2、用户
+确认自己的UID
+id
+确认自己所属的用户组
+groups
+查看用户信息
+users、who、w
+调查用户
+finger
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/18/Linux%E7%AC%94%E8%AE%B0/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1726,47 +1278,17 @@ echo $PATH  //记录命令的搜索路径</code></pre></li>
       
         
           
-            <h4 id="1、查找文件"><a href="#1、查找文件" class="headerlink" title="1、查找文件"></a>1、查找文件</h4><pre><code>find . -name &quot;*.xml&quot; 递归查找所有的xml文件
+          1、查找文件find . -name &quot;*.xml&quot; 递归查找所有的xml文件
 find / -name filename.txt 根据名称查找/目录下的filename.txt文件。
-find . -name &quot;*.xml&quot; |xargs grep &quot;hello world&quot; 递归查找所有文件内容中包含hello world的xml文件
-find ./ -size 0 | xargs rm -f &amp;amp; 删除文件大小为零的文件
-grep -H &apos;spring&apos; *.xml 查找所以有的包含spring的xml文件
-ls -l | grep &apos;.jar&apos; 查找当前目录中的所有jar文件
-grep &apos;test&apos; d* 显示所有以d开头的文件中包含test的行。
-grep &apos;test&apos; aa bb cc 显示在aa，bb，cc文件中匹配test的行。
-grep &apos;[a-z]\{5\}&apos; aa 显示所有包含每个字符串至少有5个连续小写字符的字符串的行。</code></pre><h4 id="2、查看一个程序是否运行"><a href="#2、查看一个程序是否运行" class="headerlink" title="2、查看一个程序是否运行"></a>2、查看一个程序是否运行</h4><pre><code>ps –ef|grep tomcat 查看所有有关tomcat的进程</code></pre><h4 id="3、终止线程"><a href="#3、终止线程" class="headerlink" title="3、终止线程"></a>3、终止线程</h4><pre><code>kill -9 19979 终止线程号位19979的进程</code></pre><h4 id="4、查看文件，包含隐藏文件"><a href="#4、查看文件，包含隐藏文件" class="headerlink" title="4、查看文件，包含隐藏文件"></a>4、查看文件，包含隐藏文件</h4><pre><code>ls -al</code></pre><h4 id="5、当前工作目录"><a href="#5、当前工作目录" class="headerlink" title="5、当前工作目录"></a>5、当前工作目录</h4><pre><code>pwd</code></pre><h4 id="6、创建目录"><a href="#6、创建目录" class="headerlink" title="6、创建目录"></a>6、创建目录</h4><pre><code>mkdir newfolder</code></pre><h4 id="7、复制文件"><a href="#7、复制文件" class="headerlink" title="7、复制文件"></a>7、复制文件</h4><pre><code>cp source dest 复制文件
-cp -r sourceFolder targetFolder 递归复制整个文件夹
-scp sourecFile romoteUserName@remoteIp:remoteAddr 远程拷贝</code></pre><h4 id="8、删除目录"><a href="#8、删除目录" class="headerlink" title="8、删除目录"></a>8、删除目录</h4><pre><code>rmdir deleteEmptyFolder 删除空目录
-rm -rf deleteFile 递归删除目录中所有内容</code></pre><h4 id="9、重命令"><a href="#9、重命令" class="headerlink" title="9、重命令"></a>9、重命令</h4><pre><code>mv oldNameFile newNameFile</code></pre><h4 id="10、移动文件"><a href="#10、移动文件" class="headerlink" title="10、移动文件"></a>10、移动文件</h4><pre><code>mv /temp/movefile /targetFolder</code></pre><h4 id="11、切换用户"><a href="#11、切换用户" class="headerlink" title="11、切换用户"></a>11、切换用户</h4><pre><code>su -username</code></pre><h4 id="12、修改文件权限"><a href="#12、修改文件权限" class="headerlink" title="12、修改文件权限"></a>12、修改文件权限</h4><pre><code>chmod 777 file.java //file.java的权限-rwxrwxrwx，r表示读、w表示写、x表示可
-执行</code></pre><h4 id="13、压缩文件"><a href="#13、压缩文件" class="headerlink" title="13、压缩文件"></a>13、压缩文件</h4><pre><code>tar -czf test.tar.gz /test1 /test2</code></pre><h4 id="14、列出压缩文件列表"><a href="#14、列出压缩文件列表" class="headerlink" title="14、列出压缩文件列表"></a>14、列出压缩文件列表</h4><pre><code>tar -tzf test.tar.gz</code></pre><h4 id="15、解压文件"><a href="#15、解压文件" class="headerlink" title="15、解压文件"></a>15、解压文件</h4><pre><code>tar -xvzf test.tar.gz</code></pre><h4 id="16、查看文件头10行"><a href="#16、查看文件头10行" class="headerlink" title="16、查看文件头10行"></a>16、查看文件头10行</h4><pre><code>head -n 10 example.txt</code></pre><h4 id="17、查看文件尾10行"><a href="#17、查看文件尾10行" class="headerlink" title="17、查看文件尾10行"></a>17、查看文件尾10行</h4><pre><code>tail -n 10 example.txt</code></pre><h4 id="18、使用超级管理员身份执行命令"><a href="#18、使用超级管理员身份执行命令" class="headerlink" title="18、使用超级管理员身份执行命令"></a>18、使用超级管理员身份执行命令</h4><pre><code>sudo rm a.txt 使用管理员身份删除文件</code></pre><h4 id="19、查看日志类型文件"><a href="#19、查看日志类型文件" class="headerlink" title="19、查看日志类型文件"></a>19、查看日志类型文件</h4><pre><code>tail -f exmaple.log //这个命令会自动显示新增内容，屏幕只显示10行内容的（可设置）。</code></pre><h4 id="20、查看端口占用情况"><a href="#20、查看端口占用情况" class="headerlink" title="20、查看端口占用情况"></a>20、查看端口占用情况</h4><pre><code>netstat -tlnp | grep 8080 查看端口8080的使用情况</code></pre><ul>
-<li><p>打开端口</p>
-<p>  iptables -A INPUT -ptcp –dport  端口号 -j ACCEPT</p>
-</li>
-<li><p>关闭端口</p>
-<p>  iptables -A INPUT -p tcp –drop 端口号 -j DROP</p>
-<p>  iptables -A OUTPUT -p tcp –dport 端口号 -j DROP</p>
-</li>
-<li><p>demo打开23端口（即telnet端口）</p>
-<p>  nc -lp23</p>
-</li>
-</ul>
-<h4 id="21、查看端口属于哪个程序"><a href="#21、查看端口属于哪个程序" class="headerlink" title="21、查看端口属于哪个程序"></a>21、查看端口属于哪个程序</h4><pre><code>lsof -i :8080</code></pre><h4 id="22、查看进程"><a href="#22、查看进程" class="headerlink" title="22、查看进程"></a>22、查看进程</h4><pre><code>ps aux|grep java 查看java进程
-ps aux 查看所有进程</code></pre><h4 id="23、以树状图列出目录的内容"><a href="#23、以树状图列出目录的内容" class="headerlink" title="23、以树状图列出目录的内容"></a>23、以树状图列出目录的内容</h4><pre><code>tree a
-
-ps:Mac下使用tree命令
-
-http://www.hollischuang.com/archives/546</code></pre><h4 id="24、文件下载"><a href="#24、文件下载" class="headerlink" title="24、文件下载"></a>24、文件下载</h4><pre><code>wget http://file.tgz
-curl http://file.tgz
-
-mac下安装wget命令
-
-http://www.hollischuang.com/archives/548</code></pre><h4 id="25、网络检测"><a href="#25、网络检测" class="headerlink" title="25、网络检测"></a>25、网络检测</h4><pre><code>ping www.just-ping.com</code></pre><h4 id="26、远程登录"><a href="#26、远程登录" class="headerlink" title="26、远程登录"></a>26、远程登录</h4><pre><code>ssh userName@ip</code></pre><h4 id="27、打印信息"><a href="#27、打印信息" class="headerlink" title="27、打印信息"></a>27、打印信息</h4><pre><code>echo $JAVA_HOME 打印java home环境变量的值</code></pre><h4 id="28、java-常用命令"><a href="#28、java-常用命令" class="headerlink" title="28、java 常用命令"></a>28、java 常用命令</h4><pre><code>java javac jps ,jstat ,jmap, jstack
-
-jps:http://www.hollischuang.com/archives/105
-jstat:http://www.hollischuang.com/archives/481
-jmap:http://www.hollischuang.com/archives/303
-jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看所有的可用服务"><a href="#29、查看所有的可用服务" class="headerlink" title="29、查看所有的可用服务"></a>29、查看所有的可用服务</h4><pre><code>systemctl list-unit-files |grep service |grep enable</code></pre><h4 id="30、关闭服务"><a href="#30、关闭服务" class="headerlink" title="30、关闭服务"></a>30、关闭服务</h4><pre><code>systemctl stop ipatables</code></pre><h4 id="30、开机不启动"><a href="#30、开机不启动" class="headerlink" title="30、开机不启动"></a>30、开机不启动</h4><pre><code>systemctl disable iptables</code></pre>
-          
+find . -name &quot;*.xml&quot; |xargs grep &quo
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/12/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1927,38 +1449,16 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
       
         
           
-            <p>为了更安全、方便的登录Linux服务器，可以取消密码登录，使用私钥公钥的方式来登录，更方便也更安全。</p>
-<h1 id="生成密钥（客户端机器）"><a href="#生成密钥（客户端机器）" class="headerlink" title="生成密钥（客户端机器）"></a>生成密钥（客户端机器）</h1><pre><code>ssh-keygen -t [rsa|dsa] -P &apos;&apos;</code></pre><p>直接ssh-keygen然后三次回车就可以了。<br>-P表示密码，-P ‘’ 就表示空密码，也可以不用-P参数，这样就要三车回车，用-P就一次回车。<br>它在/home/chenlb下生成.ssh目录，.ssh下有id_rsa和id_rsa.pub这样一对公私钥。</p>
-<h1 id="上传公钥到服务器端"><a href="#上传公钥到服务器端" class="headerlink" title="上传公钥到服务器端"></a>上传公钥到服务器端</h1><p>先在服务器对应用户目录下创建~/.ssh/authorized_keys目录（如果目录已存在，这一步会被略过）</p>
-<p>ssh richey@host mkdir -p .ssh/authorized_keys</p>
-<p>把客户端的公钥_rsa.pub复制到服务器端机器的.ssh/authorized_keys文件里</p>
-<pre><code>* 可以用scp复制到服务器，然后再从服务器中把从客户端复制的id_rsa.pub添加到.ssh/authorzied_keys文件里。
-
-    scp .ssh/id_rsa.pub  richey@45.xx.xx.16:/home/richey/id_rsa.pub
-
-* 或者
-
-    cat .ssh/id_rsa.pub | ssh richey@hostB &apos;cat &gt;&gt; .ssh/authorized_keys&apos;</code></pre><ul>
-<li><p>上述的创建目录并复制的操作也可以通过一个 ssh-copy-id 命令一步完成：    </p>
-<pre><code>ssh-copy-id -i ~/.ssh/id_rsa.pub aliceB@hostB</code></pre></li>
-<li><p>authorized_keys的权限要是600。</p>
-<pre><code>chmod 600 .ssh/authorized_keys</code></pre></li>
-</ul>
-<h1 id="修改SSH的配置文件"><a href="#修改SSH的配置文件" class="headerlink" title="修改SSH的配置文件"></a>修改SSH的配置文件</h1><p>配置文件位置</p>
-<pre><code>/etc/ssh/sshd_config :
-
-#RSAAuthentication yes
-#PubkeyAuthentication yes
-#AuthorizedKeysFile .ssh/authorized_keys</code></pre><p>去调上面3行前面的#，保存后重启SSH服务。</p>
-<pre><code>使用SYSVINIT初始化系统的Linux系统：service sshd restart
-使用SYSTEMD初始化系统的Linux系统：systemctl restart sshd</code></pre><p>至此服务器端已经支持使用SSH私钥证书登录。</p>
-<h1 id="关闭root用户使用密码登陆"><a href="#关闭root用户使用密码登陆" class="headerlink" title="关闭root用户使用密码登陆"></a>关闭root用户使用密码登陆</h1><p>在使用SSH Key登录验证成功后，还是为了安全，建议关闭root用户使用密码登陆，关闭的方法如下：</p>
-<p>修改SSH的配置文件/etc/ssh/sshd_config，找到下面1行：</p>
-<pre><code>PasswordAuthentication yes</code></pre><p>修改为：</p>
-<pre><code>PasswordAuthentication no</code></pre><p>保存后重启SSH服务。</p>
-<pre><code>service sshd restart</code></pre><p>好了，至此只要你保存好你的私钥（为安全，建议删除服务器端的私钥），你的服务器相比原来使用root用户加密码登陆来说已经安全多了。</p>
-
-          
+          为了更安全、方便的登录Linux服务器，可以取消密码登录，使用私钥公钥的方式来登录，更方便也更安全。
+生成密钥（客户端机器）ssh-keygen -t [rsa|dsa] -P &apos;&apos;直接ssh-keygen然后三次回车就可以了。-P表示密码，-P ‘’ 就表示空密码，也可以不用-
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2119,58 +1619,24 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
       
         
           
-            <p>iptables属于网络层防火墙。</p>
-<ul>
-<li>iptables 查看所有iptables规则</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo iptables -L</span><br></pre></td></tr></table></figure>
+          iptables属于网络层防火墙。
 
-<ul>
-<li>关闭所有的 INPUT FORWARD OUTPUT 只对某些端口开放</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">设置：</span><br><span class="line">iptables -P INPUT DROP</span><br><span class="line">iptables -P FORWARD DROP</span><br><span class="line">iptables -P OUTPUT DROP</span><br><span class="line">查看是否设置好：</span><br><span class="line">iptables -L -n</span><br><span class="line">保存设置：</span><br><span class="line">service iptables save</span><br></pre></td></tr></table></figure>
+iptables 查看所有iptables规则
 
-<ul>
-<li><p>iptables 规则保存在/etc/sysconfig/iptables里面</p>
-</li>
-<li><p>打开22端口</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">iptables -A INPUT -p tcp --dport 22 -j ACCEPT</span><br><span class="line">iptables -A OUTPUT -p tcp --sport 22 -j ACCEPT</span><br><span class="line"></span><br><span class="line">查看是否添加上去了：</span><br><span class="line">iptables -L -n</span><br><span class="line"></span><br><span class="line">记得保存：</span><br><span class="line">service iptables save</span><br><span class="line"></span><br><span class="line">命令解释：</span><br><span class="line">-A 就是添加新的规则</span><br><span class="line">-p 指定是什么协议 我们常用的tcp 协议，当然也有udp 例如53端口的DNS</span><br><span class="line">--dport 目标端口 当数据从外部进入服务器为目标端口</span><br><span class="line">--sport 数据源端口，数据从服务器出去为数据源端口</span><br><span class="line">-j 就是指定是 ACCEPT 接收 或者 DROP 不接收</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>禁止某个ip访问</p>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">添加规则：</span><br><span class="line">iptables -A INPUT -p tcp -s 192.168.1.2 -j DROP</span><br><span class="line">保存规则：</span><br><span class="line">service iptables save</span><br><span class="line"></span><br><span class="line">命令解释：</span><br><span class="line">-A 就是添加新的规则</span><br><span class="line">-p tcp 指定添加的是tcp规则</span><br><span class="line">-s 来源的意思，ip来源于192.168.1.2</span><br><span class="line">-j 怎么做 我们拒绝它 这里应该是 DROP</span><br></pre></td></tr></table></figure>
+1sudo iptables -L
 
-<ul>
-<li><p>删除规则</p>
-<p>每条规则都有一个编号，首先我们要知道要删除的规则编号。</p>
-<p>查看规则及对应编号：</p>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">iptables -L -n --line-number</span><br><span class="line"></span><br><span class="line">num  target     prot opt source               destination         </span><br><span class="line">1    ACCEPT     udp  --  0.0.0.0&#x2F;0            0.0.0.0&#x2F;0            udp dpt:53</span><br><span class="line">2    ACCEPT     tcp  --  0.0.0.0&#x2F;0            0.0.0.0&#x2F;0            tcp dpt:53</span><br><span class="line">3    ACCEPT     udp  --  0.0.0.0&#x2F;0            0.0.0.0&#x2F;0            udp dpt:67</span><br><span class="line">4    ACCEPT     tcp  --  0.0.0.0&#x2F;0            0.0.0.0&#x2F;0            tcp dpt:67</span><br><span class="line">5    ACCEPT     all  --  0.0.0.0&#x2F;0            0.0.0.0&#x2F;0            ctstate RELATED,ESTABLISHED</span><br><span class="line">6    ACCEPT     all  --  0.0.0.0&#x2F;0            0.0.0.0&#x2F;0  </span><br><span class="line"></span><br><span class="line">多了num一列，那么我们就可以进行删除了：</span><br><span class="line">iptables -D INPUT 2 #删除INPUT链编号为2的规则</span><br></pre></td></tr></table></figure>
 
-<ul>
-<li><p>过滤无效的数据包</p>
-<ul>
-<li><p>禁止没有通过请求回应的数据包</p>
-<p> 假设有人进入了服务器，或者有病毒木马程序，它可以通过22，80端口像服务器外传送数据。它的这种方式就和我们正常访问22，80端口是有区别的，它发向外发的数据不是我们通过访问网页请求而回应的数据包。</p>
-<p>iptables 提供了一个参数 是检查状态的，下面我们来配置下 22 和 80 端口，防止无效的数据包。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">iptables -A OUTPUT -p tcp --sport 22 -m state --state ESTABLISHED -j ACCEPT</span><br><span class="line"></span><br><span class="line">对比之前使用的：</span><br><span class="line">iptables -A OUTPUT -p tcp --sport 22 -j ACCEPT</span><br><span class="line">多了一个状态判断</span><br><span class="line"></span><br><span class="line">同样80端口也一样：</span><br><span class="line">iptables -A OUTPUT -p tcp --sport 80 -m state --state ESTABLISHED -j ACCEPT</span><br><span class="line"></span><br><span class="line">删掉原来的两条规则：</span><br><span class="line">iptables -L -n --line-number</span><br><span class="line">iptables -D OUTPUT 对应的规则编号</span><br><span class="line"></span><br><span class="line">保存规则：</span><br><span class="line">service iptables save</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p>打开DNS端口</p>
-<p>DNS对应的是53端口</p>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">查看能不能解析域名：</span><br><span class="line">host www.baidu.com</span><br><span class="line"></span><br><span class="line">输入这个命令后，一直等待，出现下面提示：</span><br><span class="line">;; connection timed out; no servers could be reached</span><br><span class="line"></span><br><span class="line">ping一下域名也是不通：</span><br><span class="line">ping www.baidu.com</span><br><span class="line">ping: unknown host www.baidu.com</span><br><span class="line"></span><br><span class="line">这时候可以查看53端口是否开放：</span><br><span class="line">sudo iptables -L -n|grep 53</span><br><span class="line"></span><br><span class="line">查看域名服务端口号：</span><br><span class="line">grep domain &#x2F;etc&#x2F;services</span><br><span class="line"></span><br><span class="line">domain          53&#x2F;tcp                          # name-domain server</span><br><span class="line">domain          53&#x2F;udp</span><br><span class="line">domain-s        853&#x2F;tcp                 # DNS query-response protocol</span><br><span class="line">domain-s        853&#x2F;udp                 # DNS query-response protocol</span><br><span class="line">domaintime      9909&#x2F;tcp                # domaintime</span><br><span class="line">domaintime      9909&#x2F;udp                # domaintime</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">打开DNS53端口,我们一般使用udp协议：</span><br><span class="line"></span><br><span class="line">ping一个域名数据出去</span><br><span class="line">iptables -A OUTPUT -p udp --dport 53 -j ACCEPT</span><br><span class="line">DNS服务器响应回来</span><br><span class="line">iptables -A INPUT -p udp --sport 53 -j ACCEPT</span><br><span class="line"></span><br><span class="line">同时还要设置：</span><br><span class="line">iptables -A INPUT -p udp --dport 53 -j ACCEPT</span><br><span class="line">iptables -A OUTPUT -p udp --sport 53 -j ACCEPT</span><br><span class="line"></span><br><span class="line">iptables -L -n 查看设置情况</span><br><span class="line"></span><br><span class="line">保存规则：</span><br><span class="line">service iptables save</span><br></pre></td></tr></table></figure>
+关闭所有的 INPUT FORWARD OUTPUT 只对某些端口开放
 
-<ul>
-<li>iptables对ftp的设置</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">ftp连接端口有2个 21 和 20 端口，我现在添加对应的规则。</span><br><span class="line"></span><br><span class="line">[root@localhost root]#iptables -A INPUT -p tcp --dport 21 -j ACCEPT</span><br><span class="line">[root@localhost root]#iptables -A INPUT -p tcp --dport 20 -j ACCEPT</span><br><span class="line">[root@localhost root]#iptables -A OUTPUT -p tcp --sport 21 -j ACCEPT</span><br><span class="line">[root@localhost root]#iptables -A OUTPUT -p tcp --sport 20 -j ACCEPT</span><br><span class="line"></span><br><span class="line">ftp 是比较特殊的端口，它还有一些端口是数据传输端口,如目录列表、上传、下载文件都要用到这些端口，而这些端口是任意端口。</span><br><span class="line">所以我们要给ftp指定这个数据传输端口的一个范围。</span><br><span class="line">修改一下ftp配置文件,不同ftp配置文件不同，这里以vsftpd来演示修改：</span><br><span class="line"></span><br><span class="line">[root@localhost root]#vi &#x2F;etc&#x2F;vsftpd.conf</span><br><span class="line">pasv_min_port&#x3D;30001</span><br><span class="line">pasv_max_port&#x3D;31000</span><br><span class="line"></span><br><span class="line">这两句话的意思告诉vsftpd, 要传输数据的端口范围就在30001到31000 这个范围内传送。</span><br><span class="line"></span><br><span class="line">打开iptables 30001到31000这些端口：</span><br><span class="line">[root@localhost root]#iptables -A INPUT -p tcp --dport 30001:31000 -j ACCEPT</span><br><span class="line">[root@localhost root]#iptables -A OUTPUT -p tcp --sport 30001:31000 -j ACCEPT</span><br><span class="line">[root@localhost root]#service iptables save</span><br></pre></td></tr></table></figure>
-
-          
+12345678设置：iptables -P INPUT DROPiptables -P FORW
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/10/Linux%E4%B8%8Biptables%20%E7%A6%81%E6%AD%A2%E7%AB%AF%E5%8F%A3%E5%92%8C%E5%BC%80%E6%94%BE%E7%AB%AF%E5%8F%A3/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2331,18 +1797,25 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
       
         
           
-            <ul>
-<li><p>hexo g 生成静态文件</p>
-</li>
-<li><p>hexo s 启动本地服务</p>
-</li>
-<li><p>hexo clean 清除缓存文件(db.json)和已生成的静态文件(public)</p>
-</li>
-<li><p>hexo g -d 生成文件并部署到github</p>
-</li>
-</ul>
+          
+hexo g 生成静态文件
+
+hexo s 启动本地服务
+
+hexo clean 清除缓存文件(db.json)和已生成的静态文件(public)
+
+hexo g -d 生成文件并部署到github
+
+
 
           
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/08/hexo%E5%91%BD%E4%BB%A4/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2503,212 +1976,20 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
       
         
           
-            <h1 id="1、Java-Stream-API-入门"><a href="#1、Java-Stream-API-入门" class="headerlink" title="1、Java Stream API 入门"></a>1、Java Stream API 入门</h1><h2 id="Java8引入函数式编程"><a href="#Java8引入函数式编程" class="headerlink" title="Java8引入函数式编程"></a>Java8引入函数式编程</h2><ul>
-<li>代码简洁，使用stream接口让你从此告别for循环</li>
-<li>多核友好，Java函数式编程使得编写并行程序从未如此简单，你需要的全部就是调用一下parallel()方法</li>
-</ul>
-<h2 id="Java函数式编程的主角-Stream"><a href="#Java函数式编程的主角-Stream" class="headerlink" title="Java函数式编程的主角 Stream"></a>Java函数式编程的主角 Stream</h2><blockquote>
-<p>stream并不是某种数据结构，它只是==数据源的一种视图==。这里的数据源可以是一个数组，Java容器或I/O channel等。因如此要得到一个stream通常不会手动创建，而是调用对应的工具方法，比如：</p>
-</blockquote>
-<ul>
-<li>调用Collection.stream()或者Collection.parallelStream()方法</li>
-<li>stream(T[] array)方法</li>
-<li>Stream 接口关系继承图</li>
-</ul>
-<p><img src="http://orybhlel7.bkt.clouddn.com/image/png/stream-interface.png" alt="image"></p>
-<blockquote>
-<p>图中4种stream接口继承自BaseStream，其中IntStream, LongStream, DoubleStream对应三种基本类型（int, long, double，注意不是包装类型），Stream对应所有剩余类型的stream视图</p>
-</blockquote>
-<h2 id="Stream的特点"><a href="#Stream的特点" class="headerlink" title="Stream的特点"></a>Stream的特点</h2><blockquote>
-<p>虽然大部分情况下stream是容器调用Collection.stream()方法得到的，但stream和collections有以下不同：</p>
-</blockquote>
-<ul>
-<li>==无存储==。stream不是一种数据结构，它只是某种数据源的一个视图，数据源可以是一个数组，Java容器或I/O channel等。</li>
-<li>==为函数式编程而生==。对stream的任何修改都不会修改背后的数据源，比如对stream执行过滤操作并不会删除被过滤的元素，而是会产生一个不包含被过滤元素的新stream。</li>
-<li>==惰式执行==。stream上的操作并不会立即执行，只有等到用户真正需要结果的时候才会执行。</li>
-<li>==可消费性==。stream只能被“消费”一次，一旦遍历过就会失效，就像容器的迭代器那样，想要再次遍历必须重新生成。</li>
-</ul>
-<blockquote>
-<p>对stream的操作分为为两类，==中间操作==(intermediate operations)和==结束操作==(terminal operations)，二者特点是：</p>
-</blockquote>
-<ol>
-<li>中间操作总是会惰式执行，调用中间操作只会生成一个标记了该操作的新stream，仅此而已。</li>
-<li>结束操作会触发实际计算，计算发生时会把所有中间操作积攒的操作以pipeline的方式执行，这样可以减少迭代次数。计算完成之后stream就会失效。</li>
-</ol>
-<h2 id="Stream常见方法"><a href="#Stream常见方法" class="headerlink" title="Stream常见方法"></a>Stream常见方法</h2><blockquote>
-<p>Stream接口的部分常见方法：</p>
-</blockquote>
-<table>
-<thead>
-<tr>
-<th>操作类型</th>
-<th>接口方法</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>中间操作</td>
-<td>concat() distinct() filter() flatMap() limit() map() peek() skip() sorted() parallel() sequential() unordered()</td>
-</tr>
-<tr>
-<td>结束操作</td>
-<td>allMatch() anyMatch() collect() count() findAny() findFirst() forEach() forEachOrdered() max() min() noneMatch() reduce() toArray()</td>
-</tr>
-</tbody></table>
-<p><strong>区分中间操作和结束操作最简单的方法，就是看方法的返回值，返回值为stream的大都是中间操作，否则是结束操作。</strong></p>
-<h2 id="Stream方法的使用"><a href="#Stream方法的使用" class="headerlink" title="Stream方法的使用"></a>Stream方法的使用</h2><blockquote>
-<p>stream跟函数接口关系非常紧密，没有函数接口stream就无法工作。回顾一下：==函数接口是指内部只有一个抽象方法的接口。通常函数接口出现的地方都可以使用Lambda表达式==，所以不必记忆函数接口的名字。   </p>
-</blockquote>
-<ul>
-<li>forEach()    </li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;String&gt; stream &#x3D; Stream.of(&quot;I&quot;,&quot;love&quot;,&quot;yout&quot;,&quot;too&quot;);</span><br><span class="line">stream.forEach(str -&gt; System.out.println(str));</span><br></pre></td></tr></table></figure>
-<pre><code>由于forEach()是结束方法，上述代码会立即执行，输出所有字符串。</code></pre><ul>
-<li><p>filter()    </p>
-<p>  函数原型为Stream<T> filter(Predicate&lt;? super T&gt; predicate)，作用是返回一个只包含满足predicate条件元素的Stream。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;String&gt; stream &#x3D; Stream.of(&quot;I&quot;,&quot;love&quot;,&quot;you&quot;,&quot;too&quot;);</span><br><span class="line">stream.filter(str -&gt; str.length() &#x3D;&#x3D; 3).forEach(str -&gt; System.out.println(str));</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>distinck()</p>
-<p>  函数原型为Stream<T> distinct()，作用是返回一个去除重复元素之后的Stream。</p>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;String&gt; stream &#x3D; Stream.of(&quot;I&quot;,&quot;love&quot;,&quot;you&quot;,&quot;too&quot;,&quot;too&quot;);</span><br><span class="line">stream.distinct().forEach(str -&gt; System.out.println(str));</span><br></pre></td></tr></table></figure>
+          1、Java Stream API 入门Java8引入函数式编程
+代码简洁，使用stream接口让你从此告别for循环
+多核友好，Java函数式编程使得编写并行程序从未如此简单，你需要的全部就是调用一下parallel()方法
 
-<ul>
-<li><p>sorted()</p>
-<p>  排序函数有两个，一个是用自然顺序排序，一个是使用自定义比较器排序，函数原型分别为Stream<T>　sorted()和Stream<T>　sorted(Comparator&lt;? super T&gt; comparator)。</p>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;String&gt; stream &#x3D; Stream.of(&quot;I&quot;,&quot;love&quot;,&quot;you&quot;,&quot;too&quot;);</span><br><span class="line">stream.sorted((str1, str2) -&gt; str1.length() - str2.length()).forEach(str -&gt; System.out.println(str));</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>map()</li>
-</ul>
-<p>函数原型为<R> Stream<R> map(Function&lt;? super T,? extends R&gt; mapper)，作用是返回一个对当前所有元素执行执行mapper之后的结果组成的Stream。直观的说，就是对每个元素按照某种操作进行转换，转换前后Stream中元素的个数不会改变，但元素的类型取决于转换之后的类型。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;String&gt; stream &#x3D; Stream.of(&quot;I&quot;,&quot;love&quot;,&quot;you&quot;,&quot;too&quot;);</span><br><span class="line">stream.map(str -&gt; str.toUpperCase()).forEach(str -&gt; System.out.println(str));</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>flatMap</p>
-<p>  函数原型为<R> Stream<R> flatMap(Function&lt;? super T,? extends Stream&lt;? extends R&gt;&gt; mapper)，作用是对每个元素执行mapper指定的操作，并用所有mapper返回的Stream中的元素组成一个新的Stream作为最终返回结果。说起来太拗口，通俗的讲flatMap()的作用就相当于把原stream中的所有元素都”摊平”之后组成的Stream，转换前后元素的个数和类型都可能会改变。</p>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;List&lt;Integer&gt;&gt; stream &#x3D; Stream.of(Arrays.asList(1, 2), Arrays.asList(3, 4));</span><br><span class="line">stream.flatMap(list -&gt; list.stream()).forEach(i -&gt; System.out.println(i));</span><br></pre></td></tr></table></figure>
-
-<h1 id="2、Java-Stream-API-进阶"><a href="#2、Java-Stream-API-进阶" class="headerlink" title="2、Java Stream API 进阶"></a>2、Java Stream API 进阶</h1><h2 id="Stream的规约操作"><a href="#Stream的规约操作" class="headerlink" title="Stream的规约操作"></a>Stream的规约操作</h2><blockquote>
-<p>规约操作（reduction operation）又被称作折叠操作（fold），是通过某个连接动作将所有元素汇总成一个汇总结果的过程。元素求和、求最大值或最小值、求出元素总个数、将所有元素转换成一个列表或集合，都属于规约操作。Stream类库有两个通用的规约操作reduce()和collect()，也有一些为简化书写而设计的专用规约操作，比如sum()、max()、min()、count()等。</p>
-</blockquote>
-<blockquote>
-<p>最大或最小值这类规约操作很好理解（至少方法语义上是这样），我们着重介绍reduce()和collect()，这是比较有魔法的地方。</p>
-</blockquote>
-<h3 id="多面手reduce"><a href="#多面手reduce" class="headerlink" title="多面手reduce()"></a>多面手reduce()</h3><p>reduce操作可以实现从一组元素中生成一个值，sum()、max()、min()、count()等都是reduce操作，将他们单独设为函数只是因为常用。reduce()的方法定义有三种重写形式：</p>
-<ul>
-<li>Optional<T> reduce(BinaryOperator<T> accumulator)</li>
-<li>T reduce(T identity, BinaryOperator<T> accumulator)</li>
-<li><U> U reduce(U identity, BiFunction&lt;U,? super T,U&gt; accumulator, BinaryOperator<U> combiner)</li>
-</ul>
-<p>虽然函数定义越来越长，但语义不曾改变，多的参数只是为了指明初始值（参数identity），或者是指定并行执行时多个部分结果的合并方式（参数combiner）。reduce()最常用的场景就是从一堆值中生成一个值。用这么复杂的函数去求一个最大或最小值，你是不是觉得设计者有病。其实不然，因为“大”和“小”或者“求和”有时会有不同的语义。</p>
-<p>需求：从一组单词中找出最长的单词。这里“大”的含义就是“长”。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;String&gt; stream &#x3D; Stream.of(&quot;I&quot;,&quot;love&quot;,&quot;you&quot;,&quot;too&quot;);</span><br><span class="line">Optional&lt;String&gt; longest &#x3D; stream.reduce((str1, str2) -&gt; str1.length() &gt; str2.length() ? str1 : str2);</span><br><span class="line">System.out.println(longest.get());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;等同于</span><br><span class="line">Stream&lt;String&gt; stream &#x3D; Stream.of(&quot;I&quot;,&quot;love&quot;,&quot;you&quot;,&quot;too&quot;);</span><br><span class="line">Optional&lt;String&gt; longest &#x3D; stream.max((str1, str2) -&gt; str1.length() - str2.length());</span><br><span class="line">System.out.println(longest.get());</span><br></pre></td></tr></table></figure>
-<p>上述代码会选出最长的单词love，其中Optional是（一个）值的容器，使用它可以避免null值的麻烦。当然可以使用Stream.max(Comparator&lt;? super T&gt; comparator)方法来达到同等效果，但reduce()自有其存在的理由。</p>
-<p>需求：求出一组单词的长度之和。这是个“求和”操作，操作对象输入类型是String，而结果类型是Integer。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;String&gt; stream &#x3D; Stream.of(&quot;I&quot;,&quot;love&quot;,&quot;you&quot;,&quot;too&quot;);</span><br><span class="line">Integer lengthSum &#x3D; stream.reduce(0, &#x2F;&#x2F; 初始值 &#x2F;&#x2F;(1)</span><br><span class="line">        (sum, str) -&gt; sum + str.length(),  &#x2F;&#x2F;累加器 &#x2F;&#x2F;(2)</span><br><span class="line">        (a, b) -&gt; a + b); &#x2F;&#x2F;部分结果拼接器 &#x2F;&#x2F;(3)</span><br><span class="line">&#x2F;&#x2F;stream.mapToInt(str -&gt; str.length()).sum();</span><br><span class="line">System.out.println(lengthSum);</span><br></pre></td></tr></table></figure>
-<p>上述代码标号(2)处将i. 字符串映射成长度，ii. 并和当前累加和相加。这显然是两步操作，使用reduce()函数将这两步合二为一，更有助于提升性能。如果想要使用map()和sum()组合来达到上述目的，也是可以的。</p>
-<p>==reduce()擅长的是生成一个值==，如果想要从Stream生成一个集合或者Map等复杂的对象该怎么办呢？终极武器collect()横空出世！</p>
-<h3 id="终极武器collect"><a href="#终极武器collect" class="headerlink" title="终极武器collect()"></a>终极武器collect()</h3><p>不夸张的讲，如果你发现某个功能在Stream接口中没找到，十有八九可以通过collect()方法实现。collect()是Stream接口方法中最灵活的一个，学会它才算真正入门Java函数式编程。先看几个热身的小例子：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;String&gt; stream &#x3D; Stream.of(&quot;I&quot;,&quot;love&quot;,&quot;you&quot;,&quot;too&quot;);</span><br><span class="line">List&lt;String&gt; list &#x3D; stream.collect(Collectors.toList());</span><br><span class="line">&#x2F;&#x2F;Set&lt;String&gt; set &#x3D; stream.collect(Collectors.toSet());</span><br><span class="line">&#x2F;&#x2F;Map&lt;String, Integer&gt; map &#x3D; stream.collect(Collectors.toMap(Function.identity(), String::length));</span><br></pre></td></tr></table></figure>
-
-<p>上述代码分别列举了如何将Stream转换成List、Set和Map。虽然代码语义很明确，可是我们仍然会有几个疑问：</p>
-<ul>
-<li>Function.identity()是干什么的？</li>
-<li>String::length是什么意思？</li>
-<li>Collectors是个什么东西？</li>
-</ul>
-<h4 id="接口的静态方法和默认方法"><a href="#接口的静态方法和默认方法" class="headerlink" title="==接口的静态方法和默认方法=="></a>==接口的静态方法和默认方法==</h4><p>Function是一个接口，那么Function.identity()是什么意思呢？这要从两方面解释：</p>
-<ol>
-<li>Java 8允许在接口中加入具体方法。接口中的具体方法有两种，default方法和static方法，identity()就是Function接口的一个静态方法。</li>
-<li>Function.identity()返回一个输出跟输入一样的Lambda表达式对象，等价于形如t -&gt; t形式的Lambda表达式。</li>
-</ol>
-<blockquote>
-<p>上面的解释是不是让你疑问更多？不要问我为什么接口中可以有具体方法，也不要告诉我你觉得t -&gt; t比identity()方法更直观。我会告诉你接口中的default方法是一个无奈之举，在Java 7及之前要想在定义好的接口中加入新的抽象方法是很困难甚至不可能的，因为所有实现了该接口的类都要重新实现。试想在Collection接口中加入一个stream()抽象方法会怎样？default方法就是用来解决这个尴尬问题的，直接在接口中实现新加入的方法。既然已经引入了default方法，为何不再加入static方法来避免专门的工具类呢！</p>
-</blockquote>
-<h4 id="方法引用"><a href="#方法引用" class="headerlink" title="==方法引用=="></a>==方法引用==</h4><p>诸如String::length的语法形式叫做方法引用（method references），这种语法用来替代某些特定形式Lambda表达式。如果Lambda表达式的全部内容就是调用一个已有的方法，那么可以用方法引用来替代Lambda表达式。方法引用可以细分为四类：</p>
-<table>
-<thead>
-<tr>
-<th>方法引用类别</th>
-<th>举例</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>引用静态方法</td>
-<td>Integer::sum</td>
-</tr>
-<tr>
-<td>引用某个对象的方法</td>
-<td>list::add</td>
-</tr>
-<tr>
-<td>引用某个类的方法</td>
-<td>String::length</td>
-</tr>
-<tr>
-<td>引用构造方法</td>
-<td>HashMap::new</td>
-</tr>
-</tbody></table>
-<h4 id="收集器"><a href="#收集器" class="headerlink" title="==收集器=="></a>==收集器==</h4><p>收集器（Collector）是为Stream.collect()方法量身打造的工具接口（类）。考虑一下将一个Stream转换成一个容器（或者Map）需要做哪些工作？我们至少需要两样东西：</p>
-<ol>
-<li>目标容器是什么？是ArrayList还是HashSet，或者是个TreeMap。</li>
-<li>新元素如何添加到容器中？是List.add()还是Map.put()。如果并行的进行规约，还需要告诉collect()</li>
-<li>多个部分结果如何合并成一个。</li>
-</ol>
-<p>结合以上分析，collect()方法定义为<R> R collect(Supplier<R> supplier, BiConsumer&lt;R,? super T&gt; accumulator, BiConsumer&lt;R,R&gt; combiner)，三个参数依次对应上述三条分析。不过每次调用collect()都要传入这三个参数太麻烦，收集器Collector就是对这三个参数的简单封装,所以collect()的另一定义为&lt;R,A&gt; R collect(Collector&lt;? super T,A,R&gt; collector)。Collectors工具类可通过静态方法生成各种常用的Collector。举例来说，如果要将Stream规约成List可以通过如下两种方式实现：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;String&gt; stream &#x3D; Stream.of(&quot;I&quot;,&quot;love&quot;,&quot;you&quot;,&quot;too&quot;);</span><br><span class="line">List&lt;String&gt; list &#x3D; stream.collect(ArrayList::new, ArrayList::add, ArrayList::addAll);</span><br><span class="line">&#x2F;&#x2F;List&lt;String&gt; list &#x3D; stream.collect(Collectors.toList());</span><br><span class="line">System.out.println(list);</span><br></pre></td></tr></table></figure>
-
-<p>通常情况下我们不需要手动指定collect()的三个参数，而是调用collect(Collector&lt;? super T,A,R&gt; collector)方法，并且参数中的Collector对象大都是直接通过Collectors工具类获得。实际上传入的收集器的行为决定了collect()的行为。</p>
-<p>==使用collect()生成Collection==</p>
-<p>前面已经提到通过collect()方法将Stream转换成容器的方法，这里再汇总一下。将Stream转换成List或Set是比较常见的操作，所以Collectors工具已经为我们提供了对应的收集器，通过如下代码即可完成：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 将Stream转换成List或Set</span><br><span class="line">Stream&lt;String&gt; stream &#x3D; Stream.of(&quot;I&quot;, &quot;love&quot;, &quot;you&quot;, &quot;too&quot;);</span><br><span class="line">List&lt;String&gt; list &#x3D; stream.collect(Collectors.toList()); &#x2F;&#x2F; (1)</span><br><span class="line">Set&lt;String&gt; set &#x3D; stream.collect(Collectors.toSet()); &#x2F;&#x2F; (2)</span><br></pre></td></tr></table></figure>
-
-<p>上述代码能够满足大部分需求，但由于返回结果是接口类型，我们并不知道类库实际选择的容器类型是什么，有时候我们可能会想要人为指定容器的实际类型，这个需求可通过Collectors.toCollection(Supplier<C> collectionFactory)方法完成。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; list &#x3D; stream.collect(Collectors.toCollection(ArrayList::new)); &#x2F;&#x2F;(3)</span><br><span class="line">Set&lt;String&gt; set &#x3D; stream.collect(Collectors.toCollection(HashSet::new));  &#x2F;&#x2F;(4)</span><br></pre></td></tr></table></figure>
-<p>上述代码(3)处指定规约结果是ArrayList，而(4)处指定规约结果为HashSet。一切如你所愿。</p>
-<h4 id="使用collect-生成Map"><a href="#使用collect-生成Map" class="headerlink" title="==使用collect()生成Map=="></a>==使用collect()生成Map==</h4><p>前面已经说过Stream背后依赖于某种数据源，数据源可以是数组、容器等，但不能是Map。反过来从Stream生成Map是可以的，但我们要想清楚Map的key和value分别代表什么，根本原因是我们要想清楚要干什么。通常在三种情况下collect()的结果会是Map：</p>
-<ol>
-<li>使用Collectors.toMap()生成的收集器，用户需要指定如何生成Map的key和value。</li>
-<li>使用Collectors.partitioningBy()生成的收集器，对元素进行二分区操作时用到。</li>
-<li>使用Collectors.groupingBy()生成的收集器，对元素做group操作时用到。</li>
-</ol>
-<ul>
-<li>情况1：使用toMap()生成的收集器，这种情况是最直接的，前面例子中已提到，这是和Collectors.toCollection()并列的方法。如下代码展示将电脑列表转换成由&lt;电脑，G价格&gt;组成的Map。非常直观，无需多言。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public void TestCollectMap() &#123;</span><br><span class="line">    List&lt;ComputerVO&gt; computers &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">    computers.add(new ComputerVO(&quot;联想笔记本&quot;,5500.0));</span><br><span class="line">    computers.add(new ComputerVO(&quot;华硕笔记本&quot;,3500.0));</span><br><span class="line">    computers.add(new ComputerVO(&quot;苹果笔记本&quot;,6500.0));</span><br><span class="line">    Map&lt;ComputerVO,Double&gt; map &#x3D; computers.stream().collect(Collectors.toMap(Function.identity(), computerVO -&gt; getComputerPrice(computerVO)));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private Double getComputerPrice(ComputerVO computerVO) &#123;</span><br><span class="line">    return computerVO.getPrice();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>情况2：使用partitioningBy()生成的收集器，这种情况适用于将Stream中的元素依据某个二值逻辑（满足条件，或不满足）分成互补相交的两部分，比如男女性别、成绩及格与否等。下列代码展示将电脑分成价格大于等于3500和小于3500的两部分。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public void TestcollectMap2() &#123;</span><br><span class="line">    List&lt;ComputerVO&gt; computers &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">    computers.add(new ComputerVO(&quot;联想笔记本&quot;,5500.0));</span><br><span class="line">    computers.add(new ComputerVO(&quot;华硕笔记本&quot;,3500.0));</span><br><span class="line">    computers.add(new ComputerVO(&quot;苹果笔记本&quot;,6500.0));</span><br><span class="line">    Map&lt;Boolean,List&lt;ComputerVO&gt;&gt; map &#x3D; computers.stream().collect(Collectors.partitioningBy(c -&gt; c.getPrice() &gt;&#x3D; 3500));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>情况3：使用groupingBy()生成的收集器，这是比较灵活的一种情况。跟SQL中的group by语句类似，这里的groupingBy()也是按照某个属性对数据进行分组，属性相同的元素会被对应到Map的同一个key上。下列代码展示将电脑按照品牌进行分组：</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">List&lt;ComputerVO&gt; computers &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">computers.add(new ComputerVO(&quot;联想笔记本&quot;,5500.0));</span><br><span class="line">computers.add(new ComputerVO(&quot;华硕笔记本&quot;,3500.0));</span><br><span class="line">computers.add(new ComputerVO(&quot;苹果笔记本&quot;,6500.0));</span><br><span class="line">Map&lt;String,List&lt;ComputerVO&gt;&gt; map &#x3D; computers.stream().collect(Collectors.groupingBy(ComputerVO::getName));</span><br></pre></td></tr></table></figure>
-
-<p>以上只是分组的最基本用法，有些时候仅仅分组是不够的。在SQL中使用group by是为了协助其他查询，比如1. 先将电脑按照品牌分组，2. 然后统计每个品牌电脑的个数。Java类库设计者也考虑到了这种情况，增强版的groupingBy()能够满足这种需求。增强版的groupingBy()允许我们对元素分组之后再执行某种运算，比如求和、计数、平均值、类型转换等。这种先将元素分组的收集器叫做==上游收集器==，之后执行其他运算的收集器叫做==下游收集器==(downstream Collector)。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">List&lt;ComputerVO&gt; computers &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">computers.add(new ComputerVO(&quot;联想笔记本&quot;,5500.0));</span><br><span class="line">computers.add(new ComputerVO(&quot;华硕笔记本&quot;,3500.0));</span><br><span class="line">computers.add(new ComputerVO(&quot;苹果笔记本&quot;,6500.0));</span><br><span class="line">Map&lt;String, Long&gt; map &#x3D; computers.stream().collect(Collectors.groupingBy(ComputerVO::getName, Collectors.counting()));</span><br></pre></td></tr></table></figure>
-
-<p>上面代码的逻辑是不是越看越像SQL？高度非结构化。还有更狠的，下游收集器还可以包含更下游的收集器，这绝不是为了炫技而增加的把戏，而是实际场景需要。考虑将员工按照部门分组的场景，如果我们想得到每个员工的名字（字符串），而不是一个个Employee对象，可通过如下方式做到：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 按照部门对员工分布组，并只保留员工的名字</span><br><span class="line">Map&lt;Department, List&lt;String&gt;&gt; byDept &#x3D; employees.stream()</span><br><span class="line">                .collect(Collectors.groupingBy(Employee::getDepartment,</span><br><span class="line">                        Collectors.mapping(Employee::getName,&#x2F;&#x2F; 下游收集器</span><br><span class="line">                                Collectors.toList())));&#x2F;&#x2F; 更下游的收集器</span><br></pre></td></tr></table></figure>
-
-<h4 id="使用collect-做字符串join"><a href="#使用collect-做字符串join" class="headerlink" title="==使用collect()做字符串join=="></a>==使用collect()做字符串join==</h4><p>这个肯定是大家喜闻乐见的功能，字符串拼接时使用Collectors.joining()生成的收集器，从此告别for循环。Collectors.joining()方法有三种重写形式，分别对应三种不同的拼接方式。无需多言，代码过目难忘。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 使用Collectors.joining()拼接字符串</span><br><span class="line">Stream&lt;String&gt; stream &#x3D; Stream.of(&quot;I&quot;, &quot;love&quot;, &quot;you&quot;);</span><br><span class="line">&#x2F;&#x2F;String joined &#x3D; stream.collect(Collectors.joining());&#x2F;&#x2F; &quot;Iloveyou&quot;</span><br><span class="line">&#x2F;&#x2F;String joined &#x3D; stream.collect(Collectors.joining(&quot;,&quot;));&#x2F;&#x2F; &quot;I,love,you&quot;</span><br><span class="line">String joined &#x3D; stream.collect(Collectors.joining(&quot;,&quot;, &quot;&#123;&quot;, &quot;&#125;&quot;));&#x2F;&#x2F; &quot;&#123;I,love,you&#125;&quot;</span><br></pre></td></tr></table></figure>
-
-<h4 id="collect-还可以做更多"><a href="#collect-还可以做更多" class="headerlink" title="==collect()还可以做更多=="></a>==collect()还可以做更多==</h4><p>除了可以使用Collectors工具类已经封装好的收集器，我们还可以自定义收集器，或者直接调用collect(Supplier<R> supplier, BiConsumer&lt;R,? super T&gt; accumulator, BiConsumer&lt;R,R&gt; combiner)方法，收集任何形式你想要的信息。不过Collectors工具类应该能满足我们的绝大部分需求，手动实现之间请先看看文档。</p>
-<h1 id="3、深入理解Java"><a href="#3、深入理解Java" class="headerlink" title="3、深入理解Java"></a>3、深入理解Java</h1><p><a href="http://www.importnew.com/24235.html" target="_blank" rel="noopener">http://www.importnew.com/24235.html</a></p>
-<p><a href="http://www.importnew.com/25315.html" target="_blank" rel="noopener">http://www.importnew.com/25315.html</a></p>
-<h1 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h1><p><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#package.description" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#package.description</a><br><a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html</a><br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html</a><br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html</a><br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collectors.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collectors.html</a></p>
-<p><a href="http://www.importnew.com/24237.html" target="_blank" rel="noopener">http://www.importnew.com/24237.html</a><br><a href="http://www.importnew.com/24245.html" target="_blank" rel="noopener">http://www.importnew.com/24245.html</a><br><a href="http://www.importnew.com/24235.html" target="_blank" rel="noopener">http://www.importnew.com/24235.html</a></p>
-
-          
+Java函数式编程的主角 Stream
+stream并不是某种数据结构
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/08/Java%20Stream/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
