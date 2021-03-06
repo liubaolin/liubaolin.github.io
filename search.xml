@@ -1,6 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>mongoDB系列02-mongoDB基本操作</title>
+    <url>/2021/03/06/mongoDB%E7%B3%BB%E5%88%9702-mongoDB%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/</url>
+    <content><![CDATA[<h1 id="intert插入操作"><a href="#intert插入操作" class="headerlink" title="intert插入操作"></a>intert插入操作</h1><p>db.&lt;集合&gt;.insertOne(&lt;JSON对象&gt;)<br>db.&lt;集合&gt;.insertMany([&lt;JSON 1&gt;,…<JSON n>])</p>
+<p>demo:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.staff.insertOne(&#123;name:&quot;Richey&quot;&#125;)</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedId&quot; : ObjectId(&quot;60434c93b562b8d1012436aa&quot;)</span><br><span class="line">&#125;</span><br><span class="line">&gt; db.staff.insertMany([&#123;name:&quot;Kelly&quot;&#125;,&#123;name:&quot;Darwin&quot;&#125;,&#123;name:&quot;Freeman&quot;&#125;])</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedIds&quot; : [</span><br><span class="line">		ObjectId(&quot;60434cffb562b8d1012436ab&quot;),</span><br><span class="line">		ObjectId(&quot;60434cffb562b8d1012436ac&quot;),</span><br><span class="line">		ObjectId(&quot;60434cffb562b8d1012436ad&quot;)</span><br><span class="line">	]</span><br><span class="line">&#125;</span><br><span class="line">&gt; db.staff.find()</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434c93b562b8d1012436aa&quot;), &quot;name&quot; : &quot;Richey&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ab&quot;), &quot;name&quot; : &quot;Kelly&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ac&quot;), &quot;name&quot; : &quot;Darwin&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ad&quot;), &quot;name&quot; : &quot;Freeman&quot; &#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="find查找数据"><a href="#find查找数据" class="headerlink" title="find查找数据"></a>find查找数据</h1><p>查询所有数据</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">db.&lt;集合&gt;.find()</span><br></pre></td></tr></table></figure>
+<h2 id="条件查询"><a href="#条件查询" class="headerlink" title="条件查询"></a>条件查询</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.staff.insertMany([&#123;name:&quot;Jobs&quot;,age:18&#125;,&#123;name:&quot;Lili&quot;,gender:&quot;Female&quot;&#125;])</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedIds&quot; : [</span><br><span class="line">		ObjectId(&quot;60434f08b562b8d1012436ae&quot;),</span><br><span class="line">		ObjectId(&quot;60434f08b562b8d1012436af&quot;)</span><br><span class="line">	]</span><br><span class="line">&#125;</span><br><span class="line">#单条件查询</span><br><span class="line"></span><br><span class="line">&gt; db.staff.find(&#123;&quot;age&quot;:18&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436ae&quot;), &quot;name&quot; : &quot;Jobs&quot;, &quot;age&quot; : 18 &#125;</span><br><span class="line">#多条件and查询</span><br><span class="line">&gt; db.staff.find(&#123;&quot;name&quot;:&quot;Jobs&quot;,&quot;age&quot;:18&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436ae&quot;), &quot;name&quot; : &quot;Jobs&quot;, &quot;age&quot; : 18 &#125;</span><br><span class="line">&gt; db.staff.find(&#123;$and:[&#123;&quot;name&quot;:&quot;Jobs&quot;&#125;,&#123;&quot;age&quot;:18&#125;]&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436ae&quot;), &quot;name&quot; : &quot;Jobs&quot;, &quot;age&quot; : 18 &#125;</span><br><span class="line">#多条件or查询</span><br><span class="line">&gt; db.staff.find(&#123;$or:[&#123;&quot;age&quot;:18&#125;,&#123;&quot;gender&quot;:&quot;Female&quot;&#125;]&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436ae&quot;), &quot;name&quot; : &quot;Jobs&quot;, &quot;age&quot; : 18 &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436af&quot;), &quot;name&quot; : &quot;Lili&quot;, &quot;gender&quot; : &quot;Female&quot; &#125;</span><br><span class="line">#按正则表达式查询</span><br><span class="line"></span><br><span class="line">&gt; db.staff.find(&#123;&quot;name&quot;:&#x2F;^\b&#x2F;&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434c93b562b8d1012436aa&quot;), &quot;name&quot; : &quot;Richey&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ab&quot;), &quot;name&quot; : &quot;Kelly&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ac&quot;), &quot;name&quot; : &quot;Darwin&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ad&quot;), &quot;name&quot; : &quot;Freeman&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436ae&quot;), &quot;name&quot; : &quot;Jobs&quot;, &quot;age&quot; : 18 &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436af&quot;), &quot;name&quot; : &quot;Lili&quot;, &quot;gender&quot; : &quot;Female&quot; &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="find搜索子文档"><a href="#find搜索子文档" class="headerlink" title="find搜索子文档"></a>find搜索子文档</h2><p>find支持使用”field.sub_field”形式查询子文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">db.staff.insertOne(&#123;&quot;name&quot;:&quot;ZSan&quot;,&quot;age&quot;:28,&quot;addr&quot;:&#123;&quot;city&quot;:&quot;ShangHai&quot;,&quot;street&quot;:&quot;华夏西路188号&quot;&#125;&#125;)</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedId&quot; : ObjectId(&quot;60435997b562b8d1012436b0&quot;)</span><br><span class="line">&#125;</span><br><span class="line">&gt; db.staff.find(&#123;&quot;addr.city&quot;:&quot;ShangHai&quot;&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435997b562b8d1012436b0&quot;), &quot;name&quot; : &quot;ZSan&quot;, &quot;age&quot; : 28, &quot;addr&quot; : &#123; &quot;city&quot; : &quot;ShangHai&quot;, &quot;street&quot; : &quot;华夏西路188号&quot; &#125; &#125;</span><br><span class="line"># 下面这种写法是错误的，子文档的查询应该用上面的写法</span><br><span class="line">&gt; db.staff.find(&#123;&quot;addr&quot;:&#123;&quot;city&quot;:&quot;ShangHai&quot;&#125;&#125;)</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="find搜索数组"><a href="#find搜索数组" class="headerlink" title="find搜索数组"></a>find搜索数组</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.staff.insertOne(&#123;&quot;name&quot;:&quot;LSi&quot;,&quot;food&quot;:[&quot;egg&quot;,&quot;bread&quot;,&quot;milk&quot;]&#125;)</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedId&quot; : ObjectId(&quot;60435bbbb562b8d1012436b1&quot;)</span><br><span class="line">&#125;</span><br><span class="line">&gt; db.staff.find(&#123;&quot;food&quot;:&quot;egg&quot;&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435bbbb562b8d1012436b1&quot;), &quot;name&quot; : &quot;LSi&quot;, &quot;food&quot; : [ &quot;egg&quot;, &quot;bread&quot;, &quot;milk&quot; ] &#125;</span><br><span class="line">&gt; db.staff.find(&#123;$or:[&#123;&quot;food&quot;:&quot;egg&quot;&#125;,&#123;&quot;food&quot;:&quot;milk&quot;&#125;]&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435bbbb562b8d1012436b1&quot;), &quot;name&quot; : &quot;LSi&quot;, &quot;food&quot; : [ &quot;egg&quot;, &quot;bread&quot;, &quot;milk&quot; ] &#125;</span><br></pre></td></tr></table></figure>
+<p>数组中搜索子对象的多个字段时，用$elemMatch表示必须是同一个子对象满足多个条件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.staff.insertOne(&#123;&quot;name&quot;:&quot;WWu&quot;,&quot;favorite_books&quot;:[&#123;&quot;title&quot;:&quot;The Old Man and the Sea&quot;,&quot;author&quot;:&quot;Hemingway&quot;&#125;,&#123;&quot;title&quot;:&quot;围城&quot;,&quot;author&quot;:&quot;钱锺书&quot;&#125;]&#125;)</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedId&quot; : ObjectId(&quot;60435df1b562b8d1012436b2&quot;)</span><br><span class="line">&#125;</span><br><span class="line">&gt; db.staff.find(&#123;&quot;favorite_books.title&quot;:&quot;The Old Man and the Sea&quot;,&quot;favorite_books.author&quot;:&quot;钱锺书&quot;&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435df1b562b8d1012436b2&quot;), &quot;name&quot; : &quot;WWu&quot;, &quot;favorite_books&quot; : [ &#123; &quot;title&quot; : &quot;The Old Man and the Sea&quot;, &quot;author&quot; : &quot;Hemingway&quot; &#125;, &#123; &quot;title&quot; : &quot;围城&quot;, &quot;author&quot; : &quot;钱锺书&quot; &#125; ] &#125;</span><br><span class="line">&gt; db.staff.find(&#123;&quot;favorite_books&quot;:&#123;$elemMatch:&#123;&quot;title&quot;:&quot;The Old Man and the Sea&quot;,&quot;author&quot;:&quot;钱锺书&quot;&#125;&#125;&#125;)</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="控制find返回的字段-投影projection"><a href="#控制find返回的字段-投影projection" class="headerlink" title="控制find返回的字段(投影projection)"></a>控制find返回的字段(投影projection)</h2><p>find可以指定只返回指定的字段</p>
+<p>_id字段必须明确指定不返回，否则默认返回</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.staff.find(&#123;$or:[&#123;&quot;food&quot;:&quot;egg&quot;&#125;,&#123;&quot;food&quot;:&quot;milk&quot;&#125;]&#125;,&#123;&quot;_id&quot;:0,&quot;name&quot;:1,&quot;food&quot;:1&#125;)</span><br><span class="line">&#123; &quot;name&quot; : &quot;LSi&quot;, &quot;food&quot; : [ &quot;egg&quot;, &quot;bread&quot;, &quot;milk&quot; ] &#125;</span><br><span class="line"></span><br><span class="line">&gt; db.staff.find(&#123;&#125;,&#123;&quot;_id&quot;:0,&quot;name&quot;:1,&quot;food&quot;:1&#125;)</span><br><span class="line">&#123; &quot;name&quot; : &quot;Richey&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;Kelly&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;Darwin&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;Freeman&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;Jobs&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;Lili&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;ZSan&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;LSi&quot;, &quot;food&quot; : [ &quot;egg&quot;, &quot;bread&quot;, &quot;milk&quot; ] &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;WWu&quot; &#125;</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+
+<h1 id="使用remove删除文档"><a href="#使用remove删除文档" class="headerlink" title="使用remove删除文档"></a>使用remove删除文档</h1><p>remove 命令必须配合查询条件使用，否则mongo会报错，需要要删除全部可以使用空条件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.staff.find()</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434c93b562b8d1012436aa&quot;), &quot;name&quot; : &quot;Richey&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ab&quot;), &quot;name&quot; : &quot;Kelly&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ac&quot;), &quot;name&quot; : &quot;Darwin&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ad&quot;), &quot;name&quot; : &quot;Freeman&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436ae&quot;), &quot;name&quot; : &quot;Jobs&quot;, &quot;age&quot; : 18 &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436af&quot;), &quot;name&quot; : &quot;Lili&quot;, &quot;gender&quot; : &quot;Female&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435997b562b8d1012436b0&quot;), &quot;name&quot; : &quot;ZSan&quot;, &quot;age&quot; : 28, &quot;addr&quot; : &#123; &quot;city&quot; : &quot;ShangHai&quot;, &quot;street&quot; : &quot;华夏西路188号&quot; &#125; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435bbbb562b8d1012436b1&quot;), &quot;name&quot; : &quot;LSi&quot;, &quot;food&quot; : [ &quot;egg&quot;, &quot;bread&quot;, &quot;milk&quot; ] &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435df1b562b8d1012436b2&quot;), &quot;name&quot; : &quot;WWu&quot;, &quot;favorite_books&quot; : [ &#123; &quot;title&quot; : &quot;The Old Man and the Sea&quot;, &quot;author&quot; : &quot;Hemingway&quot; &#125;, &#123; &quot;title&quot; : &quot;围城&quot;, &quot;author&quot; : &quot;钱锺书&quot; &#125; ] &#125;</span><br><span class="line">&gt; db.staff.remove(&#123;&quot;name&quot;:&quot;Jobs&quot;&#125;)</span><br><span class="line">WriteResult(&#123; &quot;nRemoved&quot; : 1 &#125;)</span><br><span class="line">&gt; db.staff.find()</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434c93b562b8d1012436aa&quot;), &quot;name&quot; : &quot;Richey&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ab&quot;), &quot;name&quot; : &quot;Kelly&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ac&quot;), &quot;name&quot; : &quot;Darwin&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ad&quot;), &quot;name&quot; : &quot;Freeman&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436af&quot;), &quot;name&quot; : &quot;Lili&quot;, &quot;gender&quot; : &quot;Female&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435997b562b8d1012436b0&quot;), &quot;name&quot; : &quot;ZSan&quot;, &quot;age&quot; : 28, &quot;addr&quot; : &#123; &quot;city&quot; : &quot;ShangHai&quot;, &quot;street&quot; : &quot;华夏西路188号&quot; &#125; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435bbbb562b8d1012436b1&quot;), &quot;name&quot; : &quot;LSi&quot;, &quot;food&quot; : [ &quot;egg&quot;, &quot;bread&quot;, &quot;milk&quot; ] &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435df1b562b8d1012436b2&quot;), &quot;name&quot; : &quot;WWu&quot;, &quot;favorite_books&quot; : [ &#123; &quot;title&quot; : &quot;The Old Man and the Sea&quot;, &quot;author&quot; : &quot;Hemingway&quot; &#125;, &#123; &quot;title&quot; : &quot;围城&quot;, &quot;author&quot; : &quot;钱锺书&quot; &#125; ] &#125;</span><br><span class="line">&gt; db.staff.remove(&#123;&#125;)</span><br><span class="line">WriteResult(&#123; &quot;nRemoved&quot; : 8 &#125;)</span><br><span class="line">&gt; db.staff.find()</span><br></pre></td></tr></table></figure>
+
+<h1 id="使用update更新文档"><a href="#使用update更新文档" class="headerlink" title="使用update更新文档"></a>使用update更新文档</h1><p>db.&lt;集合&gt;.updat(&lt;查询条件&gt;,&lt;更新字段&gt;)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.staff.insertMany([&#123;&quot;name&quot;:&quot;Richey&quot;,&quot;age&quot;:18&#125;,&#123;&quot;name&quot;:&quot;Kelly&quot;,&quot;age&quot;:20&#125;])</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedIds&quot; : [</span><br><span class="line">		ObjectId(&quot;60439f09b562b8d1012436b3&quot;),</span><br><span class="line">		ObjectId(&quot;60439f09b562b8d1012436b4&quot;)</span><br><span class="line">	]</span><br><span class="line">&#125;</span><br><span class="line">&gt; db.staff.updateOne(&#123;&quot;name&quot;:&quot;Richey&quot;&#125;,&#123;$set:&#123;&quot;age&quot;:24&#125;&#125;)</span><br><span class="line">WriteResult(&#123; &quot;nMatched&quot; : 1, &quot;nUpserted&quot; : 0, &quot;nModified&quot; : 1 &#125;)</span><br><span class="line">&gt; db.staff.find(&#123;&quot;name&quot;:&quot;Richey&quot;&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60439f09b562b8d1012436b3&quot;), &quot;name&quot; : &quot;Richey&quot;, &quot;age&quot; : 24 &#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用updateOne无论条件匹配多少条，都只会更新第一条</p>
+<p>使用updateMany表示条件匹配多少条就更新多少条</p>
+<p>使用updateOne/updateMany发方法要求更新条件部份（第二个参数）必须具有以下之一，否则报错：</p>
+<ul>
+<li>$set/$unset</li>
+<li>$push/$pushAll/$pop</li>
+<li>$pull/$pullAll</li>
+<li>$addToSet</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$push :增加一个对象到数据底部</span><br><span class="line">$pushAll： 增加多个对象到数组底部</span><br><span class="line">$pop： 从数组底部删除一个对象</span><br><span class="line">$pull： 如果匹配指定的值，则从数组中删除相应的对象</span><br><span class="line">$pullAll： 如果匹配任意的值，则从数组中三处相应的对象</span><br><span class="line">$addToSet： 如果不存在则增加一个值到数组</span><br></pre></td></tr></table></figure>
+
+<h1 id="使用drop删除集合"><a href="#使用drop删除集合" class="headerlink" title="使用drop删除集合"></a>使用drop删除集合</h1><p>db.&lt;集合&gt;.drop()</p>
+<p>集合中的全部文档都会被删除</p>
+<p>集合相关的索引也会被删除</p>
+<p>一定要谨慎使用</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; use test</span><br><span class="line">switched to db test</span><br><span class="line">&gt; show collections</span><br><span class="line">staff</span><br><span class="line">&gt; db.staff.drop()</span><br><span class="line">true</span><br><span class="line">&gt; show collections</span><br></pre></td></tr></table></figure>
+
+<h1 id="使用dropDatabase删除数据库"><a href="#使用dropDatabase删除数据库" class="headerlink" title="使用dropDatabase删除数据库"></a>使用dropDatabase删除数据库</h1><p>db.dropDatabase()</p>
+<p>数据库相应的文件也会被删除，磁盘空间将被释放</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; show dbs</span><br><span class="line">admin   0.000GB</span><br><span class="line">config  0.000GB</span><br><span class="line">local   0.000GB</span><br><span class="line">mock    0.047GB</span><br><span class="line">test    0.000GB</span><br><span class="line">&gt; use test</span><br><span class="line">switched to db test</span><br><span class="line">&gt; db.dropDatabase()</span><br><span class="line">&#123; &quot;dropped&quot; : &quot;test&quot;, &quot;ok&quot; : 1 &#125;</span><br><span class="line">&gt; show dbs</span><br><span class="line">admin   0.000GB</span><br><span class="line">config  0.000GB</span><br><span class="line">local   0.000GB</span><br><span class="line">mock    0.047GB</span><br><span class="line">&gt; show collections</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="SQL和MQL查询逻辑对照"><a href="#SQL和MQL查询逻辑对照" class="headerlink" title="SQL和MQL查询逻辑对照"></a>SQL和MQL查询逻辑对照</h1><p><a href="https://docs.mongodb.com/manual/reference/sql-comparison/" target="_blank" rel="noopener">官方文档</a></p>
+<p><img src="https://blog-pic-1254088127.picsh.myqcloud.com/sql-mapping-mql.png" alt="SQL-MAPPING-MQL"></p>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>mongoDB</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>mongoDB系列01-mongoDB基础</title>
+    <url>/2021/03/06/mongoDB%E7%B3%BB%E5%88%9701-mongoDB%E5%9F%BA%E7%A1%80/</url>
+    <content><![CDATA[<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>版本选择：</p>
+<ul>
+<li>企业版</li>
+<li>社区版 所有环境免费使用</li>
+<li>TGZ server mongos tools 和 shell</li>
+</ul>
+<p><a href="https://www.mongodb.com/try/download/community" target="_blank" rel="noopener">下载地址:https://www.mongodb.com/try/download/community</a></p>
+<p>选择好版本后可以生成下载连接,以命令行操作为例：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 创建目录,mongod 默认会使用/data/db目录进行数据存储</span></span><br><span class="line">sudo mkdir -p /data /data/db</span><br><span class="line"></span><br><span class="line">cd /data</span><br><span class="line"><span class="meta">#</span><span class="bash"> 下载安装mongodb</span></span><br><span class="line">curl -O sudo curl -O https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel80-4.2.13-rc1.tgz </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 解压缩</span></span><br><span class="line"></span><br><span class="line">(base) [richey@localhost data]$ sudo tar -xvf mongodb-linux-x86_64-rhel80-4.2.13-rc1.tgz </span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/THIRD-PARTY-NOTICES.gotools</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/README</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/THIRD-PARTY-NOTICES</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/MPL-2</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/LICENSE-Community.txt</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongodump</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongorestore</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongoexport</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongoimport</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongostat</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongotop</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/bsondump</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongofiles</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongoreplay</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongod</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongos</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongo</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/install_compass</span><br><span class="line">(base) [richey@localhost data]$ ls</span><br><span class="line">db  mongodb-linux-x86_64-rhel80-4.2.13-rc1  mongodb-linux-x86_64-rhel80-4.2.13-rc1.tgz</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 配置环境变量</span></span><br><span class="line">export PATH=$PATH:/data/mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin</span><br><span class="line"><span class="meta">#</span><span class="bash"> 永久配置</span></span><br><span class="line">sudo vim /etc/profile</span><br><span class="line">在文件最后添加：</span><br><span class="line">export PATH=$PATH:/data/mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin</span><br><span class="line">使配置立马剩下</span><br><span class="line">source /etc/profile</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 此时mongodb就配置好了,可以输入mongod启动服务</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="直接使用mongodb云服务"><a href="#直接使用mongodb云服务" class="headerlink" title="直接使用mongodb云服务"></a>直接使用mongodb云服务</h1><p>也可以在mongodb官网直接注册，可以创建一个免费的mongodb云存储服务</p>
+<p>创建好后可以配置连接方式，创建用户名密码<br><img src="https://blog-pic-1254088127.picsh.myqcloud.com/Clusters-Atlas-MongoDB-Atlas.png" alt="配置mongodb 云服务"></p>
+<p>选择连接方式<br>![配置mongodb 云服务](<a href="https://blog-pic-1254088127.picsh.myqcloud.com/Clusters-Atlas-MongoDB-Atlas" target="_blank" rel="noopener">https://blog-pic-1254088127.picsh.myqcloud.com/Clusters-Atlas-MongoDB-Atlas</a> -2.png)</p>
+<p>我们已经在本地安装了mongodb，可以选择在shell中连接，复制上面的地址在本地执行，输入密码即可连接</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">MongoDB Enterprise atlas-zh2gha-shard-0:PRIMARY&gt; show dbs</span><br><span class="line">2021-03-06T16:11:21.925+0800 I  CONNPOOL [ReplicaSetMonitor-TaskExecutor] Connecting to cluster0-shard-00-02.leoli.mongodb.net:27017</span><br><span class="line">admin  0.000GB</span><br><span class="line">local  1.253GB</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="安装图形化管理工具Compass"><a href="#安装图形化管理工具Compass" class="headerlink" title="安装图形化管理工具Compass"></a>安装图形化管理工具Compass</h1><p>去官网下载合适的包,安装即可</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">(base) [richey@localhost opt]$ sudo rpm -ivh mongodb-compass-1.26.0.x86_64.rpm </span><br><span class="line">警告：mongodb-compass-1.26.0.x86_64.rpm: 头V3 RSA&#x2F;SHA1 Signature, 密钥 ID ea312927: NOKEY</span><br><span class="line">Verifying...                          ################################# [100%]</span><br><span class="line">准备中...                          ################################# [100%]</span><br><span class="line">正在升级&#x2F;安装...</span><br><span class="line">   1:mongodb-compass-1.26.0-1.el7     ################################# [100%]</span><br></pre></td></tr></table></figure>
+
+
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>mongoDB</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>jupyter环境搭建</title>
     <url>/2021/02/20/jupyter%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</url>
     <content><![CDATA[<ol>
@@ -656,50 +747,6 @@ dtype: float64</code></pre><p>实际开发中，我们一般通过读取Excel创
       </tags>
   </entry>
   <entry>
-    <title>Mysql（14）-Mysql位（bit）数据类型</title>
-    <url>/2020/06/07/Mysql%EF%BC%8814%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/</url>
-    <content><![CDATA[<p>最近在线上碰到了一个诡异的问题，线上有个业务模块突然查询不出数据。问题反馈的时候是上午，前一天晚上进行了上线操作，基本可以判断跟上线有关系。</p>
-<h1 id="问题定位"><a href="#问题定位" class="headerlink" title="问题定位"></a>问题定位</h1><p>先看日志，没有任何报错，接口都能正常返回。并且此处没有降级机制，arthas跟踪到数据库查询确实没有返回。</p>
-<p>拿到具体的生产查询sql，直接在生产数据库查询，没有结果。但是同样的sql放到beta可以查询出结果。</p>
-<p>这里基本可以定位到是sql查询的问题了。</p>
-<p>先分析了下sql，简单的单表查询，where里有四个查询条件，其中一个字段引起了注意，如下：</p>
-<p>select * from table_staff where companyId = ‘demo-companyId’ and isDelete = ‘0’;</p>
-<p>isDelte在业务中是一个boolean类型，对应数据库中用的是位数据类型：bit(1)，首先尝试将查询条件isDelete=’0’改为isDelete=0或者isDelete=false，<br>可以在生产数据库查出结果。</p>
-<p>进一步比对生产和beta环境该表的DDL，发现isDelete字段的数据类型是一致的，但是生产比beta数据库多了一个索引 idx_companId_isDelete(companyId和isDelete的一个联合索引，而且不是唯一索引)，<br>基本确认索引问题导致。</p>
-<p>此时运维确认这个索引是前天晚上上线，为了提高跑批效率手动在生产加上去的，删掉idx_companId_isDelete索引后问题解决。</p>
-<h1 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h1><p>首先肯定是走了索引，导致数据查询不出来</p>
-<p>数据库中isDelete数据类型是bit(1),查询该类型的知识点：</p>
-<blockquote>
-<p>MySQL有少数几种存储类型使用紧凑的位存储数据。所有这些位类型，不管底层存储格式和处理方式如何，从技术上来说都是字符串类型。<br>MySQL把bit类型当作字符串类型，而不是数字类型。当检索BIT(1)的值时，结果是一个包含二进制0或者1值的字符串，而不是ASCII码的“0”或者“1”。<br>–《高性能MySQL》 P123 4.1.5-位数据类型</p>
-</blockquote>
-<p>MySQL把bit类型当作字符串类型，所以上例中当我们加了一个字符串索引，并且查询条件也使用的字符串查询时（isDelete=’0’），命中索引。而当我们把引号去掉或者使用false时（isDelete=0或isDelete=false）索引失效，进行了全表扫描。</p>
-<p>问题在于，正常字符串索引即便是查询中使用了数字，也无非就是索引失效走全表扫描，不会查不出数据，这里明显是bit(1)数据类型的问题。</p>
-<h1 id="场景还原"><a href="#场景还原" class="headerlink" title="场景还原"></a>场景还原</h1><p>在uat库加了跟生产同样的索引，还原了数据查询不出来的场景。</p>
-<p>Explain 看了下命中索引是的执行计划，Extra中看到这样的描述</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Impossible WHERE noticed after reading const tables</span><br></pre></td></tr></table></figure>
-
-<p>走了常量表，查询mysql Manual，发现了对这段描述的解释：</p>
-<p>![Mysql-extra-impossible](<a href="http://blog-pic-1254088127.picsh.myqcloud.com/mysql-impossible-const.png）" target="_blank" rel="noopener">http://blog-pic-1254088127.picsh.myqcloud.com/mysql-impossible-const.png）</a></p>
-<p>但是，上例中的查询并不符合这段解释中的要求</p>
-<p>![Mysql索引常量](<a href="http://blog-pic-1254088127.picsh.myqcloud.com/mysql-index-const.png）" target="_blank" rel="noopener">http://blog-pic-1254088127.picsh.myqcloud.com/mysql-index-const.png）</a></p>
-<h1 id="实践和结论"><a href="#实践和结论" class="headerlink" title="实践和结论"></a>实践和结论</h1><p>MySQL官方文档及其它资料中找不到合理的解释，这里给个实践结论。</p>
-<p>对bit类型的字段的查询：</p>
-<ul>
-<li>不使用索引<br>查询bit的参数值是无论是数值还是字符，mysql都会进行类型转化,将字符转换为数值，并比较数值对应的ascii码</li>
-<li>使用索引<br>检索BIT(1)列的值, 索引存的结果是一个字符串且内容是二进制位0或1, 而不是ASCII值”0″或”1″. 这就导致了为什么我们使用ASCII值”0”没有查询出结果。</li>
-</ul>
-<p>简言之：bit类型索引里存的是二进制类型的值（位类型bit），我们查询参数给的是ASCII码值</p>
-<p>结论：<br>1、定义为text和image和bit数据类型的列不应该增加索引<br>2、加完索引一定要explain看一下<br>3、使用unsigned tinyint代替bit(1) 来表示是否<br>   @Column(columnDefinition= “TINYINT”,length = 1)    暂未验证</p>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-        <tag>索引</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Mysql（15）-Mysql位（bit）数据类型实验</title>
     <url>/2020/06/07/Mysql%EF%BC%8815%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AE%9E%E9%AA%8C/</url>
     <content><![CDATA[<h1 id="bit类型字段的查询展示和计算"><a href="#bit类型字段的查询展示和计算" class="headerlink" title="bit类型字段的查询展示和计算"></a>bit类型字段的查询展示和计算</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; CREATE DATABASE richey_test CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;</span><br><span class="line">Query OK, 1 row affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; use richey_test;</span><br><span class="line"></span><br><span class="line">mysql&gt; CREATE TABLE bittest(a bit(8));</span><br><span class="line"></span><br><span class="line">mysql&gt; INSERT INTO bittest VALUES(b&#39;00111001&#39;);</span><br><span class="line"></span><br><span class="line">mysql&gt; select a,a + 0 from bittest;</span><br><span class="line">+------+-------+</span><br><span class="line">| a    | a + 0 |</span><br><span class="line">+------+-------+</span><br><span class="line">| 9    |    57 |</span><br><span class="line">+------+-------+</span><br><span class="line"></span><br><span class="line">mysql&gt; SELECT a+b&#39;1&#39; from bittest;</span><br><span class="line">+--------+</span><br><span class="line">| a+b&#39;1&#39; |</span><br><span class="line">+--------+</span><br><span class="line">|     58 |</span><br><span class="line">+--------+</span><br><span class="line">1 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select a &#x3D; 9 from bittest;</span><br><span class="line">+------+</span><br><span class="line">| a &#x3D;9 |</span><br><span class="line">+------+</span><br><span class="line">|    0 |</span><br><span class="line">+------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select a&#x3D;&#39;9&#39; from bittest;</span><br><span class="line">+-------+</span><br><span class="line">| a&#x3D;&#39;9&#39; |</span><br><span class="line">+-------+</span><br><span class="line">|     0 |</span><br><span class="line">+-------+</span><br><span class="line">1 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; select a &#x3D;57 from bittest;</span><br><span class="line">+-------+</span><br><span class="line">| a &#x3D;57 |</span><br><span class="line">+-------+</span><br><span class="line">|     1 |</span><br><span class="line">+-------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select a&#x3D;&#39;57&#39; from bittest;</span><br><span class="line">+--------+</span><br><span class="line">| a&#x3D;&#39;57&#39; |</span><br><span class="line">+--------+</span><br><span class="line">|      1 |</span><br><span class="line">+--------+</span><br><span class="line">6 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; SELECT a&#x3D;b&#39;00111001&#39; from bittest;</span><br><span class="line">+---------------+</span><br><span class="line">| a&#x3D;b&#39;00111001&#39; |</span><br><span class="line">+---------------+</span><br><span class="line">|             1 |</span><br><span class="line">+---------------+</span><br><span class="line">1 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select min(a) from bittest;</span><br><span class="line">+--------+</span><br><span class="line">| min(a) |</span><br><span class="line">+--------+</span><br><span class="line">| 57     |</span><br><span class="line">+--------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
@@ -756,6 +803,50 @@ dtype: float64</code></pre><p>实际开发中，我们一般通过读取Excel创
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">mysql&gt; select 0 is false, &#39;0&#39; is false ,&#39;123&#39; is false;</span><br><span class="line">+------------+--------------+----------------+</span><br><span class="line">| 0 is false | &#39;0&#39; is false | &#39;123&#39; is false |</span><br><span class="line">+------------+--------------+----------------+</span><br><span class="line">|          1 |            1 |              0 |</span><br><span class="line">+------------+--------------+----------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; select 1 is true,2 is true ,&#39;1&#39; is true,&#39;123&#39; is true,-1 is true;</span><br><span class="line">+-----------+-----------+-------------+---------------+------------+</span><br><span class="line">| 1 is true | 2 is true | &#39;1&#39; is true | &#39;123&#39; is true | -1 is true |</span><br><span class="line">+-----------+-----------+-------------+---------------+------------+</span><br><span class="line">|         1 |         1 |           1 |             1 |          1 |</span><br><span class="line">+-----------+-----------+-------------+---------------+------------+</span><br><span class="line"></span><br><span class="line">mysql&gt; select 1 !&#x3D; 0,2 !&#x3D;0 ,&#39;1&#39; !&#x3D; 0,&#39;123&#39; !&#x3D; 0,-1 !&#x3D; 0;</span><br><span class="line">+--------+-------+----------+------------+---------+</span><br><span class="line">| 1 !&#x3D; 0 | 2 !&#x3D;0 | &#39;1&#39; !&#x3D; 0 | &#39;123&#39; !&#x3D; 0 | -1 !&#x3D; 0 |</span><br><span class="line">+--------+-------+----------+------------+---------+</span><br><span class="line">|      1 |     1 |        1 |          1 |       1 |</span><br><span class="line">+--------+-------+----------+------------+---------+</span><br></pre></td></tr></table></figure>
 
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>综上，在mysql中不要使用bit(1)表示boolean类型，实际上不建议在任何场景使用bit类型的字段。查询会造成不必要的困扰和麻烦，令人难以理解。</p>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
+        <tag>索引</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mysql（14）-Mysql位（bit）数据类型</title>
+    <url>/2020/06/07/Mysql%EF%BC%8814%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/</url>
+    <content><![CDATA[<p>最近在线上碰到了一个诡异的问题，线上有个业务模块突然查询不出数据。问题反馈的时候是上午，前一天晚上进行了上线操作，基本可以判断跟上线有关系。</p>
+<h1 id="问题定位"><a href="#问题定位" class="headerlink" title="问题定位"></a>问题定位</h1><p>先看日志，没有任何报错，接口都能正常返回。并且此处没有降级机制，arthas跟踪到数据库查询确实没有返回。</p>
+<p>拿到具体的生产查询sql，直接在生产数据库查询，没有结果。但是同样的sql放到beta可以查询出结果。</p>
+<p>这里基本可以定位到是sql查询的问题了。</p>
+<p>先分析了下sql，简单的单表查询，where里有四个查询条件，其中一个字段引起了注意，如下：</p>
+<p>select * from table_staff where companyId = ‘demo-companyId’ and isDelete = ‘0’;</p>
+<p>isDelte在业务中是一个boolean类型，对应数据库中用的是位数据类型：bit(1)，首先尝试将查询条件isDelete=’0’改为isDelete=0或者isDelete=false，<br>可以在生产数据库查出结果。</p>
+<p>进一步比对生产和beta环境该表的DDL，发现isDelete字段的数据类型是一致的，但是生产比beta数据库多了一个索引 idx_companId_isDelete(companyId和isDelete的一个联合索引，而且不是唯一索引)，<br>基本确认索引问题导致。</p>
+<p>此时运维确认这个索引是前天晚上上线，为了提高跑批效率手动在生产加上去的，删掉idx_companId_isDelete索引后问题解决。</p>
+<h1 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h1><p>首先肯定是走了索引，导致数据查询不出来</p>
+<p>数据库中isDelete数据类型是bit(1),查询该类型的知识点：</p>
+<blockquote>
+<p>MySQL有少数几种存储类型使用紧凑的位存储数据。所有这些位类型，不管底层存储格式和处理方式如何，从技术上来说都是字符串类型。<br>MySQL把bit类型当作字符串类型，而不是数字类型。当检索BIT(1)的值时，结果是一个包含二进制0或者1值的字符串，而不是ASCII码的“0”或者“1”。<br>–《高性能MySQL》 P123 4.1.5-位数据类型</p>
+</blockquote>
+<p>MySQL把bit类型当作字符串类型，所以上例中当我们加了一个字符串索引，并且查询条件也使用的字符串查询时（isDelete=’0’），命中索引。而当我们把引号去掉或者使用false时（isDelete=0或isDelete=false）索引失效，进行了全表扫描。</p>
+<p>问题在于，正常字符串索引即便是查询中使用了数字，也无非就是索引失效走全表扫描，不会查不出数据，这里明显是bit(1)数据类型的问题。</p>
+<h1 id="场景还原"><a href="#场景还原" class="headerlink" title="场景还原"></a>场景还原</h1><p>在uat库加了跟生产同样的索引，还原了数据查询不出来的场景。</p>
+<p>Explain 看了下命中索引是的执行计划，Extra中看到这样的描述</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Impossible WHERE noticed after reading const tables</span><br></pre></td></tr></table></figure>
+
+<p>走了常量表，查询mysql Manual，发现了对这段描述的解释：</p>
+<p>![Mysql-extra-impossible](<a href="http://blog-pic-1254088127.picsh.myqcloud.com/mysql-impossible-const.png）" target="_blank" rel="noopener">http://blog-pic-1254088127.picsh.myqcloud.com/mysql-impossible-const.png）</a></p>
+<p>但是，上例中的查询并不符合这段解释中的要求</p>
+<p>![Mysql索引常量](<a href="http://blog-pic-1254088127.picsh.myqcloud.com/mysql-index-const.png）" target="_blank" rel="noopener">http://blog-pic-1254088127.picsh.myqcloud.com/mysql-index-const.png）</a></p>
+<h1 id="实践和结论"><a href="#实践和结论" class="headerlink" title="实践和结论"></a>实践和结论</h1><p>MySQL官方文档及其它资料中找不到合理的解释，这里给个实践结论。</p>
+<p>对bit类型的字段的查询：</p>
+<ul>
+<li>不使用索引<br>查询bit的参数值是无论是数值还是字符，mysql都会进行类型转化,将字符转换为数值，并比较数值对应的ascii码</li>
+<li>使用索引<br>检索BIT(1)列的值, 索引存的结果是一个字符串且内容是二进制位0或1, 而不是ASCII值”0″或”1″. 这就导致了为什么我们使用ASCII值”0”没有查询出结果。</li>
+</ul>
+<p>简言之：bit类型索引里存的是二进制类型的值（位类型bit），我们查询参数给的是ASCII码值</p>
+<p>结论：<br>1、定义为text和image和bit数据类型的列不应该增加索引<br>2、加完索引一定要explain看一下<br>3、使用unsigned tinyint代替bit(1) 来表示是否<br>   @Column(columnDefinition= “TINYINT”,length = 1)    暂未验证</p>
 ]]></content>
       <categories>
         <category>DB</category>
@@ -1609,6 +1700,58 @@ public SimpleResult sessionInvalid() {
       </tags>
   </entry>
   <entry>
+    <title>观察者模式</title>
+    <url>/2019/06/12/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F.jpg" alt="观察者模式"></p>
+<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F%E7%B1%BB%E5%9B%BE.jpg" alt="观察者模式"></p>
+<h1 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h1><p>定义了一对多的关系，这样，当一方对象状态改变时，它的所有依赖都会收到通知，并自动更新。</p>
+<h1 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h1><p>Spring中的事件机制，是观察者模式思想的一种实现</p>
+<h2 id="Spring中观察者模式的四个角色"><a href="#Spring中观察者模式的四个角色" class="headerlink" title="Spring中观察者模式的四个角色"></a>Spring中观察者模式的四个角色</h2><ul>
+<li>事件（ApplicationEvent）</li>
+</ul>
+<p>ApplicationEvent 是所有事件对象的父类。ApplicationEvent 继承自 jdk 的 EventObject, 所有的事件都需要继承 ApplicationEvent, 并且通过source得到事件源。</p>
+<p>下列描述了Spring提供的内置事件：</p>
+<p>ContextRefreshedEvent：事件发布在 ApplicationContext 初始化或刷新时（例如：通过在 ConfigurableApplicationContext 接口使用refresh()方法）。这里,“初始化”意味着所有 bean 加载，post-processor bean 被检测到并且激活,单例预先实例化，ApplicationContext 对象可以使用了。只要上下文没有关闭,可以触发多次刷新, ApplicationContext 提供了一种可选择的支持这种“热”刷新。例如：XmlWebApplicationContext 支持热刷新,但 GenericApplicationContext 并非如此。具体是在 AbstractApplicationContext 的 finishRefresh() 方法中。</p>
+<p>ContextStartedEvent：事件发布在 ApplicationContext 开始使用 ConfigurableApplicationContext 接口 start() 方法。这里,“开始”意味着所有生命周期 bean 接收到一个明确的起始信号。通常,这个信号用于明确停止后重新启动,但它也可以用于启动组件没有被配置为自动运行（例如：组件还没有开始初始化）。</p>
+<p>ContextStoppedEvent：事件发布在 ApplicationContext 停止时通过使用 ConfigurableApplicationContext 接口上的 stop() 方法。在这里,“停止”意味着所有生命周期bean接收一个显式的停止信号。停止上下文可以通过重新调用start()方法。</p>
+<p>ContextClosedEvent：事件发布在 ApplicationContext 关闭时通过关闭 ConfigurableApplicationContext 接口()方法。这里,“封闭”意味着所有单例 bean 被摧毁。一个封闭的环境达到生命的终结。它不能刷新或重启。</p>
+<p>RequestHandledEvent：一个特定的web事件告诉所有能处理HTTP请求的bean 。这个事件是在请求完成后发布的。这个事件只适用于使用 Spring 的 DispatcherServlet 的web应用程序。</p>
+<ul>
+<li>事件监听（ApplicationListener）</li>
+</ul>
+<p>ApplicationListener 事件监听器，也就是观察者。继承自 jdk 的 EventListener，该类中只有一个方法 onApplicationEvent。当监听的事件发生后该方法会被执行。</p>
+<ul>
+<li>事件发布（ApplicationContext）</li>
+</ul>
+<p>ApplicationContext 是 Spring 中的核心容器，在事件监听中 ApplicationContext 可以作为事件的发布者，也就是事件源。因为 ApplicationContext 继承自 ApplicationEventPublisher。在 ApplicationEventPublisher 中定义了事件发布的方法 — publishEvent(Object event)</p>
+<ul>
+<li>事件管理（ApplicationEventMulticaster）</li>
+</ul>
+<p>ApplicationEventMulticaster 用于事件监听器的注册和事件的广播。监听器的注册就是通过它来实现的，它的作用是把 Applicationcontext 发布的 Event 广播给它的监听器列表。</p>
+<h2 id="Spring中实现观察者模式"><a href="#Spring中实现观察者模式" class="headerlink" title="Spring中实现观察者模式"></a>Spring中实现观察者模式</h2><ol>
+<li><p>自定义需要发布的事件类，需要继承 ApplicationEvent 类或 PayloadApplicationEvent (该类也仅仅是对 ApplicationEvent 的一层封装)</p>
+</li>
+<li><p>使用 @EventListener 来监听事件或者实现 ApplicationListener 接口。</p>
+</li>
+<li><p>使用 ApplicationEventPublisher 来发布自定义事件（@Autowired注入即可）</p>
+<p> @TransactionalEventListener 监听器：如果事件的发布不是在事务（@Transactional）范围内，则监听不到该事件，除非将 fallbackExecution 标志设置为 true（@TransactionalEventListener(fallbackExecution = true)）;如果在事务中，可以选择在事务的哪个阶段来监听事件，默认在事务提交后监听（@TransactionalEventListener(phase = TransactionPhase.AFTER_COMPLETION)）。</p>
+</li>
+</ol>
+<p>以上介绍的事件监听都是同步，如果需要开启异步支持的话：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableAsync</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AsyncEventConfiguration</span> <span class="keyword">implements</span> <span class="title">AsyncConfigurer</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Executor <span class="title">getAsyncExecutor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Executors.newCachedThreadPool();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h1><h2 id="事件（MyEvent-java"><a href="#事件（MyEvent-java" class="headerlink" title="事件（MyEvent.java)"></a>事件（MyEvent.java)</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyEvent</span> <span class="keyword">extends</span> <span class="title">ApplicationEvent</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyEvent</span><span class="params">(ApplicationContext source)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(source);</span><br><span class="line">        System.out.println(<span class="string">"MyEvent 构造器执行"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">echo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"模拟业务逻辑执行"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="事件监听（MyListenerA-java、MyListenerB-java）"><a href="#事件监听（MyListenerA-java、MyListenerB-java）" class="headerlink" title="事件监听（MyListenerA.java、MyListenerB.java）"></a>事件监听（MyListenerA.java、MyListenerB.java）</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyListenerA</span> <span class="keyword">implements</span> <span class="title">ApplicationListener</span>&lt;<span class="title">MyEvent</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onApplicationEvent</span><span class="params">(MyEvent myEvent)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"MyListenerA"</span>);</span><br><span class="line">        myEvent.echo();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyListenerB</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@EventListener</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onApplicationEvent</span><span class="params">(MyEvent myEvent)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"MyListenerB"</span>);</span><br><span class="line">        myEvent.echo();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="事件发布（MyPublisher-java）"><a href="#事件发布（MyPublisher-java）" class="headerlink" title="事件发布（MyPublisher.java）"></a>事件发布（MyPublisher.java）</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyPublisher</span> <span class="keyword">implements</span> <span class="title">ApplicationContextAware</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ApplicationContext applicationContext;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setApplicationContext</span><span class="params">(ApplicationContext applicationContext)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.applicationContext = applicationContext;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 发布事件</span></span><br><span class="line"><span class="comment">     * 监听该事件的监听者都可以获取消息</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> myEvent</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">publisherEvent</span><span class="params">(MyEvent myEvent)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"---开始发布 myEvent 事件---"</span>);</span><br><span class="line">        applicationContext.publishEvent(myEvent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="单元测试"><a href="#单元测试" class="headerlink" title="单元测试"></a>单元测试</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@RunWith</span>(SpringRunner<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">SpringBootTest</span></span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">DesignPatternsApplicationTests</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MyPublisher myPublisher;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MyEvent myEvent;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">contextLoads</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        myPublisher.publisherEvent(myEvent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SpringSecurity-Session管理 (1)</title>
     <url>/2019/06/12/SpringSecurity-Session%E7%AE%A1%E7%90%86%20(1)/</url>
     <content><![CDATA[<h1 id="Session管理"><a href="#Session管理" class="headerlink" title="Session管理"></a>Session管理</h1><h2 id="内容概要"><a href="#内容概要" class="headerlink" title="内容概要"></a>内容概要</h2><ul>
@@ -1705,58 +1848,6 @@ public class EvolutionaryExpiredSessionStrategy implements SessionInformationExp
       </tags>
   </entry>
   <entry>
-    <title>观察者模式</title>
-    <url>/2019/06/12/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/</url>
-    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F.jpg" alt="观察者模式"></p>
-<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F%E7%B1%BB%E5%9B%BE.jpg" alt="观察者模式"></p>
-<h1 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h1><p>定义了一对多的关系，这样，当一方对象状态改变时，它的所有依赖都会收到通知，并自动更新。</p>
-<h1 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h1><p>Spring中的事件机制，是观察者模式思想的一种实现</p>
-<h2 id="Spring中观察者模式的四个角色"><a href="#Spring中观察者模式的四个角色" class="headerlink" title="Spring中观察者模式的四个角色"></a>Spring中观察者模式的四个角色</h2><ul>
-<li>事件（ApplicationEvent）</li>
-</ul>
-<p>ApplicationEvent 是所有事件对象的父类。ApplicationEvent 继承自 jdk 的 EventObject, 所有的事件都需要继承 ApplicationEvent, 并且通过source得到事件源。</p>
-<p>下列描述了Spring提供的内置事件：</p>
-<p>ContextRefreshedEvent：事件发布在 ApplicationContext 初始化或刷新时（例如：通过在 ConfigurableApplicationContext 接口使用refresh()方法）。这里,“初始化”意味着所有 bean 加载，post-processor bean 被检测到并且激活,单例预先实例化，ApplicationContext 对象可以使用了。只要上下文没有关闭,可以触发多次刷新, ApplicationContext 提供了一种可选择的支持这种“热”刷新。例如：XmlWebApplicationContext 支持热刷新,但 GenericApplicationContext 并非如此。具体是在 AbstractApplicationContext 的 finishRefresh() 方法中。</p>
-<p>ContextStartedEvent：事件发布在 ApplicationContext 开始使用 ConfigurableApplicationContext 接口 start() 方法。这里,“开始”意味着所有生命周期 bean 接收到一个明确的起始信号。通常,这个信号用于明确停止后重新启动,但它也可以用于启动组件没有被配置为自动运行（例如：组件还没有开始初始化）。</p>
-<p>ContextStoppedEvent：事件发布在 ApplicationContext 停止时通过使用 ConfigurableApplicationContext 接口上的 stop() 方法。在这里,“停止”意味着所有生命周期bean接收一个显式的停止信号。停止上下文可以通过重新调用start()方法。</p>
-<p>ContextClosedEvent：事件发布在 ApplicationContext 关闭时通过关闭 ConfigurableApplicationContext 接口()方法。这里,“封闭”意味着所有单例 bean 被摧毁。一个封闭的环境达到生命的终结。它不能刷新或重启。</p>
-<p>RequestHandledEvent：一个特定的web事件告诉所有能处理HTTP请求的bean 。这个事件是在请求完成后发布的。这个事件只适用于使用 Spring 的 DispatcherServlet 的web应用程序。</p>
-<ul>
-<li>事件监听（ApplicationListener）</li>
-</ul>
-<p>ApplicationListener 事件监听器，也就是观察者。继承自 jdk 的 EventListener，该类中只有一个方法 onApplicationEvent。当监听的事件发生后该方法会被执行。</p>
-<ul>
-<li>事件发布（ApplicationContext）</li>
-</ul>
-<p>ApplicationContext 是 Spring 中的核心容器，在事件监听中 ApplicationContext 可以作为事件的发布者，也就是事件源。因为 ApplicationContext 继承自 ApplicationEventPublisher。在 ApplicationEventPublisher 中定义了事件发布的方法 — publishEvent(Object event)</p>
-<ul>
-<li>事件管理（ApplicationEventMulticaster）</li>
-</ul>
-<p>ApplicationEventMulticaster 用于事件监听器的注册和事件的广播。监听器的注册就是通过它来实现的，它的作用是把 Applicationcontext 发布的 Event 广播给它的监听器列表。</p>
-<h2 id="Spring中实现观察者模式"><a href="#Spring中实现观察者模式" class="headerlink" title="Spring中实现观察者模式"></a>Spring中实现观察者模式</h2><ol>
-<li><p>自定义需要发布的事件类，需要继承 ApplicationEvent 类或 PayloadApplicationEvent (该类也仅仅是对 ApplicationEvent 的一层封装)</p>
-</li>
-<li><p>使用 @EventListener 来监听事件或者实现 ApplicationListener 接口。</p>
-</li>
-<li><p>使用 ApplicationEventPublisher 来发布自定义事件（@Autowired注入即可）</p>
-<p> @TransactionalEventListener 监听器：如果事件的发布不是在事务（@Transactional）范围内，则监听不到该事件，除非将 fallbackExecution 标志设置为 true（@TransactionalEventListener(fallbackExecution = true)）;如果在事务中，可以选择在事务的哪个阶段来监听事件，默认在事务提交后监听（@TransactionalEventListener(phase = TransactionPhase.AFTER_COMPLETION)）。</p>
-</li>
-</ol>
-<p>以上介绍的事件监听都是同步，如果需要开启异步支持的话：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableAsync</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AsyncEventConfiguration</span> <span class="keyword">implements</span> <span class="title">AsyncConfigurer</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Executor <span class="title">getAsyncExecutor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Executors.newCachedThreadPool();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h1><h2 id="事件（MyEvent-java"><a href="#事件（MyEvent-java" class="headerlink" title="事件（MyEvent.java)"></a>事件（MyEvent.java)</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyEvent</span> <span class="keyword">extends</span> <span class="title">ApplicationEvent</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyEvent</span><span class="params">(ApplicationContext source)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(source);</span><br><span class="line">        System.out.println(<span class="string">"MyEvent 构造器执行"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">echo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"模拟业务逻辑执行"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="事件监听（MyListenerA-java、MyListenerB-java）"><a href="#事件监听（MyListenerA-java、MyListenerB-java）" class="headerlink" title="事件监听（MyListenerA.java、MyListenerB.java）"></a>事件监听（MyListenerA.java、MyListenerB.java）</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyListenerA</span> <span class="keyword">implements</span> <span class="title">ApplicationListener</span>&lt;<span class="title">MyEvent</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onApplicationEvent</span><span class="params">(MyEvent myEvent)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"MyListenerA"</span>);</span><br><span class="line">        myEvent.echo();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyListenerB</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@EventListener</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onApplicationEvent</span><span class="params">(MyEvent myEvent)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"MyListenerB"</span>);</span><br><span class="line">        myEvent.echo();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="事件发布（MyPublisher-java）"><a href="#事件发布（MyPublisher-java）" class="headerlink" title="事件发布（MyPublisher.java）"></a>事件发布（MyPublisher.java）</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyPublisher</span> <span class="keyword">implements</span> <span class="title">ApplicationContextAware</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ApplicationContext applicationContext;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setApplicationContext</span><span class="params">(ApplicationContext applicationContext)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.applicationContext = applicationContext;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 发布事件</span></span><br><span class="line"><span class="comment">     * 监听该事件的监听者都可以获取消息</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> myEvent</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">publisherEvent</span><span class="params">(MyEvent myEvent)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"---开始发布 myEvent 事件---"</span>);</span><br><span class="line">        applicationContext.publishEvent(myEvent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="单元测试"><a href="#单元测试" class="headerlink" title="单元测试"></a>单元测试</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@RunWith</span>(SpringRunner<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">SpringBootTest</span></span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">DesignPatternsApplicationTests</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MyPublisher myPublisher;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MyEvent myEvent;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">contextLoads</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        myPublisher.publisherEvent(myEvent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>设计模式</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Spring Security（11）－OAuth协议简介</title>
     <url>/2019/06/11/Spring%20Security%EF%BC%8811%EF%BC%89%EF%BC%8DOAuth%E5%8D%8F%E8%AE%AE%E7%AE%80%E4%BB%8B/</url>
     <content><![CDATA[<p>概览：</p>
@@ -1811,6 +1902,21 @@ public class EvolutionaryExpiredSessionStrategy implements SessionInformationExp
       </tags>
   </entry>
   <entry>
+    <title>使用jdk自带工具jvisualvm查看.hprof文件</title>
+    <url>/2019/06/10/%E4%BD%BF%E7%94%A8jdk%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7jvisualvm%E6%9F%A5%E7%9C%8B.hprof%E6%96%87%E4%BB%B6/</url>
+    <content><![CDATA[<p>使用jdk自带的jvisualvm.exe程序来查看内存溢出文件</p>
+<p>位置：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$JAVA_HOME&#x2F;bin&#x2F;jvisualvm</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>JVM</category>
+      </categories>
+      <tags>
+        <tag>JVM</tag>
+        <tag>工具</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>策略模式</title>
     <url>/2019/06/10/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/</url>
     <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p>
@@ -1839,21 +1945,6 @@ public class EvolutionaryExpiredSessionStrategy implements SessionInformationExp
       </categories>
       <tags>
         <tag>设计模式</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用jdk自带工具jvisualvm查看.hprof文件</title>
-    <url>/2019/06/10/%E4%BD%BF%E7%94%A8jdk%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7jvisualvm%E6%9F%A5%E7%9C%8B.hprof%E6%96%87%E4%BB%B6/</url>
-    <content><![CDATA[<p>使用jdk自带的jvisualvm.exe程序来查看内存溢出文件</p>
-<p>位置：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$JAVA_HOME&#x2F;bin&#x2F;jvisualvm</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>JVM</category>
-      </categories>
-      <tags>
-        <tag>JVM</tag>
-        <tag>工具</tag>
       </tags>
   </entry>
   <entry>
@@ -1901,6 +1992,27 @@ http.authenticationProvider(smsCodeAuthenticationProvider)
       </categories>
       <tags>
         <tag>Spring-Security</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>生产故障排查流程</title>
+    <url>/2019/06/08/%E7%94%9F%E4%BA%A7%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="使用-top-查看系统中消耗cpu比较多的进程PID"><a href="#使用-top-查看系统中消耗cpu比较多的进程PID" class="headerlink" title="使用 top 查看系统中消耗cpu比较多的进程PID"></a>使用 top 查看系统中消耗cpu比较多的进程PID</h1><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">[richey@localhost ~]$ top |grep java</span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   2.7  11.3   5:49.83 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:49.87 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.7  11.3   5:49.92 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:49.96 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:50.00 java                                                                             </span><br><span class="line"> 7439 richey    20   0 7785472 346788  21388 S   0.3   2.1   0:06.05 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:50.04 java</span><br></pre></td></tr></table></figure>
+<h1 id="使用-ps-查看java相关进程的详细信息"><a href="#使用-ps-查看java相关进程的详细信息" class="headerlink" title="使用 ps 查看java相关进程的详细信息"></a>使用 ps 查看java相关进程的详细信息</h1><p>可以看出java进程JVM的详细配置</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[richey@localhost ~]$ ps -ef|grep java|grep 6274</span><br><span class="line"></span><br><span class="line">[richey@localhost ~]$ ps -ef|grep java|grep 6274</span><br><span class="line">richey    6274  6220 39 23:32 ?        00:05:52 /opt/idea-IU-172.4155.36/jre64/bin/java -Xbootclasspath/a:/opt/idea-IU-172.4155.36/lib/boot.jar -classpath /opt/idea-IU-172.4155.36/lib/bootstrap.jar:/opt/idea-IU-172.4155.36/lib/extensions.jar:/opt/idea-IU-172.4155.36/lib/util.jar:/opt/idea-IU-172.4155.36/lib/jdom.jar:/opt/idea-IU-172.4155.36/lib/log4j.jar:/opt/idea-IU-172.4155.36/lib/trove4j.jar:/opt/idea-IU-172.4155.36/lib/jna.jar:/opt/idea-IU-172.4155.36/jre64/lib/tools.jar -Xms2048m -Xmx6144m -XX:ReservedCodeCacheSize=240m -XX:+UseConcMarkSweepGC -XX:SoftRefLRUPolicyMSPerMB=50 -ea -Dsun.io.useCanonCaches=false -Djava.net.preferIPv4Stack=true -XX:+HeapDumpOnOutOfMemoryError -XX:-OmitStackTraceInFastThrow -Dawt.useSystemAAFontSettings=lcd -Dsun.java2d.renderer=sun.java2d.marlin.MarlinRenderingEngine -XX:ErrorFile=/home/richey/java_error_in_IDEA_%p.log -XX:HeapDumpPath=/home/richey/java_error_in_IDEA.hprof -Didea.paths.selector=IntelliJIdea2017.2 -Djb.vmOptionsFile=/opt/idea-IU-172.4155.36/bin/idea64.vmoptions -Didea.jre.check=true com.intellij.idea.Main</span><br></pre></td></tr></table></figure>
+
+<h1 id="使用-top-H-p-PID-来查看当前进程中比较消耗cpu的线程"><a href="#使用-top-H-p-PID-来查看当前进程中比较消耗cpu的线程" class="headerlink" title="使用 top -H -p PID 来查看当前进程中比较消耗cpu的线程"></a>使用 top -H -p PID 来查看当前进程中比较消耗cpu的线程</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">top -H -p 6274</span><br></pre></td></tr></table></figure>
+
+<p>拿到消耗cpu比较高的线程pid,先转换成16进制的</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 将16进制的pid 1077 转换成10进制</span><br><span class="line">rintf &quot;%x\n&quot; 1077</span><br></pre></td></tr></table></figure>
+
+<p>最后使用jstack pid|grep 16进制的线程id，就可以定位到问题代码。</p>
+]]></content>
+      <categories>
+        <category>生产故障</category>
+      </categories>
+      <tags>
+        <tag>问题定位</tag>
       </tags>
   </entry>
   <entry>
@@ -2082,27 +2194,6 @@ http.authenticationProvider(smsCodeAuthenticationProvider)
       </tags>
   </entry>
   <entry>
-    <title>生产故障排查流程</title>
-    <url>/2019/06/08/%E7%94%9F%E4%BA%A7%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h1 id="使用-top-查看系统中消耗cpu比较多的进程PID"><a href="#使用-top-查看系统中消耗cpu比较多的进程PID" class="headerlink" title="使用 top 查看系统中消耗cpu比较多的进程PID"></a>使用 top 查看系统中消耗cpu比较多的进程PID</h1><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">[richey@localhost ~]$ top |grep java</span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   2.7  11.3   5:49.83 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:49.87 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.7  11.3   5:49.92 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:49.96 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:50.00 java                                                                             </span><br><span class="line"> 7439 richey    20   0 7785472 346788  21388 S   0.3   2.1   0:06.05 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:50.04 java</span><br></pre></td></tr></table></figure>
-<h1 id="使用-ps-查看java相关进程的详细信息"><a href="#使用-ps-查看java相关进程的详细信息" class="headerlink" title="使用 ps 查看java相关进程的详细信息"></a>使用 ps 查看java相关进程的详细信息</h1><p>可以看出java进程JVM的详细配置</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[richey@localhost ~]$ ps -ef|grep java|grep 6274</span><br><span class="line"></span><br><span class="line">[richey@localhost ~]$ ps -ef|grep java|grep 6274</span><br><span class="line">richey    6274  6220 39 23:32 ?        00:05:52 /opt/idea-IU-172.4155.36/jre64/bin/java -Xbootclasspath/a:/opt/idea-IU-172.4155.36/lib/boot.jar -classpath /opt/idea-IU-172.4155.36/lib/bootstrap.jar:/opt/idea-IU-172.4155.36/lib/extensions.jar:/opt/idea-IU-172.4155.36/lib/util.jar:/opt/idea-IU-172.4155.36/lib/jdom.jar:/opt/idea-IU-172.4155.36/lib/log4j.jar:/opt/idea-IU-172.4155.36/lib/trove4j.jar:/opt/idea-IU-172.4155.36/lib/jna.jar:/opt/idea-IU-172.4155.36/jre64/lib/tools.jar -Xms2048m -Xmx6144m -XX:ReservedCodeCacheSize=240m -XX:+UseConcMarkSweepGC -XX:SoftRefLRUPolicyMSPerMB=50 -ea -Dsun.io.useCanonCaches=false -Djava.net.preferIPv4Stack=true -XX:+HeapDumpOnOutOfMemoryError -XX:-OmitStackTraceInFastThrow -Dawt.useSystemAAFontSettings=lcd -Dsun.java2d.renderer=sun.java2d.marlin.MarlinRenderingEngine -XX:ErrorFile=/home/richey/java_error_in_IDEA_%p.log -XX:HeapDumpPath=/home/richey/java_error_in_IDEA.hprof -Didea.paths.selector=IntelliJIdea2017.2 -Djb.vmOptionsFile=/opt/idea-IU-172.4155.36/bin/idea64.vmoptions -Didea.jre.check=true com.intellij.idea.Main</span><br></pre></td></tr></table></figure>
-
-<h1 id="使用-top-H-p-PID-来查看当前进程中比较消耗cpu的线程"><a href="#使用-top-H-p-PID-来查看当前进程中比较消耗cpu的线程" class="headerlink" title="使用 top -H -p PID 来查看当前进程中比较消耗cpu的线程"></a>使用 top -H -p PID 来查看当前进程中比较消耗cpu的线程</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">top -H -p 6274</span><br></pre></td></tr></table></figure>
-
-<p>拿到消耗cpu比较高的线程pid,先转换成16进制的</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 将16进制的pid 1077 转换成10进制</span><br><span class="line">rintf &quot;%x\n&quot; 1077</span><br></pre></td></tr></table></figure>
-
-<p>最后使用jstack pid|grep 16进制的线程id，就可以定位到问题代码。</p>
-]]></content>
-      <categories>
-        <category>生产故障</category>
-      </categories>
-      <tags>
-        <tag>问题定位</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Spring Security（7）－图片验证码重构</title>
     <url>/2019/06/07/Spring%20Security%EF%BC%887%EF%BC%89%EF%BC%8D%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81%E9%87%8D%E6%9E%84/</url>
     <content><![CDATA[<p>上一篇我们写了图片验证码的功能，但是有几个问题需要思考优化一下</p>
@@ -2212,28 +2303,6 @@ public class DemoImageCodeGenerator implements ValidateCodeGenerator {
       </categories>
       <tags>
         <tag>Spring-Security</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>适配器模式</title>
-    <url>/2019/06/06/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/</url>
-    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p>
-<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/spring%E9%85%8D%E7%BD%AE%E4%BD%BF%E7%94%A8%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8Fdemo.jpg" alt="spring适配器模式demo"></p>
-<h1 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h1><p>将一个类的接口，转换成客户期望的另一个接口。适配器让原本不兼容的接口可以合作无间。</p>
-<h1 id="对象适配器"><a href="#对象适配器" class="headerlink" title="对象适配器"></a>对象适配器</h1><ul>
-<li>采用组合模式</li>
-<li>不仅可以适配某类，还可以适配该类的任何子类。</li>
-</ul>
-<h1 id="类适配器"><a href="#类适配器" class="headerlink" title="类适配器"></a>类适配器</h1><ul>
-<li>采用继承模式</li>
-<li>不需要重新实现整个被适配者，必要的时候可以覆盖被适配者的行为。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>设计模式</tag>
       </tags>
   </entry>
   <entry>
@@ -2476,44 +2545,25 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
       </tags>
   </entry>
   <entry>
-    <title>Mysql（12）-Mysql事务隔离是如何实现的</title>
-    <url>/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/</url>
-    <content><![CDATA[<h1 id="事务的启动时机。"><a href="#事务的启动时机。" class="headerlink" title="事务的启动时机。"></a>事务的启动时机。</h1><p>begin/start transaction 命令并不是一个事务的起点，在执行到它们之后的第一个操作 InnoDB 表的语句，事务才真正启动。如果你想要马上启动一个事务，可以使用 start transaction with consistent snapshot 这个命令。</p>
-<p>第一种启动方式，一致性视图是在第执行第一个快照读语句时创建的；<br>第二种启动方式，一致性视图是在执行 start transaction with consistent snapshot 时创建的。</p>
-<h1 id="在-MySQL-里，有两个“视图”的概念"><a href="#在-MySQL-里，有两个“视图”的概念" class="headerlink" title="在 MySQL 里，有两个“视图”的概念"></a>在 MySQL 里，有两个“视图”的概念</h1><p>一个是 view。它是一个用查询语句定义的虚拟表，在调用的时候执行查询语句并生成结果。创建视图的语法是 create view … ，而它的查询方法与表一样。</p>
-<p>另一个是 InnoDB 在实现 MVCC 时用到的一致性读视图，即 consistent read view，用于支持 RC（Read Committed，读提交）和 RR（Repeatable Read，可重复读）隔离级别的实现。</p>
-<h1 id="“快照”在-MVCC-里是怎么工作的？"><a href="#“快照”在-MVCC-里是怎么工作的？" class="headerlink" title="“快照”在 MVCC 里是怎么工作的？"></a>“快照”在 MVCC 里是怎么工作的？</h1><p>在可重复读隔离级别下，事务在启动的时候就“拍了个快照”。注意，这个快照是基于整库的。</p>
-<p>InnoDB 里面每个事务有一个唯一的事务 ID，叫作 transaction id。它是在事务开始的时候向 InnoDB 的事务系统申请的，是按申请顺序严格递增的。</p>
-<p>而每行数据也都是有多个版本的。每次事务更新数据的时候，都会生成一个新的数据版本，并且把 transaction id 赋值给这个数据版本的事务 ID，记为 row trx_id。同时，旧的数据版本要保留，并且在新的数据版本中，能够有信息可以直接拿到它。</p>
-<p>也就是说，数据表中的一行记录，其实可能有多个版本 (row)，每个版本有自己的 row trx_id。</p>
-<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg" alt="Mysql数据MVVC"></p>
-<p>中的三个虚线箭头，就是 undo log；而 V1、V2、V3 并不是物理上真实存在的，而是每次需要的时候根据当前版本和 undo log 计算出来的。比如，需要 V2 的时候，就是通过 V4 依次执行 U3、U2 算出来。</p>
-<p>可重复读的定义：一个事务启动的时候，能够看到所有已经提交的事务结果。但是之后，这个事务执行期间，其他事务的更新对它不可见。</p>
-<p>因此，一个事务只需要在启动的时候声明说，“以我启动的时刻为准，如果一个数据版本是在我启动之前生成的，就认；如果是我启动以后才生成的，我就不认，我必须要找到它的上一个版本”。</p>
-<p>一个数据版本，对于一个事务视图来说，除了自己的更新总是可见以外，有三种情况：</p>
-<ol>
-<li>版本未提交，不可见；</li>
-<li>版本已提交，但是是在视图创建后提交的，不可见；</li>
-<li>版本已提交，而且是在视图创建前提交的，可见。</li>
-</ol>
-<p>更新数据都是先读后写的，而这个读，只能读当前的值，称为“当前读”（current read）。</p>
-<p>这里我们提到了一个概念，叫作当前读。其实，除了 update 语句外，select 语句如果加锁，也是当前读。</p>
-<h1 id="事务的可重复读的能力是怎么实现的？"><a href="#事务的可重复读的能力是怎么实现的？" class="headerlink" title="事务的可重复读的能力是怎么实现的？"></a>事务的可重复读的能力是怎么实现的？</h1><p>可重复读的核心就是一致性读（consistent read）；而事务更新数据的时候，只能用当前读。如果当前的记录的行锁被其他事务占用的话，就需要进入锁等待。</p>
-<h1 id="读提交的逻辑和可重复读的区别"><a href="#读提交的逻辑和可重复读的区别" class="headerlink" title="读提交的逻辑和可重复读的区别"></a>读提交的逻辑和可重复读的区别</h1><p>在可重复读隔离级别下，只需要在事务开始的时候创建一致性视图，之后事务里的其他查询都共用这个一致性视图；</p>
-<p>在读提交隔离级别下，每一个语句执行前都会重新算出一个新的视图。</p>
-<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>InnoDB 的行数据有多个版本，每个数据版本有自己的 row trx_id，每个事务或者语句有自己的一致性视图。普通查询语句是一致性读，一致性读会根据 row trx_id 和一致性视图确定数据版本的可见性。</p>
-<ul>
-<li>对于可重复读，查询只承认在事务启动前就已经提交完成的数据；</li>
-<li>对于读提交，查询只承认在语句启动前就已经提交完成的数据；</li>
-<li>而当前读，总是读取已经提交完成的最新版本。</li>
+    <title>适配器模式</title>
+    <url>/2019/06/06/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p>
+<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/spring%E9%85%8D%E7%BD%AE%E4%BD%BF%E7%94%A8%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8Fdemo.jpg" alt="spring适配器模式demo"></p>
+<h1 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h1><p>将一个类的接口，转换成客户期望的另一个接口。适配器让原本不兼容的接口可以合作无间。</p>
+<h1 id="对象适配器"><a href="#对象适配器" class="headerlink" title="对象适配器"></a>对象适配器</h1><ul>
+<li>采用组合模式</li>
+<li>不仅可以适配某类，还可以适配该类的任何子类。</li>
+</ul>
+<h1 id="类适配器"><a href="#类适配器" class="headerlink" title="类适配器"></a>类适配器</h1><ul>
+<li>采用继承模式</li>
+<li>不需要重新实现整个被适配者，必要的时候可以覆盖被适配者的行为。</li>
 </ul>
 ]]></content>
       <categories>
-        <category>DB</category>
+        <category>设计模式</category>
       </categories>
       <tags>
-        <tag>Mysql</tag>
-        <tag>事务</tag>
+        <tag>设计模式</tag>
       </tags>
   </entry>
   <entry>
@@ -2679,6 +2729,47 @@ public Object getCurrentUserToo(@AuthenticationPrincipal UserDetails userDetails
       </categories>
       <tags>
         <tag>Spring-Security</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mysql（12）-Mysql事务隔离是如何实现的</title>
+    <url>/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/</url>
+    <content><![CDATA[<h1 id="事务的启动时机。"><a href="#事务的启动时机。" class="headerlink" title="事务的启动时机。"></a>事务的启动时机。</h1><p>begin/start transaction 命令并不是一个事务的起点，在执行到它们之后的第一个操作 InnoDB 表的语句，事务才真正启动。如果你想要马上启动一个事务，可以使用 start transaction with consistent snapshot 这个命令。</p>
+<p>第一种启动方式，一致性视图是在第执行第一个快照读语句时创建的；<br>第二种启动方式，一致性视图是在执行 start transaction with consistent snapshot 时创建的。</p>
+<h1 id="在-MySQL-里，有两个“视图”的概念"><a href="#在-MySQL-里，有两个“视图”的概念" class="headerlink" title="在 MySQL 里，有两个“视图”的概念"></a>在 MySQL 里，有两个“视图”的概念</h1><p>一个是 view。它是一个用查询语句定义的虚拟表，在调用的时候执行查询语句并生成结果。创建视图的语法是 create view … ，而它的查询方法与表一样。</p>
+<p>另一个是 InnoDB 在实现 MVCC 时用到的一致性读视图，即 consistent read view，用于支持 RC（Read Committed，读提交）和 RR（Repeatable Read，可重复读）隔离级别的实现。</p>
+<h1 id="“快照”在-MVCC-里是怎么工作的？"><a href="#“快照”在-MVCC-里是怎么工作的？" class="headerlink" title="“快照”在 MVCC 里是怎么工作的？"></a>“快照”在 MVCC 里是怎么工作的？</h1><p>在可重复读隔离级别下，事务在启动的时候就“拍了个快照”。注意，这个快照是基于整库的。</p>
+<p>InnoDB 里面每个事务有一个唯一的事务 ID，叫作 transaction id。它是在事务开始的时候向 InnoDB 的事务系统申请的，是按申请顺序严格递增的。</p>
+<p>而每行数据也都是有多个版本的。每次事务更新数据的时候，都会生成一个新的数据版本，并且把 transaction id 赋值给这个数据版本的事务 ID，记为 row trx_id。同时，旧的数据版本要保留，并且在新的数据版本中，能够有信息可以直接拿到它。</p>
+<p>也就是说，数据表中的一行记录，其实可能有多个版本 (row)，每个版本有自己的 row trx_id。</p>
+<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg" alt="Mysql数据MVVC"></p>
+<p>中的三个虚线箭头，就是 undo log；而 V1、V2、V3 并不是物理上真实存在的，而是每次需要的时候根据当前版本和 undo log 计算出来的。比如，需要 V2 的时候，就是通过 V4 依次执行 U3、U2 算出来。</p>
+<p>可重复读的定义：一个事务启动的时候，能够看到所有已经提交的事务结果。但是之后，这个事务执行期间，其他事务的更新对它不可见。</p>
+<p>因此，一个事务只需要在启动的时候声明说，“以我启动的时刻为准，如果一个数据版本是在我启动之前生成的，就认；如果是我启动以后才生成的，我就不认，我必须要找到它的上一个版本”。</p>
+<p>一个数据版本，对于一个事务视图来说，除了自己的更新总是可见以外，有三种情况：</p>
+<ol>
+<li>版本未提交，不可见；</li>
+<li>版本已提交，但是是在视图创建后提交的，不可见；</li>
+<li>版本已提交，而且是在视图创建前提交的，可见。</li>
+</ol>
+<p>更新数据都是先读后写的，而这个读，只能读当前的值，称为“当前读”（current read）。</p>
+<p>这里我们提到了一个概念，叫作当前读。其实，除了 update 语句外，select 语句如果加锁，也是当前读。</p>
+<h1 id="事务的可重复读的能力是怎么实现的？"><a href="#事务的可重复读的能力是怎么实现的？" class="headerlink" title="事务的可重复读的能力是怎么实现的？"></a>事务的可重复读的能力是怎么实现的？</h1><p>可重复读的核心就是一致性读（consistent read）；而事务更新数据的时候，只能用当前读。如果当前的记录的行锁被其他事务占用的话，就需要进入锁等待。</p>
+<h1 id="读提交的逻辑和可重复读的区别"><a href="#读提交的逻辑和可重复读的区别" class="headerlink" title="读提交的逻辑和可重复读的区别"></a>读提交的逻辑和可重复读的区别</h1><p>在可重复读隔离级别下，只需要在事务开始的时候创建一致性视图，之后事务里的其他查询都共用这个一致性视图；</p>
+<p>在读提交隔离级别下，每一个语句执行前都会重新算出一个新的视图。</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>InnoDB 的行数据有多个版本，每个数据版本有自己的 row trx_id，每个事务或者语句有自己的一致性视图。普通查询语句是一致性读，一致性读会根据 row trx_id 和一致性视图确定数据版本的可见性。</p>
+<ul>
+<li>对于可重复读，查询只承认在事务启动前就已经提交完成的数据；</li>
+<li>对于读提交，查询只承认在语句启动前就已经提交完成的数据；</li>
+<li>而当前读，总是读取已经提交完成的最新版本。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
+        <tag>事务</tag>
       </tags>
   </entry>
   <entry>
@@ -3982,183 +4073,6 @@ public class SpringBootDemoApplication {
       </tags>
   </entry>
   <entry>
-    <title>Redis02-命令速查</title>
-    <url>/2019/04/06/Redis02-%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/</url>
-    <content><![CDATA[<h1 id="过期时间"><a href="#过期时间" class="headerlink" title="过期时间"></a>过期时间</h1><pre><code>127.0.0.1:6379&gt; SET expirecode foo
-OK
-127.0.0.1:6379&gt; TTL expirecode
-(integer) -1
-127.0.0.1:6379&gt; EXPIRE expirecode 60
-(integer) 1
-127.0.0.1:6379&gt; ttl expirecode
-(integer) 54
-127.0.0.1:6379&gt; set expirecode boo # set修改后,过期时间失效
-OK
-127.0.0.1:6379&gt; ttl expirecode
-(integer) -1</code></pre><h1 id="redis客户端连接"><a href="#redis客户端连接" class="headerlink" title="redis客户端连接"></a>redis客户端连接</h1><pre><code>./redis-cli    (本地)
-./redis-cli -h [host] -p [port] -a [password] (远程服务器)</code></pre><h1 id="Redis常用命令"><a href="#Redis常用命令" class="headerlink" title="Redis常用命令"></a>Redis常用命令</h1><ol>
-<li><p>连接操作命令</p>
-<pre><code>quit：关闭连接（connection）
-
-auth：简单密码认证
-
-help cmd： 查看cmd帮助，例如：help quit</code></pre></li>
-<li><p>持久化</p>
-<pre><code>save：将数据同步保存到磁盘
-
-bgsave：将数据异步保存到磁盘
-
-lastsave：返回上次成功将数据保存到磁盘的Unix时戳
-
-shutdown：将数据同步保存到磁盘，然后关闭服务</code></pre></li>
-<li><p>远程服务控制</p>
-<pre><code>info：提供服务器的信息和统计
-
-monitor：实时转储收到的请求
-
-slaveof：改变复制策略设置
-
-config：在运行时配置Redis服务器</code></pre></li>
-<li><p>对key操作的命令</p>
-<pre><code>exists(key)：确认一个key是否存在
-
-del(key)：删除一个key
-
-type(key)：返回值的类型
-
-keys(pattern)：返回满足给定pattern的所有key
-
-randomkey：随机返回key空间的一个
-
-keyrename(oldname, newname)：重命名key
-
-dbsize：返回当前数据库中key的数目
-
-expire：设定一个key的活动时间（s）
-
-ttl：获得一个key的活动时间
-
-select(index)：按索引查询
-
-move(key, dbindex)：移动当前数据库中的key到dbindex数据库
-
-flushdb：删除当前选择数据库中的所有key
-
-flushall：删除所有数据库中的所有key</code></pre></li>
-<li><p>String</p>
-<pre><code>set(key, value)：给数据库中名称为key的string赋予值value
-
-get(key)：返回数据库中名称为key的string的value
-
-getset(key, value)：给名称为key的string赋予上一次的value
-
-mget(key1, key2,…, key N)：返回库中多个string的value
-
-setnx(key, value)：添加string，名称为key，值为value
-
-setex(key, time, value)：向库中添加string，设定过期时间time
-
-mset(key N, value N)：批量设置多个string的值
-
-msetnx(key N, value N)：如果所有名称为key i的string都不存在
-
-incr(key)：名称为key的string增1操作
-
-incrby(key, integer)：名称为key的string增加integer
-
-decr(key)：名称为key的string减1操作
-
-decrby(key, integer)：名称为key的string减少integer
-
-append(key, value)：名称为key的string的值附加value
-
-substr(key, start, end)：返回名称为key的string的value的子串</code></pre></li>
-<li><p>List</p>
-<pre><code>rpush(key, value)：在名称为key的list尾添加一个值为value的元素
-
-lpush(key, value)：在名称为key的list头添加一个值为value的 元素
-
-llen(key)：返回名称为key的list的长度
-
-lrange(key, start, end)：返回名称为key的list中start至end之间的元素
-
-ltrim(key, start, end)：截取名称为key的list
-
-lindex(key, index)：返回名称为key的list中index位置的元素
-
-lset(key, index, value)：给名称为key的list中index位置的元素赋值
-
-lrem(key, count, value)：删除count个key的list中值为value的元素
-
-lpop(key)：返回并删除名称为key的list中的首元素
-
-rpop(key)：返回并删除名称为key的list中的尾元素
-
-blpop(key1, key2,… key N, timeout)：lpop命令的block版本。
-
-brpop(key1, key2,… key N, timeout)：rpop的block版本。
-
-rpoplpush(srckey, dstkey)：返回并删除名称为srckey的list的尾元素，并将该元素添加到名称为dstkey的list的头部</code></pre></li>
-<li><p>Set</p>
-<pre><code>sadd(key, member)：向名称为key的set中添加元素member
-
-srem(key, member) ：删除名称为key的set中的元素member
-
-spop(key) ：随机返回并删除名称为key的set中一个元素
-
-smove(srckey, dstkey, member) ：移到集合元素
-
-scard(key) ：返回名称为key的set的基数
-
-sismember(key, member) ：member是否是名称为key的set的元素
-
-sinter(key1, key2,…key N) ：求交集
-
-sinterstore(dstkey, (keys)) ：求交集并将交集保存到dstkey的集合
-
-sunion(key1, (keys)) ：求并集
-
-sunionstore(dstkey, (keys)) ：求并集并将并集保存到dstkey的集合
-
-sdiff(key1, (keys)) ：求差集
-
-sdiffstore(dstkey, (keys)) ：求差集并将差集保存到dstkey的集合
-
-smembers(key) ：返回名称为key的set的所有元素
-
-srandmember(key) ：随机返回名称为key的set的一个元素</code></pre></li>
-<li><p>Hash</p>
-<pre><code>hset(key, field, value)：向名称为key的hash中添加元素field
-
-hget(key, field)：返回名称为key的hash中field对应的value
-
-hmget(key, (fields))：返回名称为key的hash中field i对应的value
-
-hmset(key, (fields))：向名称为key的hash中添加元素field
-
-hincrby(key, field, integer)：将名称为key的hash中field的value增加integer
-
-hexists(key, field)：名称为key的hash中是否存在键为field的域
-
-hdel(key, field)：删除名称为key的hash中键为field的域
-
-hlen(key)：返回名称为key的hash中元素个数
-
-hkeys(key)：返回名称为key的hash中所有键
-
-hvals(key)：返回名称为key的hash中所有键对应的value
-
-hgetall(key)：返回名称为key的hash中所有的键（field）及其对应的value</code></pre></li>
-</ol>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>redis</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>maven必知必会</title>
     <url>/2019/04/06/maven%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A/</url>
     <content><![CDATA[<h1 id="仓库"><a href="#仓库" class="headerlink" title="仓库"></a>仓库</h1><p>对于Maven来说，仓库只分为两类：本地仓库和远程仓库。当Maven需要根据坐标寻找构件的时候，它首先会查找本地仓库，如果本地仓库有此构件，则直接使用；</p>
@@ -4355,6 +4269,183 @@ hgetall(key)：返回名称为key的hash中所有的键（field）及其对应�
       <tags>
         <tag>Mysql</tag>
         <tag>编码</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Redis02-命令速查</title>
+    <url>/2019/04/06/Redis02-%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/</url>
+    <content><![CDATA[<h1 id="过期时间"><a href="#过期时间" class="headerlink" title="过期时间"></a>过期时间</h1><pre><code>127.0.0.1:6379&gt; SET expirecode foo
+OK
+127.0.0.1:6379&gt; TTL expirecode
+(integer) -1
+127.0.0.1:6379&gt; EXPIRE expirecode 60
+(integer) 1
+127.0.0.1:6379&gt; ttl expirecode
+(integer) 54
+127.0.0.1:6379&gt; set expirecode boo # set修改后,过期时间失效
+OK
+127.0.0.1:6379&gt; ttl expirecode
+(integer) -1</code></pre><h1 id="redis客户端连接"><a href="#redis客户端连接" class="headerlink" title="redis客户端连接"></a>redis客户端连接</h1><pre><code>./redis-cli    (本地)
+./redis-cli -h [host] -p [port] -a [password] (远程服务器)</code></pre><h1 id="Redis常用命令"><a href="#Redis常用命令" class="headerlink" title="Redis常用命令"></a>Redis常用命令</h1><ol>
+<li><p>连接操作命令</p>
+<pre><code>quit：关闭连接（connection）
+
+auth：简单密码认证
+
+help cmd： 查看cmd帮助，例如：help quit</code></pre></li>
+<li><p>持久化</p>
+<pre><code>save：将数据同步保存到磁盘
+
+bgsave：将数据异步保存到磁盘
+
+lastsave：返回上次成功将数据保存到磁盘的Unix时戳
+
+shutdown：将数据同步保存到磁盘，然后关闭服务</code></pre></li>
+<li><p>远程服务控制</p>
+<pre><code>info：提供服务器的信息和统计
+
+monitor：实时转储收到的请求
+
+slaveof：改变复制策略设置
+
+config：在运行时配置Redis服务器</code></pre></li>
+<li><p>对key操作的命令</p>
+<pre><code>exists(key)：确认一个key是否存在
+
+del(key)：删除一个key
+
+type(key)：返回值的类型
+
+keys(pattern)：返回满足给定pattern的所有key
+
+randomkey：随机返回key空间的一个
+
+keyrename(oldname, newname)：重命名key
+
+dbsize：返回当前数据库中key的数目
+
+expire：设定一个key的活动时间（s）
+
+ttl：获得一个key的活动时间
+
+select(index)：按索引查询
+
+move(key, dbindex)：移动当前数据库中的key到dbindex数据库
+
+flushdb：删除当前选择数据库中的所有key
+
+flushall：删除所有数据库中的所有key</code></pre></li>
+<li><p>String</p>
+<pre><code>set(key, value)：给数据库中名称为key的string赋予值value
+
+get(key)：返回数据库中名称为key的string的value
+
+getset(key, value)：给名称为key的string赋予上一次的value
+
+mget(key1, key2,…, key N)：返回库中多个string的value
+
+setnx(key, value)：添加string，名称为key，值为value
+
+setex(key, time, value)：向库中添加string，设定过期时间time
+
+mset(key N, value N)：批量设置多个string的值
+
+msetnx(key N, value N)：如果所有名称为key i的string都不存在
+
+incr(key)：名称为key的string增1操作
+
+incrby(key, integer)：名称为key的string增加integer
+
+decr(key)：名称为key的string减1操作
+
+decrby(key, integer)：名称为key的string减少integer
+
+append(key, value)：名称为key的string的值附加value
+
+substr(key, start, end)：返回名称为key的string的value的子串</code></pre></li>
+<li><p>List</p>
+<pre><code>rpush(key, value)：在名称为key的list尾添加一个值为value的元素
+
+lpush(key, value)：在名称为key的list头添加一个值为value的 元素
+
+llen(key)：返回名称为key的list的长度
+
+lrange(key, start, end)：返回名称为key的list中start至end之间的元素
+
+ltrim(key, start, end)：截取名称为key的list
+
+lindex(key, index)：返回名称为key的list中index位置的元素
+
+lset(key, index, value)：给名称为key的list中index位置的元素赋值
+
+lrem(key, count, value)：删除count个key的list中值为value的元素
+
+lpop(key)：返回并删除名称为key的list中的首元素
+
+rpop(key)：返回并删除名称为key的list中的尾元素
+
+blpop(key1, key2,… key N, timeout)：lpop命令的block版本。
+
+brpop(key1, key2,… key N, timeout)：rpop的block版本。
+
+rpoplpush(srckey, dstkey)：返回并删除名称为srckey的list的尾元素，并将该元素添加到名称为dstkey的list的头部</code></pre></li>
+<li><p>Set</p>
+<pre><code>sadd(key, member)：向名称为key的set中添加元素member
+
+srem(key, member) ：删除名称为key的set中的元素member
+
+spop(key) ：随机返回并删除名称为key的set中一个元素
+
+smove(srckey, dstkey, member) ：移到集合元素
+
+scard(key) ：返回名称为key的set的基数
+
+sismember(key, member) ：member是否是名称为key的set的元素
+
+sinter(key1, key2,…key N) ：求交集
+
+sinterstore(dstkey, (keys)) ：求交集并将交集保存到dstkey的集合
+
+sunion(key1, (keys)) ：求并集
+
+sunionstore(dstkey, (keys)) ：求并集并将并集保存到dstkey的集合
+
+sdiff(key1, (keys)) ：求差集
+
+sdiffstore(dstkey, (keys)) ：求差集并将差集保存到dstkey的集合
+
+smembers(key) ：返回名称为key的set的所有元素
+
+srandmember(key) ：随机返回名称为key的set的一个元素</code></pre></li>
+<li><p>Hash</p>
+<pre><code>hset(key, field, value)：向名称为key的hash中添加元素field
+
+hget(key, field)：返回名称为key的hash中field对应的value
+
+hmget(key, (fields))：返回名称为key的hash中field i对应的value
+
+hmset(key, (fields))：向名称为key的hash中添加元素field
+
+hincrby(key, field, integer)：将名称为key的hash中field的value增加integer
+
+hexists(key, field)：名称为key的hash中是否存在键为field的域
+
+hdel(key, field)：删除名称为key的hash中键为field的域
+
+hlen(key)：返回名称为key的hash中元素个数
+
+hkeys(key)：返回名称为key的hash中所有键
+
+hvals(key)：返回名称为key的hash中所有键对应的value
+
+hgetall(key)：返回名称为key的hash中所有的键（field）及其对应的value</code></pre></li>
+</ol>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>redis</tag>
       </tags>
   </entry>
   <entry>
@@ -4876,36 +4967,6 @@ OK
       </tags>
   </entry>
   <entry>
-    <title>Nginx-3：Nginx中的正则表达式</title>
-    <url>/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/</url>
-    <content><![CDATA[<p>正则表达式可以让我们匹配的功能更加强大</p>
-<h1 id="元字符"><a href="#元字符" class="headerlink" title="元字符"></a>元字符</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.   匹配除换行符之外的任意字符</span><br><span class="line">\w  匹配字母、数字、下划线或汉字</span><br><span class="line">\s  匹配任意的空白字符</span><br><span class="line">\d  匹配数字</span><br><span class="line">\b  匹配单词的开始或结束</span><br><span class="line">^   匹配字符串的开始</span><br><span class="line">$   匹配字符串的结束</span><br></pre></td></tr></table></figure>
-
-<h1 id="重复"><a href="#重复" class="headerlink" title="重复"></a>重复</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">*      重复0次或多次</span><br><span class="line">+      重复1次或多次</span><br><span class="line">？     重复0次或1次</span><br><span class="line">&#123;n&#125;    重复n次</span><br><span class="line">&#123;n,&#125;   重复n次或更多次</span><br><span class="line">&#123;n,m&#125;  重复n到m次</span><br></pre></td></tr></table></figure>
-
-<h1 id="转义符号"><a href="#转义符号" class="headerlink" title="转义符号"></a>转义符号</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">\: 取消元字符的特殊含义</span><br></pre></td></tr></table></figure>
-
-<h1 id="分组与取值"><a href="#分组与取值" class="headerlink" title="分组与取值"></a>分组与取值</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">():用来通过$方式取表达式中的值，或者进行分组</span><br></pre></td></tr></table></figure>
-
-<h1 id="pcretest"><a href="#pcretest" class="headerlink" title="pcretest"></a>pcretest</h1><p>PCRE(Perl Compatible Regular Expressions)是一个Perl库，包括 perl 兼容的正则表达式库。我们可以通过pcretest工具来测试<br>我们写的正则表达式的可用性。</p>
-<p>我们安装pcre-tools后就可以使用pcretools了：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo dnf install pcre-tools</span><br></pre></td></tr></table></figure>
-
-<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><p>原始url： /web/assets/view/salary/month-8/payslip/basicsalary.jpg<br>转换后的url： /web/assets/view/cnb-salary/payslip/basicsalary/month/8.jpg<br>匹配原始url的正则表达式：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;^\&#x2F;web\&#x2F;assets\&#x2F;view\&#x2F;salary\&#x2F;(\w+)-(\d&#123;1,2&#125;)\&#x2F;payslip\&#x2F;(\w+)\.(png|jpg|gif|jpeg|bmp)$&#x2F;</span><br><span class="line"></span><br><span class="line">rewrite ^&#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;(\w+)-(\d&#123;1,2&#125;)&#x2F;payslip&#x2F;(\w+).(png|jpg|gif|jpeg|bmp)$  &#x2F;web&#x2F;assets&#x2F;view&#x2F;cnb-salary&#x2F;payslip&#x2F;$3&#x2F;$1&#x2F;$2.$4 last;</span><br></pre></td></tr></table></figure>
-<p>我们通过pcretest进行测试</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@192 ~]$ pcretest</span><br><span class="line">PCRE version 8.43 2019-02-23</span><br><span class="line"></span><br><span class="line">  re&gt; &#x2F;^\&#x2F;web\&#x2F;assets\&#x2F;view\&#x2F;salary\&#x2F;(\w+)-(\d&#123;1,2&#125;)\&#x2F;payslip\&#x2F;(\w+)\.(png|jpg|gif|jpeg|bmp)$&#x2F;</span><br><span class="line">data&gt; &#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;month-8&#x2F;payslip&#x2F;basicsalary.jpg</span><br><span class="line"> 0: &#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;month-8&#x2F;payslip&#x2F;basicsalary.jpg</span><br><span class="line"> 1: month</span><br><span class="line"> 2: 8</span><br><span class="line"> 3: basicsalary</span><br><span class="line"> 4: jpg</span><br></pre></td></tr></table></figure>
-<p>可以看到通过正则表达式（）匹配到的各个值，然后就可以通过$1,$2…的方式使用这些值，达到rewrite的目的。</p>
-<p>注意在nginx中使用正则表达式是不需要使用反斜杠转义的，这里是为了在pcretest中测试</p>
-]]></content>
-      <categories>
-        <category>web</category>
-      </categories>
-      <tags>
-        <tag>nginx</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Nginx-2：Nginx安装</title>
     <url>/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/</url>
     <content><![CDATA[<p>安装nginx有两种方式：</p>
@@ -4975,6 +5036,36 @@ OK
 
 <p>这里最主要的nginx的二进制文件就在sbin目录下，决定nginx功能的配置文件在conf目录下</p>
 <p>以上就是nginx编译安装的全部步骤。</p>
+]]></content>
+      <categories>
+        <category>web</category>
+      </categories>
+      <tags>
+        <tag>nginx</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Nginx-3：Nginx中的正则表达式</title>
+    <url>/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/</url>
+    <content><![CDATA[<p>正则表达式可以让我们匹配的功能更加强大</p>
+<h1 id="元字符"><a href="#元字符" class="headerlink" title="元字符"></a>元字符</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.   匹配除换行符之外的任意字符</span><br><span class="line">\w  匹配字母、数字、下划线或汉字</span><br><span class="line">\s  匹配任意的空白字符</span><br><span class="line">\d  匹配数字</span><br><span class="line">\b  匹配单词的开始或结束</span><br><span class="line">^   匹配字符串的开始</span><br><span class="line">$   匹配字符串的结束</span><br></pre></td></tr></table></figure>
+
+<h1 id="重复"><a href="#重复" class="headerlink" title="重复"></a>重复</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">*      重复0次或多次</span><br><span class="line">+      重复1次或多次</span><br><span class="line">？     重复0次或1次</span><br><span class="line">&#123;n&#125;    重复n次</span><br><span class="line">&#123;n,&#125;   重复n次或更多次</span><br><span class="line">&#123;n,m&#125;  重复n到m次</span><br></pre></td></tr></table></figure>
+
+<h1 id="转义符号"><a href="#转义符号" class="headerlink" title="转义符号"></a>转义符号</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">\: 取消元字符的特殊含义</span><br></pre></td></tr></table></figure>
+
+<h1 id="分组与取值"><a href="#分组与取值" class="headerlink" title="分组与取值"></a>分组与取值</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">():用来通过$方式取表达式中的值，或者进行分组</span><br></pre></td></tr></table></figure>
+
+<h1 id="pcretest"><a href="#pcretest" class="headerlink" title="pcretest"></a>pcretest</h1><p>PCRE(Perl Compatible Regular Expressions)是一个Perl库，包括 perl 兼容的正则表达式库。我们可以通过pcretest工具来测试<br>我们写的正则表达式的可用性。</p>
+<p>我们安装pcre-tools后就可以使用pcretools了：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo dnf install pcre-tools</span><br></pre></td></tr></table></figure>
+
+<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><p>原始url： /web/assets/view/salary/month-8/payslip/basicsalary.jpg<br>转换后的url： /web/assets/view/cnb-salary/payslip/basicsalary/month/8.jpg<br>匹配原始url的正则表达式：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;^\&#x2F;web\&#x2F;assets\&#x2F;view\&#x2F;salary\&#x2F;(\w+)-(\d&#123;1,2&#125;)\&#x2F;payslip\&#x2F;(\w+)\.(png|jpg|gif|jpeg|bmp)$&#x2F;</span><br><span class="line"></span><br><span class="line">rewrite ^&#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;(\w+)-(\d&#123;1,2&#125;)&#x2F;payslip&#x2F;(\w+).(png|jpg|gif|jpeg|bmp)$  &#x2F;web&#x2F;assets&#x2F;view&#x2F;cnb-salary&#x2F;payslip&#x2F;$3&#x2F;$1&#x2F;$2.$4 last;</span><br></pre></td></tr></table></figure>
+<p>我们通过pcretest进行测试</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@192 ~]$ pcretest</span><br><span class="line">PCRE version 8.43 2019-02-23</span><br><span class="line"></span><br><span class="line">  re&gt; &#x2F;^\&#x2F;web\&#x2F;assets\&#x2F;view\&#x2F;salary\&#x2F;(\w+)-(\d&#123;1,2&#125;)\&#x2F;payslip\&#x2F;(\w+)\.(png|jpg|gif|jpeg|bmp)$&#x2F;</span><br><span class="line">data&gt; &#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;month-8&#x2F;payslip&#x2F;basicsalary.jpg</span><br><span class="line"> 0: &#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;month-8&#x2F;payslip&#x2F;basicsalary.jpg</span><br><span class="line"> 1: month</span><br><span class="line"> 2: 8</span><br><span class="line"> 3: basicsalary</span><br><span class="line"> 4: jpg</span><br></pre></td></tr></table></figure>
+<p>可以看到通过正则表达式（）匹配到的各个值，然后就可以通过$1,$2…的方式使用这些值，达到rewrite的目的。</p>
+<p>注意在nginx中使用正则表达式是不需要使用反斜杠转义的，这里是为了在pcretest中测试</p>
 ]]></content>
       <categories>
         <category>web</category>
@@ -5547,6 +5638,47 @@ echo $PATH  //记录命令的搜索路径</code></pre></li>
       </categories>
   </entry>
   <entry>
+    <title>Linux使用私钥公钥(Public key)登录 - 免密码登录</title>
+    <url>/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/</url>
+    <content><![CDATA[<p>为了更安全、方便的登录Linux服务器，可以取消密码登录，使用私钥公钥的方式来登录，更方便也更安全。</p>
+<h1 id="生成密钥（客户端机器）"><a href="#生成密钥（客户端机器）" class="headerlink" title="生成密钥（客户端机器）"></a>生成密钥（客户端机器）</h1><pre><code>ssh-keygen -t [rsa|dsa] -P &apos;&apos;</code></pre><p>直接ssh-keygen然后三次回车就可以了。<br>-P表示密码，-P ‘’ 就表示空密码，也可以不用-P参数，这样就要三车回车，用-P就一次回车。<br>它在/home/chenlb下生成.ssh目录，.ssh下有id_rsa和id_rsa.pub这样一对公私钥。</p>
+<h1 id="上传公钥到服务器端"><a href="#上传公钥到服务器端" class="headerlink" title="上传公钥到服务器端"></a>上传公钥到服务器端</h1><p>先在服务器对应用户目录下创建~/.ssh/authorized_keys目录（如果目录已存在，这一步会被略过）</p>
+<p>ssh richey@host mkdir -p .ssh/authorized_keys</p>
+<p>把客户端的公钥_rsa.pub复制到服务器端机器的.ssh/authorized_keys文件里</p>
+<pre><code>* 可以用scp复制到服务器，然后再从服务器中把从客户端复制的id_rsa.pub添加到.ssh/authorzied_keys文件里。
+
+    scp .ssh/id_rsa.pub  richey@45.xx.xx.16:/home/richey/id_rsa.pub
+
+* 或者
+
+    cat .ssh/id_rsa.pub | ssh richey@hostB &apos;cat &gt;&gt; .ssh/authorized_keys&apos;</code></pre><ul>
+<li><p>上述的创建目录并复制的操作也可以通过一个 ssh-copy-id 命令一步完成：    </p>
+<pre><code>ssh-copy-id -i ~/.ssh/id_rsa.pub aliceB@hostB</code></pre></li>
+<li><p>authorized_keys的权限要是600。</p>
+<pre><code>chmod 600 .ssh/authorized_keys</code></pre></li>
+</ul>
+<h1 id="修改SSH的配置文件"><a href="#修改SSH的配置文件" class="headerlink" title="修改SSH的配置文件"></a>修改SSH的配置文件</h1><p>配置文件位置</p>
+<pre><code>/etc/ssh/sshd_config :
+
+#RSAAuthentication yes
+#PubkeyAuthentication yes
+#AuthorizedKeysFile .ssh/authorized_keys</code></pre><p>去调上面3行前面的#，保存后重启SSH服务。</p>
+<pre><code>使用SYSVINIT初始化系统的Linux系统：service sshd restart
+使用SYSTEMD初始化系统的Linux系统：systemctl restart sshd</code></pre><p>至此服务器端已经支持使用SSH私钥证书登录。</p>
+<h1 id="关闭root用户使用密码登陆"><a href="#关闭root用户使用密码登陆" class="headerlink" title="关闭root用户使用密码登陆"></a>关闭root用户使用密码登陆</h1><p>在使用SSH Key登录验证成功后，还是为了安全，建议关闭root用户使用密码登陆，关闭的方法如下：</p>
+<p>修改SSH的配置文件/etc/ssh/sshd_config，找到下面1行：</p>
+<pre><code>PasswordAuthentication yes</code></pre><p>修改为：</p>
+<pre><code>PasswordAuthentication no</code></pre><p>保存后重启SSH服务。</p>
+<pre><code>service sshd restart</code></pre><p>好了，至此只要你保存好你的私钥（为安全，建议删除服务器端的私钥），你的服务器相比原来使用root用户加密码登陆来说已经安全多了。</p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>ssh</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Linux常用命令</title>
     <url>/2019/03/12/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
     <content><![CDATA[<h4 id="1、查找文件"><a href="#1、查找文件" class="headerlink" title="1、查找文件"></a>1、查找文件</h4><pre><code>find . -name &quot;*.xml&quot; 递归查找所有的xml文件
@@ -5592,47 +5724,6 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
       <categories>
         <category>Linux</category>
       </categories>
-  </entry>
-  <entry>
-    <title>Linux使用私钥公钥(Public key)登录 - 免密码登录</title>
-    <url>/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/</url>
-    <content><![CDATA[<p>为了更安全、方便的登录Linux服务器，可以取消密码登录，使用私钥公钥的方式来登录，更方便也更安全。</p>
-<h1 id="生成密钥（客户端机器）"><a href="#生成密钥（客户端机器）" class="headerlink" title="生成密钥（客户端机器）"></a>生成密钥（客户端机器）</h1><pre><code>ssh-keygen -t [rsa|dsa] -P &apos;&apos;</code></pre><p>直接ssh-keygen然后三次回车就可以了。<br>-P表示密码，-P ‘’ 就表示空密码，也可以不用-P参数，这样就要三车回车，用-P就一次回车。<br>它在/home/chenlb下生成.ssh目录，.ssh下有id_rsa和id_rsa.pub这样一对公私钥。</p>
-<h1 id="上传公钥到服务器端"><a href="#上传公钥到服务器端" class="headerlink" title="上传公钥到服务器端"></a>上传公钥到服务器端</h1><p>先在服务器对应用户目录下创建~/.ssh/authorized_keys目录（如果目录已存在，这一步会被略过）</p>
-<p>ssh richey@host mkdir -p .ssh/authorized_keys</p>
-<p>把客户端的公钥_rsa.pub复制到服务器端机器的.ssh/authorized_keys文件里</p>
-<pre><code>* 可以用scp复制到服务器，然后再从服务器中把从客户端复制的id_rsa.pub添加到.ssh/authorzied_keys文件里。
-
-    scp .ssh/id_rsa.pub  richey@45.xx.xx.16:/home/richey/id_rsa.pub
-
-* 或者
-
-    cat .ssh/id_rsa.pub | ssh richey@hostB &apos;cat &gt;&gt; .ssh/authorized_keys&apos;</code></pre><ul>
-<li><p>上述的创建目录并复制的操作也可以通过一个 ssh-copy-id 命令一步完成：    </p>
-<pre><code>ssh-copy-id -i ~/.ssh/id_rsa.pub aliceB@hostB</code></pre></li>
-<li><p>authorized_keys的权限要是600。</p>
-<pre><code>chmod 600 .ssh/authorized_keys</code></pre></li>
-</ul>
-<h1 id="修改SSH的配置文件"><a href="#修改SSH的配置文件" class="headerlink" title="修改SSH的配置文件"></a>修改SSH的配置文件</h1><p>配置文件位置</p>
-<pre><code>/etc/ssh/sshd_config :
-
-#RSAAuthentication yes
-#PubkeyAuthentication yes
-#AuthorizedKeysFile .ssh/authorized_keys</code></pre><p>去调上面3行前面的#，保存后重启SSH服务。</p>
-<pre><code>使用SYSVINIT初始化系统的Linux系统：service sshd restart
-使用SYSTEMD初始化系统的Linux系统：systemctl restart sshd</code></pre><p>至此服务器端已经支持使用SSH私钥证书登录。</p>
-<h1 id="关闭root用户使用密码登陆"><a href="#关闭root用户使用密码登陆" class="headerlink" title="关闭root用户使用密码登陆"></a>关闭root用户使用密码登陆</h1><p>在使用SSH Key登录验证成功后，还是为了安全，建议关闭root用户使用密码登陆，关闭的方法如下：</p>
-<p>修改SSH的配置文件/etc/ssh/sshd_config，找到下面1行：</p>
-<pre><code>PasswordAuthentication yes</code></pre><p>修改为：</p>
-<pre><code>PasswordAuthentication no</code></pre><p>保存后重启SSH服务。</p>
-<pre><code>service sshd restart</code></pre><p>好了，至此只要你保存好你的私钥（为安全，建议删除服务器端的私钥），你的服务器相比原来使用root用户加密码登陆来说已经安全多了。</p>
-]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
-      <tags>
-        <tag>ssh</tag>
-      </tags>
   </entry>
   <entry>
     <title>Linux下iptables 禁止端口和开放端口</title>
@@ -5714,6 +5805,34 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
       </categories>
       <tags>
         <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java基础</title>
+    <url>/2019/03/08/Java%E5%9F%BA%E7%A1%80/</url>
+    <content><![CDATA[<h1 id="HashMap、Hashtable、ConcurrentHashMap的原理与区别"><a href="#HashMap、Hashtable、ConcurrentHashMap的原理与区别" class="headerlink" title="HashMap、Hashtable、ConcurrentHashMap的原理与区别"></a>HashMap、Hashtable、ConcurrentHashMap的原理与区别</h1><h2 id="简述HashMap实现原理"><a href="#简述HashMap实现原理" class="headerlink" title="简述HashMap实现原理"></a>简述HashMap实现原理</h2><p>HashMap的底层是通过数组和链表实现的。其实就是维护了一个数组，put操作的时候根据key的哈希值和数组的长度（具体看源码）算出下标，判断该位置有没有对象，没有的话直接创建一个Entry对象（该对象保存了key，hash，value，下标等属性），如果有对象则判断是否有hash冲突（不同的key，但是hash值相同），有冲突则则该闻之用链表存储。</p>
+<p>todo：源码分析</p>
+<p>注意：</p>
+<ul>
+<li>HashMap的key和value都允许是null；</li>
+<li>当put后数量大于等于当前容量*加载因子的时候，就需要扩容，扩容需要数组复制，是非常耗时的，所以如果我们已经预知HashMap中元素的个数，那么预设元素的个数能够有效的提高HashMap的性能；</li>
+</ul>
+<p>思考：<br>如果我们创建HashMap的时候指定了初始大小等于我们希望放入对象的数量，是不是就不会产生扩容？（如果不修改加载因子，仍会产生扩容）</p>
+<h2 id="HashTale与HashMap的区别"><a href="#HashTale与HashMap的区别" class="headerlink" title="HashTale与HashMap的区别"></a>HashTale与HashMap的区别</h2><ul>
+<li>HashTable同HashMap的实现差别不大，  同样是基于哈希表通过数组和链表实现的，同样每个元素是一个key-value对，其内部也是通过单链表解决冲突问题，容量不足（超过了阀值）时，同样会自动增长。</li>
+</ul>
+<h2 id="HashTable与ConcurrentHashMap的区别"><a href="#HashTable与ConcurrentHashMap的区别" class="headerlink" title="HashTable与ConcurrentHashMap的区别"></a>HashTable与ConcurrentHashMap的区别</h2><ul>
+<li>不同点在于HashTable是线程安全的，因为它每个方法中都加入了Synchronize。</li>
+<li>ConcurrentHashMap是HashTable的代替，底层采用分段的数组+链表实现，线程安全。</li>
+<li>通过把整个Map分为N个Segment，可以提供相同的线程安全，但是效率提升N倍，默认提升16倍。(读操作不加锁，由于HashEntry的value变量是 volatile的，也能保证读取到最新的值。)</li>
+</ul>
+<h1 id="volatile的作用"><a href="#volatile的作用" class="headerlink" title="volatile的作用"></a>volatile的作用</h1><h1 id="Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的"><a href="#Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的" class="headerlink" title="Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的"></a>Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的</h1><h1 id="Atomic类如何保证原子操作（CAS操作）"><a href="#Atomic类如何保证原子操作（CAS操作）" class="headerlink" title="Atomic类如何保证原子操作（CAS操作）"></a>Atomic类如何保证原子操作（CAS操作）</h1><h1 id="synchronized和Lock的区别"><a href="#synchronized和Lock的区别" class="headerlink" title="synchronized和Lock的区别"></a>synchronized和Lock的区别</h1><h1 id="ThreadLocal的原理和实现"><a href="#ThreadLocal的原理和实现" class="headerlink" title="ThreadLocal的原理和实现"></a>ThreadLocal的原理和实现</h1><h1 id="为什么要使用线程池"><a href="#为什么要使用线程池" class="headerlink" title="为什么要使用线程池"></a>为什么要使用线程池</h1><h1 id="核心线程池ThreadPoolExecutor的参数"><a href="#核心线程池ThreadPoolExecutor的参数" class="headerlink" title="核心线程池ThreadPoolExecutor的参数"></a>核心线程池ThreadPoolExecutor的参数</h1><h1 id="ThreadPoolExecutor的工作流程"><a href="#ThreadPoolExecutor的工作流程" class="headerlink" title="ThreadPoolExecutor的工作流程"></a>ThreadPoolExecutor的工作流程</h1><h1 id="如何控制线程池线程的优先级"><a href="#如何控制线程池线程的优先级" class="headerlink" title="如何控制线程池线程的优先级"></a>如何控制线程池线程的优先级</h1><h1 id="线程之间如何通信"><a href="#线程之间如何通信" class="headerlink" title="线程之间如何通信"></a>线程之间如何通信</h1><h1 id="Jdk1-8和1-7都分别新增了哪些特性"><a href="#Jdk1-8和1-7都分别新增了哪些特性" class="headerlink" title="Jdk1.8和1.7都分别新增了哪些特性"></a>Jdk1.8和1.7都分别新增了哪些特性</h1><h1 id="Exception-和-Error"><a href="#Exception-和-Error" class="headerlink" title="Exception 和 Error"></a>Exception 和 Error</h1><h1 id="Object类内的方法"><a href="#Object类内的方法" class="headerlink" title="Object类内的方法"></a>Object类内的方法</h1><p>Mysql 一句查询操作的执行流程</p>
+]]></content>
+      <categories>
+        <category>Java 基础</category>
+      </categories>
+      <tags>
+        <tag>lambda</tag>
       </tags>
   </entry>
   <entry>
@@ -5923,34 +6042,6 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
 <p><a href="http://www.importnew.com/25315.html" target="_blank" rel="noopener">http://www.importnew.com/25315.html</a></p>
 <h1 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h1><p><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#package.description" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#package.description</a><br><a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html</a><br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html</a><br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html</a><br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collectors.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collectors.html</a></p>
 <p><a href="http://www.importnew.com/24237.html" target="_blank" rel="noopener">http://www.importnew.com/24237.html</a><br><a href="http://www.importnew.com/24245.html" target="_blank" rel="noopener">http://www.importnew.com/24245.html</a><br><a href="http://www.importnew.com/24235.html" target="_blank" rel="noopener">http://www.importnew.com/24235.html</a></p>
-]]></content>
-      <categories>
-        <category>Java 基础</category>
-      </categories>
-      <tags>
-        <tag>lambda</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Java基础</title>
-    <url>/2019/03/08/Java%E5%9F%BA%E7%A1%80/</url>
-    <content><![CDATA[<h1 id="HashMap、Hashtable、ConcurrentHashMap的原理与区别"><a href="#HashMap、Hashtable、ConcurrentHashMap的原理与区别" class="headerlink" title="HashMap、Hashtable、ConcurrentHashMap的原理与区别"></a>HashMap、Hashtable、ConcurrentHashMap的原理与区别</h1><h2 id="简述HashMap实现原理"><a href="#简述HashMap实现原理" class="headerlink" title="简述HashMap实现原理"></a>简述HashMap实现原理</h2><p>HashMap的底层是通过数组和链表实现的。其实就是维护了一个数组，put操作的时候根据key的哈希值和数组的长度（具体看源码）算出下标，判断该位置有没有对象，没有的话直接创建一个Entry对象（该对象保存了key，hash，value，下标等属性），如果有对象则判断是否有hash冲突（不同的key，但是hash值相同），有冲突则则该闻之用链表存储。</p>
-<p>todo：源码分析</p>
-<p>注意：</p>
-<ul>
-<li>HashMap的key和value都允许是null；</li>
-<li>当put后数量大于等于当前容量*加载因子的时候，就需要扩容，扩容需要数组复制，是非常耗时的，所以如果我们已经预知HashMap中元素的个数，那么预设元素的个数能够有效的提高HashMap的性能；</li>
-</ul>
-<p>思考：<br>如果我们创建HashMap的时候指定了初始大小等于我们希望放入对象的数量，是不是就不会产生扩容？（如果不修改加载因子，仍会产生扩容）</p>
-<h2 id="HashTale与HashMap的区别"><a href="#HashTale与HashMap的区别" class="headerlink" title="HashTale与HashMap的区别"></a>HashTale与HashMap的区别</h2><ul>
-<li>HashTable同HashMap的实现差别不大，  同样是基于哈希表通过数组和链表实现的，同样每个元素是一个key-value对，其内部也是通过单链表解决冲突问题，容量不足（超过了阀值）时，同样会自动增长。</li>
-</ul>
-<h2 id="HashTable与ConcurrentHashMap的区别"><a href="#HashTable与ConcurrentHashMap的区别" class="headerlink" title="HashTable与ConcurrentHashMap的区别"></a>HashTable与ConcurrentHashMap的区别</h2><ul>
-<li>不同点在于HashTable是线程安全的，因为它每个方法中都加入了Synchronize。</li>
-<li>ConcurrentHashMap是HashTable的代替，底层采用分段的数组+链表实现，线程安全。</li>
-<li>通过把整个Map分为N个Segment，可以提供相同的线程安全，但是效率提升N倍，默认提升16倍。(读操作不加锁，由于HashEntry的value变量是 volatile的，也能保证读取到最新的值。)</li>
-</ul>
-<h1 id="volatile的作用"><a href="#volatile的作用" class="headerlink" title="volatile的作用"></a>volatile的作用</h1><h1 id="Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的"><a href="#Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的" class="headerlink" title="Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的"></a>Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的</h1><h1 id="Atomic类如何保证原子操作（CAS操作）"><a href="#Atomic类如何保证原子操作（CAS操作）" class="headerlink" title="Atomic类如何保证原子操作（CAS操作）"></a>Atomic类如何保证原子操作（CAS操作）</h1><h1 id="synchronized和Lock的区别"><a href="#synchronized和Lock的区别" class="headerlink" title="synchronized和Lock的区别"></a>synchronized和Lock的区别</h1><h1 id="ThreadLocal的原理和实现"><a href="#ThreadLocal的原理和实现" class="headerlink" title="ThreadLocal的原理和实现"></a>ThreadLocal的原理和实现</h1><h1 id="为什么要使用线程池"><a href="#为什么要使用线程池" class="headerlink" title="为什么要使用线程池"></a>为什么要使用线程池</h1><h1 id="核心线程池ThreadPoolExecutor的参数"><a href="#核心线程池ThreadPoolExecutor的参数" class="headerlink" title="核心线程池ThreadPoolExecutor的参数"></a>核心线程池ThreadPoolExecutor的参数</h1><h1 id="ThreadPoolExecutor的工作流程"><a href="#ThreadPoolExecutor的工作流程" class="headerlink" title="ThreadPoolExecutor的工作流程"></a>ThreadPoolExecutor的工作流程</h1><h1 id="如何控制线程池线程的优先级"><a href="#如何控制线程池线程的优先级" class="headerlink" title="如何控制线程池线程的优先级"></a>如何控制线程池线程的优先级</h1><h1 id="线程之间如何通信"><a href="#线程之间如何通信" class="headerlink" title="线程之间如何通信"></a>线程之间如何通信</h1><h1 id="Jdk1-8和1-7都分别新增了哪些特性"><a href="#Jdk1-8和1-7都分别新增了哪些特性" class="headerlink" title="Jdk1.8和1.7都分别新增了哪些特性"></a>Jdk1.8和1.7都分别新增了哪些特性</h1><h1 id="Exception-和-Error"><a href="#Exception-和-Error" class="headerlink" title="Exception 和 Error"></a>Exception 和 Error</h1><h1 id="Object类内的方法"><a href="#Object类内的方法" class="headerlink" title="Object类内的方法"></a>Object类内的方法</h1><p>Mysql 一句查询操作的执行流程</p>
 ]]></content>
       <categories>
         <category>Java 基础</category>
@@ -6741,6 +6832,23 @@ docker inspect --format=&apos;{{ .NetworkSettings.IPAddress }}&apos; containner_
       </tags>
   </entry>
   <entry>
+    <title>15、React：React 常用开发调试工具</title>
+    <url>/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/</url>
+    <content><![CDATA[<p>主要介绍ESLint、Prettier、React DevTool、Redux DevTool</p>
+<h1 id="ESLink"><a href="#ESLink" class="headerlink" title="ESLink"></a>ESLink</h1><p>javascript语法检查和一致性保证的标准</p>
+<h1 id="Prettier"><a href="#Prettier" class="headerlink" title="Prettier"></a>Prettier</h1><p>facebook出的用于格式化代码的工具：</p>
+<h1 id="格式化代码"><a href="#格式化代码" class="headerlink" title="格式化代码"></a>格式化代码</h1><p>保证更容易写出风格一致的代码</p>
+<h1 id="React-DevTool"><a href="#React-DevTool" class="headerlink" title="React DevTool"></a>React DevTool</h1><p>用来调试React的chrome插件</p>
+<h1 id="Redux-DevTool"><a href="#Redux-DevTool" class="headerlink" title="Redux DevTool"></a>Redux DevTool</h1><p>用来调试Redux的chrome插件</p>
+]]></content>
+      <categories>
+        <category>前端</category>
+      </categories>
+      <tags>
+        <tag>React</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>React：最佳实践</title>
     <url>/2019/01/15/React%EF%BC%9A%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/</url>
     <content><![CDATA[<h1 id="零碎知识点"><a href="#零碎知识点" class="headerlink" title="零碎知识点"></a>零碎知识点</h1><p>在 React 中另一个不同点是你不能通过返回 false的方式阻止默认行为。你必须显式的使用 preventDefault.</p>
@@ -6759,23 +6867,6 @@ docker inspect --format=&apos;{{ .NetworkSettings.IPAddress }}&apos; containner_
 <h2 id="向事件处理程序传递参数"><a href="#向事件处理程序传递参数" class="headerlink" title="向事件处理程序传递参数"></a>向事件处理程序传递参数</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;button onClick&#x3D;&#123;(e) &#x3D;&gt; this.deleteRow(id, e)&#125;&gt;Delete Row&lt;&#x2F;button&gt;</span><br><span class="line">&lt;button onClick&#x3D;&#123;this.deleteRow.bind(this, id)&#125;&gt;Delete Row&lt;&#x2F;button&gt;</span><br></pre></td></tr></table></figure>
 
 <h1 id="表单"><a href="#表单" class="headerlink" title="表单"></a>表单</h1>]]></content>
-      <categories>
-        <category>前端</category>
-      </categories>
-      <tags>
-        <tag>React</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>15、React：React 常用开发调试工具</title>
-    <url>/2019/01/15/15%E3%80%81React%EF%BC%9AReact%20%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/</url>
-    <content><![CDATA[<p>主要介绍ESLint、Prettier、React DevTool、Redux DevTool</p>
-<h1 id="ESLink"><a href="#ESLink" class="headerlink" title="ESLink"></a>ESLink</h1><p>javascript语法检查和一致性保证的标准</p>
-<h1 id="Prettier"><a href="#Prettier" class="headerlink" title="Prettier"></a>Prettier</h1><p>facebook出的用于格式化代码的工具：</p>
-<h1 id="格式化代码"><a href="#格式化代码" class="headerlink" title="格式化代码"></a>格式化代码</h1><p>保证更容易写出风格一致的代码</p>
-<h1 id="React-DevTool"><a href="#React-DevTool" class="headerlink" title="React DevTool"></a>React DevTool</h1><p>用来调试React的chrome插件</p>
-<h1 id="Redux-DevTool"><a href="#Redux-DevTool" class="headerlink" title="Redux DevTool"></a>Redux DevTool</h1><p>用来调试Redux的chrome插件</p>
-]]></content>
       <categories>
         <category>前端</category>
       </categories>
