@@ -288,7 +288,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/27/Mysql%EF%BC%884%EF%BC%89-%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E6%80%A7/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Richey Liu">
@@ -307,7 +307,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/" itemprop="url">Nginx-2：Nginx安装</a></h1>
+                <a class="post-title-link" href="/2019/03/27/Mysql%EF%BC%884%EF%BC%89-%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E6%80%A7/" itemprop="url">Mysql（4）-事务的隔离性</a></h1>
         
 
         <div class="post-meta">
@@ -319,8 +319,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-25T00:00:00+08:00">
-                2019-03-25
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-27T00:00:00+08:00">
+                2019-03-27
               </time>
             
 
@@ -342,8 +342,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/web/" itemprop="url" rel="index">
-                    <span itemprop="name">web</span>
+                  <a href="/categories/DB/" itemprop="url" rel="index">
+                    <span itemprop="name">DB</span>
                   </a>
                 </span>
 
@@ -360,8 +360,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/" itemprop="commentCount"></span>
+                <a href="/2019/03/27/Mysql%EF%BC%884%EF%BC%89-%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E6%80%A7/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/27/Mysql%EF%BC%884%EF%BC%89-%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E6%80%A7/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -369,7 +369,7 @@
 
           
           
-             <span id="/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/" class="leancloud_visitors" data-flag-title="Nginx-2：Nginx安装">
+             <span id="/2019/03/27/Mysql%EF%BC%884%EF%BC%89-%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E6%80%A7/" class="leancloud_visitors" data-flag-title="Mysql（4）-事务的隔离性">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -402,17 +402,13 @@
       
         
           
-          安装nginx有两种方式：
-
-编译
-使用操作系统商自带的工具比如Yarm、apt-get、yum 等直接安装Nginx。
-
-直接安装Nginx有个问题，无法安装第三方模块，安装第三方模块只能通过编译的方式安装。
-下载Nginx进入官网 http://nginx.org/ 找到download，点击进
+          在 MySQL 中，事务支持是在引擎层实现的。
+隔离级别  当数据库上有多个事务同时执行的时候，就可能出现脏读（dirty read）、不可重复读（non-repeatable read）、幻读（phantom read）的问题，为了解决这些问题，就有了“隔离级别”的概念。
+  SQL 标准的事务隔
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/#more" rel="contents">
+            <a class="btn" href="/2019/03/27/Mysql%EF%BC%884%EF%BC%89-%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E6%80%A7/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -463,7 +459,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/26/Mysql%EF%BC%883%EF%BC%89-redo%E6%97%A5%E5%BF%97%E5%92%8Cbinlog%E6%97%A5%E5%BF%97/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Richey Liu">
@@ -482,7 +478,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/" itemprop="url">Nginx-3：Nginx中的正则表达式</a></h1>
+                <a class="post-title-link" href="/2019/03/26/Mysql%EF%BC%883%EF%BC%89-redo%E6%97%A5%E5%BF%97%E5%92%8Cbinlog%E6%97%A5%E5%BF%97/" itemprop="url">Mysql（3）-redo日志和binlog日志</a></h1>
         
 
         <div class="post-meta">
@@ -494,8 +490,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-25T00:00:00+08:00">
-                2019-03-25
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-26T00:00:00+08:00">
+                2019-03-26
               </time>
             
 
@@ -517,8 +513,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/web/" itemprop="url" rel="index">
-                    <span itemprop="name">web</span>
+                  <a href="/categories/DB/" itemprop="url" rel="index">
+                    <span itemprop="name">DB</span>
                   </a>
                 </span>
 
@@ -535,8 +531,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/" itemprop="commentCount"></span>
+                <a href="/2019/03/26/Mysql%EF%BC%883%EF%BC%89-redo%E6%97%A5%E5%BF%97%E5%92%8Cbinlog%E6%97%A5%E5%BF%97/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/26/Mysql%EF%BC%883%EF%BC%89-redo%E6%97%A5%E5%BF%97%E5%92%8Cbinlog%E6%97%A5%E5%BF%97/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -544,7 +540,7 @@
 
           
           
-             <span id="/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/" class="leancloud_visitors" data-flag-title="Nginx-3：Nginx中的正则表达式">
+             <span id="/2019/03/26/Mysql%EF%BC%883%EF%BC%89-redo%E6%97%A5%E5%BF%97%E5%92%8Cbinlog%E6%97%A5%E5%BF%97/" class="leancloud_visitors" data-flag-title="Mysql（3）-redo日志和binlog日志">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -577,14 +573,19 @@
       
         
           
-          正则表达式可以让我们匹配的功能更加强大
-元字符1234567.   匹配除换行符之外的任意字符\w  匹配字母、数字、下划线或汉字\s  匹配任意的空白字符\d  匹配数字\b  匹配单词的开始或结束^   匹配字符串的开始$   匹配字符串的结束
+          update语句执行过程类似查询语句:
+1建立连接,分析器分析是更新语句，清空缓存，优化器选取索引，执行器执行sql.
 
-重复123456*      重复0次或多次+ 
+与查询语句不同的是更新还涉及两个重要的日志模块
+
+binlog
+redo log
+
+redo log场景考虑：如果每次更新都操作进磁盘，磁盘找到对应的记录,然后更新。整个过程磁盘
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/#more" rel="contents">
+            <a class="btn" href="/2019/03/26/Mysql%EF%BC%883%EF%BC%89-redo%E6%97%A5%E5%BF%97%E5%92%8Cbinlog%E6%97%A5%E5%BF%97/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -810,6 +811,353 @@ Service层涵盖Mysql的大多数核心功能，及所有的内置函数
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/" itemprop="url">Nginx-3：Nginx中的正则表达式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-25T00:00:00+08:00">
+                2019-03-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/web/" itemprop="url" rel="index">
+                    <span itemprop="name">web</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/" class="leancloud_visitors" data-flag-title="Nginx-3：Nginx中的正则表达式">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          正则表达式可以让我们匹配的功能更加强大
+元字符1234567.   匹配除换行符之外的任意字符\w  匹配字母、数字、下划线或汉字\s  匹配任意的空白字符\d  匹配数字\b  匹配单词的开始或结束^   匹配字符串的开始$   匹配字符串的结束
+
+重复123456*      重复0次或多次+ 
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/" itemprop="url">Nginx-2：Nginx安装</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-25T00:00:00+08:00">
+                2019-03-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/web/" itemprop="url" rel="index">
+                    <span itemprop="name">web</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/" class="leancloud_visitors" data-flag-title="Nginx-2：Nginx安装">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          安装nginx有两种方式：
+
+编译
+使用操作系统商自带的工具比如Yarm、apt-get、yum 等直接安装Nginx。
+
+直接安装Nginx有个问题，无法安装第三方模块，安装第三方模块只能通过编译的方式安装。
+下载Nginx进入官网 http://nginx.org/ 找到download，点击进
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/23/%E5%85%B3%E4%BA%8E%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81%EF%BC%8C%E4%BD%A0%E6%89%80%E9%9C%80%E8%A6%81%E7%9F%A5%E9%81%93%E7%9A%84%EF%BC%88ASCII-Unicode-Utf-8-GB2312%E2%80%A6%EF%BC%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -931,179 +1279,6 @@ Service层涵盖Mysql的大多数核心功能，及所有的内置函数
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2019/03/23/%E5%85%B3%E4%BA%8E%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81%EF%BC%8C%E4%BD%A0%E6%89%80%E9%9C%80%E8%A6%81%E7%9F%A5%E9%81%93%E7%9A%84%EF%BC%88ASCII-Unicode-Utf-8-GB2312%E2%80%A6%EF%BC%89/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/20/SeLinux/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/20/SeLinux/" itemprop="url">SeLinux</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-20T00:00:00+08:00">
-                2019-03-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/03/20/SeLinux/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/20/SeLinux/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/03/20/SeLinux/" class="leancloud_visitors" data-flag-title="SeLinux">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          一、关闭SeLinux
-查看SELinux状态：
-1、/usr/sbin/sestatus -v      ##如果SELinux status参数为enabled即为开启状态
-SELinux status:                 enabled
-2、getenforce         
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/03/20/SeLinux/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1278,6 +1453,179 @@ error.log错误日志定位问题
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2019/03/20/Nginx-1%EF%BC%9A%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/20/SeLinux/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/20/SeLinux/" itemprop="url">SeLinux</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-20T00:00:00+08:00">
+                2019-03-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/03/20/SeLinux/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/20/SeLinux/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/03/20/SeLinux/" class="leancloud_visitors" data-flag-title="SeLinux">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          一、关闭SeLinux
+查看SELinux状态：
+1、/usr/sbin/sestatus -v      ##如果SELinux status参数为enabled即为开启状态
+SELinux status:                 enabled
+2、getenforce         
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/20/SeLinux/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1511,176 +1859,6 @@ finger
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/" itemprop="url">Linux使用私钥公钥(Public key)登录 - 免密码登录</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-12T00:00:00+08:00">
-                2019-03-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/" class="leancloud_visitors" data-flag-title="Linux使用私钥公钥(Public key)登录 - 免密码登录">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          为了更安全、方便的登录Linux服务器，可以取消密码登录，使用私钥公钥的方式来登录，更方便也更安全。
-生成密钥（客户端机器）ssh-keygen -t [rsa|dsa] -P &apos;&apos;直接ssh-keygen然后三次回车就可以了。-P表示密码，-P ‘’ 就表示空密码，也可以不用-
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/03/12/Linux%E4%BD%BF%E7%94%A8%E7%A7%81%E9%92%A5%E5%85%AC%E9%92%A5(Public%20key)%E7%99%BB%E5%BD%95%20-%20%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/12/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1839,184 +2017,6 @@ find . -name &quot;*.xml&quot; |xargs grep &quo
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/03/10/Linux%E4%B8%8Biptables%20%E7%A6%81%E6%AD%A2%E7%AB%AF%E5%8F%A3%E5%92%8C%E5%BC%80%E6%94%BE%E7%AB%AF%E5%8F%A3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/10/Linux%E4%B8%8Biptables%20%E7%A6%81%E6%AD%A2%E7%AB%AF%E5%8F%A3%E5%92%8C%E5%BC%80%E6%94%BE%E7%AB%AF%E5%8F%A3/" itemprop="url">Linux下iptables 禁止端口和开放端口</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-10T00:00:00+08:00">
-                2019-03-10
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/03/10/Linux%E4%B8%8Biptables%20%E7%A6%81%E6%AD%A2%E7%AB%AF%E5%8F%A3%E5%92%8C%E5%BC%80%E6%94%BE%E7%AB%AF%E5%8F%A3/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/10/Linux%E4%B8%8Biptables%20%E7%A6%81%E6%AD%A2%E7%AB%AF%E5%8F%A3%E5%92%8C%E5%BC%80%E6%94%BE%E7%AB%AF%E5%8F%A3/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/03/10/Linux%E4%B8%8Biptables%20%E7%A6%81%E6%AD%A2%E7%AB%AF%E5%8F%A3%E5%92%8C%E5%BC%80%E6%94%BE%E7%AB%AF%E5%8F%A3/" class="leancloud_visitors" data-flag-title="Linux下iptables 禁止端口和开放端口">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          iptables属于网络层防火墙。
-
-iptables 查看所有iptables规则
-
-1sudo iptables -L
-
-
-关闭所有的 INPUT FORWARD OUTPUT 只对某些端口开放
-
-12345678设置：iptables -P INPUT DROPiptables -P FORW
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/03/10/Linux%E4%B8%8Biptables%20%E7%A6%81%E6%AD%A2%E7%AB%AF%E5%8F%A3%E5%92%8C%E5%BC%80%E6%94%BE%E7%AB%AF%E5%8F%A3/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2071,7 +2071,7 @@ iptables 查看所有iptables规则
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">116</span>
+                  <span class="site-state-item-count">118</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

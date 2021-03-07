@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://10000hours.top/"/>
-  <updated>2021-03-06T16:19:52.025Z</updated>
+  <updated>2021-03-07T12:55:14.118Z</updated>
   <id>http://10000hours.top/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>mongoDB系列03-mongoDB聚合操作</title>
+    <link href="http://10000hours.top/2021/03/07/mongoDB%E7%B3%BB%E5%88%9703-mongoDB%E8%81%9A%E5%90%88%E6%93%8D%E4%BD%9C/"/>
+    <id>http://10000hours.top/2021/03/07/mongoDB%E7%B3%BB%E5%88%9703-mongoDB%E8%81%9A%E5%90%88%E6%93%8D%E4%BD%9C/</id>
+    <published>2021-03-06T16:00:00.000Z</published>
+    <updated>2021-03-07T12:55:14.118Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="聚合框架说明"><a href="#聚合框架说明" class="headerlink" title="聚合框架说明"></a>聚合框架说明</h1><p>MongoDB聚合框架（Aggregation Framework）是一个计算框架</p><p>可以作用在一个或几个集合上，对集合的数据进行一系列运算，将这些数据转化为期望的形式</p><p>MongoDB聚合框架相当于SQL查询中的:GROUPBY/LEFT OUTER JOIN /AS 等</p><p>MongoDB聚合中的管道（Pipline）和步骤（Stage）, 整个聚合运算的过程称为管道（Pipline），它是由多个步骤组成的,每个管道:</p><ul><li><p>接收一系列文档（数据）</p></li><li><p>每个步骤对这些文档进行一系列的运算</p></li><li><p>结果文档输出给下一个步骤</p></li></ul><h1 id="聚合运算的基本格式"><a href="#聚合运算的基本格式" class="headerlink" title="聚合运算的基本格式"></a>聚合运算的基本格式</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义pipeline（由一系列的步骤组成）</span></span><br><span class="line">pipeline = [$stage1,$stage2,...$stageN]</span><br><span class="line"></span><br><span class="line">db.&lt;集合&gt;.aggregate(pipeline,&#123;options&#125;)</span><br></pre></td></tr></table></figure><h1 id="常见步骤类型"><a href="#常见步骤类型" class="headerlink" title="常见步骤类型"></a>常见步骤类型</h1><ul><li><p>$match </p><p>过滤用，相当于sql中的where</p></li><li><p>$project </p><p>投影, 相当于sql中的as</p></li><li><p>$sort</p><p>排序， 相当于sql中的order by</p></li><li><p>$group </p><p>分组， 相当于sql中的group by</p></li><li><p>$skip/$limit</p><p>结果限制， 相当于sql中的skip/limit</p></li><li><p>$lookup </p><p>左外连接， 相当于sql中的left outer join </p></li></ul><p><img src="https://blog-pic-1254088127.picsh.myqcloud.com/mongo-aggregate-02.png" alt="常见步骤"></p><h1 id="常见步骤中的运算符"><a href="#常见步骤中的运算符" class="headerlink" title="常见步骤中的运算符"></a>常见步骤中的运算符</h1><p><img src="https://blog-pic-1254088127.picsh.myqcloud.com/mongo-aggregate-01.png" alt="group中常见运算符"></p><h1 id="聚合的使用场景"><a href="#聚合的使用场景" class="headerlink" title="聚合的使用场景"></a>聚合的使用场景</h1><ul><li><p>OLTP</p><p>计算</p></li><li><p>OLAP</p><p>分析总额、均值、数据分布等等</p></li></ul><h1 id="聚合查询"><a href="#聚合查询" class="headerlink" title="聚合查询"></a>聚合查询</h1><p>可以使用compass工具方便的生成聚合逻辑<br>//todo </p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;聚合框架说明&quot;&gt;&lt;a href=&quot;#聚合框架说明&quot; class=&quot;headerlink&quot; title=&quot;聚合框架说明&quot;&gt;&lt;/a&gt;聚合框架说明&lt;/h1&gt;&lt;p&gt;MongoDB聚合框架（Aggregation Framework）是一个计算框架&lt;/p&gt;
+&lt;p&gt;可以作用在
+      
+    
+    </summary>
+    
+    
+      <category term="DB" scheme="http://10000hours.top/categories/DB/"/>
+    
+    
+      <category term="mongoDB" scheme="http://10000hours.top/tags/mongoDB/"/>
+    
+  </entry>
   
   <entry>
     <title>mongoDB系列02-mongoDB基本操作</title>
@@ -69,6 +96,32 @@
     
     
       <category term="mongoDB" scheme="http://10000hours.top/tags/mongoDB/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>python-操作mongodb</title>
+    <link href="http://10000hours.top/2021/03/01/python-%E6%93%8D%E4%BD%9Cmongodb/"/>
+    <id>http://10000hours.top/2021/03/01/python-%E6%93%8D%E4%BD%9Cmongodb/</id>
+    <published>2021-02-28T16:00:00.000Z</published>
+    <updated>2021-03-07T10:26:06.785Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="安装Python-MongoDB驱动"><a href="#安装Python-MongoDB驱动" class="headerlink" title="安装Python MongoDB驱动"></a>安装Python MongoDB驱动</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">pip install pymongo</span><br><span class="line">``` </span><br><span class="line"><span class="comment"># 检查驱动安装</span></span><br><span class="line"></span><br><span class="line">```python</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> pymongo</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>pymongo.version</span><br><span class="line"><span class="string">'3.11.3'</span></span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure><h1 id="创建连接"><a href="#创建连接" class="headerlink" title="创建连接"></a>创建连接</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> pymongo <span class="keyword">import</span> MongoClient</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>uri = <span class="string">"mongodb://127.0.0.1:27017"</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>client = MongoClient(uri)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(client)</span><br><span class="line">MongoClient(host=[<span class="string">'127.0.0.1:27017'</span>], document_class=dict, tz_aware=<span class="literal">False</span>, connect=<span class="literal">True</span>)</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure><h1 id="操作数据库和集合"><a href="#操作数据库和集合" class="headerlink" title="操作数据库和集合"></a>操作数据库和集合</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>db = client[<span class="string">"salary"</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>payslip_collection = db[<span class="string">"payslip"</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>new_payslip = &#123;<span class="string">"basesalary"</span>:<span class="number">2800</span>,<span class="string">"bonus"</span>:<span class="number">8000</span>,<span class="string">"performances"</span>:<span class="number">1600</span>&#125;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>result = payslip_collection.insert_one(new_payslip)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(result)</span><br><span class="line">&lt;pymongo.results.InsertOneResult object at <span class="number">0x7fd8ee8cdf00</span>&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt; show dbs</span><br><span class="line">admin   <span class="number">0.000</span>GB</span><br><span class="line">config  <span class="number">0.000</span>GB</span><br><span class="line">local   <span class="number">0.000</span>GB</span><br><span class="line">mock    <span class="number">0.047</span>GB</span><br><span class="line">salary  <span class="number">0.000</span>GB</span><br><span class="line">test    <span class="number">0.000</span>GB</span><br><span class="line">&gt; use salary</span><br><span class="line">switched to db salary</span><br><span class="line">&gt; show collections</span><br><span class="line">payslip</span><br><span class="line">&gt; db.payslip.find()</span><br><span class="line">&#123; <span class="string">"_id"</span> : ObjectId(<span class="string">"6044a74ca6868ddcfa42c426"</span>), <span class="string">"basesalary"</span> : <span class="number">2800</span>, <span class="string">"bonus"</span> : <span class="number">8000</span>, <span class="string">"performances"</span> : <span class="number">1600</span> &#125;</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure><h1 id="更新操作"><a href="#更新操作" class="headerlink" title="更新操作"></a>更新操作</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>result = payslip_collection.update_one(&#123;<span class="string">"basesalary"</span>:<span class="number">2800</span>&#125;,&#123;<span class="string">"$set"</span>:&#123;<span class="string">"positionsalary"</span>:<span class="number">3000</span>&#125;&#125;)</span><br><span class="line"></span><br><span class="line">&gt; db.payslip.find()</span><br><span class="line">&#123; <span class="string">"_id"</span> : ObjectId(<span class="string">"6044a74ca6868ddcfa42c426"</span>), <span class="string">"basesalary"</span> : <span class="number">2800</span>, <span class="string">"bonus"</span> : <span class="number">8000</span>, <span class="string">"performances"</span> : <span class="number">1600</span>, <span class="string">"positionsalary"</span> : <span class="number">3000</span> &#125;</span><br><span class="line">&gt; </span><br><span class="line"></span><br><span class="line"><span class="comment"># 这里不需要修改数据库表结构</span></span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;安装Python-MongoDB驱动&quot;&gt;&lt;a href=&quot;#安装Python-MongoDB驱动&quot; class=&quot;headerlink&quot; title=&quot;安装Python MongoDB驱动&quot;&gt;&lt;/a&gt;安装Python MongoDB驱动&lt;/h1&gt;&lt;figure c
+      
+    
+    </summary>
+    
+    
+      <category term="Phthon" scheme="http://10000hours.top/categories/Phthon/"/>
+    
+    
+      <category term="Python" scheme="http://10000hours.top/tags/Python/"/>
     
   </entry>
   
@@ -493,51 +546,6 @@
     
     
       <category term="JVM" scheme="http://10000hours.top/tags/JVM/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>springboot-validation统一异常处理</title>
-    <link href="http://10000hours.top/2020/01/01/springboot-validation%E7%BB%9F%E4%B8%80%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/"/>
-    <id>http://10000hours.top/2020/01/01/springboot-validation%E7%BB%9F%E4%B8%80%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/</id>
-    <published>2019-12-31T16:00:00.000Z</published>
-    <updated>2021-01-01T16:04:08.289Z</updated>
-    
-    <summary type="html">
-    
-    </summary>
-    
-    
-      <category term="异常处理" scheme="http://10000hours.top/categories/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/"/>
-    
-    
-      <category term="springboot" scheme="http://10000hours.top/tags/springboot/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Mysql常见问题总结</title>
-    <link href="http://10000hours.top/2019/12/01/Mysql%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/"/>
-    <id>http://10000hours.top/2019/12/01/Mysql%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/</id>
-    <published>2019-11-30T16:00:00.000Z</published>
-    <updated>2020-10-31T06:55:45.600Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="Mysql基本架构"><a href="#Mysql基本架构" class="headerlink" title="Mysql基本架构"></a>Mysql基本架构</h1><h1 id="Mysql中一条update语句是如何执行的"><a href="#Mysql中一条update语句是如何执行的" class="headerlink" title="Mysql中一条update语句是如何执行的"></a>Mysql中一条update语句是如何执行的</h1><h1 id="Mysql索引的实现方式，为什么这么实现"><a href="#Mysql索引的实现方式，为什么这么实现" class="headerlink" title="Mysql索引的实现方式，为什么这么实现"></a>Mysql索引的实现方式，为什么这么实现</h1><ul><li>Mysql索引是在存储引擎层实现的，InnoDB使用了B+树数据模型实现的索引，综合考虑了搜索效率和IO性能。</li><li>每个索引在InnoDB里对应一棵树</li></ul><h1 id="Mysql中有哪几种索引"><a href="#Mysql中有哪几种索引" class="headerlink" title="Mysql中有哪几种索引"></a>Mysql中有哪几种索引</h1><h1 id="什么时候使用联合索引？"><a href="#什么时候使用联合索引？" class="headerlink" title="什么时候使用联合索引？"></a>什么时候使用联合索引？</h1><h1 id="普通索引和唯一索引的区别"><a href="#普通索引和唯一索引的区别" class="headerlink" title="普通索引和唯一索引的区别"></a>普通索引和唯一索引的区别</h1><ul><li>查询</li><li>更新</li></ul><h1 id="索引失效的场景"><a href="#索引失效的场景" class="headerlink" title="索引失效的场景"></a>索引失效的场景</h1><h1 id="Mysql-有哪几种日志，分别有什么作用"><a href="#Mysql-有哪几种日志，分别有什么作用" class="headerlink" title="Mysql 有哪几种日志，分别有什么作用"></a>Mysql 有哪几种日志，分别有什么作用</h1><h1 id="每次更新数据都写磁盘的话，io成本会很高，mysql是如何解决的这个问题"><a href="#每次更新数据都写磁盘的话，io成本会很高，mysql是如何解决的这个问题" class="headerlink" title="每次更新数据都写磁盘的话，io成本会很高，mysql是如何解决的这个问题"></a>每次更新数据都写磁盘的话，io成本会很高，mysql是如何解决的这个问题</h1><p>WAL</p><h1 id="死锁产生的原因以及解决方式"><a href="#死锁产生的原因以及解决方式" class="headerlink" title="死锁产生的原因以及解决方式"></a>死锁产生的原因以及解决方式</h1>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h1 id=&quot;Mysql基本架构&quot;&gt;&lt;a href=&quot;#Mysql基本架构&quot; class=&quot;headerlink&quot; title=&quot;Mysql基本架构&quot;&gt;&lt;/a&gt;Mysql基本架构&lt;/h1&gt;&lt;h1 id=&quot;Mysql中一条update语句是如何执行的&quot;&gt;&lt;a href=&quot;#Mys
-      
-    
-    </summary>
-    
-    
-      <category term="DB" scheme="http://10000hours.top/categories/DB/"/>
-    
-    
-      <category term="Mysql" scheme="http://10000hours.top/tags/Mysql/"/>
     
   </entry>
   
