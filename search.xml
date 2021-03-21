@@ -1,9 +1,156 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>mongoDB系列04-mongoDB复制集</title>
+    <url>/2021/03/21/mongoDB%E7%B3%BB%E5%88%9704-mongoDB%E5%A4%8D%E5%88%B6%E9%9B%86/</url>
+    <content><![CDATA[<h1 id="复制集的作用"><a href="#复制集的作用" class="headerlink" title="复制集的作用"></a>复制集的作用</h1><ul>
+<li>高可用：复制集主要是为了实现服务的高可用,mongoDB原生支持高可用.</li>
+<li>数据分发：将数据从一个区域分发到另一个区域，减少另一个区域的读延迟</li>
+<li>读写分离：降低节点压力</li>
+<li>异地容灾：数据中心故障时迅速切换到异地</li>
+</ul>
+<h1 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h1><ul>
+<li>数据写入时,后台有进程会将数据迅速复制到另一个节点上</li>
+<li>在接收写入的节点发生故障时，自动选举出一个新的代替节点</li>
+</ul>
+<h1 id="复制集结构"><a href="#复制集结构" class="headerlink" title="复制集结构"></a>复制集结构</h1><p>一般由3个以上（奇数个）具有投票权的节点组成，其中有：</p>
+<ul>
+<li>一个主节点(PRIMARY），接收写入操作和选举时投票；</li>
+<li>两个或多个从节点（SECONDARY）,复制主节点的数据和选举时投票</li>
+</ul>
+<h1 id="数据如何复制"><a href="#数据如何复制" class="headerlink" title="数据如何复制"></a>数据如何复制</h1><ul>
+<li>当一个修改操作（增删改）到达主节点时，它对数据的操作将被记录下来（经过一些必要的转换），这些记录称为aplog.</li>
+<li>从节点通过在主节点上打开一个tailable游标不断获取新进入主节点的aplog，并在自己的数据库上回放，以此保持跟主节点上的数据一致.</li>
+</ul>
+<h1 id="选举机制"><a href="#选举机制" class="headerlink" title="选举机制"></a>选举机制</h1><ul>
+<li>具有投票权的节点之间两两之间互相发送心跳</li>
+<li>当5次心跳未收到时认为该节点失联，如果失联的是主节点，则从节点会发起选举，选出新的主节点，如果是从节点失联，则不会产生新的选举</li>
+<li>选举基于RAFT一致性算法实现，选举成功的必要条件是大多数投票节点存活</li>
+<li>复制集中最多可以有50个节点，但有投票权的节点最多有7个</li>
+</ul>
+<h1 id="影响选举的因素"><a href="#影响选举的因素" class="headerlink" title="影响选举的因素"></a>影响选举的因素</h1><ul>
+<li>整个集群必须有大多数投票节点粗活</li>
+<li>被选举的主节点必须<ul>
+<li>包括自己在内，能够与多数节点建立连接</li>
+<li>有较新的aplog</li>
+<li>具有较高的优先级（如果有配置）</li>
+</ul>
+</li>
+</ul>
+<h1 id="复制集部署选项"><a href="#复制集部署选项" class="headerlink" title="复制集部署选项"></a>复制集部署选项</h1><ul>
+<li>是否具有投票权（v参数）,默认是有的</li>
+<li>优先级（priority参数），优先级越高的节点越优先成为主节点，优先级为0的节点无法成为主节点</li>
+<li>隐藏（hidden参数），复制数据，但对应用不可见。隐藏节点可以具有投票权，但是优先级必须为0,隐藏数据主要用于备份，不希望被应用使用.</li>
+<li>延迟（slveDely参数），复制n s之前的数据，保持于主节点的时间差.这个参数主要用于数据恢复，比如设置延迟一个小时，则数据可以恢复到一个小时之前。</li>
+</ul>
+<h1 id="复制集注意事项"><a href="#复制集注意事项" class="headerlink" title="复制集注意事项"></a>复制集注意事项</h1><ul>
+<li>正常复制集节点都有可能成为主节点，所以它们的地位应该是一样的</li>
+<li>为了保证节点不会同时宕机，各节点应该相互独立</li>
+<li>复制集各节点的软件版本必须一致，避免出现未知的问题</li>
+<li>增加节点不会增加系统的写性能,只能对读操作进行分流。要降低写操作的压力，需考虑分片部署的方式。</li>
+</ul>
+<h1 id="搭建mongoDB复制集"><a href="#搭建mongoDB复制集" class="headerlink" title="搭建mongoDB复制集"></a>搭建mongoDB复制集</h1><p>搭建一主两从的3节点复制集需要几步：</p>
+<ul>
+<li>启动3个mongoDB实例</li>
+<li>将3个mongoDB实例搭建成一个复制集</li>
+<li>对复制集参数进行一些常规调整</li>
+</ul>
+<h2 id="准备工作："><a href="#准备工作：" class="headerlink" title="准备工作："></a>准备工作：</h2><ul>
+<li><p>安装最新的mongoDB版本，并配置好环境变量<a href="https://10000hours.top/2021/03/06/mongoDB%E7%B3%BB%E5%88%9702-mongoDB%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/">安装mongoDB</a></p>
+</li>
+<li><p>确保有10G以上的硬盘空间</p>
+</li>
+</ul>
+<h2 id="创建数据目录"><a href="#创建数据目录" class="headerlink" title="创建数据目录"></a>创建数据目录</h2><p>mongoDB启动的时候将使用一个数据目录存放所有的数据文件。我们先为3个复制集分别创建各自的数据目录</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mkdir -p &#x2F;data&#x2F;db&#123;1,2,3&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="准备配置文件"><a href="#准备配置文件" class="headerlink" title="准备配置文件"></a>准备配置文件</h2><p>在生成环境，不同的复制集实例应该运行在不同的服务器上。这里我们为了实验，需要在一台机器上运行3个mongoDB实例进程，因此需要对它们各自配置：</p>
+<ul>
+<li>不同的端口，28017、28018、28019</li>
+<li>不同的数据目录 /data/db1 、/data/db2、/data/db3</li>
+<li>不同的日志文件 /data/db1/mongod.log、/data/db1/mongod.log、/data/db1/mongod.log</li>
+</ul>
+<p>配置文件demo（/data/db1/mongod.conf)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">systemLog:</span><br><span class="line">   destination: file</span><br><span class="line">   path: &quot;&#x2F;data&#x2F;db1&#x2F;mongod.log&quot;</span><br><span class="line">   logAppend: true</span><br><span class="line">storage:</span><br><span class="line">   dbPath: &#x2F;data&#x2F;db1</span><br><span class="line">   journal:</span><br><span class="line">      enabled: true</span><br><span class="line">processManagement:</span><br><span class="line">   fork: true # 作为后端进程独立运行</span><br><span class="line">net:</span><br><span class="line">   bindIp: 0.0.0.0 # 监听所有ip，默认只监听127.0.0.1,也就是只有本地可以访问</span><br><span class="line">   port: 28017</span><br><span class="line">replication:</span><br><span class="line">   replSetName: rs0 #复制集名称，没有此配置说明是单节点</span><br></pre></td></tr></table></figure>
+
+<h2 id="准备好配置文件后，启动3个mongoDB实例"><a href="#准备好配置文件后，启动3个mongoDB实例" class="headerlink" title="准备好配置文件后，启动3个mongoDB实例"></a>准备好配置文件后，启动3个mongoDB实例</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mongod -f &#x2F;data&#x2F;db1&#x2F;mongod.conf </span><br><span class="line">mongod -f &#x2F;data&#x2F;db2&#x2F;mongod.conf </span><br><span class="line">mongod -f &#x2F;data&#x2F;db3&#x2F;mongod.conf </span><br><span class="line"></span><br><span class="line">#demo</span><br><span class="line">richey@localhost db1]$ mongod -f &#x2F;data&#x2F;db3&#x2F;mongod.conf </span><br><span class="line">about to fork child process, waiting until server is ready for connections.</span><br><span class="line">forked process: 20340</span><br><span class="line">child process started successfully, parent exiting</span><br></pre></td></tr></table></figure>
+<p>确认进程正在运行</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@localhost db1]$ ps -ef|grep mongod</span><br><span class="line">richey   20033     1  0 15:36 ?        00:00:02 mongod -f &#x2F;data&#x2F;db1&#x2F;mongod.conf</span><br><span class="line">richey   20231     1  0 15:40 ?        00:00:01 mongod -f &#x2F;data&#x2F;db2&#x2F;mongod.conf</span><br><span class="line">richey   20340     1  0 15:43 ?        00:00:01 mongod -f &#x2F;data&#x2F;db3&#x2F;mongod.conf</span><br><span class="line">richey   20470 17013  0 15:46 pts&#x2F;4    00:00:00 grep --color&#x3D;auto mongod</span><br></pre></td></tr></table></figure>
+<p>停止mongo服务</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@localhost ~]$ mongod --shutdown -f &#x2F;data&#x2F;db1&#x2F;mongod.conf </span><br><span class="line">killing process with pid: 20033</span><br><span class="line">[richey@localhost ~]$ mongod --shutdown -f &#x2F;data&#x2F;db2&#x2F;mongod.conf </span><br><span class="line">killing process with pid: 20231</span><br><span class="line">[richey@localhost ~]$ mongod --shutdown -f &#x2F;data&#x2F;db3&#x2F;mongod.conf </span><br><span class="line">killing process with pid: 20340</span><br></pre></td></tr></table></figure>
+
+<h1 id="配置复制集"><a href="#配置复制集" class="headerlink" title="配置复制集"></a>配置复制集</h1><p>我们已经启动了3个mongoDB实例，但目前为止它们是相互独立，互不相干的，我们需要对其进行配置，使其变成一个复制集.</p>
+<h2 id="方法1"><a href="#方法1" class="headerlink" title="方法1"></a>方法1</h2><p>此方法hostname需要能被解析</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@localhost ~]$ cat &#x2F;etc&#x2F;hosts</span><br><span class="line"></span><br><span class="line">127.0.0.1 10000hours</span><br></pre></td></tr></table></figure>
+
+<p>rs.initiate()</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mongo localhost:28017</span><br><span class="line"></span><br><span class="line">&gt; rs.initiate()  # 初始化复制集</span><br><span class="line">&#123;</span><br><span class="line">	&quot;info2&quot; : &quot;no configuration specified. Using a default configuration for the set&quot;,</span><br><span class="line">	&quot;me&quot; : &quot;localhost.localdomain:28017&quot;,</span><br><span class="line">	&quot;ok&quot; : 1,</span><br><span class="line">	&quot;$clusterTime&quot; : &#123;</span><br><span class="line">		&quot;clusterTime&quot; : Timestamp(1616314186, 1),</span><br><span class="line">		&quot;signature&quot; : &#123;</span><br><span class="line">			&quot;hash&quot; : BinData(0,&quot;AAAAAAAAAAAAAAAAAAAAAAAAAAA&#x3D;&quot;),</span><br><span class="line">			&quot;keyId&quot; : NumberLong(0)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;,</span><br><span class="line">	&quot;operationTime&quot; : Timestamp(1616314186, 1)</span><br><span class="line">&#125;</span><br><span class="line">rs0:SECONDARY&gt; # 执行完rs.initiate() 变成从节点 </span><br><span class="line">rs0:PRIMARY&gt; # 再回车，变成主节点</span><br></pre></td></tr></table></figure>
+
+<p>rs.add(“10000hours:28018”)</p>
+<p>rs.add(“10000hours:28018”)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rs0:PRIMARY&gt; rs.add(&quot;10000hours:28018&quot;)</span><br><span class="line">&#123;</span><br><span class="line">	&quot;ok&quot; : 1,</span><br><span class="line">	&quot;$clusterTime&quot; : &#123;</span><br><span class="line">		&quot;clusterTime&quot; : Timestamp(1616314337, 1),</span><br><span class="line">		&quot;signature&quot; : &#123;</span><br><span class="line">			&quot;hash&quot; : BinData(0,&quot;AAAAAAAAAAAAAAAAAAAAAAAAAAA&#x3D;&quot;),</span><br><span class="line">			&quot;keyId&quot; : NumberLong(0)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;,</span><br><span class="line">	&quot;operationTime&quot; : Timestamp(1616314337, 1)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">rs0:PRIMARY&gt; rs.add(&quot;10000hours:28019&quot;)</span><br><span class="line">&#123;</span><br><span class="line">	&quot;ok&quot; : 1,</span><br><span class="line">	&quot;$clusterTime&quot; : &#123;</span><br><span class="line">		&quot;clusterTime&quot; : Timestamp(1616314304, 1),</span><br><span class="line">		&quot;signature&quot; : &#123;</span><br><span class="line">			&quot;hash&quot; : BinData(0,&quot;AAAAAAAAAAAAAAAAAAAAAAAAAAA&#x3D;&quot;),</span><br><span class="line">			&quot;keyId&quot; : NumberLong(0)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;,</span><br><span class="line">	&quot;operationTime&quot; : Timestamp(1616314304, 1)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查看状态rs.status()</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rs0:PRIMARY&gt; rs.status()</span><br><span class="line">&#123;</span><br><span class="line">	&quot;set&quot; : &quot;rs0&quot;,</span><br><span class="line">	&quot;date&quot; : ISODate(&quot;2021-03-21T08:21:57.896Z&quot;),</span><br><span class="line">	&quot;myState&quot; : 1,</span><br><span class="line">	&quot;term&quot; : NumberLong(1),</span><br><span class="line">	&quot;syncingTo&quot; : &quot;&quot;,</span><br><span class="line">	&quot;syncSourceHost&quot; : &quot;&quot;,</span><br><span class="line">	&quot;syncSourceId&quot; : -1,</span><br><span class="line">	&quot;heartbeatIntervalMillis&quot; : NumberLong(2000),</span><br><span class="line">	&quot;majorityVoteCount&quot; : 2,</span><br><span class="line">	&quot;writeMajorityCount&quot; : 2,</span><br><span class="line">	&quot;optimes&quot; : &#123;</span><br><span class="line">		&quot;lastCommittedOpTime&quot; : &#123;</span><br><span class="line">			&quot;ts&quot; : Timestamp(1616314916, 1),</span><br><span class="line">			&quot;t&quot; : NumberLong(1)</span><br><span class="line">		&#125;,</span><br><span class="line">		&quot;lastCommittedWallTime&quot; : ISODate(&quot;2021-03-21T08:21:56.560Z&quot;),</span><br><span class="line">		&quot;readConcernMajorityOpTime&quot; : &#123;</span><br><span class="line">			&quot;ts&quot; : Timestamp(1616314916, 1),</span><br><span class="line">			&quot;t&quot; : NumberLong(1)</span><br><span class="line">		&#125;,</span><br><span class="line">		&quot;readConcernMajorityWallTime&quot; : ISODate(&quot;2021-03-21T08:21:56.560Z&quot;),</span><br><span class="line">		&quot;appliedOpTime&quot; : &#123;</span><br><span class="line">			&quot;ts&quot; : Timestamp(1616314916, 1),</span><br><span class="line">			&quot;t&quot; : NumberLong(1)</span><br><span class="line">		&#125;,</span><br><span class="line">		&quot;durableOpTime&quot; : &#123;</span><br><span class="line">			&quot;ts&quot; : Timestamp(1616314916, 1),</span><br><span class="line">			&quot;t&quot; : NumberLong(1)</span><br><span class="line">		&#125;,</span><br><span class="line">		&quot;lastAppliedWallTime&quot; : ISODate(&quot;2021-03-21T08:21:56.560Z&quot;),</span><br><span class="line">		&quot;lastDurableWallTime&quot; : ISODate(&quot;2021-03-21T08:21:56.560Z&quot;)</span><br><span class="line">	&#125;,</span><br><span class="line">	&quot;lastStableRecoveryTimestamp&quot; : Timestamp(1616314906, 1),</span><br><span class="line">	&quot;lastStableCheckpointTimestamp&quot; : Timestamp(1616314906, 1),</span><br><span class="line">	&quot;electionCandidateMetrics&quot; : &#123;</span><br><span class="line">		&quot;lastElectionReason&quot; : &quot;electionTimeout&quot;,</span><br><span class="line">		&quot;lastElectionDate&quot; : ISODate(&quot;2021-03-21T08:09:46.529Z&quot;),</span><br><span class="line">		&quot;electionTerm&quot; : NumberLong(1),</span><br><span class="line">		&quot;lastCommittedOpTimeAtElection&quot; : &#123;</span><br><span class="line">			&quot;ts&quot; : Timestamp(0, 0),</span><br><span class="line">			&quot;t&quot; : NumberLong(-1)</span><br><span class="line">		&#125;,</span><br><span class="line">		&quot;lastSeenOpTimeAtElection&quot; : &#123;</span><br><span class="line">			&quot;ts&quot; : Timestamp(1616314186, 1),</span><br><span class="line">			&quot;t&quot; : NumberLong(-1)</span><br><span class="line">		&#125;,</span><br><span class="line">		&quot;numVotesNeeded&quot; : 1,</span><br><span class="line">		&quot;priorityAtElection&quot; : 1,</span><br><span class="line">		&quot;electionTimeoutMillis&quot; : NumberLong(10000),</span><br><span class="line">		&quot;newTermStartDate&quot; : ISODate(&quot;2021-03-21T08:09:46.546Z&quot;),</span><br><span class="line">		&quot;wMajorityWriteAvailabilityDate&quot; : ISODate(&quot;2021-03-21T08:09:46.552Z&quot;)</span><br><span class="line">	&#125;,</span><br><span class="line">	&quot;members&quot; : [</span><br><span class="line">		&#123;</span><br><span class="line">			&quot;_id&quot; : 0,</span><br><span class="line">			&quot;name&quot; : &quot;localhost.localdomain:28017&quot;,</span><br><span class="line">			&quot;health&quot; : 1,</span><br><span class="line">			&quot;state&quot; : 1,</span><br><span class="line">			&quot;stateStr&quot; : &quot;PRIMARY&quot;,</span><br><span class="line">			&quot;uptime&quot; : 783,</span><br><span class="line">			&quot;optime&quot; : &#123;</span><br><span class="line">				&quot;ts&quot; : Timestamp(1616314916, 1),</span><br><span class="line">				&quot;t&quot; : NumberLong(1)</span><br><span class="line">			&#125;,</span><br><span class="line">			&quot;optimeDate&quot; : ISODate(&quot;2021-03-21T08:21:56Z&quot;),</span><br><span class="line">			&quot;syncingTo&quot; : &quot;&quot;,</span><br><span class="line">			&quot;syncSourceHost&quot; : &quot;&quot;,</span><br><span class="line">			&quot;syncSourceId&quot; : -1,</span><br><span class="line">			&quot;infoMessage&quot; : &quot;&quot;,</span><br><span class="line">			&quot;electionTime&quot; : Timestamp(1616314186, 2),</span><br><span class="line">			&quot;electionDate&quot; : ISODate(&quot;2021-03-21T08:09:46Z&quot;),</span><br><span class="line">			&quot;configVersion&quot; : 3,</span><br><span class="line">			&quot;self&quot; : true,</span><br><span class="line">			&quot;lastHeartbeatMessage&quot; : &quot;&quot;</span><br><span class="line">		&#125;,</span><br><span class="line">		&#123;</span><br><span class="line">			&quot;_id&quot; : 1,</span><br><span class="line">			&quot;name&quot; : &quot;10000hours:28019&quot;,</span><br><span class="line">			&quot;health&quot; : 1,</span><br><span class="line">			&quot;state&quot; : 2,</span><br><span class="line">			&quot;stateStr&quot; : &quot;SECONDARY&quot;,</span><br><span class="line">			&quot;uptime&quot; : 613,</span><br><span class="line">			&quot;optime&quot; : &#123;</span><br><span class="line">				&quot;ts&quot; : Timestamp(1616314916, 1),</span><br><span class="line">				&quot;t&quot; : NumberLong(1)</span><br><span class="line">			&#125;,</span><br><span class="line">			&quot;optimeDurable&quot; : &#123;</span><br><span class="line">				&quot;ts&quot; : Timestamp(1616314916, 1),</span><br><span class="line">				&quot;t&quot; : NumberLong(1)</span><br><span class="line">			&#125;,</span><br><span class="line">			&quot;optimeDate&quot; : ISODate(&quot;2021-03-21T08:21:56Z&quot;),</span><br><span class="line">			&quot;optimeDurableDate&quot; : ISODate(&quot;2021-03-21T08:21:56Z&quot;),</span><br><span class="line">			&quot;lastHeartbeat&quot; : ISODate(&quot;2021-03-21T08:21:57.867Z&quot;),</span><br><span class="line">			&quot;lastHeartbeatRecv&quot; : ISODate(&quot;2021-03-21T08:21:57.871Z&quot;),</span><br><span class="line">			&quot;pingMs&quot; : NumberLong(0),</span><br><span class="line">			&quot;lastHeartbeatMessage&quot; : &quot;&quot;,</span><br><span class="line">			&quot;syncingTo&quot; : &quot;localhost.localdomain:28017&quot;,</span><br><span class="line">			&quot;syncSourceHost&quot; : &quot;localhost.localdomain:28017&quot;,</span><br><span class="line">			&quot;syncSourceId&quot; : 0,</span><br><span class="line">			&quot;infoMessage&quot; : &quot;&quot;,</span><br><span class="line">			&quot;configVersion&quot; : 3</span><br><span class="line">		&#125;,</span><br><span class="line">		&#123;</span><br><span class="line">			&quot;_id&quot; : 2,</span><br><span class="line">			&quot;name&quot; : &quot;10000hours:28018&quot;,</span><br><span class="line">			&quot;health&quot; : 1,</span><br><span class="line">			&quot;state&quot; : 2,</span><br><span class="line">			&quot;stateStr&quot; : &quot;SECONDARY&quot;,</span><br><span class="line">			&quot;uptime&quot; : 580,</span><br><span class="line">			&quot;optime&quot; : &#123;</span><br><span class="line">				&quot;ts&quot; : Timestamp(1616314916, 1),</span><br><span class="line">				&quot;t&quot; : NumberLong(1)</span><br><span class="line">			&#125;,</span><br><span class="line">			&quot;optimeDurable&quot; : &#123;</span><br><span class="line">				&quot;ts&quot; : Timestamp(1616314916, 1),</span><br><span class="line">				&quot;t&quot; : NumberLong(1)</span><br><span class="line">			&#125;,</span><br><span class="line">			&quot;optimeDate&quot; : ISODate(&quot;2021-03-21T08:21:56Z&quot;),</span><br><span class="line">			&quot;optimeDurableDate&quot; : ISODate(&quot;2021-03-21T08:21:56Z&quot;),</span><br><span class="line">			&quot;lastHeartbeat&quot; : ISODate(&quot;2021-03-21T08:21:57.867Z&quot;),</span><br><span class="line">			&quot;lastHeartbeatRecv&quot; : ISODate(&quot;2021-03-21T08:21:57.565Z&quot;),</span><br><span class="line">			&quot;pingMs&quot; : NumberLong(0),</span><br><span class="line">			&quot;lastHeartbeatMessage&quot; : &quot;&quot;,</span><br><span class="line">			&quot;syncingTo&quot; : &quot;10000hours:28019&quot;,</span><br><span class="line">			&quot;syncSourceHost&quot; : &quot;10000hours:28019&quot;,</span><br><span class="line">			&quot;syncSourceId&quot; : 1,</span><br><span class="line">			&quot;infoMessage&quot; : &quot;&quot;,</span><br><span class="line">			&quot;configVersion&quot; : 3</span><br><span class="line">		&#125;</span><br><span class="line">	],</span><br><span class="line">	&quot;ok&quot; : 1,</span><br><span class="line">	&quot;$clusterTime&quot; : &#123;</span><br><span class="line">		&quot;clusterTime&quot; : Timestamp(1616314916, 1),</span><br><span class="line">		&quot;signature&quot; : &#123;</span><br><span class="line">			&quot;hash&quot; : BinData(0,&quot;AAAAAAAAAAAAAAAAAAAAAAAAAAA&#x3D;&quot;),</span><br><span class="line">			&quot;keyId&quot; : NumberLong(0)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;,</span><br><span class="line">	&quot;operationTime&quot; : Timestamp(1616314916, 1)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="方法2"><a href="#方法2" class="headerlink" title="方法2"></a>方法2</h2><p>直接使用rs.initiate(),传入配置</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">rs.initiate(&#123;</span><br><span class="line">        _id:&quot;rs0&quot;,</span><br><span class="line">        members:[</span><br><span class="line">        &#123;_id:0,</span><br><span class="line">        host:&quot;localhost:28017&quot;&#125;,</span><br><span class="line">        &#123;_id:1,</span><br><span class="line">        host:&quot;localhost:28018&quot;&#125;,</span><br><span class="line">        &#123;_id:2,</span><br><span class="line">        host:&quot;localhost:28019&quot;&#125;</span><br><span class="line">        ]</span><br><span class="line">        &#125;)</span><br></pre></td></tr></table></figure>
+
+<h1 id="验证复制集"><a href="#验证复制集" class="headerlink" title="验证复制集"></a>验证复制集</h1><p>在主节点插入数据</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mongo localhost:28017</span><br><span class="line">db.test.insert(&#123;name:&quot;richey&quot;&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>在从节点查询</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mongo localhost:28018</span><br><span class="line"></span><br><span class="line">rs0:SECONDARY&gt; show dbs</span><br><span class="line">2021-03-21T16:31:28.658+0800 E  QUERY    [js] uncaught exception: Error: listDatabases failed:&#123;</span><br><span class="line">	&quot;operationTime&quot; : Timestamp(1616315486, 1),</span><br><span class="line">	&quot;ok&quot; : 0,</span><br><span class="line">	&quot;errmsg&quot; : &quot;not master and slaveOk&#x3D;false&quot;,</span><br><span class="line">	&quot;code&quot; : 13435,</span><br><span class="line">	&quot;codeName&quot; : &quot;NotPrimaryNoSecondaryOk&quot;,</span><br><span class="line">	&quot;$clusterTime&quot; : &#123;</span><br><span class="line">		&quot;clusterTime&quot; : Timestamp(1616315486, 1),</span><br><span class="line">		&quot;signature&quot; : &#123;</span><br><span class="line">			&quot;hash&quot; : BinData(0,&quot;AAAAAAAAAAAAAAAAAAAAAAAAAAA&#x3D;&quot;),</span><br><span class="line">			&quot;keyId&quot; : NumberLong(0)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125; :</span><br><span class="line">rs0:SECONDARY&gt; </span><br><span class="line">rs0:SECONDARY&gt; rs.slaveOk() # 上面报错，slave没有读权限，执行此命令允许从节点读</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>mongoDB</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ulimit详解</title>
+    <url>/2021/03/21/ulimit%E8%AF%A6%E8%A7%A3/</url>
+    <content><![CDATA[<p>本地测试mongodb，大量创建Collection的时候报错open: Too many open files.这个问题主要指的是进程企图打开一个文件，或者叫句柄，但是现在进程打开的句柄已经达到了上限，已经无法打开新句柄了。</p>
+<h1 id="Linux句柄介绍"><a href="#Linux句柄介绍" class="headerlink" title="Linux句柄介绍"></a>Linux句柄介绍</h1><p>Linux中所有的事物或资源都是以文件的形式存在，比如消息、共享内存、连接等，句柄可以理解为指向这些文件的指针。</p>
+<h1 id="ulimit"><a href="#ulimit" class="headerlink" title="ulimit"></a>ulimit</h1><p>对于这些句柄，Linux是有数量限制的，单个进程默认可以打开的句柄数上限，可以用以下命令来查看：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@localhost ~]$ ulimit -a</span><br><span class="line">core file size          (blocks, -c) unlimited</span><br><span class="line">data seg size           (kbytes, -d) unlimited</span><br><span class="line">scheduling priority             (-e) 0</span><br><span class="line">file size               (blocks, -f) unlimited</span><br><span class="line">pending signals                 (-i) 62939</span><br><span class="line">max locked memory       (kbytes, -l) 16384</span><br><span class="line">max memory size         (kbytes, -m) unlimited</span><br><span class="line">open files                      (-n) 2000</span><br><span class="line">pipe size            (512 bytes, -p) 8</span><br><span class="line">POSIX message queues     (bytes, -q) 819200</span><br><span class="line">real-time priority              (-r) 0</span><br><span class="line">stack size              (kbytes, -s) 8192</span><br><span class="line">cpu time               (seconds, -t) unlimited</span><br><span class="line">max user processes              (-u) 62939</span><br><span class="line">virtual memory          (kbytes, -v) unlimited</span><br><span class="line">file locks                      (-x) unlimited</span><br></pre></td></tr></table></figure>
+<p>其中的open files一项就是默认的句柄数</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ulimit: ulimit [-SHabcdefiklmnpqrstuvxPT] [限制]</span><br><span class="line">    修改 shell 资源限制。</span><br><span class="line">    </span><br><span class="line">    在允许此类控制的系统上，提供对于 shell 及其创建的进程所可用的</span><br><span class="line">    资源的控制。</span><br><span class="line">    </span><br><span class="line">    选项：</span><br><span class="line">      -S	使用软 (&#96;soft&#39;) 资源限制</span><br><span class="line">      -H	使用硬 (&#96;hard&#39;) 资源限制</span><br><span class="line">      -a	所有当前限制都被报告</span><br><span class="line">      -b	套接字缓存尺寸</span><br><span class="line">      -c	创建的核文件的最大尺寸</span><br><span class="line">      -d	一个进程的数据区的最大尺寸</span><br><span class="line">      -e	最高的调度优先级 (&#96;nice&#39;)</span><br><span class="line">      -f	有 shell 及其子进程可以写的最大文件尺寸</span><br><span class="line">      -i	最多的可以挂起的信号数</span><br><span class="line">      -k	分配给此进程的最大 kqueue 数量</span><br><span class="line">      -l	一个进程可以锁定的最大内存尺寸</span><br><span class="line">      -m	最大的内存进驻尺寸</span><br><span class="line">      -n	最多的打开的文件描述符个数</span><br><span class="line">      -p	管道缓冲区尺寸</span><br><span class="line">      -q	POSIX 信息队列的最大字节数</span><br><span class="line">      -r	实时调度的最大优先级</span><br><span class="line">      -s	最大栈尺寸</span><br><span class="line">      -t	最大的CPU时间，以秒为单位</span><br><span class="line">      -u	最大用户进程数</span><br><span class="line">      -v	虚拟内存尺寸</span><br><span class="line">      -x	最大的文件锁数量</span><br><span class="line">      -P	最大伪终端数量</span><br><span class="line">      -T	最大线程数量</span><br><span class="line">    </span><br><span class="line">    并非所有选项在所有系统上可用。</span><br><span class="line">    </span><br><span class="line">    如果提供了 LIMIT 变量，则它为指定资源的新的值；特别的 LIMIT 值为</span><br><span class="line">    &#96;soft&#39;、&#96;hard&#39;和&#96;unlimited&#39;，分别表示当前的软限制，硬限制和无限制。</span><br><span class="line">    否则打印指定资源的当前限制值，不带选项则假定为 -f</span><br><span class="line">    </span><br><span class="line">    取值都是 1024 字节为单位，除了 -t 以秒为单位，-p 以 512 字节递增，</span><br><span class="line">    -u 为无范围的进程数量。</span><br></pre></td></tr></table></figure>
+<p>设置某个进程的句柄上限</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ulimit –a PID</span><br></pre></td></tr></table></figure>
+
+<h1 id="ulimit配置文件"><a href="#ulimit配置文件" class="headerlink" title="ulimit配置文件"></a>ulimit配置文件</h1><p>使用ulimit方式修改句柄设置，在系统重启后会失效，可以通过修改配置文件的方式进行永久设置</p>
+<p>配置文件地址：/etc/security/limits.conf</p>
+<p>格式：<br>domain：可以是用户或者用户组 <em>代表所有<br>type：可以有三个值，soft 、 hard和-,其中hard的设置是实际的默认值，也就是上限，而soft的配置只是用来警告的，如果超过了soft的值，会有warn，而第三种用短横线– 的配置，则是hard和soft同时配置的方式。<br>item：表示要限定的资源 可以有很多候选值，如 stack（最大堆栈大小），cpu（占用cpu的时间），nofile（最大打开文件数） 等等<br>例：</em> hard nofile 100 该行配置语句限定了任意用户所能创建的最大文件数是 100。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">* soft nofile 196605</span><br><span class="line">* hard nofile 196605</span><br></pre></td></tr></table></figure>
+
+<p>修改后重启或重新ssh连接服务器，使用命令ulimit -a即可看到效果</p>
+<h1 id="查询某个进程占用的句柄"><a href="#查询某个进程占用的句柄" class="headerlink" title="查询某个进程占用的句柄"></a>查询某个进程占用的句柄</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">lsof |grep pid</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>mongoDB系列00-MongoDB数据库选型</title>
+    <url>/2021/03/20/mongoDB%E7%B3%BB%E5%88%9700-MongoDB%E6%95%B0%E6%8D%AE%E5%BA%93%E9%80%89%E5%9E%8B/</url>
+    <content><![CDATA[<h1 id="基本"><a href="#基本" class="headerlink" title="基本"></a>基本</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; show dbs</span><br><span class="line">admin   0.000GB</span><br><span class="line">config  0.000GB</span><br><span class="line">local   0.000GB</span><br><span class="line">mock    0.047GB</span><br><span class="line">salary  0.000GB</span><br><span class="line">test    0.000GB</span><br><span class="line">&gt; use salary</span><br><span class="line">switched to db salary</span><br><span class="line">&gt; show collections</span><br><span class="line">payslip</span><br><span class="line">&gt; db</span><br><span class="line">salary</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>mongoDB</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>mongoDB系列03-mongoDB聚合操作</title>
     <url>/2021/03/07/mongoDB%E7%B3%BB%E5%88%9703-mongoDB%E8%81%9A%E5%90%88%E6%93%8D%E4%BD%9C/</url>
-    <content><![CDATA[<h1 id="聚合框架说明"><a href="#聚合框架说明" class="headerlink" title="聚合框架说明"></a>聚合框架说明</h1><p>MongoDB聚合框架（Aggregation Framework）是一个计算框架</p>
+    <content><![CDATA[<h1 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; show dbs</span><br><span class="line">admin   0.000GB</span><br><span class="line">config  0.000GB</span><br><span class="line">local   0.000GB</span><br><span class="line">mock    0.047GB</span><br><span class="line">salary  0.000GB</span><br><span class="line">test    0.000GB</span><br><span class="line">&gt; use salary</span><br><span class="line">switched to db salary</span><br><span class="line">&gt; show collections</span><br><span class="line">payslip</span><br><span class="line">&gt; db</span><br><span class="line">salary</span><br></pre></td></tr></table></figure>
+
+<h1 id="聚合框架说明"><a href="#聚合框架说明" class="headerlink" title="聚合框架说明"></a>聚合框架说明</h1><p>MongoDB聚合框架（Aggregation Framework）是一个计算框架</p>
 <p>可以作用在一个或几个集合上，对集合的数据进行一系列运算，将这些数据转化为期望的形式</p>
 <p>MongoDB聚合框架相当于SQL查询中的:GROUPBY/LEFT OUTER JOIN /AS 等</p>
 <p>MongoDB聚合中的管道（Pipline）和步骤（Stage）, 整个聚合运算的过程称为管道（Pipline），它是由多个步骤组成的,每个管道:</p>
@@ -1773,6 +1920,58 @@ public SimpleResult sessionInvalid() {
       </tags>
   </entry>
   <entry>
+    <title>观察者模式</title>
+    <url>/2019/06/12/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F.jpg" alt="观察者模式"></p>
+<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F%E7%B1%BB%E5%9B%BE.jpg" alt="观察者模式"></p>
+<h1 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h1><p>定义了一对多的关系，这样，当一方对象状态改变时，它的所有依赖都会收到通知，并自动更新。</p>
+<h1 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h1><p>Spring中的事件机制，是观察者模式思想的一种实现</p>
+<h2 id="Spring中观察者模式的四个角色"><a href="#Spring中观察者模式的四个角色" class="headerlink" title="Spring中观察者模式的四个角色"></a>Spring中观察者模式的四个角色</h2><ul>
+<li>事件（ApplicationEvent）</li>
+</ul>
+<p>ApplicationEvent 是所有事件对象的父类。ApplicationEvent 继承自 jdk 的 EventObject, 所有的事件都需要继承 ApplicationEvent, 并且通过source得到事件源。</p>
+<p>下列描述了Spring提供的内置事件：</p>
+<p>ContextRefreshedEvent：事件发布在 ApplicationContext 初始化或刷新时（例如：通过在 ConfigurableApplicationContext 接口使用refresh()方法）。这里,“初始化”意味着所有 bean 加载，post-processor bean 被检测到并且激活,单例预先实例化，ApplicationContext 对象可以使用了。只要上下文没有关闭,可以触发多次刷新, ApplicationContext 提供了一种可选择的支持这种“热”刷新。例如：XmlWebApplicationContext 支持热刷新,但 GenericApplicationContext 并非如此。具体是在 AbstractApplicationContext 的 finishRefresh() 方法中。</p>
+<p>ContextStartedEvent：事件发布在 ApplicationContext 开始使用 ConfigurableApplicationContext 接口 start() 方法。这里,“开始”意味着所有生命周期 bean 接收到一个明确的起始信号。通常,这个信号用于明确停止后重新启动,但它也可以用于启动组件没有被配置为自动运行（例如：组件还没有开始初始化）。</p>
+<p>ContextStoppedEvent：事件发布在 ApplicationContext 停止时通过使用 ConfigurableApplicationContext 接口上的 stop() 方法。在这里,“停止”意味着所有生命周期bean接收一个显式的停止信号。停止上下文可以通过重新调用start()方法。</p>
+<p>ContextClosedEvent：事件发布在 ApplicationContext 关闭时通过关闭 ConfigurableApplicationContext 接口()方法。这里,“封闭”意味着所有单例 bean 被摧毁。一个封闭的环境达到生命的终结。它不能刷新或重启。</p>
+<p>RequestHandledEvent：一个特定的web事件告诉所有能处理HTTP请求的bean 。这个事件是在请求完成后发布的。这个事件只适用于使用 Spring 的 DispatcherServlet 的web应用程序。</p>
+<ul>
+<li>事件监听（ApplicationListener）</li>
+</ul>
+<p>ApplicationListener 事件监听器，也就是观察者。继承自 jdk 的 EventListener，该类中只有一个方法 onApplicationEvent。当监听的事件发生后该方法会被执行。</p>
+<ul>
+<li>事件发布（ApplicationContext）</li>
+</ul>
+<p>ApplicationContext 是 Spring 中的核心容器，在事件监听中 ApplicationContext 可以作为事件的发布者，也就是事件源。因为 ApplicationContext 继承自 ApplicationEventPublisher。在 ApplicationEventPublisher 中定义了事件发布的方法 — publishEvent(Object event)</p>
+<ul>
+<li>事件管理（ApplicationEventMulticaster）</li>
+</ul>
+<p>ApplicationEventMulticaster 用于事件监听器的注册和事件的广播。监听器的注册就是通过它来实现的，它的作用是把 Applicationcontext 发布的 Event 广播给它的监听器列表。</p>
+<h2 id="Spring中实现观察者模式"><a href="#Spring中实现观察者模式" class="headerlink" title="Spring中实现观察者模式"></a>Spring中实现观察者模式</h2><ol>
+<li><p>自定义需要发布的事件类，需要继承 ApplicationEvent 类或 PayloadApplicationEvent (该类也仅仅是对 ApplicationEvent 的一层封装)</p>
+</li>
+<li><p>使用 @EventListener 来监听事件或者实现 ApplicationListener 接口。</p>
+</li>
+<li><p>使用 ApplicationEventPublisher 来发布自定义事件（@Autowired注入即可）</p>
+<p> @TransactionalEventListener 监听器：如果事件的发布不是在事务（@Transactional）范围内，则监听不到该事件，除非将 fallbackExecution 标志设置为 true（@TransactionalEventListener(fallbackExecution = true)）;如果在事务中，可以选择在事务的哪个阶段来监听事件，默认在事务提交后监听（@TransactionalEventListener(phase = TransactionPhase.AFTER_COMPLETION)）。</p>
+</li>
+</ol>
+<p>以上介绍的事件监听都是同步，如果需要开启异步支持的话：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableAsync</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AsyncEventConfiguration</span> <span class="keyword">implements</span> <span class="title">AsyncConfigurer</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Executor <span class="title">getAsyncExecutor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Executors.newCachedThreadPool();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h1><h2 id="事件（MyEvent-java"><a href="#事件（MyEvent-java" class="headerlink" title="事件（MyEvent.java)"></a>事件（MyEvent.java)</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyEvent</span> <span class="keyword">extends</span> <span class="title">ApplicationEvent</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyEvent</span><span class="params">(ApplicationContext source)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(source);</span><br><span class="line">        System.out.println(<span class="string">"MyEvent 构造器执行"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">echo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"模拟业务逻辑执行"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="事件监听（MyListenerA-java、MyListenerB-java）"><a href="#事件监听（MyListenerA-java、MyListenerB-java）" class="headerlink" title="事件监听（MyListenerA.java、MyListenerB.java）"></a>事件监听（MyListenerA.java、MyListenerB.java）</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyListenerA</span> <span class="keyword">implements</span> <span class="title">ApplicationListener</span>&lt;<span class="title">MyEvent</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onApplicationEvent</span><span class="params">(MyEvent myEvent)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"MyListenerA"</span>);</span><br><span class="line">        myEvent.echo();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyListenerB</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@EventListener</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onApplicationEvent</span><span class="params">(MyEvent myEvent)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"MyListenerB"</span>);</span><br><span class="line">        myEvent.echo();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="事件发布（MyPublisher-java）"><a href="#事件发布（MyPublisher-java）" class="headerlink" title="事件发布（MyPublisher.java）"></a>事件发布（MyPublisher.java）</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyPublisher</span> <span class="keyword">implements</span> <span class="title">ApplicationContextAware</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ApplicationContext applicationContext;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setApplicationContext</span><span class="params">(ApplicationContext applicationContext)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.applicationContext = applicationContext;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 发布事件</span></span><br><span class="line"><span class="comment">     * 监听该事件的监听者都可以获取消息</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> myEvent</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">publisherEvent</span><span class="params">(MyEvent myEvent)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"---开始发布 myEvent 事件---"</span>);</span><br><span class="line">        applicationContext.publishEvent(myEvent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="单元测试"><a href="#单元测试" class="headerlink" title="单元测试"></a>单元测试</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@RunWith</span>(SpringRunner<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">SpringBootTest</span></span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">DesignPatternsApplicationTests</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MyPublisher myPublisher;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MyEvent myEvent;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">contextLoads</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        myPublisher.publisherEvent(myEvent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SpringSecurity-Session管理 (1)</title>
     <url>/2019/06/12/SpringSecurity-Session%E7%AE%A1%E7%90%86%20(1)/</url>
     <content><![CDATA[<h1 id="Session管理"><a href="#Session管理" class="headerlink" title="Session管理"></a>Session管理</h1><h2 id="内容概要"><a href="#内容概要" class="headerlink" title="内容概要"></a>内容概要</h2><ul>
@@ -1869,58 +2068,6 @@ public class EvolutionaryExpiredSessionStrategy implements SessionInformationExp
       </tags>
   </entry>
   <entry>
-    <title>观察者模式</title>
-    <url>/2019/06/12/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/</url>
-    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F.jpg" alt="观察者模式"></p>
-<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F%E7%B1%BB%E5%9B%BE.jpg" alt="观察者模式"></p>
-<h1 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h1><p>定义了一对多的关系，这样，当一方对象状态改变时，它的所有依赖都会收到通知，并自动更新。</p>
-<h1 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h1><p>Spring中的事件机制，是观察者模式思想的一种实现</p>
-<h2 id="Spring中观察者模式的四个角色"><a href="#Spring中观察者模式的四个角色" class="headerlink" title="Spring中观察者模式的四个角色"></a>Spring中观察者模式的四个角色</h2><ul>
-<li>事件（ApplicationEvent）</li>
-</ul>
-<p>ApplicationEvent 是所有事件对象的父类。ApplicationEvent 继承自 jdk 的 EventObject, 所有的事件都需要继承 ApplicationEvent, 并且通过source得到事件源。</p>
-<p>下列描述了Spring提供的内置事件：</p>
-<p>ContextRefreshedEvent：事件发布在 ApplicationContext 初始化或刷新时（例如：通过在 ConfigurableApplicationContext 接口使用refresh()方法）。这里,“初始化”意味着所有 bean 加载，post-processor bean 被检测到并且激活,单例预先实例化，ApplicationContext 对象可以使用了。只要上下文没有关闭,可以触发多次刷新, ApplicationContext 提供了一种可选择的支持这种“热”刷新。例如：XmlWebApplicationContext 支持热刷新,但 GenericApplicationContext 并非如此。具体是在 AbstractApplicationContext 的 finishRefresh() 方法中。</p>
-<p>ContextStartedEvent：事件发布在 ApplicationContext 开始使用 ConfigurableApplicationContext 接口 start() 方法。这里,“开始”意味着所有生命周期 bean 接收到一个明确的起始信号。通常,这个信号用于明确停止后重新启动,但它也可以用于启动组件没有被配置为自动运行（例如：组件还没有开始初始化）。</p>
-<p>ContextStoppedEvent：事件发布在 ApplicationContext 停止时通过使用 ConfigurableApplicationContext 接口上的 stop() 方法。在这里,“停止”意味着所有生命周期bean接收一个显式的停止信号。停止上下文可以通过重新调用start()方法。</p>
-<p>ContextClosedEvent：事件发布在 ApplicationContext 关闭时通过关闭 ConfigurableApplicationContext 接口()方法。这里,“封闭”意味着所有单例 bean 被摧毁。一个封闭的环境达到生命的终结。它不能刷新或重启。</p>
-<p>RequestHandledEvent：一个特定的web事件告诉所有能处理HTTP请求的bean 。这个事件是在请求完成后发布的。这个事件只适用于使用 Spring 的 DispatcherServlet 的web应用程序。</p>
-<ul>
-<li>事件监听（ApplicationListener）</li>
-</ul>
-<p>ApplicationListener 事件监听器，也就是观察者。继承自 jdk 的 EventListener，该类中只有一个方法 onApplicationEvent。当监听的事件发生后该方法会被执行。</p>
-<ul>
-<li>事件发布（ApplicationContext）</li>
-</ul>
-<p>ApplicationContext 是 Spring 中的核心容器，在事件监听中 ApplicationContext 可以作为事件的发布者，也就是事件源。因为 ApplicationContext 继承自 ApplicationEventPublisher。在 ApplicationEventPublisher 中定义了事件发布的方法 — publishEvent(Object event)</p>
-<ul>
-<li>事件管理（ApplicationEventMulticaster）</li>
-</ul>
-<p>ApplicationEventMulticaster 用于事件监听器的注册和事件的广播。监听器的注册就是通过它来实现的，它的作用是把 Applicationcontext 发布的 Event 广播给它的监听器列表。</p>
-<h2 id="Spring中实现观察者模式"><a href="#Spring中实现观察者模式" class="headerlink" title="Spring中实现观察者模式"></a>Spring中实现观察者模式</h2><ol>
-<li><p>自定义需要发布的事件类，需要继承 ApplicationEvent 类或 PayloadApplicationEvent (该类也仅仅是对 ApplicationEvent 的一层封装)</p>
-</li>
-<li><p>使用 @EventListener 来监听事件或者实现 ApplicationListener 接口。</p>
-</li>
-<li><p>使用 ApplicationEventPublisher 来发布自定义事件（@Autowired注入即可）</p>
-<p> @TransactionalEventListener 监听器：如果事件的发布不是在事务（@Transactional）范围内，则监听不到该事件，除非将 fallbackExecution 标志设置为 true（@TransactionalEventListener(fallbackExecution = true)）;如果在事务中，可以选择在事务的哪个阶段来监听事件，默认在事务提交后监听（@TransactionalEventListener(phase = TransactionPhase.AFTER_COMPLETION)）。</p>
-</li>
-</ol>
-<p>以上介绍的事件监听都是同步，如果需要开启异步支持的话：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableAsync</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AsyncEventConfiguration</span> <span class="keyword">implements</span> <span class="title">AsyncConfigurer</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Executor <span class="title">getAsyncExecutor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Executors.newCachedThreadPool();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h1><h2 id="事件（MyEvent-java"><a href="#事件（MyEvent-java" class="headerlink" title="事件（MyEvent.java)"></a>事件（MyEvent.java)</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyEvent</span> <span class="keyword">extends</span> <span class="title">ApplicationEvent</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyEvent</span><span class="params">(ApplicationContext source)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(source);</span><br><span class="line">        System.out.println(<span class="string">"MyEvent 构造器执行"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">echo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"模拟业务逻辑执行"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="事件监听（MyListenerA-java、MyListenerB-java）"><a href="#事件监听（MyListenerA-java、MyListenerB-java）" class="headerlink" title="事件监听（MyListenerA.java、MyListenerB.java）"></a>事件监听（MyListenerA.java、MyListenerB.java）</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyListenerA</span> <span class="keyword">implements</span> <span class="title">ApplicationListener</span>&lt;<span class="title">MyEvent</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onApplicationEvent</span><span class="params">(MyEvent myEvent)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"MyListenerA"</span>);</span><br><span class="line">        myEvent.echo();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyListenerB</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@EventListener</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onApplicationEvent</span><span class="params">(MyEvent myEvent)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"MyListenerB"</span>);</span><br><span class="line">        myEvent.echo();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="事件发布（MyPublisher-java）"><a href="#事件发布（MyPublisher-java）" class="headerlink" title="事件发布（MyPublisher.java）"></a>事件发布（MyPublisher.java）</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyPublisher</span> <span class="keyword">implements</span> <span class="title">ApplicationContextAware</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ApplicationContext applicationContext;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setApplicationContext</span><span class="params">(ApplicationContext applicationContext)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.applicationContext = applicationContext;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 发布事件</span></span><br><span class="line"><span class="comment">     * 监听该事件的监听者都可以获取消息</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> myEvent</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">publisherEvent</span><span class="params">(MyEvent myEvent)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"---开始发布 myEvent 事件---"</span>);</span><br><span class="line">        applicationContext.publishEvent(myEvent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="单元测试"><a href="#单元测试" class="headerlink" title="单元测试"></a>单元测试</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@RunWith</span>(SpringRunner<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">SpringBootTest</span></span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">DesignPatternsApplicationTests</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MyPublisher myPublisher;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MyEvent myEvent;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">contextLoads</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        myPublisher.publisherEvent(myEvent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>设计模式</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Spring Security（11）－OAuth协议简介</title>
     <url>/2019/06/11/Spring%20Security%EF%BC%8811%EF%BC%89%EF%BC%8DOAuth%E5%8D%8F%E8%AE%AE%E7%AE%80%E4%BB%8B/</url>
     <content><![CDATA[<p>概览：</p>
@@ -1975,6 +2122,52 @@ public class EvolutionaryExpiredSessionStrategy implements SessionInformationExp
       </tags>
   </entry>
   <entry>
+    <title>策略模式</title>
+    <url>/2019/06/10/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p>
+<h2 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h2><ul>
+<li><p>抽象策略略⻆色<br>  这个是⼀一个抽象的角色，通常情况下使⽤接口或者抽象类去实现。比如我们的Comparator接⼝口。</p>
+</li>
+<li><p>具体策略略⻆色<br>  包装了了具体的算法和⾏行行为。比如实现了Comparator接口的一组实现类。</p>
+</li>
+<li><p>环境⻆角⾊色Context<br>  内部会持有⼀个抽象⻆色的引⽤用，给客户端调⽤策略模式用于封装系列的算法，这些算法通常被封装在一个被称为 Context 类中，<br>客户端程序可以⾃由选择其中一种算法，或让 Context 为客户端选择一个最佳的算法——使⽤策略模式的优势是为了⽀支持算法的自由切换。</p>
+</li>
+</ul>
+<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><ul>
+<li><p>Resource和策略略模式<br>  Resource 接口就是策略模式的典型应用，Resource 接口就代表资源访问策略，但具体采⽤用哪种策略实现，Resource 接口并不理理会。<br>客户端程序只和Resource 接口耦合，并不知道底层采⽤何种资源访问策略，这样应用可以在不同的资源访问策略之间自由切换。</p>
+</li>
+<li><p>Spring 框架的 Context 如何“智能”地选择资源访问策略<br>  Spring提供两个标志性接口：</p>
+<ul>
+<li>ResourceLoader：该接口实现类的实例可以获得⼀个 Resource 实例例。</li>
+<li>ResourceLoaderAware：该接口实现类的实例将获得一个 ResourceLoader 的引用。<br>在 ResourceLoader 接口里有如下方法：Resource getResource(String location)：该接口仅包含这个⽅法，该方法⽤于返回一个 Resource 实例例。</li>
+</ul>
+<p>ApplicationContext 的实现类都实现 ResourceLoader 接⼝，因此 ApplicationContext 可⽤于直接获取 Resource 实例。</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用jdk自带工具jvisualvm查看.hprof文件</title>
+    <url>/2019/06/10/%E4%BD%BF%E7%94%A8jdk%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7jvisualvm%E6%9F%A5%E7%9C%8B.hprof%E6%96%87%E4%BB%B6/</url>
+    <content><![CDATA[<p>使用jdk自带的jvisualvm.exe程序来查看内存溢出文件</p>
+<p>位置：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$JAVA_HOME&#x2F;bin&#x2F;jvisualvm</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>JVM</category>
+      </categories>
+      <tags>
+        <tag>JVM</tag>
+        <tag>工具</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Spring Security（10）－短信登录开发</title>
     <url>/2019/06/10/Spring%20Security%EF%BC%8810%EF%BC%89%EF%BC%8D%E7%9F%AD%E4%BF%A1%E7%99%BB%E5%BD%95%E5%BC%80%E5%8F%91/</url>
     <content><![CDATA[<p>Spring Security默认没有支持基于短信的认证方式，我们先回顾一下Spring Security开发基于表单的认流程：</p>
@@ -2004,52 +2197,6 @@ http.authenticationProvider(smsCodeAuthenticationProvider)
       </categories>
       <tags>
         <tag>Spring-Security</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用jdk自带工具jvisualvm查看.hprof文件</title>
-    <url>/2019/06/10/%E4%BD%BF%E7%94%A8jdk%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7jvisualvm%E6%9F%A5%E7%9C%8B.hprof%E6%96%87%E4%BB%B6/</url>
-    <content><![CDATA[<p>使用jdk自带的jvisualvm.exe程序来查看内存溢出文件</p>
-<p>位置：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$JAVA_HOME&#x2F;bin&#x2F;jvisualvm</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>JVM</category>
-      </categories>
-      <tags>
-        <tag>JVM</tag>
-        <tag>工具</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>策略模式</title>
-    <url>/2019/06/10/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/</url>
-    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p>
-<h2 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h2><ul>
-<li><p>抽象策略略⻆色<br>  这个是⼀一个抽象的角色，通常情况下使⽤接口或者抽象类去实现。比如我们的Comparator接⼝口。</p>
-</li>
-<li><p>具体策略略⻆色<br>  包装了了具体的算法和⾏行行为。比如实现了Comparator接口的一组实现类。</p>
-</li>
-<li><p>环境⻆角⾊色Context<br>  内部会持有⼀个抽象⻆色的引⽤用，给客户端调⽤策略模式用于封装系列的算法，这些算法通常被封装在一个被称为 Context 类中，<br>客户端程序可以⾃由选择其中一种算法，或让 Context 为客户端选择一个最佳的算法——使⽤策略模式的优势是为了⽀支持算法的自由切换。</p>
-</li>
-</ul>
-<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><ul>
-<li><p>Resource和策略略模式<br>  Resource 接口就是策略模式的典型应用，Resource 接口就代表资源访问策略，但具体采⽤用哪种策略实现，Resource 接口并不理理会。<br>客户端程序只和Resource 接口耦合，并不知道底层采⽤何种资源访问策略，这样应用可以在不同的资源访问策略之间自由切换。</p>
-</li>
-<li><p>Spring 框架的 Context 如何“智能”地选择资源访问策略<br>  Spring提供两个标志性接口：</p>
-<ul>
-<li>ResourceLoader：该接口实现类的实例可以获得⼀个 Resource 实例例。</li>
-<li>ResourceLoaderAware：该接口实现类的实例将获得一个 ResourceLoader 的引用。<br>在 ResourceLoader 接口里有如下方法：Resource getResource(String location)：该接口仅包含这个⽅法，该方法⽤于返回一个 Resource 实例例。</li>
-</ul>
-<p>ApplicationContext 的实现类都实现 ResourceLoader 接⼝，因此 ApplicationContext 可⽤于直接获取 Resource 实例。</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>设计模式</tag>
       </tags>
   </entry>
   <entry>
@@ -4832,28 +4979,6 @@ OK
       </tags>
   </entry>
   <entry>
-    <title>Mysql（5）-数据库索引（必知必会）</title>
-    <url>/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/</url>
-    <content><![CDATA[<h2 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h2><p>二级索引已经“覆盖了”我们的查询需求，不需要再回表查整行记录，我们称为覆盖索引。</p>
-<p>覆盖索引可以减少树的搜索次数，显著提升查询性能，所以使用覆盖索引是一个常用的性能优化手段。</p>
-<h2 id="最左前缀原则"><a href="#最左前缀原则" class="headerlink" title="最左前缀原则"></a>最左前缀原则</h2><p>索引项是按照索引定义里面出现的字段顺序排序的。正因为如此根据最左前缀，我们找到第一条数据位置，然后遍历到最后一条匹配到最左前缀的就可以了（因为按照顺序相同最左前缀的都排在一块）。</p>
-<p>不只是索引的全部定义，只要满足最左前缀，就可以利用索引来加速检索。这个最左前缀可以是联合索引的最左 N 个字段，也可以是字符串索引的最左 M 个字符。</p>
-<h3 id="在建立联合索引的时候，如何安排索引内的字段顺序。"><a href="#在建立联合索引的时候，如何安排索引内的字段顺序。" class="headerlink" title="在建立联合索引的时候，如何安排索引内的字段顺序。"></a>在建立联合索引的时候，如何安排索引内的字段顺序。</h3><p>第一原则是，如果通过调整顺序，可以少维护一个索引，那么这个顺序往往就是需要优先考虑采用的。提高索引的复用能力，比如根据最左前缀原则，当已经有了 (a,b)这个联合索引后，一般就不需要单独在 a 上建立索引了。</p>
-<p>第二原则，考虑的是空间。</p>
-<p>如果a，b要建联合索引，且单查a或b的时候都要走索引，那么就要再a或b上再加一个索引，此时就要考虑空间。比如a字段b字段更占空间那就建一个（a，b）的联合索引和一个b的索引。</p>
-<h2 id="索引下推"><a href="#索引下推" class="headerlink" title="索引下推"></a>索引下推</h2><p>MySQL 5.6引入的索引下推优化（index condition pushdown)，可以在索引遍历过程中，对索引中包含的字段先做判断，直接过滤掉不满足条件的记录，减少回表次数。</p>
-<h2 id="重建索引"><a href="#重建索引" class="headerlink" title="重建索引"></a>重建索引</h2><p>索引可能因为删除，或者页分裂等原因，导致数据页有空洞，重建索引的过程会创建一个新的索引，把数据按顺序插入，这样页面的利用率最高，也就是索引更紧凑、更省空间。</p>
-<h3 id="重建二级索引索引"><a href="#重建二级索引索引" class="headerlink" title="重建二级索引索引"></a>重建二级索引索引</h3><p>alter table T drop index k;<br>alter table T add index(k);</p>
-<h3 id="重建主键索引："><a href="#重建主键索引：" class="headerlink" title="重建主键索引："></a>重建主键索引：</h3><p>alter table T engine=InnoDB</p>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Mysql（6）-数据库索引（数据结构）</title>
     <url>/2019/03/28/Mysql%EF%BC%886%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%89/</url>
     <content><![CDATA[<h2 id="索引的作用"><a href="#索引的作用" class="headerlink" title="索引的作用"></a>索引的作用</h2><p>索引是为了提高数据库的查询效率。</p>
@@ -4896,6 +5021,28 @@ OK
 <li>该索引是唯一索引</li>
 </ol>
 <p>就是典型的 KV 场景。由于没有其他索引，所以也就不用考虑其他索引的叶子节点大小的问题。</p>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mysql（5）-数据库索引（必知必会）</title>
+    <url>/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/</url>
+    <content><![CDATA[<h2 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h2><p>二级索引已经“覆盖了”我们的查询需求，不需要再回表查整行记录，我们称为覆盖索引。</p>
+<p>覆盖索引可以减少树的搜索次数，显著提升查询性能，所以使用覆盖索引是一个常用的性能优化手段。</p>
+<h2 id="最左前缀原则"><a href="#最左前缀原则" class="headerlink" title="最左前缀原则"></a>最左前缀原则</h2><p>索引项是按照索引定义里面出现的字段顺序排序的。正因为如此根据最左前缀，我们找到第一条数据位置，然后遍历到最后一条匹配到最左前缀的就可以了（因为按照顺序相同最左前缀的都排在一块）。</p>
+<p>不只是索引的全部定义，只要满足最左前缀，就可以利用索引来加速检索。这个最左前缀可以是联合索引的最左 N 个字段，也可以是字符串索引的最左 M 个字符。</p>
+<h3 id="在建立联合索引的时候，如何安排索引内的字段顺序。"><a href="#在建立联合索引的时候，如何安排索引内的字段顺序。" class="headerlink" title="在建立联合索引的时候，如何安排索引内的字段顺序。"></a>在建立联合索引的时候，如何安排索引内的字段顺序。</h3><p>第一原则是，如果通过调整顺序，可以少维护一个索引，那么这个顺序往往就是需要优先考虑采用的。提高索引的复用能力，比如根据最左前缀原则，当已经有了 (a,b)这个联合索引后，一般就不需要单独在 a 上建立索引了。</p>
+<p>第二原则，考虑的是空间。</p>
+<p>如果a，b要建联合索引，且单查a或b的时候都要走索引，那么就要再a或b上再加一个索引，此时就要考虑空间。比如a字段b字段更占空间那就建一个（a，b）的联合索引和一个b的索引。</p>
+<h2 id="索引下推"><a href="#索引下推" class="headerlink" title="索引下推"></a>索引下推</h2><p>MySQL 5.6引入的索引下推优化（index condition pushdown)，可以在索引遍历过程中，对索引中包含的字段先做判断，直接过滤掉不满足条件的记录，减少回表次数。</p>
+<h2 id="重建索引"><a href="#重建索引" class="headerlink" title="重建索引"></a>重建索引</h2><p>索引可能因为删除，或者页分裂等原因，导致数据页有空洞，重建索引的过程会创建一个新的索引，把数据按顺序插入，这样页面的利用率最高，也就是索引更紧凑、更省空间。</p>
+<h3 id="重建二级索引索引"><a href="#重建二级索引索引" class="headerlink" title="重建二级索引索引"></a>重建二级索引索引</h3><p>alter table T drop index k;<br>alter table T add index(k);</p>
+<h3 id="重建主键索引："><a href="#重建主键索引：" class="headerlink" title="重建主键索引："></a>重建主键索引：</h3><p>alter table T engine=InnoDB</p>
 ]]></content>
       <categories>
         <category>DB</category>
@@ -5040,6 +5187,36 @@ OK
       </tags>
   </entry>
   <entry>
+    <title>Nginx-3：Nginx中的正则表达式</title>
+    <url>/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/</url>
+    <content><![CDATA[<p>正则表达式可以让我们匹配的功能更加强大</p>
+<h1 id="元字符"><a href="#元字符" class="headerlink" title="元字符"></a>元字符</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.   匹配除换行符之外的任意字符</span><br><span class="line">\w  匹配字母、数字、下划线或汉字</span><br><span class="line">\s  匹配任意的空白字符</span><br><span class="line">\d  匹配数字</span><br><span class="line">\b  匹配单词的开始或结束</span><br><span class="line">^   匹配字符串的开始</span><br><span class="line">$   匹配字符串的结束</span><br></pre></td></tr></table></figure>
+
+<h1 id="重复"><a href="#重复" class="headerlink" title="重复"></a>重复</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">*      重复0次或多次</span><br><span class="line">+      重复1次或多次</span><br><span class="line">？     重复0次或1次</span><br><span class="line">&#123;n&#125;    重复n次</span><br><span class="line">&#123;n,&#125;   重复n次或更多次</span><br><span class="line">&#123;n,m&#125;  重复n到m次</span><br></pre></td></tr></table></figure>
+
+<h1 id="转义符号"><a href="#转义符号" class="headerlink" title="转义符号"></a>转义符号</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">\: 取消元字符的特殊含义</span><br></pre></td></tr></table></figure>
+
+<h1 id="分组与取值"><a href="#分组与取值" class="headerlink" title="分组与取值"></a>分组与取值</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">():用来通过$方式取表达式中的值，或者进行分组</span><br></pre></td></tr></table></figure>
+
+<h1 id="pcretest"><a href="#pcretest" class="headerlink" title="pcretest"></a>pcretest</h1><p>PCRE(Perl Compatible Regular Expressions)是一个Perl库，包括 perl 兼容的正则表达式库。我们可以通过pcretest工具来测试<br>我们写的正则表达式的可用性。</p>
+<p>我们安装pcre-tools后就可以使用pcretools了：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo dnf install pcre-tools</span><br></pre></td></tr></table></figure>
+
+<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><p>原始url： /web/assets/view/salary/month-8/payslip/basicsalary.jpg<br>转换后的url： /web/assets/view/cnb-salary/payslip/basicsalary/month/8.jpg<br>匹配原始url的正则表达式：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;^\&#x2F;web\&#x2F;assets\&#x2F;view\&#x2F;salary\&#x2F;(\w+)-(\d&#123;1,2&#125;)\&#x2F;payslip\&#x2F;(\w+)\.(png|jpg|gif|jpeg|bmp)$&#x2F;</span><br><span class="line"></span><br><span class="line">rewrite ^&#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;(\w+)-(\d&#123;1,2&#125;)&#x2F;payslip&#x2F;(\w+).(png|jpg|gif|jpeg|bmp)$  &#x2F;web&#x2F;assets&#x2F;view&#x2F;cnb-salary&#x2F;payslip&#x2F;$3&#x2F;$1&#x2F;$2.$4 last;</span><br></pre></td></tr></table></figure>
+<p>我们通过pcretest进行测试</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@192 ~]$ pcretest</span><br><span class="line">PCRE version 8.43 2019-02-23</span><br><span class="line"></span><br><span class="line">  re&gt; &#x2F;^\&#x2F;web\&#x2F;assets\&#x2F;view\&#x2F;salary\&#x2F;(\w+)-(\d&#123;1,2&#125;)\&#x2F;payslip\&#x2F;(\w+)\.(png|jpg|gif|jpeg|bmp)$&#x2F;</span><br><span class="line">data&gt; &#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;month-8&#x2F;payslip&#x2F;basicsalary.jpg</span><br><span class="line"> 0: &#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;month-8&#x2F;payslip&#x2F;basicsalary.jpg</span><br><span class="line"> 1: month</span><br><span class="line"> 2: 8</span><br><span class="line"> 3: basicsalary</span><br><span class="line"> 4: jpg</span><br></pre></td></tr></table></figure>
+<p>可以看到通过正则表达式（）匹配到的各个值，然后就可以通过$1,$2…的方式使用这些值，达到rewrite的目的。</p>
+<p>注意在nginx中使用正则表达式是不需要使用反斜杠转义的，这里是为了在pcretest中测试</p>
+]]></content>
+      <categories>
+        <category>web</category>
+      </categories>
+      <tags>
+        <tag>nginx</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Mysql（2）-基本架构</title>
     <url>/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/</url>
     <content><![CDATA[<h2 id="Mysql基本架构是什么样子的（简述Mysql基本架构）"><a href="#Mysql基本架构是什么样子的（简述Mysql基本架构）" class="headerlink" title="Mysql基本架构是什么样子的（简述Mysql基本架构）"></a>Mysql基本架构是什么样子的（简述Mysql基本架构）</h2><p>Mysql由服务层（Service层）和存储引擎层构成。</p>
@@ -5094,36 +5271,6 @@ OK
       </categories>
       <tags>
         <tag>Mysql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Nginx-3：Nginx中的正则表达式</title>
-    <url>/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/</url>
-    <content><![CDATA[<p>正则表达式可以让我们匹配的功能更加强大</p>
-<h1 id="元字符"><a href="#元字符" class="headerlink" title="元字符"></a>元字符</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.   匹配除换行符之外的任意字符</span><br><span class="line">\w  匹配字母、数字、下划线或汉字</span><br><span class="line">\s  匹配任意的空白字符</span><br><span class="line">\d  匹配数字</span><br><span class="line">\b  匹配单词的开始或结束</span><br><span class="line">^   匹配字符串的开始</span><br><span class="line">$   匹配字符串的结束</span><br></pre></td></tr></table></figure>
-
-<h1 id="重复"><a href="#重复" class="headerlink" title="重复"></a>重复</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">*      重复0次或多次</span><br><span class="line">+      重复1次或多次</span><br><span class="line">？     重复0次或1次</span><br><span class="line">&#123;n&#125;    重复n次</span><br><span class="line">&#123;n,&#125;   重复n次或更多次</span><br><span class="line">&#123;n,m&#125;  重复n到m次</span><br></pre></td></tr></table></figure>
-
-<h1 id="转义符号"><a href="#转义符号" class="headerlink" title="转义符号"></a>转义符号</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">\: 取消元字符的特殊含义</span><br></pre></td></tr></table></figure>
-
-<h1 id="分组与取值"><a href="#分组与取值" class="headerlink" title="分组与取值"></a>分组与取值</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">():用来通过$方式取表达式中的值，或者进行分组</span><br></pre></td></tr></table></figure>
-
-<h1 id="pcretest"><a href="#pcretest" class="headerlink" title="pcretest"></a>pcretest</h1><p>PCRE(Perl Compatible Regular Expressions)是一个Perl库，包括 perl 兼容的正则表达式库。我们可以通过pcretest工具来测试<br>我们写的正则表达式的可用性。</p>
-<p>我们安装pcre-tools后就可以使用pcretools了：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo dnf install pcre-tools</span><br></pre></td></tr></table></figure>
-
-<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><p>原始url： /web/assets/view/salary/month-8/payslip/basicsalary.jpg<br>转换后的url： /web/assets/view/cnb-salary/payslip/basicsalary/month/8.jpg<br>匹配原始url的正则表达式：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;^\&#x2F;web\&#x2F;assets\&#x2F;view\&#x2F;salary\&#x2F;(\w+)-(\d&#123;1,2&#125;)\&#x2F;payslip\&#x2F;(\w+)\.(png|jpg|gif|jpeg|bmp)$&#x2F;</span><br><span class="line"></span><br><span class="line">rewrite ^&#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;(\w+)-(\d&#123;1,2&#125;)&#x2F;payslip&#x2F;(\w+).(png|jpg|gif|jpeg|bmp)$  &#x2F;web&#x2F;assets&#x2F;view&#x2F;cnb-salary&#x2F;payslip&#x2F;$3&#x2F;$1&#x2F;$2.$4 last;</span><br></pre></td></tr></table></figure>
-<p>我们通过pcretest进行测试</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@192 ~]$ pcretest</span><br><span class="line">PCRE version 8.43 2019-02-23</span><br><span class="line"></span><br><span class="line">  re&gt; &#x2F;^\&#x2F;web\&#x2F;assets\&#x2F;view\&#x2F;salary\&#x2F;(\w+)-(\d&#123;1,2&#125;)\&#x2F;payslip\&#x2F;(\w+)\.(png|jpg|gif|jpeg|bmp)$&#x2F;</span><br><span class="line">data&gt; &#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;month-8&#x2F;payslip&#x2F;basicsalary.jpg</span><br><span class="line"> 0: &#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;month-8&#x2F;payslip&#x2F;basicsalary.jpg</span><br><span class="line"> 1: month</span><br><span class="line"> 2: 8</span><br><span class="line"> 3: basicsalary</span><br><span class="line"> 4: jpg</span><br></pre></td></tr></table></figure>
-<p>可以看到通过正则表达式（）匹配到的各个值，然后就可以通过$1,$2…的方式使用这些值，达到rewrite的目的。</p>
-<p>注意在nginx中使用正则表达式是不需要使用反斜杠转义的，这里是为了在pcretest中测试</p>
-]]></content>
-      <categories>
-        <category>web</category>
-      </categories>
-      <tags>
-        <tag>nginx</tag>
       </tags>
   </entry>
   <entry>
@@ -5293,6 +5440,29 @@ OK
       </tags>
   </entry>
   <entry>
+    <title>SeLinux</title>
+    <url>/2019/03/20/SeLinux/</url>
+    <content><![CDATA[<p>一、关闭SeLinux</p>
+<p>查看SELinux状态：</p>
+<p>1、/usr/sbin/sestatus -v      ##如果SELinux status参数为enabled即为开启状态</p>
+<p>SELinux status:                 enabled</p>
+<p>2、getenforce                 ##也可以用这个命令检查</p>
+<p>关闭SELinux：</p>
+<p>1、临时关闭（不用重启机器）：</p>
+<p>setenforce 0                  ##设置SELinux 成为permissive模式</p>
+<p>##setenforce 1 设置SELinux 成为enforcing模式</p>
+<p>2、修改配置文件需要重启机器：</p>
+<p>修改/etc/selinux/config 文件</p>
+<p>将SELINUX=enforcing改为SELINUX=disabled</p>
+<p>重启机器即可</p>
+<p>二、执行下面的命令</p>
+<p>setsebool -P httpd_can_network_connect 1</p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+  </entry>
+  <entry>
     <title>Nginx-1：基本概念</title>
     <url>/2019/03/20/Nginx-1%EF%BC%9A%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</url>
     <content><![CDATA[<h1 id="Nginx组成"><a href="#Nginx组成" class="headerlink" title="Nginx组成"></a>Nginx组成</h1><h2 id="Ngnix二进制可执行文件"><a href="#Ngnix二进制可执行文件" class="headerlink" title="Ngnix二进制可执行文件"></a>Ngnix二进制可执行文件</h2><p>由各模块源码编译出来的一个文件</p>
@@ -5335,29 +5505,6 @@ OK
       <tags>
         <tag>nginx</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>SeLinux</title>
-    <url>/2019/03/20/SeLinux/</url>
-    <content><![CDATA[<p>一、关闭SeLinux</p>
-<p>查看SELinux状态：</p>
-<p>1、/usr/sbin/sestatus -v      ##如果SELinux status参数为enabled即为开启状态</p>
-<p>SELinux status:                 enabled</p>
-<p>2、getenforce                 ##也可以用这个命令检查</p>
-<p>关闭SELinux：</p>
-<p>1、临时关闭（不用重启机器）：</p>
-<p>setenforce 0                  ##设置SELinux 成为permissive模式</p>
-<p>##setenforce 1 设置SELinux 成为enforcing模式</p>
-<p>2、修改配置文件需要重启机器：</p>
-<p>修改/etc/selinux/config 文件</p>
-<p>将SELINUX=enforcing改为SELINUX=disabled</p>
-<p>重启机器即可</p>
-<p>二、执行下面的命令</p>
-<p>setsebool -P httpd_can_network_connect 1</p>
-]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
   </entry>
   <entry>
     <title>Linux笔记</title>
@@ -5860,34 +6007,6 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
       </tags>
   </entry>
   <entry>
-    <title>Java基础</title>
-    <url>/2019/03/08/Java%E5%9F%BA%E7%A1%80/</url>
-    <content><![CDATA[<h1 id="HashMap、Hashtable、ConcurrentHashMap的原理与区别"><a href="#HashMap、Hashtable、ConcurrentHashMap的原理与区别" class="headerlink" title="HashMap、Hashtable、ConcurrentHashMap的原理与区别"></a>HashMap、Hashtable、ConcurrentHashMap的原理与区别</h1><h2 id="简述HashMap实现原理"><a href="#简述HashMap实现原理" class="headerlink" title="简述HashMap实现原理"></a>简述HashMap实现原理</h2><p>HashMap的底层是通过数组和链表实现的。其实就是维护了一个数组，put操作的时候根据key的哈希值和数组的长度（具体看源码）算出下标，判断该位置有没有对象，没有的话直接创建一个Entry对象（该对象保存了key，hash，value，下标等属性），如果有对象则判断是否有hash冲突（不同的key，但是hash值相同），有冲突则则该闻之用链表存储。</p>
-<p>todo：源码分析</p>
-<p>注意：</p>
-<ul>
-<li>HashMap的key和value都允许是null；</li>
-<li>当put后数量大于等于当前容量*加载因子的时候，就需要扩容，扩容需要数组复制，是非常耗时的，所以如果我们已经预知HashMap中元素的个数，那么预设元素的个数能够有效的提高HashMap的性能；</li>
-</ul>
-<p>思考：<br>如果我们创建HashMap的时候指定了初始大小等于我们希望放入对象的数量，是不是就不会产生扩容？（如果不修改加载因子，仍会产生扩容）</p>
-<h2 id="HashTale与HashMap的区别"><a href="#HashTale与HashMap的区别" class="headerlink" title="HashTale与HashMap的区别"></a>HashTale与HashMap的区别</h2><ul>
-<li>HashTable同HashMap的实现差别不大，  同样是基于哈希表通过数组和链表实现的，同样每个元素是一个key-value对，其内部也是通过单链表解决冲突问题，容量不足（超过了阀值）时，同样会自动增长。</li>
-</ul>
-<h2 id="HashTable与ConcurrentHashMap的区别"><a href="#HashTable与ConcurrentHashMap的区别" class="headerlink" title="HashTable与ConcurrentHashMap的区别"></a>HashTable与ConcurrentHashMap的区别</h2><ul>
-<li>不同点在于HashTable是线程安全的，因为它每个方法中都加入了Synchronize。</li>
-<li>ConcurrentHashMap是HashTable的代替，底层采用分段的数组+链表实现，线程安全。</li>
-<li>通过把整个Map分为N个Segment，可以提供相同的线程安全，但是效率提升N倍，默认提升16倍。(读操作不加锁，由于HashEntry的value变量是 volatile的，也能保证读取到最新的值。)</li>
-</ul>
-<h1 id="volatile的作用"><a href="#volatile的作用" class="headerlink" title="volatile的作用"></a>volatile的作用</h1><h1 id="Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的"><a href="#Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的" class="headerlink" title="Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的"></a>Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的</h1><h1 id="Atomic类如何保证原子操作（CAS操作）"><a href="#Atomic类如何保证原子操作（CAS操作）" class="headerlink" title="Atomic类如何保证原子操作（CAS操作）"></a>Atomic类如何保证原子操作（CAS操作）</h1><h1 id="synchronized和Lock的区别"><a href="#synchronized和Lock的区别" class="headerlink" title="synchronized和Lock的区别"></a>synchronized和Lock的区别</h1><h1 id="ThreadLocal的原理和实现"><a href="#ThreadLocal的原理和实现" class="headerlink" title="ThreadLocal的原理和实现"></a>ThreadLocal的原理和实现</h1><h1 id="为什么要使用线程池"><a href="#为什么要使用线程池" class="headerlink" title="为什么要使用线程池"></a>为什么要使用线程池</h1><h1 id="核心线程池ThreadPoolExecutor的参数"><a href="#核心线程池ThreadPoolExecutor的参数" class="headerlink" title="核心线程池ThreadPoolExecutor的参数"></a>核心线程池ThreadPoolExecutor的参数</h1><h1 id="ThreadPoolExecutor的工作流程"><a href="#ThreadPoolExecutor的工作流程" class="headerlink" title="ThreadPoolExecutor的工作流程"></a>ThreadPoolExecutor的工作流程</h1><h1 id="如何控制线程池线程的优先级"><a href="#如何控制线程池线程的优先级" class="headerlink" title="如何控制线程池线程的优先级"></a>如何控制线程池线程的优先级</h1><h1 id="线程之间如何通信"><a href="#线程之间如何通信" class="headerlink" title="线程之间如何通信"></a>线程之间如何通信</h1><h1 id="Jdk1-8和1-7都分别新增了哪些特性"><a href="#Jdk1-8和1-7都分别新增了哪些特性" class="headerlink" title="Jdk1.8和1.7都分别新增了哪些特性"></a>Jdk1.8和1.7都分别新增了哪些特性</h1><h1 id="Exception-和-Error"><a href="#Exception-和-Error" class="headerlink" title="Exception 和 Error"></a>Exception 和 Error</h1><h1 id="Object类内的方法"><a href="#Object类内的方法" class="headerlink" title="Object类内的方法"></a>Object类内的方法</h1><p>Mysql 一句查询操作的执行流程</p>
-]]></content>
-      <categories>
-        <category>Java 基础</category>
-      </categories>
-      <tags>
-        <tag>lambda</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Java Stream</title>
     <url>/2019/03/08/Java%20Stream/</url>
     <content><![CDATA[<h1 id="1、Java-Stream-API-入门"><a href="#1、Java-Stream-API-入门" class="headerlink" title="1、Java Stream API 入门"></a>1、Java Stream API 入门</h1><h2 id="Java8引入函数式编程"><a href="#Java8引入函数式编程" class="headerlink" title="Java8引入函数式编程"></a>Java8引入函数式编程</h2><ul>
@@ -6094,6 +6213,34 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
 <p><a href="http://www.importnew.com/25315.html" target="_blank" rel="noopener">http://www.importnew.com/25315.html</a></p>
 <h1 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h1><p><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#package.description" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#package.description</a><br><a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html</a><br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html</a><br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html</a><br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collectors.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collectors.html</a></p>
 <p><a href="http://www.importnew.com/24237.html" target="_blank" rel="noopener">http://www.importnew.com/24237.html</a><br><a href="http://www.importnew.com/24245.html" target="_blank" rel="noopener">http://www.importnew.com/24245.html</a><br><a href="http://www.importnew.com/24235.html" target="_blank" rel="noopener">http://www.importnew.com/24235.html</a></p>
+]]></content>
+      <categories>
+        <category>Java 基础</category>
+      </categories>
+      <tags>
+        <tag>lambda</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java基础</title>
+    <url>/2019/03/08/Java%E5%9F%BA%E7%A1%80/</url>
+    <content><![CDATA[<h1 id="HashMap、Hashtable、ConcurrentHashMap的原理与区别"><a href="#HashMap、Hashtable、ConcurrentHashMap的原理与区别" class="headerlink" title="HashMap、Hashtable、ConcurrentHashMap的原理与区别"></a>HashMap、Hashtable、ConcurrentHashMap的原理与区别</h1><h2 id="简述HashMap实现原理"><a href="#简述HashMap实现原理" class="headerlink" title="简述HashMap实现原理"></a>简述HashMap实现原理</h2><p>HashMap的底层是通过数组和链表实现的。其实就是维护了一个数组，put操作的时候根据key的哈希值和数组的长度（具体看源码）算出下标，判断该位置有没有对象，没有的话直接创建一个Entry对象（该对象保存了key，hash，value，下标等属性），如果有对象则判断是否有hash冲突（不同的key，但是hash值相同），有冲突则则该闻之用链表存储。</p>
+<p>todo：源码分析</p>
+<p>注意：</p>
+<ul>
+<li>HashMap的key和value都允许是null；</li>
+<li>当put后数量大于等于当前容量*加载因子的时候，就需要扩容，扩容需要数组复制，是非常耗时的，所以如果我们已经预知HashMap中元素的个数，那么预设元素的个数能够有效的提高HashMap的性能；</li>
+</ul>
+<p>思考：<br>如果我们创建HashMap的时候指定了初始大小等于我们希望放入对象的数量，是不是就不会产生扩容？（如果不修改加载因子，仍会产生扩容）</p>
+<h2 id="HashTale与HashMap的区别"><a href="#HashTale与HashMap的区别" class="headerlink" title="HashTale与HashMap的区别"></a>HashTale与HashMap的区别</h2><ul>
+<li>HashTable同HashMap的实现差别不大，  同样是基于哈希表通过数组和链表实现的，同样每个元素是一个key-value对，其内部也是通过单链表解决冲突问题，容量不足（超过了阀值）时，同样会自动增长。</li>
+</ul>
+<h2 id="HashTable与ConcurrentHashMap的区别"><a href="#HashTable与ConcurrentHashMap的区别" class="headerlink" title="HashTable与ConcurrentHashMap的区别"></a>HashTable与ConcurrentHashMap的区别</h2><ul>
+<li>不同点在于HashTable是线程安全的，因为它每个方法中都加入了Synchronize。</li>
+<li>ConcurrentHashMap是HashTable的代替，底层采用分段的数组+链表实现，线程安全。</li>
+<li>通过把整个Map分为N个Segment，可以提供相同的线程安全，但是效率提升N倍，默认提升16倍。(读操作不加锁，由于HashEntry的value变量是 volatile的，也能保证读取到最新的值。)</li>
+</ul>
+<h1 id="volatile的作用"><a href="#volatile的作用" class="headerlink" title="volatile的作用"></a>volatile的作用</h1><h1 id="Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的"><a href="#Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的" class="headerlink" title="Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的"></a>Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的</h1><h1 id="Atomic类如何保证原子操作（CAS操作）"><a href="#Atomic类如何保证原子操作（CAS操作）" class="headerlink" title="Atomic类如何保证原子操作（CAS操作）"></a>Atomic类如何保证原子操作（CAS操作）</h1><h1 id="synchronized和Lock的区别"><a href="#synchronized和Lock的区别" class="headerlink" title="synchronized和Lock的区别"></a>synchronized和Lock的区别</h1><h1 id="ThreadLocal的原理和实现"><a href="#ThreadLocal的原理和实现" class="headerlink" title="ThreadLocal的原理和实现"></a>ThreadLocal的原理和实现</h1><h1 id="为什么要使用线程池"><a href="#为什么要使用线程池" class="headerlink" title="为什么要使用线程池"></a>为什么要使用线程池</h1><h1 id="核心线程池ThreadPoolExecutor的参数"><a href="#核心线程池ThreadPoolExecutor的参数" class="headerlink" title="核心线程池ThreadPoolExecutor的参数"></a>核心线程池ThreadPoolExecutor的参数</h1><h1 id="ThreadPoolExecutor的工作流程"><a href="#ThreadPoolExecutor的工作流程" class="headerlink" title="ThreadPoolExecutor的工作流程"></a>ThreadPoolExecutor的工作流程</h1><h1 id="如何控制线程池线程的优先级"><a href="#如何控制线程池线程的优先级" class="headerlink" title="如何控制线程池线程的优先级"></a>如何控制线程池线程的优先级</h1><h1 id="线程之间如何通信"><a href="#线程之间如何通信" class="headerlink" title="线程之间如何通信"></a>线程之间如何通信</h1><h1 id="Jdk1-8和1-7都分别新增了哪些特性"><a href="#Jdk1-8和1-7都分别新增了哪些特性" class="headerlink" title="Jdk1.8和1.7都分别新增了哪些特性"></a>Jdk1.8和1.7都分别新增了哪些特性</h1><h1 id="Exception-和-Error"><a href="#Exception-和-Error" class="headerlink" title="Exception 和 Error"></a>Exception 和 Error</h1><h1 id="Object类内的方法"><a href="#Object类内的方法" class="headerlink" title="Object类内的方法"></a>Object类内的方法</h1><p>Mysql 一句查询操作的执行流程</p>
 ]]></content>
       <categories>
         <category>Java 基础</category>
