@@ -83,15 +83,15 @@
 
 
 
-<meta name="description" content="安装版本选择：  企业版 社区版 所有环境免费使用 TGZ server mongos tools 和 shell  下载地址:https:&#x2F;&#x2F;www.mongodb.com&#x2F;try&#x2F;download&#x2F;community 选择好版本后可以生成下载连接,以命令行操作为例： 1234567891011121314151617181920212223242526272829303132333435363">
+<meta name="description" content="基本概念   SQL术语&#x2F;概念 MongoDB术语&#x2F;概念 解释&#x2F;说明    database database 数据库   table collection 数据库表&#x2F;集合   row document 数据记录行&#x2F;文档   column field 数据字段&#x2F;域   index index 索引   table joins  表连接,MongoDB不支持   primary key primar">
 <meta property="og:type" content="article">
 <meta property="og:title" content="mongoDB系列01-mongoDB基础">
 <meta property="og:url" content="http://10000hours.top/2021/03/06/mongoDB%E7%B3%BB%E5%88%9701-mongoDB%E5%9F%BA%E7%A1%80/index.html">
 <meta property="og:site_name" content="Richey&#39;s Blog">
-<meta property="og:description" content="安装版本选择：  企业版 社区版 所有环境免费使用 TGZ server mongos tools 和 shell  下载地址:https:&#x2F;&#x2F;www.mongodb.com&#x2F;try&#x2F;download&#x2F;community 选择好版本后可以生成下载连接,以命令行操作为例： 1234567891011121314151617181920212223242526272829303132333435363">
+<meta property="og:description" content="基本概念   SQL术语&#x2F;概念 MongoDB术语&#x2F;概念 解释&#x2F;说明    database database 数据库   table collection 数据库表&#x2F;集合   row document 数据记录行&#x2F;文档   column field 数据字段&#x2F;域   index index 索引   table joins  表连接,MongoDB不支持   primary key primar">
 <meta property="og:image" content="https://blog-pic-1254088127.picsh.myqcloud.com/Clusters-Atlas-MongoDB-Atlas.png">
 <meta property="article:published_time" content="2021-03-05T16:00:00.000Z">
-<meta property="article:modified_time" content="2021-03-06T09:28:20.217Z">
+<meta property="article:modified_time" content="2021-04-03T06:57:46.723Z">
 <meta property="article:author" content="Richey Liu">
 <meta property="article:tag" content="mongoDB">
 <meta name="twitter:card" content="summary">
@@ -402,7 +402,51 @@
       
 
       
-        <h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>版本选择：</p>
+        <h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><table>
+<thead>
+<tr>
+<th>SQL术语/概念</th>
+<th align="center">MongoDB术语/概念</th>
+<th align="right">解释/说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>database</td>
+<td align="center">database</td>
+<td align="right">数据库</td>
+</tr>
+<tr>
+<td>table</td>
+<td align="center">collection</td>
+<td align="right">数据库表/集合</td>
+</tr>
+<tr>
+<td>row</td>
+<td align="center">document</td>
+<td align="right">数据记录行/文档</td>
+</tr>
+<tr>
+<td>column</td>
+<td align="center">field</td>
+<td align="right">数据字段/域</td>
+</tr>
+<tr>
+<td>index</td>
+<td align="center">index</td>
+<td align="right">索引</td>
+</tr>
+<tr>
+<td>table joins</td>
+<td align="center"></td>
+<td align="right">表连接,MongoDB不支持</td>
+</tr>
+<tr>
+<td>primary key</td>
+<td align="center">primary key</td>
+<td align="right">主键,MongoDB自动将_id字段设置为主键</td>
+</tr>
+</tbody></table>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>版本选择：</p>
 <ul>
 <li>企业版</li>
 <li>社区版 所有环境免费使用</li>
@@ -602,7 +646,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">121</span>
+                  <span class="site-state-item-count">123</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -680,7 +724,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#安装"><span class="nav-number">1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#直接使用mongodb云服务"><span class="nav-number">2.</span> <span class="nav-text">直接使用mongodb云服务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装图形化管理工具Compass"><span class="nav-number">3.</span> <span class="nav-text">安装图形化管理工具Compass</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#基本概念"><span class="nav-number">1.</span> <span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装"><span class="nav-number">2.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#直接使用mongodb云服务"><span class="nav-number">3.</span> <span class="nav-text">直接使用mongodb云服务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装图形化管理工具Compass"><span class="nav-number">4.</span> <span class="nav-text">安装图形化管理工具Compass</span></a></li></ol></div>
             
 
           </div>
