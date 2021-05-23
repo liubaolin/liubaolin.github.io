@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>mongoDB系列06-mongoDB事务操作</title>
+    <url>/2021/04/05/mongoDB%E7%B3%BB%E5%88%9706-mongoDB%E4%BA%8B%E5%8A%A1%E6%93%8D%E4%BD%9C/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>mongoDB</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>mongoDB命令速查</title>
     <url>/2021/04/03/mongoDB%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/</url>
     <content><![CDATA[<h1 id="基础命令"><a href="#基础命令" class="headerlink" title="基础命令"></a>基础命令</h1><h2 id="显示所有数据库"><a href="#显示所有数据库" class="headerlink" title="显示所有数据库"></a>显示所有数据库</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rs0:PRIMARY&gt; show dbs</span><br><span class="line">admin   0.000GB</span><br><span class="line">config  0.000GB</span><br><span class="line">local   0.000GB</span><br><span class="line">test    0.000GB</span><br></pre></td></tr></table></figure>
@@ -114,30 +125,6 @@
       </tags>
   </entry>
   <entry>
-    <title>ulimit详解</title>
-    <url>/2021/03/21/ulimit%E8%AF%A6%E8%A7%A3/</url>
-    <content><![CDATA[<p>本地测试mongodb，大量创建Collection的时候报错open: Too many open files.这个问题主要指的是进程企图打开一个文件，或者叫句柄，但是现在进程打开的句柄已经达到了上限，已经无法打开新句柄了。</p>
-<h1 id="Linux句柄介绍"><a href="#Linux句柄介绍" class="headerlink" title="Linux句柄介绍"></a>Linux句柄介绍</h1><p>Linux中所有的事物或资源都是以文件的形式存在，比如消息、共享内存、连接等，句柄可以理解为指向这些文件的指针。</p>
-<h1 id="ulimit"><a href="#ulimit" class="headerlink" title="ulimit"></a>ulimit</h1><p>对于这些句柄，Linux是有数量限制的，单个进程默认可以打开的句柄数上限，可以用以下命令来查看：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@localhost ~]$ ulimit -a</span><br><span class="line">core file size          (blocks, -c) unlimited</span><br><span class="line">data seg size           (kbytes, -d) unlimited</span><br><span class="line">scheduling priority             (-e) 0</span><br><span class="line">file size               (blocks, -f) unlimited</span><br><span class="line">pending signals                 (-i) 62939</span><br><span class="line">max locked memory       (kbytes, -l) 16384</span><br><span class="line">max memory size         (kbytes, -m) unlimited</span><br><span class="line">open files                      (-n) 2000</span><br><span class="line">pipe size            (512 bytes, -p) 8</span><br><span class="line">POSIX message queues     (bytes, -q) 819200</span><br><span class="line">real-time priority              (-r) 0</span><br><span class="line">stack size              (kbytes, -s) 8192</span><br><span class="line">cpu time               (seconds, -t) unlimited</span><br><span class="line">max user processes              (-u) 62939</span><br><span class="line">virtual memory          (kbytes, -v) unlimited</span><br><span class="line">file locks                      (-x) unlimited</span><br></pre></td></tr></table></figure>
-<p>其中的open files一项就是默认的句柄数</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ulimit: ulimit [-SHabcdefiklmnpqrstuvxPT] [限制]</span><br><span class="line">    修改 shell 资源限制。</span><br><span class="line">    </span><br><span class="line">    在允许此类控制的系统上，提供对于 shell 及其创建的进程所可用的</span><br><span class="line">    资源的控制。</span><br><span class="line">    </span><br><span class="line">    选项：</span><br><span class="line">      -S	使用软 (&#96;soft&#39;) 资源限制</span><br><span class="line">      -H	使用硬 (&#96;hard&#39;) 资源限制</span><br><span class="line">      -a	所有当前限制都被报告</span><br><span class="line">      -b	套接字缓存尺寸</span><br><span class="line">      -c	创建的核文件的最大尺寸</span><br><span class="line">      -d	一个进程的数据区的最大尺寸</span><br><span class="line">      -e	最高的调度优先级 (&#96;nice&#39;)</span><br><span class="line">      -f	有 shell 及其子进程可以写的最大文件尺寸</span><br><span class="line">      -i	最多的可以挂起的信号数</span><br><span class="line">      -k	分配给此进程的最大 kqueue 数量</span><br><span class="line">      -l	一个进程可以锁定的最大内存尺寸</span><br><span class="line">      -m	最大的内存进驻尺寸</span><br><span class="line">      -n	最多的打开的文件描述符个数</span><br><span class="line">      -p	管道缓冲区尺寸</span><br><span class="line">      -q	POSIX 信息队列的最大字节数</span><br><span class="line">      -r	实时调度的最大优先级</span><br><span class="line">      -s	最大栈尺寸</span><br><span class="line">      -t	最大的CPU时间，以秒为单位</span><br><span class="line">      -u	最大用户进程数</span><br><span class="line">      -v	虚拟内存尺寸</span><br><span class="line">      -x	最大的文件锁数量</span><br><span class="line">      -P	最大伪终端数量</span><br><span class="line">      -T	最大线程数量</span><br><span class="line">    </span><br><span class="line">    并非所有选项在所有系统上可用。</span><br><span class="line">    </span><br><span class="line">    如果提供了 LIMIT 变量，则它为指定资源的新的值；特别的 LIMIT 值为</span><br><span class="line">    &#96;soft&#39;、&#96;hard&#39;和&#96;unlimited&#39;，分别表示当前的软限制，硬限制和无限制。</span><br><span class="line">    否则打印指定资源的当前限制值，不带选项则假定为 -f</span><br><span class="line">    </span><br><span class="line">    取值都是 1024 字节为单位，除了 -t 以秒为单位，-p 以 512 字节递增，</span><br><span class="line">    -u 为无范围的进程数量。</span><br></pre></td></tr></table></figure>
-<p>设置某个进程的句柄上限</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ulimit –a PID</span><br></pre></td></tr></table></figure>
-
-<h1 id="ulimit配置文件"><a href="#ulimit配置文件" class="headerlink" title="ulimit配置文件"></a>ulimit配置文件</h1><p>使用ulimit方式修改句柄设置，在系统重启后会失效，可以通过修改配置文件的方式进行永久设置</p>
-<p>配置文件地址：/etc/security/limits.conf</p>
-<p>格式：<br>domain：可以是用户或者用户组 <em>代表所有<br>type：可以有三个值，soft 、 hard和-,其中hard的设置是实际的默认值，也就是上限，而soft的配置只是用来警告的，如果超过了soft的值，会有warn，而第三种用短横线– 的配置，则是hard和soft同时配置的方式。<br>item：表示要限定的资源 可以有很多候选值，如 stack（最大堆栈大小），cpu（占用cpu的时间），nofile（最大打开文件数） 等等<br>例：</em> hard nofile 100 该行配置语句限定了任意用户所能创建的最大文件数是 100。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">* soft nofile 196605</span><br><span class="line">* hard nofile 196605</span><br></pre></td></tr></table></figure>
-
-<p>修改后重启或重新ssh连接服务器，使用命令ulimit -a即可看到效果</p>
-<h1 id="查询某个进程占用的句柄"><a href="#查询某个进程占用的句柄" class="headerlink" title="查询某个进程占用的句柄"></a>查询某个进程占用的句柄</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">lsof |grep pid</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
-  </entry>
-  <entry>
     <title>mongoDB系列04-mongoDB复制集</title>
     <url>/2021/03/21/mongoDB%E7%B3%BB%E5%88%9704-mongoDB%E5%A4%8D%E5%88%B6%E9%9B%86/</url>
     <content><![CDATA[<h1 id="复制集的作用"><a href="#复制集的作用" class="headerlink" title="复制集的作用"></a>复制集的作用</h1><ul>
@@ -247,6 +234,30 @@
       </tags>
   </entry>
   <entry>
+    <title>ulimit详解</title>
+    <url>/2021/03/21/ulimit%E8%AF%A6%E8%A7%A3/</url>
+    <content><![CDATA[<p>本地测试mongodb，大量创建Collection的时候报错open: Too many open files.这个问题主要指的是进程企图打开一个文件，或者叫句柄，但是现在进程打开的句柄已经达到了上限，已经无法打开新句柄了。</p>
+<h1 id="Linux句柄介绍"><a href="#Linux句柄介绍" class="headerlink" title="Linux句柄介绍"></a>Linux句柄介绍</h1><p>Linux中所有的事物或资源都是以文件的形式存在，比如消息、共享内存、连接等，句柄可以理解为指向这些文件的指针。</p>
+<h1 id="ulimit"><a href="#ulimit" class="headerlink" title="ulimit"></a>ulimit</h1><p>对于这些句柄，Linux是有数量限制的，单个进程默认可以打开的句柄数上限，可以用以下命令来查看：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@localhost ~]$ ulimit -a</span><br><span class="line">core file size          (blocks, -c) unlimited</span><br><span class="line">data seg size           (kbytes, -d) unlimited</span><br><span class="line">scheduling priority             (-e) 0</span><br><span class="line">file size               (blocks, -f) unlimited</span><br><span class="line">pending signals                 (-i) 62939</span><br><span class="line">max locked memory       (kbytes, -l) 16384</span><br><span class="line">max memory size         (kbytes, -m) unlimited</span><br><span class="line">open files                      (-n) 2000</span><br><span class="line">pipe size            (512 bytes, -p) 8</span><br><span class="line">POSIX message queues     (bytes, -q) 819200</span><br><span class="line">real-time priority              (-r) 0</span><br><span class="line">stack size              (kbytes, -s) 8192</span><br><span class="line">cpu time               (seconds, -t) unlimited</span><br><span class="line">max user processes              (-u) 62939</span><br><span class="line">virtual memory          (kbytes, -v) unlimited</span><br><span class="line">file locks                      (-x) unlimited</span><br></pre></td></tr></table></figure>
+<p>其中的open files一项就是默认的句柄数</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ulimit: ulimit [-SHabcdefiklmnpqrstuvxPT] [限制]</span><br><span class="line">    修改 shell 资源限制。</span><br><span class="line">    </span><br><span class="line">    在允许此类控制的系统上，提供对于 shell 及其创建的进程所可用的</span><br><span class="line">    资源的控制。</span><br><span class="line">    </span><br><span class="line">    选项：</span><br><span class="line">      -S	使用软 (&#96;soft&#39;) 资源限制</span><br><span class="line">      -H	使用硬 (&#96;hard&#39;) 资源限制</span><br><span class="line">      -a	所有当前限制都被报告</span><br><span class="line">      -b	套接字缓存尺寸</span><br><span class="line">      -c	创建的核文件的最大尺寸</span><br><span class="line">      -d	一个进程的数据区的最大尺寸</span><br><span class="line">      -e	最高的调度优先级 (&#96;nice&#39;)</span><br><span class="line">      -f	有 shell 及其子进程可以写的最大文件尺寸</span><br><span class="line">      -i	最多的可以挂起的信号数</span><br><span class="line">      -k	分配给此进程的最大 kqueue 数量</span><br><span class="line">      -l	一个进程可以锁定的最大内存尺寸</span><br><span class="line">      -m	最大的内存进驻尺寸</span><br><span class="line">      -n	最多的打开的文件描述符个数</span><br><span class="line">      -p	管道缓冲区尺寸</span><br><span class="line">      -q	POSIX 信息队列的最大字节数</span><br><span class="line">      -r	实时调度的最大优先级</span><br><span class="line">      -s	最大栈尺寸</span><br><span class="line">      -t	最大的CPU时间，以秒为单位</span><br><span class="line">      -u	最大用户进程数</span><br><span class="line">      -v	虚拟内存尺寸</span><br><span class="line">      -x	最大的文件锁数量</span><br><span class="line">      -P	最大伪终端数量</span><br><span class="line">      -T	最大线程数量</span><br><span class="line">    </span><br><span class="line">    并非所有选项在所有系统上可用。</span><br><span class="line">    </span><br><span class="line">    如果提供了 LIMIT 变量，则它为指定资源的新的值；特别的 LIMIT 值为</span><br><span class="line">    &#96;soft&#39;、&#96;hard&#39;和&#96;unlimited&#39;，分别表示当前的软限制，硬限制和无限制。</span><br><span class="line">    否则打印指定资源的当前限制值，不带选项则假定为 -f</span><br><span class="line">    </span><br><span class="line">    取值都是 1024 字节为单位，除了 -t 以秒为单位，-p 以 512 字节递增，</span><br><span class="line">    -u 为无范围的进程数量。</span><br></pre></td></tr></table></figure>
+<p>设置某个进程的句柄上限</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ulimit –a PID</span><br></pre></td></tr></table></figure>
+
+<h1 id="ulimit配置文件"><a href="#ulimit配置文件" class="headerlink" title="ulimit配置文件"></a>ulimit配置文件</h1><p>使用ulimit方式修改句柄设置，在系统重启后会失效，可以通过修改配置文件的方式进行永久设置</p>
+<p>配置文件地址：/etc/security/limits.conf</p>
+<p>格式：<br>domain：可以是用户或者用户组 <em>代表所有<br>type：可以有三个值，soft 、 hard和-,其中hard的设置是实际的默认值，也就是上限，而soft的配置只是用来警告的，如果超过了soft的值，会有warn，而第三种用短横线– 的配置，则是hard和soft同时配置的方式。<br>item：表示要限定的资源 可以有很多候选值，如 stack（最大堆栈大小），cpu（占用cpu的时间），nofile（最大打开文件数） 等等<br>例：</em> hard nofile 100 该行配置语句限定了任意用户所能创建的最大文件数是 100。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">* soft nofile 196605</span><br><span class="line">* hard nofile 196605</span><br></pre></td></tr></table></figure>
+
+<p>修改后重启或重新ssh连接服务器，使用命令ulimit -a即可看到效果</p>
+<h1 id="查询某个进程占用的句柄"><a href="#查询某个进程占用的句柄" class="headerlink" title="查询某个进程占用的句柄"></a>查询某个进程占用的句柄</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">lsof |grep pid</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+  </entry>
+  <entry>
     <title>mongoDB系列00-MongoDB数据库选型</title>
     <url>/2021/03/20/mongoDB%E7%B3%BB%E5%88%9700-MongoDB%E6%95%B0%E6%8D%AE%E5%BA%93%E9%80%89%E5%9E%8B/</url>
     <content><![CDATA[<h1 id="基本"><a href="#基本" class="headerlink" title="基本"></a>基本</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; show dbs</span><br><span class="line">admin   0.000GB</span><br><span class="line">config  0.000GB</span><br><span class="line">local   0.000GB</span><br><span class="line">mock    0.047GB</span><br><span class="line">salary  0.000GB</span><br><span class="line">test    0.000GB</span><br><span class="line">&gt; use salary</span><br><span class="line">switched to db salary</span><br><span class="line">&gt; show collections</span><br><span class="line">payslip</span><br><span class="line">&gt; db</span><br><span class="line">salary</span><br></pre></td></tr></table></figure>
@@ -308,6 +319,82 @@
 </li>
 </ul>
 <h1 id="聚合查询"><a href="#聚合查询" class="headerlink" title="聚合查询"></a>聚合查询</h1><p>可以使用compass工具方便的生成聚合逻辑<br>//todo </p>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>mongoDB</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>K8s常用命令</title>
+    <url>/2021/03/06/K8s%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><table>
+<thead>
+<tr>
+<th>SQL术语/概念</th>
+<th align="center">MongoDB术语/概念</th>
+<th align="right">解释/说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>database</td>
+<td align="center">database</td>
+<td align="right">数据库</td>
+</tr>
+<tr>
+<td>table</td>
+<td align="center">collection</td>
+<td align="right">数据库表/集合</td>
+</tr>
+<tr>
+<td>row</td>
+<td align="center">document</td>
+<td align="right">数据记录行/文档</td>
+</tr>
+<tr>
+<td>column</td>
+<td align="center">field</td>
+<td align="right">数据字段/域</td>
+</tr>
+<tr>
+<td>index</td>
+<td align="center">index</td>
+<td align="right">索引</td>
+</tr>
+<tr>
+<td>table joins</td>
+<td align="center"></td>
+<td align="right">表连接,MongoDB不支持</td>
+</tr>
+<tr>
+<td>primary key</td>
+<td align="center">primary key</td>
+<td align="right">主键,MongoDB自动将_id字段设置为主键</td>
+</tr>
+</tbody></table>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>版本选择：</p>
+<ul>
+<li>企业版</li>
+<li>社区版 所有环境免费使用</li>
+<li>TGZ server mongos tools 和 shell</li>
+</ul>
+<p><a href="https://www.mongodb.com/try/download/community" target="_blank" rel="noopener">下载地址:https://www.mongodb.com/try/download/community</a></p>
+<p>选择好版本后可以生成下载连接,以命令行操作为例：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 创建目录,mongod 默认会使用/data/db目录进行数据存储</span></span><br><span class="line">sudo mkdir -p /data /data/db</span><br><span class="line"></span><br><span class="line">cd /data</span><br><span class="line"><span class="meta">#</span><span class="bash"> 下载安装mongodb</span></span><br><span class="line">curl -O sudo curl -O https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel80-4.2.13-rc1.tgz </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 解压缩</span></span><br><span class="line"></span><br><span class="line">(base) [richey@localhost data]$ sudo tar -xvf mongodb-linux-x86_64-rhel80-4.2.13-rc1.tgz </span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/THIRD-PARTY-NOTICES.gotools</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/README</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/THIRD-PARTY-NOTICES</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/MPL-2</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/LICENSE-Community.txt</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongodump</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongorestore</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongoexport</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongoimport</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongostat</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongotop</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/bsondump</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongofiles</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongoreplay</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongod</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongos</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongo</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/install_compass</span><br><span class="line">(base) [richey@localhost data]$ ls</span><br><span class="line">db  mongodb-linux-x86_64-rhel80-4.2.13-rc1  mongodb-linux-x86_64-rhel80-4.2.13-rc1.tgz</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 配置环境变量</span></span><br><span class="line">export PATH=$PATH:/data/mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin</span><br><span class="line"><span class="meta">#</span><span class="bash"> 永久配置</span></span><br><span class="line">sudo vim /etc/profile</span><br><span class="line">在文件最后添加：</span><br><span class="line">export PATH=$PATH:/data/mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin</span><br><span class="line">使配置立马剩下</span><br><span class="line">source /etc/profile</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 此时mongodb就配置好了,可以输入mongod启动服务</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="直接使用mongodb云服务"><a href="#直接使用mongodb云服务" class="headerlink" title="直接使用mongodb云服务"></a>直接使用mongodb云服务</h1><p>也可以在mongodb官网直接注册，可以创建一个免费的mongodb云存储服务</p>
+<p>创建好后可以配置连接方式，创建用户名密码<br><img src="https://blog-pic-1254088127.picsh.myqcloud.com/Clusters-Atlas-MongoDB-Atlas.png" alt="配置mongodb 云服务"></p>
+<p>选择连接方式<br>![配置mongodb 云服务](<a href="https://blog-pic-1254088127.picsh.myqcloud.com/Clusters-Atlas-MongoDB-Atlas" target="_blank" rel="noopener">https://blog-pic-1254088127.picsh.myqcloud.com/Clusters-Atlas-MongoDB-Atlas</a> -2.png)</p>
+<p>我们已经在本地安装了mongodb，可以选择在shell中连接，复制上面的地址在本地执行，输入密码即可连接</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">MongoDB Enterprise atlas-zh2gha-shard-0:PRIMARY&gt; show dbs</span><br><span class="line">2021-03-06T16:11:21.925+0800 I  CONNPOOL [ReplicaSetMonitor-TaskExecutor] Connecting to cluster0-shard-00-02.leoli.mongodb.net:27017</span><br><span class="line">admin  0.000GB</span><br><span class="line">local  1.253GB</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="安装图形化管理工具Compass"><a href="#安装图形化管理工具Compass" class="headerlink" title="安装图形化管理工具Compass"></a>安装图形化管理工具Compass</h1><p>去官网下载合适的包,安装即可</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">(base) [richey@localhost opt]$ sudo rpm -ivh mongodb-compass-1.26.0.x86_64.rpm </span><br><span class="line">警告：mongodb-compass-1.26.0.x86_64.rpm: 头V3 RSA&#x2F;SHA1 Signature, 密钥 ID ea312927: NOKEY</span><br><span class="line">Verifying...                          ################################# [100%]</span><br><span class="line">准备中...                          ################################# [100%]</span><br><span class="line">正在升级&#x2F;安装...</span><br><span class="line">   1:mongodb-compass-1.26.0-1.el7     ################################# [100%]</span><br></pre></td></tr></table></figure>
+
+
 ]]></content>
       <categories>
         <category>DB</category>
@@ -452,6 +539,182 @@
       </tags>
   </entry>
   <entry>
+    <title>Kubernetes04-集群搭建</title>
+    <url>/2021/03/06/Kubernetes04-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/</url>
+    <content><![CDATA[<h1 id="准备3台服务器"><a href="#准备3台服务器" class="headerlink" title="准备3台服务器"></a>准备3台服务器</h1><p>这里我们用虚拟机装3个节点：node1,node2,node3</p>
+<p>如果安装的时候没有设置好主机名，可以手动再设置一下，给个名字方便操作：</p>
+<p>hostnamectl set-hostname node1  //node2 node3</p>
+<h2 id="设置静态ip"><a href="#设置静态ip" class="headerlink" title="设置静态ip"></a>设置静态ip</h2><p>最好将节点的ip设置成静态的（不能随便变）,这里3个节点装的是ubuntu 20.04 server,设置方法如下：</p>
+<p>ifconfig //列出系统中所有连接的网络接口</p>
+<p><img src="https://blog-pic-1254088127.picsh.myqcloud.com/ifconfig-20210523.png" alt="ifconfig"></p>
+<p>我们将ens33以太网网络接口配置一个静态IP</p>
+<p>vim /etc/netplan/xxx-yaml</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">network:</span><br><span class="line">  ethernets:</span><br><span class="line">    ens33:</span><br><span class="line">      addresses:</span><br><span class="line">      - 172.16.250.128&#x2F;24</span><br><span class="line">      dhcp4: false</span><br><span class="line">      gateway4: 172.16.250.2</span><br><span class="line">      nameservers:</span><br><span class="line">        addresses:</span><br><span class="line">          - 8.8.8.8</span><br><span class="line">  version: 2</span><br></pre></td></tr></table></figure>
+<p>如果YAML文件不是由发行版安装程序创建的，则可以使用此命令为渲染器生成所需的配置。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo netplan generate</span><br></pre></td></tr></table></figure>
+<p>保存该文件并退出。然后使用以下netplan命令应用最近的网络更改。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo netplan apply</span><br></pre></td></tr></table></figure>
+
+<p>将3个节点全部设置成静态ip</p>
+<h2 id="修改域名文件"><a href="#修改域名文件" class="headerlink" title="修改域名文件"></a>修改域名文件</h2><p>vim /etc/hosts</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">172.16.250.128 node1</span><br><span class="line">172.16.250.129 node2</span><br><span class="line">172.16.250.131 node3</span><br></pre></td></tr></table></figure>
+<p>scp /etc/hosts <a href="mailto:root@172.16.250.129">root@172.16.250.129</a>:/etc/hosts<br>scp /etc/hosts <a href="mailto:root@172.16.250.131">root@172.16.250.131</a>:/etc/hosts</p>
+<h1 id="时区"><a href="#时区" class="headerlink" title="时区"></a>时区</h1><p>务必保证3台服务器的时区是一样的，强制更改时区为上海，执行以下命令</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ln -snf &#x2F;usr&#x2F;share&#x2F;zoneinfo&#x2F;Asia&#x2F;Shanghai &#x2F;etc&#x2F;localtime</span><br><span class="line">bash -c &quot;echo &#39;Asia&#x2F;Shanghai&#39; &gt; &#x2F;etc&#x2F;timezone&quot;</span><br></pre></td></tr></table></figure>
+
+<p>安装ntpdate</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">apt-get install -y ntpdate</span><br></pre></td></tr></table></figure>
+<p>如果出现以下错误：</p>
+<p>E: Could not get lock /var/lib/dpkg/lock - open (11: Resource temporarily unavailable)<br>E: Unable to lock the administration directory (/var/lib/dpkg/), is another process using it?</p>
+<p>执行2个命令解决</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo rm &#x2F;var&#x2F;cache&#x2F;apt&#x2F;archives&#x2F;lock</span><br><span class="line">sudo rm &#x2F;var&#x2F;lib&#x2F;dpkg&#x2F;lock</span><br></pre></td></tr></table></figure>
+
+<p>使用阿里云的时间服务器更新</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ntpdate ntp1.aliyun.com</span><br><span class="line">i</span><br></pre></td></tr></table></figure>
+<p>3台服务器都执行一下，确保时间一致.</p>
+<h1 id="安装docker"><a href="#安装docker" class="headerlink" title="安装docker"></a>安装docker</h1><p>所有节点都要安装。<br>如果使用docker作为k8s容器，则docker是必须要安装的。</p>
+<p>更新apt源并添加https支持</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt-get update &amp;&amp; sudo apt-get install apt-transport-https ca-certificates curl software-properties-common -y</span><br></pre></td></tr></table></figure>
+
+<p>使用utc源添加GPG Key</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl -fsSL https:&#x2F;&#x2F;mirrors.ustc.edu.cn&#x2F;docker-ce&#x2F;linux&#x2F;ubuntu&#x2F;gpg | sudo apt-key add</span><br></pre></td></tr></table></figure>
+
+<p>添加Docker-ce稳定版源地址</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo add-apt-repository &quot;deb [arch&#x3D;amd64] https:&#x2F;&#x2F;mirrors.ustc.edu.cn&#x2F;docker-ce&#x2F;linux&#x2F;ubuntu $(lsb_release -cs) stable&quot;</span><br></pre></td></tr></table></figure>
+
+<p>安装docker</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line">apt-cache madison docker-ce &#x2F;&#x2F; List the versions available in your repo</span><br><span class="line">sudo apt install docker-ce&#x3D;5:19.03.9~3-0~ubuntu-focal</span><br></pre></td></tr></table></figure>
+
+
+
+<p>3个节点都要安装</p>
+<h1 id="安装kubernetes组件"><a href="#安装kubernetes组件" class="headerlink" title="安装kubernetes组件"></a>安装kubernetes组件</h1><ul>
+<li>kubeadm：引导集群的命令。</li>
+<li>kubelet：在群集中所有计算机上运行的组件，它执行诸如启动Pod和容器之类的操作。</li>
+<li>kubectl：用于与您的集群通信的命令行工具。</li>
+</ul>
+<p>所有节点都需要安装：</p>
+<p>添加apt key及源</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt update &amp;&amp; sudo apt install -y apt-transport-https curl</span><br><span class="line"></span><br><span class="line">curl -s https:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;kubernetes&#x2F;apt&#x2F;doc&#x2F;apt-key.gpg | sudo apt-key add -</span><br><span class="line"></span><br><span class="line">echo &quot;deb https:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;kubernetes&#x2F;apt&#x2F; kubernetes-xenial main&quot; &gt;&gt;&#x2F;etc&#x2F;apt&#x2F;sources.list.d&#x2F;kubernetes.list</span><br></pre></td></tr></table></figure>
+<p>安装</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">sudo apt update</span><br><span class="line">sudo apt install -y kubelet&#x3D;1.15.2-00 kubeadm&#x3D;1.15.2-00 kubectl&#x3D;1.15.2-00</span><br><span class="line">sudo apt-mark hold kubelet&#x3D;1.15.2-00 kubeadm&#x3D;1.15.2-00 kubectl&#x3D;1.15.2-00</span><br></pre></td></tr></table></figure>
+<h1 id="禁用swap"><a href="#禁用swap" class="headerlink" title="禁用swap"></a>禁用swap</h1><p>所有节点都要操作（这里node1，node2，node3）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo sed -i &#39;&#x2F;swap&#x2F; s&#x2F;^&#x2F;#&#x2F;&#39; &#x2F;etc&#x2F;fstab</span><br><span class="line">sudo swapoff -a</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="安装kubernetes集群"><a href="#安装kubernetes集群" class="headerlink" title="安装kubernetes集群"></a>安装kubernetes集群</h1><p>只在master节点安装即可，这里我们用node1做master节点</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo kubeadm init --image-repository registry.aliyuncs.com&#x2F;google_containers --kubernetes-version v1.15.2 --pod-network-cidr&#x3D;192.169.0.0&#x2F;16</span><br><span class="line"></span><br><span class="line">[init] Using Kubernetes version: v1.15.2</span><br><span class="line">[preflight] Running pre-flight checks</span><br><span class="line">	[WARNING IsDockerSystemdCheck]: detected &quot;cgroupfs&quot; as the Docker cgroup driver. The recommended driver is &quot;systemd&quot;. Please follow the guide at https:&#x2F;&#x2F;kubernetes.io&#x2F;docs&#x2F;setup&#x2F;cri&#x2F;</span><br><span class="line">	[WARNING SystemVerification]: this Docker version is not on the list of validated versions: 19.03.9. Latest validated version: 18.09</span><br><span class="line">[preflight] Pulling images required for setting up a Kubernetes cluster</span><br><span class="line">[preflight] This might take a minute or two, depending on the speed of your internet connection</span><br><span class="line">[preflight] You can also perform this action in beforehand using &#39;kubeadm config images pull&#39;</span><br><span class="line">[kubelet-start] Writing kubelet environment file with flags to file &quot;&#x2F;var&#x2F;lib&#x2F;kubelet&#x2F;kubeadm-flags.env&quot;</span><br><span class="line">[kubelet-start] Writing kubelet configuration to file &quot;&#x2F;var&#x2F;lib&#x2F;kubelet&#x2F;config.yaml&quot;</span><br><span class="line">[kubelet-start] Activating the kubelet service</span><br><span class="line">[certs] Using certificateDir folder &quot;&#x2F;etc&#x2F;kubernetes&#x2F;pki&quot;</span><br><span class="line">[certs] Generating &quot;etcd&#x2F;ca&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;etcd&#x2F;server&quot; certificate and key</span><br><span class="line">[certs] etcd&#x2F;server serving cert is signed for DNS names [node1 localhost] and IPs [172.16.250.128 127.0.0.1 ::1]</span><br><span class="line">[certs] Generating &quot;etcd&#x2F;peer&quot; certificate and key</span><br><span class="line">[certs] etcd&#x2F;peer serving cert is signed for DNS names [node1 localhost] and IPs [172.16.250.128 127.0.0.1 ::1]</span><br><span class="line">[certs] Generating &quot;etcd&#x2F;healthcheck-client&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;apiserver-etcd-client&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;ca&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;apiserver-kubelet-client&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;apiserver&quot; certificate and key</span><br><span class="line">[certs] apiserver serving cert is signed for DNS names [node1 kubernetes kubernetes.default kubernetes.default.svc kubernetes.default.svc.cluster.local] and IPs [10.96.0.1 172.16.250.128]</span><br><span class="line">[certs] Generating &quot;front-proxy-ca&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;front-proxy-client&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;sa&quot; key and public key</span><br><span class="line">[kubeconfig] Using kubeconfig folder &quot;&#x2F;etc&#x2F;kubernetes&quot;</span><br><span class="line">[kubeconfig] Writing &quot;admin.conf&quot; kubeconfig file</span><br><span class="line">[kubeconfig] Writing &quot;kubelet.conf&quot; kubeconfig file</span><br><span class="line">[kubeconfig] Writing &quot;controller-manager.conf&quot; kubeconfig file</span><br><span class="line">[kubeconfig] Writing &quot;scheduler.conf&quot; kubeconfig file</span><br><span class="line">[control-plane] Using manifest folder &quot;&#x2F;etc&#x2F;kubernetes&#x2F;manifests&quot;</span><br><span class="line">[control-plane] Creating static Pod manifest for &quot;kube-apiserver&quot;</span><br><span class="line">[control-plane] Creating static Pod manifest for &quot;kube-controller-manager&quot;</span><br><span class="line">[control-plane] Creating static Pod manifest for &quot;kube-scheduler&quot;</span><br><span class="line">[etcd] Creating static Pod manifest for local etcd in &quot;&#x2F;etc&#x2F;kubernetes&#x2F;manifests&quot;</span><br><span class="line">[wait-control-plane] Waiting for the kubelet to boot up the control plane as static Pods from directory &quot;&#x2F;etc&#x2F;kubernetes&#x2F;manifests&quot;. This can take up to 4m0s</span><br><span class="line">[apiclient] All control plane components are healthy after 16.004480 seconds</span><br><span class="line">[upload-config] Storing the configuration used in ConfigMap &quot;kubeadm-config&quot; in the &quot;kube-system&quot; Namespace</span><br><span class="line">[kubelet] Creating a ConfigMap &quot;kubelet-config-1.15&quot; in namespace kube-system with the configuration for the kubelets in the cluster</span><br><span class="line">[upload-certs] Skipping phase. Please see --upload-certs</span><br><span class="line">[mark-control-plane] Marking the node node1 as control-plane by adding the label &quot;node-role.kubernetes.io&#x2F;master&#x3D;&#39;&#39;&quot;</span><br><span class="line">[mark-control-plane] Marking the node node1 as control-plane by adding the taints [node-role.kubernetes.io&#x2F;master:NoSchedule]</span><br><span class="line">[bootstrap-token] Using token: yq1qjo.00jrgi61fik1rnuc</span><br><span class="line">[bootstrap-token] Configuring bootstrap tokens, cluster-info ConfigMap, RBAC Roles</span><br><span class="line">[bootstrap-token] configured RBAC rules to allow Node Bootstrap tokens to post CSRs in order for nodes to get long term certificate credentials</span><br><span class="line">[bootstrap-token] configured RBAC rules to allow the csrapprover controller automatically approve CSRs from a Node Bootstrap Token</span><br><span class="line">[bootstrap-token] configured RBAC rules to allow certificate rotation for all node client certificates in the cluster</span><br><span class="line">[bootstrap-token] Creating the &quot;cluster-info&quot; ConfigMap in the &quot;kube-public&quot; namespace</span><br><span class="line">[addons] Applied essential addon: CoreDNS</span><br><span class="line">[addons] Applied essential addon: kube-proxy</span><br><span class="line"></span><br><span class="line">Your Kubernetes control-plane has initialized successfully!</span><br><span class="line"></span><br><span class="line">To start using your cluster, you need to run the following as a regular user:</span><br><span class="line"></span><br><span class="line">  mkdir -p $HOME&#x2F;.kube</span><br><span class="line">  sudo cp -i &#x2F;etc&#x2F;kubernetes&#x2F;admin.conf $HOME&#x2F;.kube&#x2F;config</span><br><span class="line">  sudo chown $(id -u):$(id -g) $HOME&#x2F;.kube&#x2F;config</span><br><span class="line"></span><br><span class="line">You should now deploy a pod network to the cluster.</span><br><span class="line">Run &quot;kubectl apply -f [podnetwork].yaml&quot; with one of the options listed at:</span><br><span class="line">  https:&#x2F;&#x2F;kubernetes.io&#x2F;docs&#x2F;concepts&#x2F;cluster-administration&#x2F;addons&#x2F;</span><br><span class="line"></span><br><span class="line">Then you can join any number of worker nodes by running the following on each as root:</span><br><span class="line"></span><br><span class="line">kubeadm join 172.16.250.128:6443 --token yq1qjo.00jrgi61fik1rnuc \</span><br><span class="line">    --discovery-token-ca-cert-hash sha256:fcb73171bb839f6dc6701880d9b863258f62992530aa04695e150798e56ef6ed</span><br></pre></td></tr></table></figure>
+
+<p>这样就初始化成功了，注意警告信息：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[WARNING IsDockerSystemdCheck]: detected &quot;cgroupfs&quot; as the Docker cgroup driver. The recommended driver is &quot;systemd&quot;. Please follow the guide at https:&#x2F;&#x2F;kubernetes.io&#x2F;docs&#x2F;setup&#x2F;cri&#x2F;</span><br></pre></td></tr></table></figure>
+<p>可以忽略，解决方法：</p>
+<p>修改或者创建 vim /etc/docker/daemon.json</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;exec-opts&quot;: [&quot;native.cgroupdriver&#x3D;systemd&quot;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="拷贝kubeconfig文件到家目录的-kube目录"><a href="#拷贝kubeconfig文件到家目录的-kube目录" class="headerlink" title="拷贝kubeconfig文件到家目录的.kube目录"></a>拷贝kubeconfig文件到家目录的.kube目录</h1><p>只需要在master节点（这里我们是node1节点）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# mkdir -p $HOME&#x2F;.kube</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# sudo cp -i &#x2F;etc&#x2F;kubernetes&#x2F;admin.conf $HOME&#x2F;.kube&#x2F;config</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# sudo chown $(id -u):$(id -g) $HOME&#x2F;.kube&#x2F;config</span><br></pre></td></tr></table></figure>
+
+<h1 id="安装网络插件，让pod之间通信"><a href="#安装网络插件，让pod之间通信" class="headerlink" title="安装网络插件，让pod之间通信"></a>安装网络插件，让pod之间通信</h1><p>只需要在master节点（这里我们是node1节点）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">wget https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;coreos&#x2F;flannel&#x2F;master&#x2F;Documentation&#x2F;kube-flannel.yml</span><br><span class="line"></span><br><span class="line">kubectl apply -f kube-flannel.yml</span><br></pre></td></tr></table></figure>
+
+<h1 id="查看kube-system命名空间下的pod状态"><a href="#查看kube-system命名空间下的pod状态" class="headerlink" title="查看kube-system命名空间下的pod状态"></a>查看kube-system命名空间下的pod状态</h1><p>kubectl get pod -n kube-system</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get pod -n kube-system</span><br><span class="line">NAME                            READY   STATUS    RESTARTS   AGE</span><br><span class="line">coredns-bccdc95cf-6khq2         1&#x2F;1     Running   0          30m</span><br><span class="line">coredns-bccdc95cf-lk8j6         1&#x2F;1     Running   0          30m</span><br><span class="line">etcd-node1                      1&#x2F;1     Running   0          30m</span><br><span class="line">kube-apiserver-node1            1&#x2F;1     Running   0          30m</span><br><span class="line">kube-controller-manager-node1   1&#x2F;1     Running   0          29m</span><br><span class="line">kube-flannel-ds-cxt98           1&#x2F;1     Running   0          78s</span><br><span class="line">kube-proxy-56nt6                1&#x2F;1     Running   0          30m</span><br><span class="line">kube-scheduler-node1            1&#x2F;1     Running   0          29m</span><br></pre></td></tr></table></figure>
+
+<h1 id="加入node节点"><a href="#加入node节点" class="headerlink" title="加入node节点"></a>加入node节点</h1><p>仅在node节点操作，在master节点执行kubeadm init时，最后会打印出加入node节点的命令，在每个node节点执行此命令，如：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubeadm join 172.16.250.128:6443 --token yq1qjo.00jrgi61fik1rnuc \</span><br><span class="line">    --discovery-token-ca-cert-hash sha256:fcb73171bb839f6dc6701880d9b863258f62992530aa04695e150798e56ef6ed</span><br></pre></td></tr></table></figure>
+
+<p>操作完后可以在主节点查看节点信息：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get nodes</span><br><span class="line">NAME    STATUS     ROLES    AGE   VERSION</span><br><span class="line">node1   Ready      master   34m   v1.15.2</span><br><span class="line">node2   NotReady   &lt;none&gt;   31s   v1.15.2</span><br><span class="line">node3   NotReady   &lt;none&gt;   25s   v1.15.2</span><br></pre></td></tr></table></figure>
+
+<h1 id="命令补全"><a href="#命令补全" class="headerlink" title="命令补全"></a>命令补全</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">apt-get install bash-completion</span><br><span class="line"></span><br><span class="line">source &lt;(kubectl completion bash)</span><br><span class="line">echo &quot;source &lt;(kubectl completion bash)&quot; &gt;&gt; ~&#x2F;.bashrc</span><br><span class="line">source  ~&#x2F;.bashrc</span><br></pre></td></tr></table></figure>
+
+<h1 id="部署dashboard可视化插件"><a href="#部署dashboard可视化插件" class="headerlink" title="部署dashboard可视化插件"></a>部署dashboard可视化插件</h1><p><a href="https://github.com/kubernetes/dashboard" target="_blank" rel="noopener">https://github.com/kubernetes/dashboard</a></p>
+<p>安装</p>
+<pre><code></code></pre>]]></content>
+      <categories>
+        <category>SRE</category>
+      </categories>
+      <tags>
+        <tag>K8s</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Kubernetes03-Quick-Start</title>
+    <url>/2021/03/06/Kubernetes03-Quick-Start/</url>
+    <content><![CDATA[<h1 id="安装Minikube，快速启动一个单节点K8s环境"><a href="#安装Minikube，快速启动一个单节点K8s环境" class="headerlink" title="安装Minikube，快速启动一个单节点K8s环境"></a>安装Minikube，快速启动一个单节点K8s环境</h1><p><a href="https://kubernetes.io/zh/docs/tutorials/hello-minikube/" target="_blank" rel="noopener">https://kubernetes.io/zh/docs/tutorials/hello-minikube/</a></p>
+<h1 id="快速运行一个应用"><a href="#快速运行一个应用" class="headerlink" title="快速运行一个应用"></a>快速运行一个应用</h1><p>kubectl run可以创建所有组件而不需要JSON或YAML文件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@localhost config-exercise]$ kubectl run kubia --image&#x3D;luksa&#x2F;kubia --port&#x3D;8080 --generator&#x3D;run&#x2F;v1</span><br><span class="line">Flag --generator has been deprecated, has no effect and will be removed in the future.</span><br><span class="line">pod&#x2F;kubia created</span><br></pre></td></tr></table></figure>
+
+<h1 id="查看pod"><a href="#查看pod" class="headerlink" title="查看pod"></a>查看pod</h1><p>kubectl get pods</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@localhost config-exercise]$ kubectl get pods -o wide</span><br><span class="line">NAME    READY   STATUS    RESTARTS   AGE     IP           NODE       NOMINATED NODE   READINESS GATES</span><br><span class="line">kubia   1&#x2F;1     Running   0          3m57s   172.17.0.3   minikube   &lt;none&gt;           &lt;none&gt;</span><br></pre></td></tr></table></figure>
+<p>可以看到这个pod有自己的ip，但是这个ip是集群内部的，在集群外无法访问，我们在集群外可以ping一下这个ip，是不通的。</p>
+<h1 id="创建Service"><a href="#创建Service" class="headerlink" title="创建Service"></a>创建Service</h1><p>要想从集群外部访问pod，需要在集群中创建一个Service服务，Service用于访问集群内的pod，并对外提供可访问的ip。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl expose pod kubia --type&#x3D;LoadBalancer --name kubia-http</span><br><span class="line">service&#x2F;kubia-http exposed</span><br><span class="line">[richey@localhost config-exercise]$ kubectl get svc</span><br><span class="line">NAME         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE</span><br><span class="line">kubernetes   ClusterIP      10.96.0.1       &lt;none&gt;        443&#x2F;TCP          19h</span><br><span class="line">kubia-http   LoadBalancer   10.100.122.15   &lt;pending&gt;     8080:31222&#x2F;TCP   9s</span><br></pre></td></tr></table></figure>
+
+<p>使用minikube不支持LoadBalance类型服务，因此服务不会有外部ip。可以运行minikube service kubia-http获取可以访问服务的ip和端口</p>
+]]></content>
+      <categories>
+        <category>SRE</category>
+      </categories>
+      <tags>
+        <tag>K8s</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Kubernetes02-基本概念</title>
+    <url>/2021/03/06/Kubernetes02-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</url>
+    <content><![CDATA[<h1 id="Pod"><a href="#Pod" class="headerlink" title="Pod"></a>Pod</h1><p>Kubernetes中的基本构成模块,基本操作单元。<br>一个pod就是一组紧密管理的容器（也可能是一个）,它们一起运行在一个工作节点上，及同一个Linux命名空间中。<br>一个pod就像一个独立的逻辑机器，它有独立的IP、主机名、进程等。</p>
+<h1 id="区别于容器"><a href="#区别于容器" class="headerlink" title="区别于容器"></a>区别于容器</h1><p>容器被设计成每个容器中只能运行一个进程，pod中可以运行多个容器（便于相关服务部署在一起）。</p>
+<p>容器间彼此完全隔离，pod中的容器可以共享相同的命名空间，可以共享相同的主机名和端口,同样的这些容器在相同的IPC命名空间下运行，因此可以使用IPC进行通信。</p>
+<p>可以通过localhost与同一个pod中的其它容器进行通讯。</p>
+<h1 id="平坦pod间网络"><a href="#平坦pod间网络" class="headerlink" title="平坦pod间网络"></a>平坦pod间网络</h1><p>Kubernetes集群中的所有pod都是在同一个共享网络地址空间中。所以每个pod都可以通过访问其它pod 的ip地址实现相互访问。（它们之间没有NAT）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl get pods &#x2F;&#x2F;列出pod</span><br><span class="line">kubectl describe pod pod-name &#x2F;&#x2F;查看具体pod的详细信息</span><br><span class="line">kubectl get pod my-pode-name -o yaml &#x2F;&#x2F; 查看pod的当前yaml配置</span><br></pre></td></tr></table></figure>
+
+<h1 id="yaml文件重要参数"><a href="#yaml文件重要参数" class="headerlink" title="yaml文件重要参数"></a>yaml文件重要参数</h1><ul>
+<li>metadata<br>包括名称、命名空间、标签和关于容器的其它信息</li>
+<li>spec<br>包括pod的实际说明， 例如pod的容器、卷和其它数据</li>
+<li>status<br>运行中的pod的当前信息，例如pod所处的条件、每个容器的描述和状态，以及内部ip和其它信息</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl explain pods &#x2F;&#x2F; 查看可能的api字段</span><br><span class="line">kubectl explain pods</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="访问pod"><a href="#访问pod" class="headerlink" title="访问pod"></a>访问pod</h2><p>pod有自己的IP，但是这个ip是集群内部的，不能从集群外部访问。</p>
+<p>需要创建服务对象公开pod，服务对象是一个特殊的LoadBalanceer类型的服务，可以通过服务对外共该的ip访问pod。</p>
+<h1 id="服务"><a href="#服务" class="headerlink" title="服务"></a>服务</h1><p>服务对象是一个特殊的LoadBalanceer类型的服务，可以通过服务对外共该的ip访问pod</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl get svc &#x2F;&#x2F;列出所有服务，-o wide 可查看详细数据</span><br><span class="line">&#x2F;&#x2F; 详细数据中的EXTERNAL-IP 是对外开放的ip</span><br></pre></td></tr></table></figure>
+
+<h1 id="RS"><a href="#RS" class="headerlink" title="RS"></a>RS</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl get rs &#x2F;&#x2F;查看rs信息，比如副本数</span><br><span class="line"></span><br><span class="line">kubectl scale rs my-rs-name  --replicas&#x3D;3 &#x2F;&#x2F;修改副本数</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>SRE</category>
+      </categories>
+      <tags>
+        <tag>K8s</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Kubernetes01-命令速查</title>
+    <url>/2021/03/06/Kubernetes01-%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/</url>
+    <content><![CDATA[<h1 id="展示集群信息"><a href="#展示集群信息" class="headerlink" title="展示集群信息"></a>展示集群信息</h1><p>kubectl cluster-info</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@k8s-master-dev:&#x2F;home&#x2F;richey kubectl cluster-info</span><br><span class="line">Kubernetes master is running at https:&#x2F;&#x2F;192.168.1.217:8443</span><br><span class="line">KubeDNS is running at https:&#x2F;&#x2F;192.168.1.217:8443&#x2F;api&#x2F;v1&#x2F;namespaces&#x2F;kube-system&#x2F;services&#x2F;kube-dns:dns&#x2F;proxy</span><br></pre></td></tr></table></figure>
+<h1 id="列出集群节点"><a href="#列出集群节点" class="headerlink" title="列出集群节点"></a>列出集群节点</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl get nodes</span><br></pre></td></tr></table></figure>
+
+<h1 id="查看节点的详细信息"><a href="#查看节点的详细信息" class="headerlink" title="查看节点的详细信息"></a>查看节点的详细信息</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl describe node node-name</span><br><span class="line">kubectl describe node &#x2F;&#x2F;不指定具体的node名，将展示所有的</span><br></pre></td></tr></table></figure>
+
+<h1 id="为kubectl配置别名和命令补齐"><a href="#为kubectl配置别名和命令补齐" class="headerlink" title="为kubectl配置别名和命令补齐"></a>为kubectl配置别名和命令补齐</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">alias k&#x3D;kubectl &#x2F;&#x2F;将此命令添加到~&#x2F;.bashrc文件中</span><br></pre></td></tr></table></figure>
+
+<h1 id="列出pod"><a href="#列出pod" class="headerlink" title="列出pod"></a>列出pod</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl get pods</span><br></pre></td></tr></table></figure>
+
+<h1 id="查看pod的yaml文件"><a href="#查看pod的yaml文件" class="headerlink" title="查看pod的yaml文件"></a>查看pod的yaml文件</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl get pod my-pode-name -o yaml  &#x2F;&#x2F;通过 -o yaml参数</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>SRE</category>
+      </categories>
+      <tags>
+        <tag>K8s</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>python-操作mongodb</title>
     <url>/2021/03/01/python-%E6%93%8D%E4%BD%9Cmongodb/</url>
     <content><![CDATA[<h1 id="安装Python-MongoDB驱动"><a href="#安装Python-MongoDB驱动" class="headerlink" title="安装Python MongoDB驱动"></a>安装Python MongoDB驱动</h1><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">pip install pymongo</span><br><span class="line">``` </span><br><span class="line"><span class="comment"># 检查驱动安装</span></span><br><span class="line"></span><br><span class="line">```python</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> pymongo</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>pymongo.version</span><br><span class="line"><span class="string">'3.11.3'</span></span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
@@ -460,23 +723,6 @@
 
 <h1 id="更新操作"><a href="#更新操作" class="headerlink" title="更新操作"></a>更新操作</h1><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>result = payslip_collection.update_one(&#123;<span class="string">"basesalary"</span>:<span class="number">2800</span>&#125;,&#123;<span class="string">"$set"</span>:&#123;<span class="string">"positionsalary"</span>:<span class="number">3000</span>&#125;&#125;)</span><br><span class="line"></span><br><span class="line">&gt; db.payslip.find()</span><br><span class="line">&#123; <span class="string">"_id"</span> : ObjectId(<span class="string">"6044a74ca6868ddcfa42c426"</span>), <span class="string">"basesalary"</span> : <span class="number">2800</span>, <span class="string">"bonus"</span> : <span class="number">8000</span>, <span class="string">"performances"</span> : <span class="number">1600</span>, <span class="string">"positionsalary"</span> : <span class="number">3000</span> &#125;</span><br><span class="line">&gt; </span><br><span class="line"></span><br><span class="line"><span class="comment"># 这里不需要修改数据库表结构</span></span><br></pre></td></tr></table></figure>
 
-]]></content>
-      <categories>
-        <category>Phthon</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>jupyter环境搭建</title>
-    <url>/2021/02/20/jupyter%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</url>
-    <content><![CDATA[<ol>
-<li>安装anaconda</li>
-<li>pycharm中新建项目配置环境变量为conda</li>
-<li>安装必要的包</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip3 install -i https:&#x2F;&#x2F;pypi.doubanio.com&#x2F;simple pandas jupyter xlrd openpyxl pillow matplotlib seaborn</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>Phthon</category>
@@ -531,6 +777,23 @@
       </categories>
       <tags>
         <tag>kafka</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>jupyter环境搭建</title>
+    <url>/2021/02/20/jupyter%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</url>
+    <content><![CDATA[<ol>
+<li>安装anaconda</li>
+<li>pycharm中新建项目配置环境变量为conda</li>
+<li>安装必要的包</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip3 install -i https:&#x2F;&#x2F;pypi.doubanio.com&#x2F;simple pandas jupyter xlrd openpyxl pillow matplotlib seaborn</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Phthon</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
       </tags>
   </entry>
   <entry>
@@ -1124,6 +1387,50 @@ dtype: float64</code></pre><p>实际开发中，我们一般通过读取Excel创
       </tags>
   </entry>
   <entry>
+    <title>Mysql（14）-Mysql位（bit）数据类型</title>
+    <url>/2020/06/07/Mysql%EF%BC%8814%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/</url>
+    <content><![CDATA[<p>最近在线上碰到了一个诡异的问题，线上有个业务模块突然查询不出数据。问题反馈的时候是上午，前一天晚上进行了上线操作，基本可以判断跟上线有关系。</p>
+<h1 id="问题定位"><a href="#问题定位" class="headerlink" title="问题定位"></a>问题定位</h1><p>先看日志，没有任何报错，接口都能正常返回。并且此处没有降级机制，arthas跟踪到数据库查询确实没有返回。</p>
+<p>拿到具体的生产查询sql，直接在生产数据库查询，没有结果。但是同样的sql放到beta可以查询出结果。</p>
+<p>这里基本可以定位到是sql查询的问题了。</p>
+<p>先分析了下sql，简单的单表查询，where里有四个查询条件，其中一个字段引起了注意，如下：</p>
+<p>select * from table_staff where companyId = ‘demo-companyId’ and isDelete = ‘0’;</p>
+<p>isDelte在业务中是一个boolean类型，对应数据库中用的是位数据类型：bit(1)，首先尝试将查询条件isDelete=’0’改为isDelete=0或者isDelete=false，<br>可以在生产数据库查出结果。</p>
+<p>进一步比对生产和beta环境该表的DDL，发现isDelete字段的数据类型是一致的，但是生产比beta数据库多了一个索引 idx_companId_isDelete(companyId和isDelete的一个联合索引，而且不是唯一索引)，<br>基本确认索引问题导致。</p>
+<p>此时运维确认这个索引是前天晚上上线，为了提高跑批效率手动在生产加上去的，删掉idx_companId_isDelete索引后问题解决。</p>
+<h1 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h1><p>首先肯定是走了索引，导致数据查询不出来</p>
+<p>数据库中isDelete数据类型是bit(1),查询该类型的知识点：</p>
+<blockquote>
+<p>MySQL有少数几种存储类型使用紧凑的位存储数据。所有这些位类型，不管底层存储格式和处理方式如何，从技术上来说都是字符串类型。<br>MySQL把bit类型当作字符串类型，而不是数字类型。当检索BIT(1)的值时，结果是一个包含二进制0或者1值的字符串，而不是ASCII码的“0”或者“1”。<br>–《高性能MySQL》 P123 4.1.5-位数据类型</p>
+</blockquote>
+<p>MySQL把bit类型当作字符串类型，所以上例中当我们加了一个字符串索引，并且查询条件也使用的字符串查询时（isDelete=’0’），命中索引。而当我们把引号去掉或者使用false时（isDelete=0或isDelete=false）索引失效，进行了全表扫描。</p>
+<p>问题在于，正常字符串索引即便是查询中使用了数字，也无非就是索引失效走全表扫描，不会查不出数据，这里明显是bit(1)数据类型的问题。</p>
+<h1 id="场景还原"><a href="#场景还原" class="headerlink" title="场景还原"></a>场景还原</h1><p>在uat库加了跟生产同样的索引，还原了数据查询不出来的场景。</p>
+<p>Explain 看了下命中索引是的执行计划，Extra中看到这样的描述</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Impossible WHERE noticed after reading const tables</span><br></pre></td></tr></table></figure>
+
+<p>走了常量表，查询mysql Manual，发现了对这段描述的解释：</p>
+<p>![Mysql-extra-impossible](<a href="http://blog-pic-1254088127.picsh.myqcloud.com/mysql-impossible-const.png）" target="_blank" rel="noopener">http://blog-pic-1254088127.picsh.myqcloud.com/mysql-impossible-const.png）</a></p>
+<p>但是，上例中的查询并不符合这段解释中的要求</p>
+<p>![Mysql索引常量](<a href="http://blog-pic-1254088127.picsh.myqcloud.com/mysql-index-const.png）" target="_blank" rel="noopener">http://blog-pic-1254088127.picsh.myqcloud.com/mysql-index-const.png）</a></p>
+<h1 id="实践和结论"><a href="#实践和结论" class="headerlink" title="实践和结论"></a>实践和结论</h1><p>MySQL官方文档及其它资料中找不到合理的解释，这里给个实践结论。</p>
+<p>对bit类型的字段的查询：</p>
+<ul>
+<li>不使用索引<br>查询bit的参数值是无论是数值还是字符，mysql都会进行类型转化,将字符转换为数值，并比较数值对应的ascii码</li>
+<li>使用索引<br>检索BIT(1)列的值, 索引存的结果是一个字符串且内容是二进制位0或1, 而不是ASCII值”0″或”1″. 这就导致了为什么我们使用ASCII值”0”没有查询出结果。</li>
+</ul>
+<p>简言之：bit类型索引里存的是二进制类型的值（位类型bit），我们查询参数给的是ASCII码值</p>
+<p>结论：<br>1、定义为text和image和bit数据类型的列不应该增加索引<br>2、加完索引一定要explain看一下<br>3、使用unsigned tinyint代替bit(1) 来表示是否<br>   @Column(columnDefinition= “TINYINT”,length = 1)    暂未验证</p>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
+        <tag>索引</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Mysql（15）-Mysql位（bit）数据类型实验</title>
     <url>/2020/06/07/Mysql%EF%BC%8815%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AE%9E%E9%AA%8C/</url>
     <content><![CDATA[<h1 id="bit类型字段的查询展示和计算"><a href="#bit类型字段的查询展示和计算" class="headerlink" title="bit类型字段的查询展示和计算"></a>bit类型字段的查询展示和计算</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; CREATE DATABASE richey_test CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;</span><br><span class="line">Query OK, 1 row affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; use richey_test;</span><br><span class="line"></span><br><span class="line">mysql&gt; CREATE TABLE bittest(a bit(8));</span><br><span class="line"></span><br><span class="line">mysql&gt; INSERT INTO bittest VALUES(b&#39;00111001&#39;);</span><br><span class="line"></span><br><span class="line">mysql&gt; select a,a + 0 from bittest;</span><br><span class="line">+------+-------+</span><br><span class="line">| a    | a + 0 |</span><br><span class="line">+------+-------+</span><br><span class="line">| 9    |    57 |</span><br><span class="line">+------+-------+</span><br><span class="line"></span><br><span class="line">mysql&gt; SELECT a+b&#39;1&#39; from bittest;</span><br><span class="line">+--------+</span><br><span class="line">| a+b&#39;1&#39; |</span><br><span class="line">+--------+</span><br><span class="line">|     58 |</span><br><span class="line">+--------+</span><br><span class="line">1 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select a &#x3D; 9 from bittest;</span><br><span class="line">+------+</span><br><span class="line">| a &#x3D;9 |</span><br><span class="line">+------+</span><br><span class="line">|    0 |</span><br><span class="line">+------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select a&#x3D;&#39;9&#39; from bittest;</span><br><span class="line">+-------+</span><br><span class="line">| a&#x3D;&#39;9&#39; |</span><br><span class="line">+-------+</span><br><span class="line">|     0 |</span><br><span class="line">+-------+</span><br><span class="line">1 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; select a &#x3D;57 from bittest;</span><br><span class="line">+-------+</span><br><span class="line">| a &#x3D;57 |</span><br><span class="line">+-------+</span><br><span class="line">|     1 |</span><br><span class="line">+-------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select a&#x3D;&#39;57&#39; from bittest;</span><br><span class="line">+--------+</span><br><span class="line">| a&#x3D;&#39;57&#39; |</span><br><span class="line">+--------+</span><br><span class="line">|      1 |</span><br><span class="line">+--------+</span><br><span class="line">6 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; SELECT a&#x3D;b&#39;00111001&#39; from bittest;</span><br><span class="line">+---------------+</span><br><span class="line">| a&#x3D;b&#39;00111001&#39; |</span><br><span class="line">+---------------+</span><br><span class="line">|             1 |</span><br><span class="line">+---------------+</span><br><span class="line">1 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select min(a) from bittest;</span><br><span class="line">+--------+</span><br><span class="line">| min(a) |</span><br><span class="line">+--------+</span><br><span class="line">| 57     |</span><br><span class="line">+--------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
@@ -1180,50 +1487,6 @@ dtype: float64</code></pre><p>实际开发中，我们一般通过读取Excel创
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">mysql&gt; select 0 is false, &#39;0&#39; is false ,&#39;123&#39; is false;</span><br><span class="line">+------------+--------------+----------------+</span><br><span class="line">| 0 is false | &#39;0&#39; is false | &#39;123&#39; is false |</span><br><span class="line">+------------+--------------+----------------+</span><br><span class="line">|          1 |            1 |              0 |</span><br><span class="line">+------------+--------------+----------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; select 1 is true,2 is true ,&#39;1&#39; is true,&#39;123&#39; is true,-1 is true;</span><br><span class="line">+-----------+-----------+-------------+---------------+------------+</span><br><span class="line">| 1 is true | 2 is true | &#39;1&#39; is true | &#39;123&#39; is true | -1 is true |</span><br><span class="line">+-----------+-----------+-------------+---------------+------------+</span><br><span class="line">|         1 |         1 |           1 |             1 |          1 |</span><br><span class="line">+-----------+-----------+-------------+---------------+------------+</span><br><span class="line"></span><br><span class="line">mysql&gt; select 1 !&#x3D; 0,2 !&#x3D;0 ,&#39;1&#39; !&#x3D; 0,&#39;123&#39; !&#x3D; 0,-1 !&#x3D; 0;</span><br><span class="line">+--------+-------+----------+------------+---------+</span><br><span class="line">| 1 !&#x3D; 0 | 2 !&#x3D;0 | &#39;1&#39; !&#x3D; 0 | &#39;123&#39; !&#x3D; 0 | -1 !&#x3D; 0 |</span><br><span class="line">+--------+-------+----------+------------+---------+</span><br><span class="line">|      1 |     1 |        1 |          1 |       1 |</span><br><span class="line">+--------+-------+----------+------------+---------+</span><br></pre></td></tr></table></figure>
 
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>综上，在mysql中不要使用bit(1)表示boolean类型，实际上不建议在任何场景使用bit类型的字段。查询会造成不必要的困扰和麻烦，令人难以理解。</p>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-        <tag>索引</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Mysql（14）-Mysql位（bit）数据类型</title>
-    <url>/2020/06/07/Mysql%EF%BC%8814%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/</url>
-    <content><![CDATA[<p>最近在线上碰到了一个诡异的问题，线上有个业务模块突然查询不出数据。问题反馈的时候是上午，前一天晚上进行了上线操作，基本可以判断跟上线有关系。</p>
-<h1 id="问题定位"><a href="#问题定位" class="headerlink" title="问题定位"></a>问题定位</h1><p>先看日志，没有任何报错，接口都能正常返回。并且此处没有降级机制，arthas跟踪到数据库查询确实没有返回。</p>
-<p>拿到具体的生产查询sql，直接在生产数据库查询，没有结果。但是同样的sql放到beta可以查询出结果。</p>
-<p>这里基本可以定位到是sql查询的问题了。</p>
-<p>先分析了下sql，简单的单表查询，where里有四个查询条件，其中一个字段引起了注意，如下：</p>
-<p>select * from table_staff where companyId = ‘demo-companyId’ and isDelete = ‘0’;</p>
-<p>isDelte在业务中是一个boolean类型，对应数据库中用的是位数据类型：bit(1)，首先尝试将查询条件isDelete=’0’改为isDelete=0或者isDelete=false，<br>可以在生产数据库查出结果。</p>
-<p>进一步比对生产和beta环境该表的DDL，发现isDelete字段的数据类型是一致的，但是生产比beta数据库多了一个索引 idx_companId_isDelete(companyId和isDelete的一个联合索引，而且不是唯一索引)，<br>基本确认索引问题导致。</p>
-<p>此时运维确认这个索引是前天晚上上线，为了提高跑批效率手动在生产加上去的，删掉idx_companId_isDelete索引后问题解决。</p>
-<h1 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h1><p>首先肯定是走了索引，导致数据查询不出来</p>
-<p>数据库中isDelete数据类型是bit(1),查询该类型的知识点：</p>
-<blockquote>
-<p>MySQL有少数几种存储类型使用紧凑的位存储数据。所有这些位类型，不管底层存储格式和处理方式如何，从技术上来说都是字符串类型。<br>MySQL把bit类型当作字符串类型，而不是数字类型。当检索BIT(1)的值时，结果是一个包含二进制0或者1值的字符串，而不是ASCII码的“0”或者“1”。<br>–《高性能MySQL》 P123 4.1.5-位数据类型</p>
-</blockquote>
-<p>MySQL把bit类型当作字符串类型，所以上例中当我们加了一个字符串索引，并且查询条件也使用的字符串查询时（isDelete=’0’），命中索引。而当我们把引号去掉或者使用false时（isDelete=0或isDelete=false）索引失效，进行了全表扫描。</p>
-<p>问题在于，正常字符串索引即便是查询中使用了数字，也无非就是索引失效走全表扫描，不会查不出数据，这里明显是bit(1)数据类型的问题。</p>
-<h1 id="场景还原"><a href="#场景还原" class="headerlink" title="场景还原"></a>场景还原</h1><p>在uat库加了跟生产同样的索引，还原了数据查询不出来的场景。</p>
-<p>Explain 看了下命中索引是的执行计划，Extra中看到这样的描述</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Impossible WHERE noticed after reading const tables</span><br></pre></td></tr></table></figure>
-
-<p>走了常量表，查询mysql Manual，发现了对这段描述的解释：</p>
-<p>![Mysql-extra-impossible](<a href="http://blog-pic-1254088127.picsh.myqcloud.com/mysql-impossible-const.png）" target="_blank" rel="noopener">http://blog-pic-1254088127.picsh.myqcloud.com/mysql-impossible-const.png）</a></p>
-<p>但是，上例中的查询并不符合这段解释中的要求</p>
-<p>![Mysql索引常量](<a href="http://blog-pic-1254088127.picsh.myqcloud.com/mysql-index-const.png）" target="_blank" rel="noopener">http://blog-pic-1254088127.picsh.myqcloud.com/mysql-index-const.png）</a></p>
-<h1 id="实践和结论"><a href="#实践和结论" class="headerlink" title="实践和结论"></a>实践和结论</h1><p>MySQL官方文档及其它资料中找不到合理的解释，这里给个实践结论。</p>
-<p>对bit类型的字段的查询：</p>
-<ul>
-<li>不使用索引<br>查询bit的参数值是无论是数值还是字符，mysql都会进行类型转化,将字符转换为数值，并比较数值对应的ascii码</li>
-<li>使用索引<br>检索BIT(1)列的值, 索引存的结果是一个字符串且内容是二进制位0或1, 而不是ASCII值”0″或”1″. 这就导致了为什么我们使用ASCII值”0”没有查询出结果。</li>
-</ul>
-<p>简言之：bit类型索引里存的是二进制类型的值（位类型bit），我们查询参数给的是ASCII码值</p>
-<p>结论：<br>1、定义为text和image和bit数据类型的列不应该增加索引<br>2、加完索引一定要explain看一下<br>3、使用unsigned tinyint代替bit(1) 来表示是否<br>   @Column(columnDefinition= “TINYINT”,length = 1)    暂未验证</p>
 ]]></content>
       <categories>
         <category>DB</category>
@@ -2279,37 +2542,6 @@ public class EvolutionaryExpiredSessionStrategy implements SessionInformationExp
       </tags>
   </entry>
   <entry>
-    <title>策略模式</title>
-    <url>/2019/06/10/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/</url>
-    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p>
-<h2 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h2><ul>
-<li><p>抽象策略略⻆色<br>  这个是⼀一个抽象的角色，通常情况下使⽤接口或者抽象类去实现。比如我们的Comparator接⼝口。</p>
-</li>
-<li><p>具体策略略⻆色<br>  包装了了具体的算法和⾏行行为。比如实现了Comparator接口的一组实现类。</p>
-</li>
-<li><p>环境⻆角⾊色Context<br>  内部会持有⼀个抽象⻆色的引⽤用，给客户端调⽤策略模式用于封装系列的算法，这些算法通常被封装在一个被称为 Context 类中，<br>客户端程序可以⾃由选择其中一种算法，或让 Context 为客户端选择一个最佳的算法——使⽤策略模式的优势是为了⽀支持算法的自由切换。</p>
-</li>
-</ul>
-<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><ul>
-<li><p>Resource和策略略模式<br>  Resource 接口就是策略模式的典型应用，Resource 接口就代表资源访问策略，但具体采⽤用哪种策略实现，Resource 接口并不理理会。<br>客户端程序只和Resource 接口耦合，并不知道底层采⽤何种资源访问策略，这样应用可以在不同的资源访问策略之间自由切换。</p>
-</li>
-<li><p>Spring 框架的 Context 如何“智能”地选择资源访问策略<br>  Spring提供两个标志性接口：</p>
-<ul>
-<li>ResourceLoader：该接口实现类的实例可以获得⼀个 Resource 实例例。</li>
-<li>ResourceLoaderAware：该接口实现类的实例将获得一个 ResourceLoader 的引用。<br>在 ResourceLoader 接口里有如下方法：Resource getResource(String location)：该接口仅包含这个⽅法，该方法⽤于返回一个 Resource 实例例。</li>
-</ul>
-<p>ApplicationContext 的实现类都实现 ResourceLoader 接⼝，因此 ApplicationContext 可⽤于直接获取 Resource 实例。</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>设计模式</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>使用jdk自带工具jvisualvm查看.hprof文件</title>
     <url>/2019/06/10/%E4%BD%BF%E7%94%A8jdk%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7jvisualvm%E6%9F%A5%E7%9C%8B.hprof%E6%96%87%E4%BB%B6/</url>
     <content><![CDATA[<p>使用jdk自带的jvisualvm.exe程序来查看内存溢出文件</p>
@@ -2354,6 +2586,37 @@ http.authenticationProvider(smsCodeAuthenticationProvider)
       </categories>
       <tags>
         <tag>Spring-Security</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>策略模式</title>
+    <url>/2019/06/10/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p>
+<h2 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h2><ul>
+<li><p>抽象策略略⻆色<br>  这个是⼀一个抽象的角色，通常情况下使⽤接口或者抽象类去实现。比如我们的Comparator接⼝口。</p>
+</li>
+<li><p>具体策略略⻆色<br>  包装了了具体的算法和⾏行行为。比如实现了Comparator接口的一组实现类。</p>
+</li>
+<li><p>环境⻆角⾊色Context<br>  内部会持有⼀个抽象⻆色的引⽤用，给客户端调⽤策略模式用于封装系列的算法，这些算法通常被封装在一个被称为 Context 类中，<br>客户端程序可以⾃由选择其中一种算法，或让 Context 为客户端选择一个最佳的算法——使⽤策略模式的优势是为了⽀支持算法的自由切换。</p>
+</li>
+</ul>
+<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><ul>
+<li><p>Resource和策略略模式<br>  Resource 接口就是策略模式的典型应用，Resource 接口就代表资源访问策略，但具体采⽤用哪种策略实现，Resource 接口并不理理会。<br>客户端程序只和Resource 接口耦合，并不知道底层采⽤何种资源访问策略，这样应用可以在不同的资源访问策略之间自由切换。</p>
+</li>
+<li><p>Spring 框架的 Context 如何“智能”地选择资源访问策略<br>  Spring提供两个标志性接口：</p>
+<ul>
+<li>ResourceLoader：该接口实现类的实例可以获得⼀个 Resource 实例例。</li>
+<li>ResourceLoaderAware：该接口实现类的实例将获得一个 ResourceLoader 的引用。<br>在 ResourceLoader 接口里有如下方法：Resource getResource(String location)：该接口仅包含这个⽅法，该方法⽤于返回一个 Resource 实例例。</li>
+</ul>
+<p>ApplicationContext 的实现类都实现 ResourceLoader 接⼝，因此 ApplicationContext 可⽤于直接获取 Resource 实例。</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
       </tags>
   </entry>
   <entry>
@@ -2683,6 +2946,28 @@ public class DemoImageCodeGenerator implements ValidateCodeGenerator {
       </tags>
   </entry>
   <entry>
+    <title>适配器模式</title>
+    <url>/2019/06/06/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p>
+<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/spring%E9%85%8D%E7%BD%AE%E4%BD%BF%E7%94%A8%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8Fdemo.jpg" alt="spring适配器模式demo"></p>
+<h1 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h1><p>将一个类的接口，转换成客户期望的另一个接口。适配器让原本不兼容的接口可以合作无间。</p>
+<h1 id="对象适配器"><a href="#对象适配器" class="headerlink" title="对象适配器"></a>对象适配器</h1><ul>
+<li>采用组合模式</li>
+<li>不仅可以适配某类，还可以适配该类的任何子类。</li>
+</ul>
+<h1 id="类适配器"><a href="#类适配器" class="headerlink" title="类适配器"></a>类适配器</h1><ul>
+<li>采用继承模式</li>
+<li>不需要重新实现整个被适配者，必要的时候可以覆盖被适配者的行为。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Spring Security（6）－图片验证码</title>
     <url>/2019/06/06/Spring%20Security%EF%BC%886%EF%BC%89%EF%BC%8D%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/</url>
     <content><![CDATA[<p>概要：</p>
@@ -2919,28 +3204,6 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
       </categories>
       <tags>
         <tag>Spring-Security</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>适配器模式</title>
-    <url>/2019/06/06/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/</url>
-    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p>
-<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/spring%E9%85%8D%E7%BD%AE%E4%BD%BF%E7%94%A8%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8Fdemo.jpg" alt="spring适配器模式demo"></p>
-<h1 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h1><p>将一个类的接口，转换成客户期望的另一个接口。适配器让原本不兼容的接口可以合作无间。</p>
-<h1 id="对象适配器"><a href="#对象适配器" class="headerlink" title="对象适配器"></a>对象适配器</h1><ul>
-<li>采用组合模式</li>
-<li>不仅可以适配某类，还可以适配该类的任何子类。</li>
-</ul>
-<h1 id="类适配器"><a href="#类适配器" class="headerlink" title="类适配器"></a>类适配器</h1><ul>
-<li>采用继承模式</li>
-<li>不需要重新实现整个被适配者，必要的时候可以覆盖被适配者的行为。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>设计模式</tag>
       </tags>
   </entry>
   <entry>
@@ -3665,13 +3928,14 @@ $ time scp backup.sql.gz another-server:backup-dir</code></pre><h2 id="备份选
 <pre><code>--routines</code></pre><p>如果数据库中包含存储过程或函数，则–routine是必须的</p>
 <pre><code>--master-data</code></pre><p>时间点恢复</p>
 <pre><code>--all-databases
---database  指定特定数据库
+--databases  指定特定数据库
 --tables  指定特定表
 --ignore-table  排除表</code></pre><p>指定导出相关的信息</p>
 <pre><code>--skip-quote-names</code></pre><p>去掉导出文件对象名两端的单引号（`）</p>
 <pre><code>--hex-blob</code></pre><p>当数据库包含二进制文件时，–hex-blob将提供最大的兼容性</p>
 <pre><code>--no-data</code></pre><p>不导出数据，只导表结构</p>
-<pre><code>--no-create-info</code></pre><p>不导建表语句，配置–routines 只导出函数和存储过程</p>
+<pre><code>--no-create-info</code></pre><p>记录binlog日志，加了下面的配置恢复的数据会进binlog日志<br>    –set-gtid-purged=off</p>
+<p>不导建表语句，配置–routines 只导出函数和存储过程</p>
 <pre><code>mysqldump -h localhost -uroot -p --no-data --all-databases &gt; backup-schema.sql
 
 mysqldump -h localhost -uroot -p --no-data --no-create-info --routines --all-databases &gt; backup-routines.sql</code></pre><h1 id="文件系统备份"><a href="#文件系统备份" class="headerlink" title="文件系统备份"></a>文件系统备份</h1><p>需要关闭MYSQL实例，对文件系统上的文件进行物理复制。</p>
@@ -4450,62 +4714,6 @@ public class SpringBootDemoApplication {
       </tags>
   </entry>
   <entry>
-    <title>maven必知必会</title>
-    <url>/2019/04/06/maven%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A/</url>
-    <content><![CDATA[<h1 id="仓库"><a href="#仓库" class="headerlink" title="仓库"></a>仓库</h1><p>对于Maven来说，仓库只分为两类：本地仓库和远程仓库。当Maven需要根据坐标寻找构件的时候，它首先会查找本地仓库，如果本地仓库有此构件，则直接使用；</p>
-<p>如果本地仓库没有此构件或许需要查看此构件是否有更新版本Maven会去远程仓库查找，发现需要的构件后，会先下载到本地仓库再使用。如果本地仓库和远程仓库都没有找到需要的构件，则Maven会报错。</p>
-<iframe id="embed_dom" name="embed_dom" frameborder="0" style="display:block;width:525px; height:245px;" src="https://www.processon.com/embed/5ca8497de4b0ec8ff3663e7d"></iframe>
-
-<h1 id="远程仓库"><a href="#远程仓库" class="headerlink" title="远程仓库"></a>远程仓库</h1><h2 id="中央仓库"><a href="#中央仓库" class="headerlink" title="中央仓库"></a>中央仓库</h2><p>中央仓库是默认的远程仓库，Maven安装文件中自带的超级POM中自带了中央仓库的配置，所有的Maven项目都会继承Maven的这个超级POM.</p>
-<p>超级POM中的中央仓库配置：</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repositories</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;<span class="name">repository</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span> central<span class="tag">&lt;/<span class="name">id</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span> Maven Repository Switchboard<span class="tag">&lt;/<span class="name">name</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">layout</span>&gt;</span> default<span class="tag">&lt;/<span class="name">layout</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span> http://repo1.maven.org/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">      <span class="comment">&lt;!-- 不从该仓库下载快照版本的构件 --&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">enabled</span>&gt;</span> false<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;/<span class="name">repository</span>&gt;</span>        </span><br><span class="line"><span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>覆盖中央仓库的默认地址</p>
-<p>在setting.xml里面配置：</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">settings</span>&gt;</span>        </span><br><span class="line">…        </span><br><span class="line">  <span class="tag">&lt;<span class="name">mirrors</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">mirror</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span> maven-net-cn<span class="tag">&lt;/<span class="name">id</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">name</span>&gt;</span> Maven China Mirror<span class="tag">&lt;/<span class="name">name</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">url</span>&gt;</span> http://maven.net.cn/content/groups/public/<span class="tag">&lt;/<span class="name">url</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">mirrorOf</span>&gt;</span> central<span class="tag">&lt;/<span class="name">mirrorOf</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;/<span class="name">mirror</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;/<span class="name">mirrors</span>&gt;</span>        </span><br><span class="line">…        </span><br><span class="line"><span class="tag">&lt;/<span class="name">settings</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>central表示只为central仓库做镜像，如果想为所有的仓库做镜像可以将central改为： *</p>
-<h2 id="配置远程仓库"><a href="#配置远程仓库" class="headerlink" title="配置远程仓库"></a>配置远程仓库</h2><p>在repositories元素下，可以使用repository子元素声明一个或多个远程仓库。</p>
-<p>作用于当先项目</p>
-<p>添加如下配置到pom的第一层（xml），只作用于当前项目</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 可添加多个 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>jboss<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>JBoss Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 仓库地址 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://repository.jboss.com/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 是否下载该仓库的release类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">updatePolicy</span>&gt;</span>daily<span class="tag">&lt;/<span class="name">updatePolicy</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">checksumPolicy</span>&gt;</span>ignore<span class="tag">&lt;/<span class="name">checksumPolicy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 是否下载该仓库的snapshots类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">           <span class="comment">&lt;!-- Maven从远程仓库检查的频率，默认是daily --&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">updatePolicy</span>&gt;</span>daily<span class="tag">&lt;/<span class="name">updatePolicy</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">checksumPolicy</span>&gt;</span>ignore<span class="tag">&lt;/<span class="name">checksumPolicy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h2 id="snapshots和releases元素的子元素："><a href="#snapshots和releases元素的子元素：" class="headerlink" title="snapshots和releases元素的子元素："></a>snapshots和releases元素的子元素：</h2><ul>
-<li><p>updatePolicy</p>
-<p>Maven从远程仓库检查的频率，默认是daily，表示Maven每天检查一次。其它可用的值包括：never——从不检查更新；<br>always——每次构建都检查更新；X——每隔X分钟检查一次（X为任意整数）。</p>
-</li>
-<li><p>checksumPolicy<br>用来配置Mavne校验和文件的策略。当部署构件到仓库时会同时部署校验和文件。下载构件时Maven会验证校验和文件。如果验证失败，怎么办？<br>当checksumPolicy的值为默认的warn时，Maven会在执行构建时输出警告信息，其它可能的值包括：fail——验证不通过时，让构建失败；ignore——使<br>Maven完全忽略验证错误。</p>
-</li>
-<li><p>作用于全局</p>
-<p>在settings文件中添加配置，添加profiles后，mirrors可以省略</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">profiles</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">profile</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>besttop_nexus<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 激活此profile --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">activation</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">activeByDefault</span>&gt;</span>true<span class="tag">&lt;/<span class="name">activeByDefault</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">activation</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--all requests to nexus via the mirror --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 可添加多个 --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">id</span>&gt;</span>jboss<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">name</span>&gt;</span>JBoss Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 仓库地址 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://repository.jboss.com/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 是否下载该仓库的release类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 是否下载该仓库的snapshots类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">profile</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">profiles</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h2 id="远程仓库的认证"><a href="#远程仓库的认证" class="headerlink" title="远程仓库的认证"></a>远程仓库的认证</h2><p>大部分远程仓库无需认证就可以访问，但有时候出于安全方面的考虑，我们需要提供认证信息才能访问一些仓库。比如组织内部的私有仓库。</p>
-</li>
-</ul>
-<p>仓库信息可以配置子啊POM中，但是认证信息必须配置在setting.xml文件中。</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">servers</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">server</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span>my-proj<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">username</span>&gt;</span>admin<span class="tag">&lt;/<span class="name">username</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">password</span>&gt;</span>pwd<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">server</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">servers</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>注意：</p>
-<p>这里的关键是id，这里的id必须要与POM中需要认证的repository元素的id完全一致。换句话说，正是这个id将认证信息与仓库联系在一起。</p>
-<p>部署至远程仓库<br>私服的一大作用就是部署第三方构件，包括组织内部生成的构件及一些无法从外部仓库直接获取的构件。<br>无论是日常开发中生成的构件，还是正式版本发布的构件，都需要部署到仓库中，供其它团队成员使用。</p>
-<p>配置distributionManagement元素：</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">distributionManagement</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 发布版本的构件仓库 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">repository</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">uniqueVersion</span>&gt;</span>false<span class="tag">&lt;/<span class="name">uniqueVersion</span>&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- id是仓库的唯一标识 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>corp1<span class="tag">&lt;/<span class="name">id</span>&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- name是为了方便人阅读 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>Corporate Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- 表示该仓库的地址 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span>scp://repo/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">layout</span>&gt;</span>default<span class="tag">&lt;/<span class="name">layout</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;/<span class="name">repository</span>&gt;</span>  </span><br><span class="line">  <span class="comment">&lt;!-- 快照版本的构件仓库 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">snapshotRepository</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">uniqueVersion</span>&gt;</span>true<span class="tag">&lt;/<span class="name">uniqueVersion</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>propSnap<span class="tag">&lt;/<span class="name">id</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>Propellors Snapshots<span class="tag">&lt;/<span class="name">name</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span>sftp://propellers.net/maven<span class="tag">&lt;/<span class="name">url</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;/<span class="name">snapshotRepository</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;/<span class="name">distributionManagement</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>Maven的快照版本，在发布的过程中会自动打上时间戳，有了时间戳，Maven就能找到相同快照版本的最新文件。<br>当我们下载某一个版本的快照时，Maven会从远程仓库检查该构件是否有更新，有的话会先下载更新到本地仓库。<br>注意Maven并不会每次都去检查，默认会每天检查一次（根据updatePolicy配置），我们可以使用-U命令，让Maven强制更新，比如：mvn clean install -U.</p>
-<p>其它Maven配置详解</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">settings</span> <span class="attr">xmlns</span>=<span class="string">"http://maven.apache.org/POM/4.0.0"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://maven.apache.org/POM/4.0.0</span></span></span><br><span class="line"><span class="tag"><span class="string">                               http://maven.apache.org/xsd/settings-1.0.0.xsd"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">localRepository</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">interactiveMode</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">usePluginRegistry</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">offline</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">pluginGroups</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">servers</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">mirrors</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">proxies</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">profiles</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">activeProfiles</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">settings</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>localRepository</p>
-<p>表示本地库的保存位置，也就是maven2主要的jar保存位置，默认在${user.dir}/.m2/repository，如果需要另外设置，就换成其他的路径。</p>
-</li>
-<li><p>offline</p>
-<p>设置为true后，不会每次编译，都去查找远程中心库。当然前提是你已经下载了必须的依赖包。实际开发过程中迭代频繁的情况下，构件经常变动，不建议设置为true。</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>ci/cd</category>
-      </categories>
-      <tags>
-        <tag>maven</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Mysql（8）-搞定Mysql字符集及校对规则</title>
     <url>/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/</url>
     <content><![CDATA[<h1 id="MySQL的字符集（Character-Set"><a href="#MySQL的字符集（Character-Set" class="headerlink" title="MySQL的字符集（Character Set)"></a>MySQL的字符集（Character Set)</h1><p>关于字符集，之前转载了一篇文章讲的非常好——<a href="">关于字符编码，你所需要知道的（ASCII,Unicode,Utf-8,GB2312…）</a></p>
@@ -4646,6 +4854,62 @@ public class SpringBootDemoApplication {
       <tags>
         <tag>Mysql</tag>
         <tag>编码</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>maven必知必会</title>
+    <url>/2019/04/06/maven%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A/</url>
+    <content><![CDATA[<h1 id="仓库"><a href="#仓库" class="headerlink" title="仓库"></a>仓库</h1><p>对于Maven来说，仓库只分为两类：本地仓库和远程仓库。当Maven需要根据坐标寻找构件的时候，它首先会查找本地仓库，如果本地仓库有此构件，则直接使用；</p>
+<p>如果本地仓库没有此构件或许需要查看此构件是否有更新版本Maven会去远程仓库查找，发现需要的构件后，会先下载到本地仓库再使用。如果本地仓库和远程仓库都没有找到需要的构件，则Maven会报错。</p>
+<iframe id="embed_dom" name="embed_dom" frameborder="0" style="display:block;width:525px; height:245px;" src="https://www.processon.com/embed/5ca8497de4b0ec8ff3663e7d"></iframe>
+
+<h1 id="远程仓库"><a href="#远程仓库" class="headerlink" title="远程仓库"></a>远程仓库</h1><h2 id="中央仓库"><a href="#中央仓库" class="headerlink" title="中央仓库"></a>中央仓库</h2><p>中央仓库是默认的远程仓库，Maven安装文件中自带的超级POM中自带了中央仓库的配置，所有的Maven项目都会继承Maven的这个超级POM.</p>
+<p>超级POM中的中央仓库配置：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repositories</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;<span class="name">repository</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span> central<span class="tag">&lt;/<span class="name">id</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span> Maven Repository Switchboard<span class="tag">&lt;/<span class="name">name</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">layout</span>&gt;</span> default<span class="tag">&lt;/<span class="name">layout</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span> http://repo1.maven.org/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">      <span class="comment">&lt;!-- 不从该仓库下载快照版本的构件 --&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">enabled</span>&gt;</span> false<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;/<span class="name">repository</span>&gt;</span>        </span><br><span class="line"><span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>覆盖中央仓库的默认地址</p>
+<p>在setting.xml里面配置：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">settings</span>&gt;</span>        </span><br><span class="line">…        </span><br><span class="line">  <span class="tag">&lt;<span class="name">mirrors</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">mirror</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span> maven-net-cn<span class="tag">&lt;/<span class="name">id</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">name</span>&gt;</span> Maven China Mirror<span class="tag">&lt;/<span class="name">name</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">url</span>&gt;</span> http://maven.net.cn/content/groups/public/<span class="tag">&lt;/<span class="name">url</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">mirrorOf</span>&gt;</span> central<span class="tag">&lt;/<span class="name">mirrorOf</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;/<span class="name">mirror</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;/<span class="name">mirrors</span>&gt;</span>        </span><br><span class="line">…        </span><br><span class="line"><span class="tag">&lt;/<span class="name">settings</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>central表示只为central仓库做镜像，如果想为所有的仓库做镜像可以将central改为： *</p>
+<h2 id="配置远程仓库"><a href="#配置远程仓库" class="headerlink" title="配置远程仓库"></a>配置远程仓库</h2><p>在repositories元素下，可以使用repository子元素声明一个或多个远程仓库。</p>
+<p>作用于当先项目</p>
+<p>添加如下配置到pom的第一层（xml），只作用于当前项目</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 可添加多个 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>jboss<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>JBoss Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 仓库地址 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://repository.jboss.com/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 是否下载该仓库的release类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">updatePolicy</span>&gt;</span>daily<span class="tag">&lt;/<span class="name">updatePolicy</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">checksumPolicy</span>&gt;</span>ignore<span class="tag">&lt;/<span class="name">checksumPolicy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 是否下载该仓库的snapshots类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">           <span class="comment">&lt;!-- Maven从远程仓库检查的频率，默认是daily --&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">updatePolicy</span>&gt;</span>daily<span class="tag">&lt;/<span class="name">updatePolicy</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">checksumPolicy</span>&gt;</span>ignore<span class="tag">&lt;/<span class="name">checksumPolicy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="snapshots和releases元素的子元素："><a href="#snapshots和releases元素的子元素：" class="headerlink" title="snapshots和releases元素的子元素："></a>snapshots和releases元素的子元素：</h2><ul>
+<li><p>updatePolicy</p>
+<p>Maven从远程仓库检查的频率，默认是daily，表示Maven每天检查一次。其它可用的值包括：never——从不检查更新；<br>always——每次构建都检查更新；X——每隔X分钟检查一次（X为任意整数）。</p>
+</li>
+<li><p>checksumPolicy<br>用来配置Mavne校验和文件的策略。当部署构件到仓库时会同时部署校验和文件。下载构件时Maven会验证校验和文件。如果验证失败，怎么办？<br>当checksumPolicy的值为默认的warn时，Maven会在执行构建时输出警告信息，其它可能的值包括：fail——验证不通过时，让构建失败；ignore——使<br>Maven完全忽略验证错误。</p>
+</li>
+<li><p>作用于全局</p>
+<p>在settings文件中添加配置，添加profiles后，mirrors可以省略</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">profiles</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">profile</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>besttop_nexus<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 激活此profile --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">activation</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">activeByDefault</span>&gt;</span>true<span class="tag">&lt;/<span class="name">activeByDefault</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">activation</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--all requests to nexus via the mirror --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 可添加多个 --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">id</span>&gt;</span>jboss<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">name</span>&gt;</span>JBoss Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 仓库地址 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://repository.jboss.com/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 是否下载该仓库的release类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 是否下载该仓库的snapshots类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">profile</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">profiles</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="远程仓库的认证"><a href="#远程仓库的认证" class="headerlink" title="远程仓库的认证"></a>远程仓库的认证</h2><p>大部分远程仓库无需认证就可以访问，但有时候出于安全方面的考虑，我们需要提供认证信息才能访问一些仓库。比如组织内部的私有仓库。</p>
+</li>
+</ul>
+<p>仓库信息可以配置子啊POM中，但是认证信息必须配置在setting.xml文件中。</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">servers</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">server</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span>my-proj<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">username</span>&gt;</span>admin<span class="tag">&lt;/<span class="name">username</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">password</span>&gt;</span>pwd<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">server</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">servers</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>注意：</p>
+<p>这里的关键是id，这里的id必须要与POM中需要认证的repository元素的id完全一致。换句话说，正是这个id将认证信息与仓库联系在一起。</p>
+<p>部署至远程仓库<br>私服的一大作用就是部署第三方构件，包括组织内部生成的构件及一些无法从外部仓库直接获取的构件。<br>无论是日常开发中生成的构件，还是正式版本发布的构件，都需要部署到仓库中，供其它团队成员使用。</p>
+<p>配置distributionManagement元素：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">distributionManagement</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 发布版本的构件仓库 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">repository</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">uniqueVersion</span>&gt;</span>false<span class="tag">&lt;/<span class="name">uniqueVersion</span>&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- id是仓库的唯一标识 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>corp1<span class="tag">&lt;/<span class="name">id</span>&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- name是为了方便人阅读 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>Corporate Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- 表示该仓库的地址 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span>scp://repo/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">layout</span>&gt;</span>default<span class="tag">&lt;/<span class="name">layout</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;/<span class="name">repository</span>&gt;</span>  </span><br><span class="line">  <span class="comment">&lt;!-- 快照版本的构件仓库 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">snapshotRepository</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">uniqueVersion</span>&gt;</span>true<span class="tag">&lt;/<span class="name">uniqueVersion</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>propSnap<span class="tag">&lt;/<span class="name">id</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>Propellors Snapshots<span class="tag">&lt;/<span class="name">name</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span>sftp://propellers.net/maven<span class="tag">&lt;/<span class="name">url</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;/<span class="name">snapshotRepository</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;/<span class="name">distributionManagement</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>Maven的快照版本，在发布的过程中会自动打上时间戳，有了时间戳，Maven就能找到相同快照版本的最新文件。<br>当我们下载某一个版本的快照时，Maven会从远程仓库检查该构件是否有更新，有的话会先下载更新到本地仓库。<br>注意Maven并不会每次都去检查，默认会每天检查一次（根据updatePolicy配置），我们可以使用-U命令，让Maven强制更新，比如：mvn clean install -U.</p>
+<p>其它Maven配置详解</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">settings</span> <span class="attr">xmlns</span>=<span class="string">"http://maven.apache.org/POM/4.0.0"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://maven.apache.org/POM/4.0.0</span></span></span><br><span class="line"><span class="tag"><span class="string">                               http://maven.apache.org/xsd/settings-1.0.0.xsd"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">localRepository</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">interactiveMode</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">usePluginRegistry</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">offline</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">pluginGroups</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">servers</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">mirrors</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">proxies</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">profiles</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">activeProfiles</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">settings</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>localRepository</p>
+<p>表示本地库的保存位置，也就是maven2主要的jar保存位置，默认在${user.dir}/.m2/repository，如果需要另外设置，就换成其他的路径。</p>
+</li>
+<li><p>offline</p>
+<p>设置为true后，不会每次编译，都去查找远程中心库。当然前提是你已经下载了必须的依赖包。实际开发过程中迭代频繁的情况下，构件经常变动，不建议设置为true。</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>ci/cd</category>
+      </categories>
+      <tags>
+        <tag>maven</tag>
       </tags>
   </entry>
   <entry>
@@ -5344,63 +5608,6 @@ OK
       </tags>
   </entry>
   <entry>
-    <title>Mysql（2）-基本架构</title>
-    <url>/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/</url>
-    <content><![CDATA[<h2 id="Mysql基本架构是什么样子的（简述Mysql基本架构）"><a href="#Mysql基本架构是什么样子的（简述Mysql基本架构）" class="headerlink" title="Mysql基本架构是什么样子的（简述Mysql基本架构）"></a>Mysql基本架构是什么样子的（简述Mysql基本架构）</h2><p>Mysql由服务层（Service层）和存储引擎层构成。</p>
-<ul>
-<li><p>Service层涵盖Mysql的大多数核心功能，及所有的内置函数</p>
-<p>包含连接器、查询缓存、分析器、优化器、执行器；</p>
-<p>所有跨存储引擎的功能都在这一层实现；</p>
-</li>
-<li><p>存储引擎层，负责数据的存储和提取</p>
-<p>采用插件式设计，支持InnoDB、MYISAM、Memory等多个存储引擎；</p>
-<p>建表时，如果不制定引擎类型，会默认使用InnoDB</p>
-  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#指定存储引擎</span><br><span class="line">create table foo（id int primary key,name var(10) not null）engine&#x3D;InnoDB;</span><br></pre></td></tr></table></figure>
-<p>不同的存储引擎共用一个service层</p>
-</li>
-</ul>
-<h2 id="Mysql由哪些组件组成-各个组件的作用是什么"><a href="#Mysql由哪些组件组成-各个组件的作用是什么" class="headerlink" title="Mysql由哪些组件组成,各个组件的作用是什么"></a>Mysql由哪些组件组成,各个组件的作用是什么</h2><h3 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h3><p>  负责跟客户端建立连接，获取权限，维持和管理连接；</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#mysql客户端工具连接</span><br><span class="line">mysql -h$ip -P$port -u$user -p</span><br></pre></td></tr></table></figure>
-
-<p>  客户端同服务端建立连接，在完成TCP握手后，连接器就开始认证身份，需要我们提供用户名密码；</p>
-<p>  认证通过后，连接器会到权限表里查出所有你拥有的权限，之后这个连接里的所有权限判断，都将依赖于此时读到的权限。也就是说连接成功后权限就不会改变了，如果修改了权限，需要重新连接。</p>
-<p>  关于连接的一些参数：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">show processlist; --查看所有链接状态</span><br><span class="line"></span><br><span class="line">-- 查看mysql參數</span><br><span class="line">show variables like &quot;%timeout%&quot;；</span><br><span class="line">-- wait_timeout：设置非交互连接（就是指那些连接池方式、非客户端方式连接的）的超时时间，默认是28800，就是8小时，超过这个时间，mysql服务器会主动切断那些已经连接的，但是状态是sleep的连接。</span><br><span class="line"></span><br><span class="line">-- interactive_timeout:交互链接超时时间;</span><br><span class="line"></span><br><span class="line">-- connection_timeout：“连接过程中”的等待时间</span><br></pre></td></tr></table></figure>
-
-<p>  建立连接的过程通常是比较复杂的，所以建议你在使用中要尽量减少建立连接的动作，也就是尽量使用长连接。</p>
-<p>  MySQL 在执行过程中临时使用的内存是管理在连接对象里面的。这些资源会在连接断开的时候才释放。所以如果长连接累积下来，可能导致内存占用太大，被系统强行杀掉（OOM），从现象看就是 MySQL 异常重启了。</p>
-<pre><code>解决：
-定期断开长连接。使用一段时间，或者程序里面判断执行过一个占用内存的大查询后，断开连接，之后要查询再重连。
-
-如果你用的是 MySQL 5.7 或更新版本，可以在每次执行一个比较大的操作后，通过执行 mysql_reset_connection 来重新初始化连接资源。这个过程不需要重连和重新做权限验证，但是会将连接恢复到刚刚创建完时的状态。</code></pre><h3 id="查询缓存"><a href="#查询缓存" class="headerlink" title="查询缓存"></a>查询缓存</h3><p>  键值对的形式，key是查询语句，valve是结果；</p>
-<p>  查询缓存的失效非常频繁，只要有对一个表的更新，这个表上所有的查询缓存都会被清空。</p>
-<p>  可以将参数 query_cache_type 设置成 DEMAND，这样对于默认的 SQL 语句都不使用查询缓存。</p>
-<p>  MySQL 8.0版本直接将查询缓存的整块功能删掉了，也就是说 8.0 开始彻底没有这个功能了。</p>
-<p>  如果命中查询缓存，会在查询缓存返回结果的时候，做权限验证。</p>
-<p>  关于查询缓存的一些参数：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">query_catche_size&#x3D;0; -- 最好设置为1024的倍数，参考值32M</span><br><span class="line">query_catch_type&#x3D;0; -- 0禁用 1缓存所有查询 2只缓存通过SQL_CACHE指定需要缓存的查询</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="分析器"><a href="#分析器" class="headerlink" title="分析器"></a>分析器</h3><p>  词法分析；</p>
-<pre><code>读取表定义，识别关键字及表和列信息等</code></pre><p>  语法分析；</p>
-<pre><code>ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &apos;elect * from t where ID=1&apos; at line 1</code></pre><h3 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h3><p>  查询会在优化器之前调用 precheck 验证权限；</p>
-<p>  选择索引，决定表的连接顺序。</p>
-<h3 id="执行器"><a href="#执行器" class="headerlink" title="执行器"></a>执行器</h3><p>  权限检查；</p>
-<p>  开表；</p>
-<p>  重复调用表定义的引擎接口，直到表的最后一行，拿到所有满足条件的接口，组成结果集返回给客户端；</p>
-<h2 id="Mysql权限是怎么控制的？"><a href="#Mysql权限是怎么控制的？" class="headerlink" title="Mysql权限是怎么控制的？"></a>Mysql权限是怎么控制的？</h2><p>  客户端通过认证后，会去权限表读取权限，此后所有的权限判断都基于此时读取的权限。除非重新连接，否则不会改变。</p>
-<p>  命中缓存后，返回结果前会校验权限；</p>
-<p>  优化器之前会调用precheck权限验证；</p>
-<p>  执行器开表前会进行权限验证。</p>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Nginx-2：Nginx安装</title>
     <url>/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/</url>
     <content><![CDATA[<p>安装nginx有两种方式：</p>
@@ -5476,6 +5683,63 @@ OK
       </categories>
       <tags>
         <tag>nginx</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mysql（2）-基本架构</title>
+    <url>/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/</url>
+    <content><![CDATA[<h2 id="Mysql基本架构是什么样子的（简述Mysql基本架构）"><a href="#Mysql基本架构是什么样子的（简述Mysql基本架构）" class="headerlink" title="Mysql基本架构是什么样子的（简述Mysql基本架构）"></a>Mysql基本架构是什么样子的（简述Mysql基本架构）</h2><p>Mysql由服务层（Service层）和存储引擎层构成。</p>
+<ul>
+<li><p>Service层涵盖Mysql的大多数核心功能，及所有的内置函数</p>
+<p>包含连接器、查询缓存、分析器、优化器、执行器；</p>
+<p>所有跨存储引擎的功能都在这一层实现；</p>
+</li>
+<li><p>存储引擎层，负责数据的存储和提取</p>
+<p>采用插件式设计，支持InnoDB、MYISAM、Memory等多个存储引擎；</p>
+<p>建表时，如果不制定引擎类型，会默认使用InnoDB</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#指定存储引擎</span><br><span class="line">create table foo（id int primary key,name var(10) not null）engine&#x3D;InnoDB;</span><br></pre></td></tr></table></figure>
+<p>不同的存储引擎共用一个service层</p>
+</li>
+</ul>
+<h2 id="Mysql由哪些组件组成-各个组件的作用是什么"><a href="#Mysql由哪些组件组成-各个组件的作用是什么" class="headerlink" title="Mysql由哪些组件组成,各个组件的作用是什么"></a>Mysql由哪些组件组成,各个组件的作用是什么</h2><h3 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h3><p>  负责跟客户端建立连接，获取权限，维持和管理连接；</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#mysql客户端工具连接</span><br><span class="line">mysql -h$ip -P$port -u$user -p</span><br></pre></td></tr></table></figure>
+
+<p>  客户端同服务端建立连接，在完成TCP握手后，连接器就开始认证身份，需要我们提供用户名密码；</p>
+<p>  认证通过后，连接器会到权限表里查出所有你拥有的权限，之后这个连接里的所有权限判断，都将依赖于此时读到的权限。也就是说连接成功后权限就不会改变了，如果修改了权限，需要重新连接。</p>
+<p>  关于连接的一些参数：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">show processlist; --查看所有链接状态</span><br><span class="line"></span><br><span class="line">-- 查看mysql參數</span><br><span class="line">show variables like &quot;%timeout%&quot;；</span><br><span class="line">-- wait_timeout：设置非交互连接（就是指那些连接池方式、非客户端方式连接的）的超时时间，默认是28800，就是8小时，超过这个时间，mysql服务器会主动切断那些已经连接的，但是状态是sleep的连接。</span><br><span class="line"></span><br><span class="line">-- interactive_timeout:交互链接超时时间;</span><br><span class="line"></span><br><span class="line">-- connection_timeout：“连接过程中”的等待时间</span><br></pre></td></tr></table></figure>
+
+<p>  建立连接的过程通常是比较复杂的，所以建议你在使用中要尽量减少建立连接的动作，也就是尽量使用长连接。</p>
+<p>  MySQL 在执行过程中临时使用的内存是管理在连接对象里面的。这些资源会在连接断开的时候才释放。所以如果长连接累积下来，可能导致内存占用太大，被系统强行杀掉（OOM），从现象看就是 MySQL 异常重启了。</p>
+<pre><code>解决：
+定期断开长连接。使用一段时间，或者程序里面判断执行过一个占用内存的大查询后，断开连接，之后要查询再重连。
+
+如果你用的是 MySQL 5.7 或更新版本，可以在每次执行一个比较大的操作后，通过执行 mysql_reset_connection 来重新初始化连接资源。这个过程不需要重连和重新做权限验证，但是会将连接恢复到刚刚创建完时的状态。</code></pre><h3 id="查询缓存"><a href="#查询缓存" class="headerlink" title="查询缓存"></a>查询缓存</h3><p>  键值对的形式，key是查询语句，valve是结果；</p>
+<p>  查询缓存的失效非常频繁，只要有对一个表的更新，这个表上所有的查询缓存都会被清空。</p>
+<p>  可以将参数 query_cache_type 设置成 DEMAND，这样对于默认的 SQL 语句都不使用查询缓存。</p>
+<p>  MySQL 8.0版本直接将查询缓存的整块功能删掉了，也就是说 8.0 开始彻底没有这个功能了。</p>
+<p>  如果命中查询缓存，会在查询缓存返回结果的时候，做权限验证。</p>
+<p>  关于查询缓存的一些参数：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">query_catche_size&#x3D;0; -- 最好设置为1024的倍数，参考值32M</span><br><span class="line">query_catch_type&#x3D;0; -- 0禁用 1缓存所有查询 2只缓存通过SQL_CACHE指定需要缓存的查询</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="分析器"><a href="#分析器" class="headerlink" title="分析器"></a>分析器</h3><p>  词法分析；</p>
+<pre><code>读取表定义，识别关键字及表和列信息等</code></pre><p>  语法分析；</p>
+<pre><code>ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &apos;elect * from t where ID=1&apos; at line 1</code></pre><h3 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h3><p>  查询会在优化器之前调用 precheck 验证权限；</p>
+<p>  选择索引，决定表的连接顺序。</p>
+<h3 id="执行器"><a href="#执行器" class="headerlink" title="执行器"></a>执行器</h3><p>  权限检查；</p>
+<p>  开表；</p>
+<p>  重复调用表定义的引擎接口，直到表的最后一行，拿到所有满足条件的接口，组成结果集返回给客户端；</p>
+<h2 id="Mysql权限是怎么控制的？"><a href="#Mysql权限是怎么控制的？" class="headerlink" title="Mysql权限是怎么控制的？"></a>Mysql权限是怎么控制的？</h2><p>  客户端通过认证后，会去权限表读取权限，此后所有的权限判断都基于此时读取的权限。除非重新连接，否则不会改变。</p>
+<p>  命中缓存后，返回结果前会校验权限；</p>
+<p>  优化器之前会调用precheck权限验证；</p>
+<p>  执行器开表前会进行权限验证。</p>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
       </tags>
   </entry>
   <entry>
@@ -5597,29 +5861,6 @@ OK
       </tags>
   </entry>
   <entry>
-    <title>SeLinux</title>
-    <url>/2019/03/20/SeLinux/</url>
-    <content><![CDATA[<p>一、关闭SeLinux</p>
-<p>查看SELinux状态：</p>
-<p>1、/usr/sbin/sestatus -v      ##如果SELinux status参数为enabled即为开启状态</p>
-<p>SELinux status:                 enabled</p>
-<p>2、getenforce                 ##也可以用这个命令检查</p>
-<p>关闭SELinux：</p>
-<p>1、临时关闭（不用重启机器）：</p>
-<p>setenforce 0                  ##设置SELinux 成为permissive模式</p>
-<p>##setenforce 1 设置SELinux 成为enforcing模式</p>
-<p>2、修改配置文件需要重启机器：</p>
-<p>修改/etc/selinux/config 文件</p>
-<p>将SELINUX=enforcing改为SELINUX=disabled</p>
-<p>重启机器即可</p>
-<p>二、执行下面的命令</p>
-<p>setsebool -P httpd_can_network_connect 1</p>
-]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
-  </entry>
-  <entry>
     <title>Nginx-1：基本概念</title>
     <url>/2019/03/20/Nginx-1%EF%BC%9A%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</url>
     <content><![CDATA[<h1 id="Nginx组成"><a href="#Nginx组成" class="headerlink" title="Nginx组成"></a>Nginx组成</h1><h2 id="Ngnix二进制可执行文件"><a href="#Ngnix二进制可执行文件" class="headerlink" title="Ngnix二进制可执行文件"></a>Ngnix二进制可执行文件</h2><p>由各模块源码编译出来的一个文件</p>
@@ -5662,6 +5903,29 @@ OK
       <tags>
         <tag>nginx</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>SeLinux</title>
+    <url>/2019/03/20/SeLinux/</url>
+    <content><![CDATA[<p>一、关闭SeLinux</p>
+<p>查看SELinux状态：</p>
+<p>1、/usr/sbin/sestatus -v      ##如果SELinux status参数为enabled即为开启状态</p>
+<p>SELinux status:                 enabled</p>
+<p>2、getenforce                 ##也可以用这个命令检查</p>
+<p>关闭SELinux：</p>
+<p>1、临时关闭（不用重启机器）：</p>
+<p>setenforce 0                  ##设置SELinux 成为permissive模式</p>
+<p>##setenforce 1 设置SELinux 成为enforcing模式</p>
+<p>2、修改配置文件需要重启机器：</p>
+<p>修改/etc/selinux/config 文件</p>
+<p>将SELINUX=enforcing改为SELINUX=disabled</p>
+<p>重启机器即可</p>
+<p>二、执行下面的命令</p>
+<p>setsebool -P httpd_can_network_connect 1</p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
   </entry>
   <entry>
     <title>Linux笔记</title>
@@ -6164,31 +6428,24 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
       </tags>
   </entry>
   <entry>
-    <title>Java基础</title>
-    <url>/2019/03/08/Java%E5%9F%BA%E7%A1%80/</url>
-    <content><![CDATA[<h1 id="HashMap、Hashtable、ConcurrentHashMap的原理与区别"><a href="#HashMap、Hashtable、ConcurrentHashMap的原理与区别" class="headerlink" title="HashMap、Hashtable、ConcurrentHashMap的原理与区别"></a>HashMap、Hashtable、ConcurrentHashMap的原理与区别</h1><h2 id="简述HashMap实现原理"><a href="#简述HashMap实现原理" class="headerlink" title="简述HashMap实现原理"></a>简述HashMap实现原理</h2><p>HashMap的底层是通过数组和链表实现的。其实就是维护了一个数组，put操作的时候根据key的哈希值和数组的长度（具体看源码）算出下标，判断该位置有没有对象，没有的话直接创建一个Entry对象（该对象保存了key，hash，value，下标等属性），如果有对象则判断是否有hash冲突（不同的key，但是hash值相同），有冲突则则该闻之用链表存储。</p>
-<p>todo：源码分析</p>
-<p>注意：</p>
-<ul>
-<li>HashMap的key和value都允许是null；</li>
-<li>当put后数量大于等于当前容量*加载因子的时候，就需要扩容，扩容需要数组复制，是非常耗时的，所以如果我们已经预知HashMap中元素的个数，那么预设元素的个数能够有效的提高HashMap的性能；</li>
+    <title>hexo命令</title>
+    <url>/2019/03/08/hexo%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<ul>
+<li><p>hexo g 生成静态文件</p>
+</li>
+<li><p>hexo s 启动本地服务</p>
+</li>
+<li><p>hexo clean 清除缓存文件(db.json)和已生成的静态文件(public)</p>
+</li>
+<li><p>hexo g -d 生成文件并部署到github</p>
+</li>
 </ul>
-<p>思考：<br>如果我们创建HashMap的时候指定了初始大小等于我们希望放入对象的数量，是不是就不会产生扩容？（如果不修改加载因子，仍会产生扩容）</p>
-<h2 id="HashTale与HashMap的区别"><a href="#HashTale与HashMap的区别" class="headerlink" title="HashTale与HashMap的区别"></a>HashTale与HashMap的区别</h2><ul>
-<li>HashTable同HashMap的实现差别不大，  同样是基于哈希表通过数组和链表实现的，同样每个元素是一个key-value对，其内部也是通过单链表解决冲突问题，容量不足（超过了阀值）时，同样会自动增长。</li>
-</ul>
-<h2 id="HashTable与ConcurrentHashMap的区别"><a href="#HashTable与ConcurrentHashMap的区别" class="headerlink" title="HashTable与ConcurrentHashMap的区别"></a>HashTable与ConcurrentHashMap的区别</h2><ul>
-<li>不同点在于HashTable是线程安全的，因为它每个方法中都加入了Synchronize。</li>
-<li>ConcurrentHashMap是HashTable的代替，底层采用分段的数组+链表实现，线程安全。</li>
-<li>通过把整个Map分为N个Segment，可以提供相同的线程安全，但是效率提升N倍，默认提升16倍。(读操作不加锁，由于HashEntry的value变量是 volatile的，也能保证读取到最新的值。)</li>
-</ul>
-<h1 id="volatile的作用"><a href="#volatile的作用" class="headerlink" title="volatile的作用"></a>volatile的作用</h1><h1 id="Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的"><a href="#Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的" class="headerlink" title="Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的"></a>Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的</h1><h1 id="Atomic类如何保证原子操作（CAS操作）"><a href="#Atomic类如何保证原子操作（CAS操作）" class="headerlink" title="Atomic类如何保证原子操作（CAS操作）"></a>Atomic类如何保证原子操作（CAS操作）</h1><h1 id="synchronized和Lock的区别"><a href="#synchronized和Lock的区别" class="headerlink" title="synchronized和Lock的区别"></a>synchronized和Lock的区别</h1><h1 id="ThreadLocal的原理和实现"><a href="#ThreadLocal的原理和实现" class="headerlink" title="ThreadLocal的原理和实现"></a>ThreadLocal的原理和实现</h1><h1 id="为什么要使用线程池"><a href="#为什么要使用线程池" class="headerlink" title="为什么要使用线程池"></a>为什么要使用线程池</h1><h1 id="核心线程池ThreadPoolExecutor的参数"><a href="#核心线程池ThreadPoolExecutor的参数" class="headerlink" title="核心线程池ThreadPoolExecutor的参数"></a>核心线程池ThreadPoolExecutor的参数</h1><h1 id="ThreadPoolExecutor的工作流程"><a href="#ThreadPoolExecutor的工作流程" class="headerlink" title="ThreadPoolExecutor的工作流程"></a>ThreadPoolExecutor的工作流程</h1><h1 id="如何控制线程池线程的优先级"><a href="#如何控制线程池线程的优先级" class="headerlink" title="如何控制线程池线程的优先级"></a>如何控制线程池线程的优先级</h1><h1 id="线程之间如何通信"><a href="#线程之间如何通信" class="headerlink" title="线程之间如何通信"></a>线程之间如何通信</h1><h1 id="Jdk1-8和1-7都分别新增了哪些特性"><a href="#Jdk1-8和1-7都分别新增了哪些特性" class="headerlink" title="Jdk1.8和1.7都分别新增了哪些特性"></a>Jdk1.8和1.7都分别新增了哪些特性</h1><h1 id="Exception-和-Error"><a href="#Exception-和-Error" class="headerlink" title="Exception 和 Error"></a>Exception 和 Error</h1><h1 id="Object类内的方法"><a href="#Object类内的方法" class="headerlink" title="Object类内的方法"></a>Object类内的方法</h1><p>Mysql 一句查询操作的执行流程</p>
 ]]></content>
       <categories>
-        <category>Java 基础</category>
+        <category>其它</category>
       </categories>
       <tags>
-        <tag>lambda</tag>
+        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -6407,24 +6664,31 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
       </tags>
   </entry>
   <entry>
-    <title>hexo命令</title>
-    <url>/2019/03/08/hexo%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<ul>
-<li><p>hexo g 生成静态文件</p>
-</li>
-<li><p>hexo s 启动本地服务</p>
-</li>
-<li><p>hexo clean 清除缓存文件(db.json)和已生成的静态文件(public)</p>
-</li>
-<li><p>hexo g -d 生成文件并部署到github</p>
-</li>
+    <title>Java基础</title>
+    <url>/2019/03/08/Java%E5%9F%BA%E7%A1%80/</url>
+    <content><![CDATA[<h1 id="HashMap、Hashtable、ConcurrentHashMap的原理与区别"><a href="#HashMap、Hashtable、ConcurrentHashMap的原理与区别" class="headerlink" title="HashMap、Hashtable、ConcurrentHashMap的原理与区别"></a>HashMap、Hashtable、ConcurrentHashMap的原理与区别</h1><h2 id="简述HashMap实现原理"><a href="#简述HashMap实现原理" class="headerlink" title="简述HashMap实现原理"></a>简述HashMap实现原理</h2><p>HashMap的底层是通过数组和链表实现的。其实就是维护了一个数组，put操作的时候根据key的哈希值和数组的长度（具体看源码）算出下标，判断该位置有没有对象，没有的话直接创建一个Entry对象（该对象保存了key，hash，value，下标等属性），如果有对象则判断是否有hash冲突（不同的key，但是hash值相同），有冲突则则该闻之用链表存储。</p>
+<p>todo：源码分析</p>
+<p>注意：</p>
+<ul>
+<li>HashMap的key和value都允许是null；</li>
+<li>当put后数量大于等于当前容量*加载因子的时候，就需要扩容，扩容需要数组复制，是非常耗时的，所以如果我们已经预知HashMap中元素的个数，那么预设元素的个数能够有效的提高HashMap的性能；</li>
 </ul>
+<p>思考：<br>如果我们创建HashMap的时候指定了初始大小等于我们希望放入对象的数量，是不是就不会产生扩容？（如果不修改加载因子，仍会产生扩容）</p>
+<h2 id="HashTale与HashMap的区别"><a href="#HashTale与HashMap的区别" class="headerlink" title="HashTale与HashMap的区别"></a>HashTale与HashMap的区别</h2><ul>
+<li>HashTable同HashMap的实现差别不大，  同样是基于哈希表通过数组和链表实现的，同样每个元素是一个key-value对，其内部也是通过单链表解决冲突问题，容量不足（超过了阀值）时，同样会自动增长。</li>
+</ul>
+<h2 id="HashTable与ConcurrentHashMap的区别"><a href="#HashTable与ConcurrentHashMap的区别" class="headerlink" title="HashTable与ConcurrentHashMap的区别"></a>HashTable与ConcurrentHashMap的区别</h2><ul>
+<li>不同点在于HashTable是线程安全的，因为它每个方法中都加入了Synchronize。</li>
+<li>ConcurrentHashMap是HashTable的代替，底层采用分段的数组+链表实现，线程安全。</li>
+<li>通过把整个Map分为N个Segment，可以提供相同的线程安全，但是效率提升N倍，默认提升16倍。(读操作不加锁，由于HashEntry的value变量是 volatile的，也能保证读取到最新的值。)</li>
+</ul>
+<h1 id="volatile的作用"><a href="#volatile的作用" class="headerlink" title="volatile的作用"></a>volatile的作用</h1><h1 id="Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的"><a href="#Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的" class="headerlink" title="Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的"></a>Jdk7中HashMap的环是如何形成的，Jdk8是如何解决的</h1><h1 id="Atomic类如何保证原子操作（CAS操作）"><a href="#Atomic类如何保证原子操作（CAS操作）" class="headerlink" title="Atomic类如何保证原子操作（CAS操作）"></a>Atomic类如何保证原子操作（CAS操作）</h1><h1 id="synchronized和Lock的区别"><a href="#synchronized和Lock的区别" class="headerlink" title="synchronized和Lock的区别"></a>synchronized和Lock的区别</h1><h1 id="ThreadLocal的原理和实现"><a href="#ThreadLocal的原理和实现" class="headerlink" title="ThreadLocal的原理和实现"></a>ThreadLocal的原理和实现</h1><h1 id="为什么要使用线程池"><a href="#为什么要使用线程池" class="headerlink" title="为什么要使用线程池"></a>为什么要使用线程池</h1><h1 id="核心线程池ThreadPoolExecutor的参数"><a href="#核心线程池ThreadPoolExecutor的参数" class="headerlink" title="核心线程池ThreadPoolExecutor的参数"></a>核心线程池ThreadPoolExecutor的参数</h1><h1 id="ThreadPoolExecutor的工作流程"><a href="#ThreadPoolExecutor的工作流程" class="headerlink" title="ThreadPoolExecutor的工作流程"></a>ThreadPoolExecutor的工作流程</h1><h1 id="如何控制线程池线程的优先级"><a href="#如何控制线程池线程的优先级" class="headerlink" title="如何控制线程池线程的优先级"></a>如何控制线程池线程的优先级</h1><h1 id="线程之间如何通信"><a href="#线程之间如何通信" class="headerlink" title="线程之间如何通信"></a>线程之间如何通信</h1><h1 id="Jdk1-8和1-7都分别新增了哪些特性"><a href="#Jdk1-8和1-7都分别新增了哪些特性" class="headerlink" title="Jdk1.8和1.7都分别新增了哪些特性"></a>Jdk1.8和1.7都分别新增了哪些特性</h1><h1 id="Exception-和-Error"><a href="#Exception-和-Error" class="headerlink" title="Exception 和 Error"></a>Exception 和 Error</h1><h1 id="Object类内的方法"><a href="#Object类内的方法" class="headerlink" title="Object类内的方法"></a>Object类内的方法</h1><p>Mysql 一句查询操作的执行流程</p>
 ]]></content>
       <categories>
-        <category>其它</category>
+        <category>Java 基础</category>
       </categories>
       <tags>
-        <tag>hexo</tag>
+        <tag>lambda</tag>
       </tags>
   </entry>
   <entry>
@@ -6459,7 +6723,7 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
 <h2 id="执行语句手动关闭安全更新模式"><a href="#执行语句手动关闭安全更新模式" class="headerlink" title="执行语句手动关闭安全更新模式"></a>执行语句手动关闭安全更新模式</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SET SQL_SAFE_UPDATES &#x3D; 0;</span><br></pre></td></tr></table></figure>
 
 <h1 id="用户相关"><a href="#用户相关" class="headerlink" title="用户相关"></a>用户相关</h1><h2 id="创建用户（CREATE-USER）"><a href="#创建用户（CREATE-USER）" class="headerlink" title="创建用户（CREATE USER）"></a>创建用户（CREATE USER）</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; create user &#39;richey&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;!@#$1234Richey&#39;;</span><br></pre></td></tr></table></figure>
-
+<h2 id="查看用户权限"><a href="#查看用户权限" class="headerlink" title="查看用户权限"></a>查看用户权限</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show grants for foo;</span><br></pre></td></tr></table></figure>
 <h2 id="给数据库用户授权（GRANT-PERMISSIONS）"><a href="#给数据库用户授权（GRANT-PERMISSIONS）" class="headerlink" title="给数据库用户授权（GRANT PERMISSIONS）"></a>给数据库用户授权（GRANT PERMISSIONS）</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; GRANT ALL ON mysql_study.* TO &#39;richey&#39;@&#39;localhost&#39;;</span><br></pre></td></tr></table></figure>
 
 <h2 id="刷新权限-（FLUSH-PRIVILEGES-Tell-the-server-to-reload-the-grant-tables）"><a href="#刷新权限-（FLUSH-PRIVILEGES-Tell-the-server-to-reload-the-grant-tables）" class="headerlink" title="刷新权限 （FLUSH PRIVILEGES, Tell the server to reload the grant tables）"></a>刷新权限 （FLUSH PRIVILEGES, Tell the server to reload the grant tables）</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; FLUSH PRIVILEGES;</span><br></pre></td></tr></table></figure>
