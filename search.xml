@@ -1,6 +1,208 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Kubernetes04-集群搭建</title>
+    <url>/2021/05/24/Kubernetes04-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/</url>
+    <content><![CDATA[<h1 id="准备3台服务器"><a href="#准备3台服务器" class="headerlink" title="准备3台服务器"></a>准备3台服务器</h1><p>这里我们用虚拟机装3个节点：node1,node2,node3</p>
+<p>如果安装的时候没有设置好主机名，可以手动再设置一下，给个名字方便操作：</p>
+<p>hostnamectl set-hostname node1  //node2 node3</p>
+<h2 id="设置静态ip"><a href="#设置静态ip" class="headerlink" title="设置静态ip"></a>设置静态ip</h2><p>最好将节点的ip设置成静态的（不能随便变）,这里3个节点装的是ubuntu 20.04 server,设置方法如下：</p>
+<p>ifconfig //列出系统中所有连接的网络接口</p>
+<p><img src="https://blog-pic-1254088127.picsh.myqcloud.com/ifconfig-20210523.png" alt="ifconfig"></p>
+<p>我们将ens33以太网网络接口配置一个静态IP</p>
+<p>vim /etc/netplan/xxx-yaml</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">network:</span><br><span class="line">  ethernets:</span><br><span class="line">    ens33:</span><br><span class="line">      addresses:</span><br><span class="line">      - 172.16.250.128&#x2F;24</span><br><span class="line">      dhcp4: false</span><br><span class="line">      gateway4: 172.16.250.2</span><br><span class="line">      nameservers:</span><br><span class="line">        addresses:</span><br><span class="line">          - 8.8.8.8</span><br><span class="line">  version: 2</span><br></pre></td></tr></table></figure>
+<p>如果YAML文件不是由发行版安装程序创建的，则可以使用此命令为渲染器生成所需的配置。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo netplan generate</span><br></pre></td></tr></table></figure>
+<p>保存该文件并退出。然后使用以下netplan命令应用最近的网络更改。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo netplan apply</span><br></pre></td></tr></table></figure>
+
+<p>将3个节点全部设置成静态ip</p>
+<h2 id="修改域名文件"><a href="#修改域名文件" class="headerlink" title="修改域名文件"></a>修改域名文件</h2><p>vim /etc/hosts</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">172.16.250.128 node1</span><br><span class="line">172.16.250.129 node2</span><br><span class="line">172.16.250.131 node3</span><br></pre></td></tr></table></figure>
+<p>scp /etc/hosts <a href="mailto:root@172.16.250.129">root@172.16.250.129</a>:/etc/hosts<br>scp /etc/hosts <a href="mailto:root@172.16.250.131">root@172.16.250.131</a>:/etc/hosts</p>
+<h1 id="时区"><a href="#时区" class="headerlink" title="时区"></a>时区</h1><p>务必保证3台服务器的时区是一样的，强制更改时区为上海，执行以下命令</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ln -snf &#x2F;usr&#x2F;share&#x2F;zoneinfo&#x2F;Asia&#x2F;Shanghai &#x2F;etc&#x2F;localtime</span><br><span class="line">bash -c &quot;echo &#39;Asia&#x2F;Shanghai&#39; &gt; &#x2F;etc&#x2F;timezone&quot;</span><br></pre></td></tr></table></figure>
+
+<p>安装ntpdate</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">apt-get install -y ntpdate</span><br></pre></td></tr></table></figure>
+<p>如果出现以下错误：</p>
+<p>E: Could not get lock /var/lib/dpkg/lock - open (11: Resource temporarily unavailable)<br>E: Unable to lock the administration directory (/var/lib/dpkg/), is another process using it?</p>
+<p>执行2个命令解决</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo rm &#x2F;var&#x2F;cache&#x2F;apt&#x2F;archives&#x2F;lock</span><br><span class="line">sudo rm &#x2F;var&#x2F;lib&#x2F;dpkg&#x2F;lock</span><br></pre></td></tr></table></figure>
+
+<p>使用阿里云的时间服务器更新</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ntpdate ntp1.aliyun.com</span><br><span class="line">i</span><br></pre></td></tr></table></figure>
+<p>3台服务器都执行一下，确保时间一致.</p>
+<h1 id="安装docker"><a href="#安装docker" class="headerlink" title="安装docker"></a>安装docker</h1><p>所有节点都要安装。<br>如果使用docker作为k8s容器，则docker是必须要安装的。</p>
+<p>更新apt源并添加https支持</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt-get update &amp;&amp; sudo apt-get install apt-transport-https ca-certificates curl software-properties-common -y</span><br></pre></td></tr></table></figure>
+
+<p>使用utc源添加GPG Key</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl -fsSL https:&#x2F;&#x2F;mirrors.ustc.edu.cn&#x2F;docker-ce&#x2F;linux&#x2F;ubuntu&#x2F;gpg | sudo apt-key add</span><br></pre></td></tr></table></figure>
+
+<p>添加Docker-ce稳定版源地址</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo add-apt-repository &quot;deb [arch&#x3D;amd64] https:&#x2F;&#x2F;mirrors.ustc.edu.cn&#x2F;docker-ce&#x2F;linux&#x2F;ubuntu $(lsb_release -cs) stable&quot;</span><br></pre></td></tr></table></figure>
+
+<p>安装docker</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line">apt-cache madison docker-ce &#x2F;&#x2F; List the versions available in your repo</span><br><span class="line">sudo apt install docker-ce&#x3D;5:19.03.9~3-0~ubuntu-focal</span><br></pre></td></tr></table></figure>
+
+
+
+<p>3个节点都要安装</p>
+<h1 id="安装kubernetes组件"><a href="#安装kubernetes组件" class="headerlink" title="安装kubernetes组件"></a>安装kubernetes组件</h1><ul>
+<li>kubeadm：引导集群的命令。</li>
+<li>kubelet：在群集中所有计算机上运行的组件，它执行诸如启动Pod和容器之类的操作。</li>
+<li>kubectl：用于与您的集群通信的命令行工具。</li>
+</ul>
+<p>所有节点都需要安装：</p>
+<p>添加apt key及源</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt update &amp;&amp; sudo apt install -y apt-transport-https curl</span><br><span class="line"></span><br><span class="line">curl -s https:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;kubernetes&#x2F;apt&#x2F;doc&#x2F;apt-key.gpg | sudo apt-key add -</span><br><span class="line"></span><br><span class="line">echo &quot;deb https:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;kubernetes&#x2F;apt&#x2F; kubernetes-xenial main&quot; &gt;&gt;&#x2F;etc&#x2F;apt&#x2F;sources.list.d&#x2F;kubernetes.list</span><br></pre></td></tr></table></figure>
+<p>安装</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">sudo apt update</span><br><span class="line">sudo apt install -y kubelet&#x3D;1.15.2-00 kubeadm&#x3D;1.15.2-00 kubectl&#x3D;1.15.2-00</span><br><span class="line">sudo apt-mark hold kubelet&#x3D;1.15.2-00 kubeadm&#x3D;1.15.2-00 kubectl&#x3D;1.15.2-00</span><br></pre></td></tr></table></figure>
+<h1 id="禁用swap"><a href="#禁用swap" class="headerlink" title="禁用swap"></a>禁用swap</h1><p>所有节点都要操作（这里node1，node2，node3）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo sed -i &#39;&#x2F;swap&#x2F; s&#x2F;^&#x2F;#&#x2F;&#39; &#x2F;etc&#x2F;fstab</span><br><span class="line">sudo swapoff -a</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="安装kubernetes集群"><a href="#安装kubernetes集群" class="headerlink" title="安装kubernetes集群"></a>安装kubernetes集群</h1><p>只在master节点安装即可，这里我们用node1做master节点</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo kubeadm init --image-repository registry.aliyuncs.com&#x2F;google_containers --kubernetes-version v1.15.2 --pod-network-cidr&#x3D;192.169.0.0&#x2F;16</span><br><span class="line"></span><br><span class="line">[init] Using Kubernetes version: v1.15.2</span><br><span class="line">[preflight] Running pre-flight checks</span><br><span class="line">	[WARNING IsDockerSystemdCheck]: detected &quot;cgroupfs&quot; as the Docker cgroup driver. The recommended driver is &quot;systemd&quot;. Please follow the guide at https:&#x2F;&#x2F;kubernetes.io&#x2F;docs&#x2F;setup&#x2F;cri&#x2F;</span><br><span class="line">	[WARNING SystemVerification]: this Docker version is not on the list of validated versions: 19.03.9. Latest validated version: 18.09</span><br><span class="line">[preflight] Pulling images required for setting up a Kubernetes cluster</span><br><span class="line">[preflight] This might take a minute or two, depending on the speed of your internet connection</span><br><span class="line">[preflight] You can also perform this action in beforehand using &#39;kubeadm config images pull&#39;</span><br><span class="line">[kubelet-start] Writing kubelet environment file with flags to file &quot;&#x2F;var&#x2F;lib&#x2F;kubelet&#x2F;kubeadm-flags.env&quot;</span><br><span class="line">[kubelet-start] Writing kubelet configuration to file &quot;&#x2F;var&#x2F;lib&#x2F;kubelet&#x2F;config.yaml&quot;</span><br><span class="line">[kubelet-start] Activating the kubelet service</span><br><span class="line">[certs] Using certificateDir folder &quot;&#x2F;etc&#x2F;kubernetes&#x2F;pki&quot;</span><br><span class="line">[certs] Generating &quot;etcd&#x2F;ca&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;etcd&#x2F;server&quot; certificate and key</span><br><span class="line">[certs] etcd&#x2F;server serving cert is signed for DNS names [node1 localhost] and IPs [172.16.250.128 127.0.0.1 ::1]</span><br><span class="line">[certs] Generating &quot;etcd&#x2F;peer&quot; certificate and key</span><br><span class="line">[certs] etcd&#x2F;peer serving cert is signed for DNS names [node1 localhost] and IPs [172.16.250.128 127.0.0.1 ::1]</span><br><span class="line">[certs] Generating &quot;etcd&#x2F;healthcheck-client&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;apiserver-etcd-client&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;ca&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;apiserver-kubelet-client&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;apiserver&quot; certificate and key</span><br><span class="line">[certs] apiserver serving cert is signed for DNS names [node1 kubernetes kubernetes.default kubernetes.default.svc kubernetes.default.svc.cluster.local] and IPs [10.96.0.1 172.16.250.128]</span><br><span class="line">[certs] Generating &quot;front-proxy-ca&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;front-proxy-client&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;sa&quot; key and public key</span><br><span class="line">[kubeconfig] Using kubeconfig folder &quot;&#x2F;etc&#x2F;kubernetes&quot;</span><br><span class="line">[kubeconfig] Writing &quot;admin.conf&quot; kubeconfig file</span><br><span class="line">[kubeconfig] Writing &quot;kubelet.conf&quot; kubeconfig file</span><br><span class="line">[kubeconfig] Writing &quot;controller-manager.conf&quot; kubeconfig file</span><br><span class="line">[kubeconfig] Writing &quot;scheduler.conf&quot; kubeconfig file</span><br><span class="line">[control-plane] Using manifest folder &quot;&#x2F;etc&#x2F;kubernetes&#x2F;manifests&quot;</span><br><span class="line">[control-plane] Creating static Pod manifest for &quot;kube-apiserver&quot;</span><br><span class="line">[control-plane] Creating static Pod manifest for &quot;kube-controller-manager&quot;</span><br><span class="line">[control-plane] Creating static Pod manifest for &quot;kube-scheduler&quot;</span><br><span class="line">[etcd] Creating static Pod manifest for local etcd in &quot;&#x2F;etc&#x2F;kubernetes&#x2F;manifests&quot;</span><br><span class="line">[wait-control-plane] Waiting for the kubelet to boot up the control plane as static Pods from directory &quot;&#x2F;etc&#x2F;kubernetes&#x2F;manifests&quot;. This can take up to 4m0s</span><br><span class="line">[apiclient] All control plane components are healthy after 16.004480 seconds</span><br><span class="line">[upload-config] Storing the configuration used in ConfigMap &quot;kubeadm-config&quot; in the &quot;kube-system&quot; Namespace</span><br><span class="line">[kubelet] Creating a ConfigMap &quot;kubelet-config-1.15&quot; in namespace kube-system with the configuration for the kubelets in the cluster</span><br><span class="line">[upload-certs] Skipping phase. Please see --upload-certs</span><br><span class="line">[mark-control-plane] Marking the node node1 as control-plane by adding the label &quot;node-role.kubernetes.io&#x2F;master&#x3D;&#39;&#39;&quot;</span><br><span class="line">[mark-control-plane] Marking the node node1 as control-plane by adding the taints [node-role.kubernetes.io&#x2F;master:NoSchedule]</span><br><span class="line">[bootstrap-token] Using token: yq1qjo.00jrgi61fik1rnuc</span><br><span class="line">[bootstrap-token] Configuring bootstrap tokens, cluster-info ConfigMap, RBAC Roles</span><br><span class="line">[bootstrap-token] configured RBAC rules to allow Node Bootstrap tokens to post CSRs in order for nodes to get long term certificate credentials</span><br><span class="line">[bootstrap-token] configured RBAC rules to allow the csrapprover controller automatically approve CSRs from a Node Bootstrap Token</span><br><span class="line">[bootstrap-token] configured RBAC rules to allow certificate rotation for all node client certificates in the cluster</span><br><span class="line">[bootstrap-token] Creating the &quot;cluster-info&quot; ConfigMap in the &quot;kube-public&quot; namespace</span><br><span class="line">[addons] Applied essential addon: CoreDNS</span><br><span class="line">[addons] Applied essential addon: kube-proxy</span><br><span class="line"></span><br><span class="line">Your Kubernetes control-plane has initialized successfully!</span><br><span class="line"></span><br><span class="line">To start using your cluster, you need to run the following as a regular user:</span><br><span class="line"></span><br><span class="line">  mkdir -p $HOME&#x2F;.kube</span><br><span class="line">  sudo cp -i &#x2F;etc&#x2F;kubernetes&#x2F;admin.conf $HOME&#x2F;.kube&#x2F;config</span><br><span class="line">  sudo chown $(id -u):$(id -g) $HOME&#x2F;.kube&#x2F;config</span><br><span class="line"></span><br><span class="line">You should now deploy a pod network to the cluster.</span><br><span class="line">Run &quot;kubectl apply -f [podnetwork].yaml&quot; with one of the options listed at:</span><br><span class="line">  https:&#x2F;&#x2F;kubernetes.io&#x2F;docs&#x2F;concepts&#x2F;cluster-administration&#x2F;addons&#x2F;</span><br><span class="line"></span><br><span class="line">Then you can join any number of worker nodes by running the following on each as root:</span><br><span class="line"></span><br><span class="line">kubeadm join 172.16.250.128:6443 --token yq1qjo.00jrgi61fik1rnuc \</span><br><span class="line">    --discovery-token-ca-cert-hash sha256:fcb73171bb839f6dc6701880d9b863258f62992530aa04695e150798e56ef6ed</span><br></pre></td></tr></table></figure>
+
+<p>这样就初始化成功了，注意警告信息：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[WARNING IsDockerSystemdCheck]: detected &quot;cgroupfs&quot; as the Docker cgroup driver. The recommended driver is &quot;systemd&quot;. Please follow the guide at https:&#x2F;&#x2F;kubernetes.io&#x2F;docs&#x2F;setup&#x2F;cri&#x2F;</span><br></pre></td></tr></table></figure>
+<p>可以忽略，解决方法：</p>
+<p>修改或者创建 vim /etc/docker/daemon.json</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;exec-opts&quot;: [&quot;native.cgroupdriver&#x3D;systemd&quot;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="拷贝kubeconfig文件到家目录的-kube目录"><a href="#拷贝kubeconfig文件到家目录的-kube目录" class="headerlink" title="拷贝kubeconfig文件到家目录的.kube目录"></a>拷贝kubeconfig文件到家目录的.kube目录</h1><p>只需要在master节点（这里我们是node1节点）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# mkdir -p $HOME&#x2F;.kube</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# sudo cp -i &#x2F;etc&#x2F;kubernetes&#x2F;admin.conf $HOME&#x2F;.kube&#x2F;config</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# sudo chown $(id -u):$(id -g) $HOME&#x2F;.kube&#x2F;config</span><br></pre></td></tr></table></figure>
+
+<h1 id="安装网络插件，让pod之间通信"><a href="#安装网络插件，让pod之间通信" class="headerlink" title="安装网络插件，让pod之间通信"></a>安装网络插件，让pod之间通信</h1><p>只需要在master节点（这里我们是node1节点）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">wget https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;coreos&#x2F;flannel&#x2F;master&#x2F;Documentation&#x2F;kube-flannel.yml</span><br><span class="line"></span><br><span class="line">kubectl apply -f kube-flannel.yml</span><br></pre></td></tr></table></figure>
+
+<h1 id="查看kube-system命名空间下的pod状态"><a href="#查看kube-system命名空间下的pod状态" class="headerlink" title="查看kube-system命名空间下的pod状态"></a>查看kube-system命名空间下的pod状态</h1><p>kubectl get pod -n kube-system</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get pod -n kube-system</span><br><span class="line">NAME                            READY   STATUS    RESTARTS   AGE</span><br><span class="line">coredns-bccdc95cf-6khq2         1&#x2F;1     Running   0          30m</span><br><span class="line">coredns-bccdc95cf-lk8j6         1&#x2F;1     Running   0          30m</span><br><span class="line">etcd-node1                      1&#x2F;1     Running   0          30m</span><br><span class="line">kube-apiserver-node1            1&#x2F;1     Running   0          30m</span><br><span class="line">kube-controller-manager-node1   1&#x2F;1     Running   0          29m</span><br><span class="line">kube-flannel-ds-cxt98           1&#x2F;1     Running   0          78s</span><br><span class="line">kube-proxy-56nt6                1&#x2F;1     Running   0          30m</span><br><span class="line">kube-scheduler-node1            1&#x2F;1     Running   0          29m</span><br></pre></td></tr></table></figure>
+
+<h1 id="加入node节点"><a href="#加入node节点" class="headerlink" title="加入node节点"></a>加入node节点</h1><p>仅在node节点操作，在master节点执行kubeadm init时，最后会打印出加入node节点的命令，在每个node节点执行此命令，如：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubeadm join 172.16.250.128:6443 --token yq1qjo.00jrgi61fik1rnuc \</span><br><span class="line">    --discovery-token-ca-cert-hash sha256:fcb73171bb839f6dc6701880d9b863258f62992530aa04695e150798e56ef6ed</span><br></pre></td></tr></table></figure>
+
+<p>操作完后可以在主节点查看节点信息：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get nodes</span><br><span class="line">NAME    STATUS     ROLES    AGE   VERSION</span><br><span class="line">node1   Ready      master   34m   v1.15.2</span><br><span class="line">node2   NotReady   &lt;none&gt;   31s   v1.15.2</span><br><span class="line">node3   NotReady   &lt;none&gt;   25s   v1.15.2</span><br></pre></td></tr></table></figure>
+
+<h1 id="命令补全"><a href="#命令补全" class="headerlink" title="命令补全"></a>命令补全</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">apt-get install bash-completion</span><br><span class="line"></span><br><span class="line">source &lt;(kubectl completion bash)</span><br><span class="line">echo &quot;source &lt;(kubectl completion bash)&quot; &gt;&gt; ~&#x2F;.bashrc</span><br><span class="line">source  ~&#x2F;.bashrc</span><br></pre></td></tr></table></figure>
+
+<h1 id="部署dashboard可视化插件"><a href="#部署dashboard可视化插件" class="headerlink" title="部署dashboard可视化插件"></a>部署dashboard可视化插件</h1><p><a href="https://github.com/kubernetes/dashboard" target="_blank" rel="noopener">https://github.com/kubernetes/dashboard</a></p>
+<p>安装</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl apply -f http:&#x2F;&#x2F;mirror.faasx.com&#x2F;kubernetes&#x2F;dashboard&#x2F;master&#x2F;src&#x2F;deploy&#x2F;recommended&#x2F;kubernetes-dashboard.yaml</span><br></pre></td></tr></table></figure>
+
+<p>查看service、pod</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl -n&#x3D;kube-system get deployment kubernetes-dashboard</span><br><span class="line">NAME                   READY   UP-TO-DATE   AVAILABLE   AGE</span><br><span class="line">kubernetes-dashboard   0&#x2F;1     1            0           83s</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl -n&#x3D;kube-system get service kubernetes-dashboard</span><br><span class="line">NAME                   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE</span><br><span class="line">kubernetes-dashboard   ClusterIP   10.99.233.149   &lt;none&gt;        443&#x2F;TCP   2m12s</span><br><span class="line"></span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get pod -n&#x3D;kube-system -o wide | grep dashboard</span><br><span class="line">kubernetes-dashboard-8594bd9565-4t9tr   0&#x2F;1     ContainerCreating   0          2m58s   &lt;none&gt;           node3   &lt;none&gt;           &lt;none&gt;</span><br></pre></td></tr></table></figure>
+<p>允许外部访问</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl proxy --address&#x3D;&#39;0.0.0.0&#39;  --accept-hosts&#x3D;&#39;^*$&#39;</span><br></pre></td></tr></table></figure>
+
+<p>通过浏览器访问</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;172.16.250.128:8001&#x2F;api&#x2F;v1&#x2F;namespaces&#x2F;kube-system&#x2F;services&#x2F;https:kubernetes-dashboard:&#x2F;proxy&#x2F;</span><br><span class="line"></span><br><span class="line">172.16.250.128为master节点ip</span><br></pre></td></tr></table></figure>
+
+<p>配置登录权限</p>
+<p>Dashboard 支持 Kubeconfig 和 Token 两种认证方式，为了简化配置，我们通过配置文件 dashboard-admin.yaml 为 Dashboard 默认用户赋予 admin 权限。</p>
+<p>vim dashboard-admin.yml</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">metadata:</span><br><span class="line">  name: kubernetes-dashboard</span><br><span class="line">  labels: </span><br><span class="line">     k8s-app: kubernetes-dashboard</span><br><span class="line">roleRef:</span><br><span class="line">  apiGroup: rbac.authorization.k8s.io</span><br><span class="line">  kind: ClusterRole</span><br><span class="line">  name: cluster-admin</span><br><span class="line">subjects:</span><br><span class="line">- kind: ServiceAccount</span><br><span class="line">  name: kubernetes-dashboard</span><br><span class="line">  namespace: kube-system</span><br><span class="line">~</span><br></pre></td></tr></table></figure>
+<p>kubectl apply -f dashboard-admin.yml</p>
+<h1 id="重启"><a href="#重启" class="headerlink" title="重启"></a>重启</h1><p>这里将3个节点都重启一下演示重启k8s</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">systemctl start kubelet &#x2F;&#x2F;启动kubelet</span><br><span class="line">systemctl status kubelet &#x2F;&#x2F;查看kubelet状态</span><br><span class="line"></span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# systemctl status kubelet</span><br><span class="line">● kubelet.service - kubelet: The Kubernetes Node Agent</span><br><span class="line">     Loaded: loaded (&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;kubelet.service; enabled; vendor preset: enabled)</span><br><span class="line">    Drop-In: &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;kubelet.service.d</span><br><span class="line">             └─10-kubeadm.conf</span><br><span class="line">     Active: activating (auto-restart) (Result: exit-code) since Mon 2021-05-24 14:14:08 UTC; 3s ago</span><br><span class="line">       Docs: https:&#x2F;&#x2F;kubernetes.io&#x2F;docs&#x2F;home&#x2F;</span><br><span class="line">    Process: 10669 ExecStart&#x3D;&#x2F;usr&#x2F;bin&#x2F;kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_ARGS (code&#x3D;exited, status&#x3D;255&#x2F;EXCEPTION)</span><br><span class="line">   Main PID: 10669 (code&#x3D;exited, status&#x3D;255&#x2F;EXCEPTION)</span><br></pre></td></tr></table></figure>
+
+<p>查看详细报错日志</p>
+<p>root@node1:/home/richey# journalctl _PID=10669 |vim -</p>
+<h1 id="重置"><a href="#重置" class="headerlink" title="重置"></a>重置</h1><p>执行kubeadm reset后可以重新搭建k8s集群</p>
+<p>kubeadm reset </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">The reset process does not clean your kubeconfig files and you must remove them manually.</span><br><span class="line">Please, check the contents of the $HOME&#x2F;.kube&#x2F;config file.</span><br></pre></td></tr></table></figure>
+
+<p>需要手动删除$HOME/.kube/config</p>
+<p>注意要在3个节点都执行kubeadm reset</p>
+]]></content>
+      <categories>
+        <category>SRE</category>
+      </categories>
+      <tags>
+        <tag>K8s</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Kubernetes03-Quick-Start</title>
+    <url>/2021/05/20/Kubernetes03-Quick-Start/</url>
+    <content><![CDATA[<h1 id="部署3个节点的k8s节点"><a href="#部署3个节点的k8s节点" class="headerlink" title="部署3个节点的k8s节点"></a>部署3个节点的k8s节点</h1><p><a href="https://10000hours.top/2021/03/06/Kubernetes04-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/">https://10000hours.top/2021/03/06/Kubernetes04-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/</a></p>
+<h1 id="快速运行一个应用"><a href="#快速运行一个应用" class="headerlink" title="快速运行一个应用"></a>快速运行一个应用</h1><p>kubectl run可以创建所有组件而不需要JSON或YAML文件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl run kubia --image&#x3D;luksa&#x2F;kubia --port&#x3D;8080 --generator&#x3D;run&#x2F;v1</span><br><span class="line">kubectl run --generator&#x3D;run&#x2F;v1 is DEPRECATED and will be removed in a future version. Use kubectl run --generator&#x3D;run-pod&#x2F;v1 or kubectl create instead.</span><br><span class="line">replicationcontroller&#x2F;kubia created</span><br></pre></td></tr></table></figure>
+
+<h1 id="查看pod"><a href="#查看pod" class="headerlink" title="查看pod"></a>查看pod</h1><p>kubectl get pods</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@localhost config-exercise]$ kubectl get pods -o wide</span><br><span class="line">NAME    READY   STATUS    RESTARTS   AGE     IP           NODE       NOMINATED NODE   READINESS GATES</span><br><span class="line">kubia   1&#x2F;1     Running   0          3m57s   172.17.0.3   minikube   &lt;none&gt;           &lt;none&gt;</span><br></pre></td></tr></table></figure>
+<p>可以看到这个pod有自己的ip，但是这个ip是集群内部的，在集群外无法访问，我们在集群外可以ping一下这个ip，是不通的。</p>
+<h1 id="创建Service"><a href="#创建Service" class="headerlink" title="创建Service"></a>创建Service</h1><p>要想从集群外部访问pod，需要在集群中创建一个Service服务，Service用于访问集群内的pod，并对外提供可访问的ip。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl expose pod kubia --type&#x3D;LoadBalancer --name kubia-http</span><br><span class="line">service&#x2F;kubia-http exposed</span><br><span class="line">[richey@localhost config-exercise]$ kubectl get svc</span><br><span class="line">NAME         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE</span><br><span class="line">kubernetes   ClusterIP      10.96.0.1       &lt;none&gt;        443&#x2F;TCP          19h</span><br><span class="line">kubia-http   LoadBalancer   10.100.122.15   &lt;pending&gt;     8080:31222&#x2F;TCP   9s</span><br></pre></td></tr></table></figure>
+
+<p>使用minikube不支持LoadBalance类型服务，因此服务不会有外部ip。可以运行minikube service kubia-http获取可以访问服务的ip和端口</p>
+]]></content>
+      <categories>
+        <category>SRE</category>
+      </categories>
+      <tags>
+        <tag>K8s</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Kubernetes02-基本概念</title>
+    <url>/2021/05/12/Kubernetes02-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</url>
+    <content><![CDATA[<h1 id="Pod"><a href="#Pod" class="headerlink" title="Pod"></a>Pod</h1><p>Kubernetes中的基本构成模块,基本操作单元。<br>一个pod就是一组紧密管理的容器（也可能是一个）,它们一起运行在一个工作节点上，及同一个Linux命名空间中。<br>一个pod就像一个独立的逻辑机器，它有独立的IP、主机名、进程等。</p>
+<h1 id="区别于容器"><a href="#区别于容器" class="headerlink" title="区别于容器"></a>区别于容器</h1><p>容器被设计成每个容器中只能运行一个进程，pod中可以运行多个容器（便于相关服务部署在一起）。</p>
+<p>容器间彼此完全隔离，pod中的容器可以共享相同的命名空间，可以共享相同的主机名和端口,同样的这些容器在相同的IPC命名空间下运行，因此可以使用IPC进行通信。</p>
+<p>可以通过localhost与同一个pod中的其它容器进行通讯。</p>
+<h1 id="平坦pod间网络"><a href="#平坦pod间网络" class="headerlink" title="平坦pod间网络"></a>平坦pod间网络</h1><p>Kubernetes集群中的所有pod都是在同一个共享网络地址空间中。所以每个pod都可以通过访问其它pod 的ip地址实现相互访问。（它们之间没有NAT）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl get pods &#x2F;&#x2F;列出pod</span><br><span class="line">kubectl describe pod pod-name &#x2F;&#x2F;查看具体pod的详细信息</span><br><span class="line">kubectl get pod my-pode-name -o yaml &#x2F;&#x2F; 查看pod的当前yaml配置</span><br></pre></td></tr></table></figure>
+
+<h1 id="yaml文件重要参数"><a href="#yaml文件重要参数" class="headerlink" title="yaml文件重要参数"></a>yaml文件重要参数</h1><ul>
+<li>metadata<br>包括名称、命名空间、标签和关于容器的其它信息</li>
+<li>spec<br>包括pod的实际说明， 例如pod的容器、卷和其它数据</li>
+<li>status<br>运行中的pod的当前信息，例如pod所处的条件、每个容器的描述和状态，以及内部ip和其它信息</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl explain pods &#x2F;&#x2F; 查看可能的api字段</span><br><span class="line">kubectl explain pods</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="访问pod"><a href="#访问pod" class="headerlink" title="访问pod"></a>访问pod</h2><p>pod有自己的IP，但是这个ip是集群内部的，不能从集群外部访问。</p>
+<p>需要创建服务对象公开pod，服务对象是一个特殊的LoadBalanceer类型的服务，可以通过服务对外共该的ip访问pod。</p>
+<h1 id="服务"><a href="#服务" class="headerlink" title="服务"></a>服务</h1><p>服务对象是一个特殊的LoadBalanceer类型的服务，可以通过服务对外共该的ip访问pod</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl get svc &#x2F;&#x2F;列出所有服务，-o wide 可查看详细数据</span><br><span class="line">&#x2F;&#x2F; 详细数据中的EXTERNAL-IP 是对外开放的ip</span><br></pre></td></tr></table></figure>
+
+<h1 id="RS"><a href="#RS" class="headerlink" title="RS"></a>RS</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl get rs &#x2F;&#x2F;查看rs信息，比如副本数</span><br><span class="line"></span><br><span class="line">kubectl scale rs my-rs-name  --replicas&#x3D;3 &#x2F;&#x2F;修改副本数</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>SRE</category>
+      </categories>
+      <tags>
+        <tag>K8s</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Kubernetes01-命令速查</title>
+    <url>/2021/05/06/Kubernetes01-%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/</url>
+    <content><![CDATA[<h1 id="展示集群信息"><a href="#展示集群信息" class="headerlink" title="展示集群信息"></a>展示集群信息</h1><p>kubectl cluster-info</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@k8s-master-dev:&#x2F;home&#x2F;richey kubectl cluster-info</span><br><span class="line">Kubernetes master is running at https:&#x2F;&#x2F;192.168.1.217:8443</span><br><span class="line">KubeDNS is running at https:&#x2F;&#x2F;192.168.1.217:8443&#x2F;api&#x2F;v1&#x2F;namespaces&#x2F;kube-system&#x2F;services&#x2F;kube-dns:dns&#x2F;proxy</span><br></pre></td></tr></table></figure>
+<h1 id="列出集群节点"><a href="#列出集群节点" class="headerlink" title="列出集群节点"></a>列出集群节点</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl get nodes</span><br></pre></td></tr></table></figure>
+
+<h1 id="查看节点的详细信息"><a href="#查看节点的详细信息" class="headerlink" title="查看节点的详细信息"></a>查看节点的详细信息</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl describe node node-name</span><br><span class="line">kubectl describe node &#x2F;&#x2F;不指定具体的node名，将展示所有的</span><br></pre></td></tr></table></figure>
+
+<h1 id="为kubectl配置别名和命令补齐"><a href="#为kubectl配置别名和命令补齐" class="headerlink" title="为kubectl配置别名和命令补齐"></a>为kubectl配置别名和命令补齐</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">alias k&#x3D;kubectl &#x2F;&#x2F;将此命令添加到~&#x2F;.bashrc文件中</span><br></pre></td></tr></table></figure>
+
+<h1 id="列出pod"><a href="#列出pod" class="headerlink" title="列出pod"></a>列出pod</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl get pods</span><br></pre></td></tr></table></figure>
+
+<h1 id="查看pod的yaml文件"><a href="#查看pod的yaml文件" class="headerlink" title="查看pod的yaml文件"></a>查看pod的yaml文件</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl get pod my-pode-name -o yaml  &#x2F;&#x2F;通过 -o yaml参数</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>SRE</category>
+      </categories>
+      <tags>
+        <tag>K8s</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>mongoDB系列06-mongoDB事务操作</title>
     <url>/2021/04/05/mongoDB%E7%B3%BB%E5%88%9706-mongoDB%E4%BA%8B%E5%8A%A1%E6%93%8D%E4%BD%9C/</url>
     <content><![CDATA[]]></content>
@@ -37,85 +239,6 @@
 
 <h2 id="删除索引"><a href="#删除索引" class="headerlink" title="删除索引"></a>删除索引</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.TestCollection98252.dropIndex(&quot;name_1&quot;)</span><br><span class="line">&#123; &quot;nIndexesWas&quot; : 2, &quot;ok&quot; : 1 &#125;</span><br><span class="line">&gt; db.TestCollection98252.getIndexes()</span><br><span class="line">[</span><br><span class="line">	&#123;</span><br><span class="line">		&quot;v&quot; : 2,</span><br><span class="line">		&quot;key&quot; : &#123;</span><br><span class="line">			&quot;_id&quot; : 1</span><br><span class="line">		&#125;,</span><br><span class="line">		&quot;name&quot; : &quot;_id_&quot;,</span><br><span class="line">		&quot;ns&quot; : &quot;test.TestCollection98252&quot;</span><br><span class="line">	&#125;</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"># 删除当前集合所有索引</span><br><span class="line">db.TestCollection98252.dropIndex()</span><br></pre></td></tr></table></figure>
 <h2 id="重建索引"><a href="#重建索引" class="headerlink" title="重建索引"></a>重建索引</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.page.reIndex()</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>mongoDB</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>mongoDB系列05-mongoDB数据模型设计</title>
-    <url>/2021/03/21/mongoDB%E7%B3%BB%E5%88%9705-mongoDB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/</url>
-    <content><![CDATA[<h1 id="JSON文档模型特点"><a href="#JSON文档模型特点" class="headerlink" title="JSON文档模型特点"></a>JSON文档模型特点</h1><p>在传统关系模型中需要多张表关联的模型，在json文档模型中可以通过一个表（集合）完成</p>
-<p>文档模型设计主要考虑两点：性能和开发易用</p>
-<h1 id="几个概念"><a href="#几个概念" class="headerlink" title="几个概念"></a>几个概念</h1><ul>
-<li>集合：同关系数据库中的表</li>
-<li>字段：同关系数据库中的列</li>
-<li>内嵌数组，引用字段：类似于关系数据库的主外键，关联关系</li>
-</ul>
-<h1 id="1-1关系建模"><a href="#1-1关系建模" class="headerlink" title="1-1关系建模"></a>1-1关系建模</h1><ul>
-<li>一对一关系以内嵌为主,作为子文档形式或者直接在顶级</li>
-<li>如果内嵌后导致文档大小超过16M,则不建议内嵌</li>
-</ul>
-<blockquote>
-<p>mongoDB文档大小不能超过16M</p>
-</blockquote>
-<h1 id="1-N关系建模"><a href="#1-N关系建模" class="headerlink" title="1-N关系建模"></a>1-N关系建模</h1><ul>
-<li>一对多关系同样以内嵌为主</li>
-<li>用数组表示一对多</li>
-<li>同样如果文档大小超过16M或数组长度太大（数万或更多）或数组长度不确定则不使用内嵌</li>
-</ul>
-<h1 id="N-N关系模型"><a href="#N-N关系模型" class="headerlink" title="N-N关系模型"></a>N-N关系模型</h1><ul>
-<li><p>不通过映射表做，同样建议通过内嵌数组表示一对多，通过冗余来实现N-N</p>
-</li>
-<li><p>同样如果文档大小超过16M或数组长度太大（数万或更多）或数组长度不确定则不使用内嵌</p>
-<p>在mongoDB里面有些时候是允许甚至鼓励做冗余的</p>
-<p>在mongoDB建模中，内嵌是一种重要的方式,但是内嵌不是万能的，根据具体情况我也需要建立文档间的引用关系</p>
-</li>
-</ul>
-<h1 id="根据业务需求细化建模"><a href="#根据业务需求细化建模" class="headerlink" title="根据业务需求细化建模"></a>根据业务需求细化建模</h1><p>首先要收集确认需求：</p>
-<ul>
-<li><p>读写比例</p>
-</li>
-<li><p>查询方式，比如查询最近几天，查询参数,以及最频繁的查询方式是什么</p>
-</li>
-<li><p>最频繁的写入方式是什么</p>
-</li>
-<li><p>数据量大小,将低频查询且数据量较大的数据单独集合保存，建立关联关系</p>
-<p>基于这些需求，我们最终决定是使用引用来避免性能瓶颈还是使用冗余来优化访问性能.</p>
-<p>比如内嵌模型通过冗余的方式实现N-N时，加入在数据量大的情况下，我们可能面临大量的修改操作(对冗余的数据进行修改),此时就需要设计为关联的方式,<br>将关联关系独立出一张表来，然后依然通过数组冗余的方式维护关系，只不过此时我们冗余的不是具体的数据，而是冗余表的主键数组</p>
-<p>这种通过冗余+关联的设计，我们可以通过$lookup的方式进行（多表）查询，类似mysql中的join</p>
-</li>
-</ul>
-<p>总结，什么时候应该使用引用的方式查询：</p>
-<ul>
-<li>内嵌文档太大，数MB或则超过16MB</li>
-<li>内嵌文档或者数组元素会频繁修改</li>
-<li>内嵌数组元素会持续增长且没有封顶</li>
-</ul>
-<h1 id="mongoDB引用设计的限制"><a href="#mongoDB引用设计的限制" class="headerlink" title="mongoDB引用设计的限制"></a>mongoDB引用设计的限制</h1><ul>
-<li>引用集合之间无主外键检查</li>
-<li>使用$lookup的方式模仿关联查询</li>
-<li>$lookup只支持left outer join</li>
-<li>$lookup的关联目标(from)不能是分片表</li>
-</ul>
-<h1 id="常用的设计模式"><a href="#常用的设计模式" class="headerlink" title="常用的设计模式"></a>常用的设计模式</h1><h2 id="分桶模式"><a href="#分桶模式" class="headerlink" title="分桶模式"></a>分桶模式</h2><p>批量保存概念，节省索引和公共字段的存储空间。</p>
-<p>通过分桶模式可以大大减少文档数量和索引的占用空间</p>
-<h2 id="列转行"><a href="#列转行" class="headerlink" title="列转行"></a>列转行</h2><p>将多列数据转换成一行数据，将多列的信息放到行内的数组中维护</p>
-<p>这样如果我们本来需要对这些列建分别建索引（可能几十个），现在只需要建一个就够了.此模式解决的是索引过多的问题</p>
-<p>索引太多影响插入效率的问题就解决了</p>
-<p>注意的是只有这些列能抽象成一个对象表示时才可行(否则我们从语义上也无法实现列转行)</p>
-<h2 id="版本管理"><a href="#版本管理" class="headerlink" title="版本管理"></a>版本管理</h2><p>模型灵活了，如何管理文档的不同版本？</p>
-<p>可以增加一个版本字段：”schema_version”</p>
-<p>这样我们可以根据版本进行过滤，同时可以根据版本进行规则设置</p>
-<h2 id="近似计算"><a href="#近似计算" class="headerlink" title="近似计算"></a>近似计算</h2><p>对于请求量大同时准确性要求不高的统计，我们可以采用近似计算的方式：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if random(0,9) &#x3D;&#x3D; 0</span><br><span class="line">  increment by 10</span><br></pre></td></tr></table></figure>
-
-<p>可大量减少写入操作</p>
-<h2 id="预聚合"><a href="#预聚合" class="headerlink" title="预聚合"></a>预聚合</h2><p>增加统计字段，在进行数据修改的同时，修改这些统计字段的值，这样就可以避免聚合查询带来的性能和资源问题。</p>
-<p>这里是利用了mongoDB文档模型的灵活性，增加了聚合字段，而不影响正常业务数据</p>
 ]]></content>
       <categories>
         <category>DB</category>
@@ -258,6 +381,85 @@
       </categories>
   </entry>
   <entry>
+    <title>mongoDB系列05-mongoDB数据模型设计</title>
+    <url>/2021/03/21/mongoDB%E7%B3%BB%E5%88%9705-mongoDB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/</url>
+    <content><![CDATA[<h1 id="JSON文档模型特点"><a href="#JSON文档模型特点" class="headerlink" title="JSON文档模型特点"></a>JSON文档模型特点</h1><p>在传统关系模型中需要多张表关联的模型，在json文档模型中可以通过一个表（集合）完成</p>
+<p>文档模型设计主要考虑两点：性能和开发易用</p>
+<h1 id="几个概念"><a href="#几个概念" class="headerlink" title="几个概念"></a>几个概念</h1><ul>
+<li>集合：同关系数据库中的表</li>
+<li>字段：同关系数据库中的列</li>
+<li>内嵌数组，引用字段：类似于关系数据库的主外键，关联关系</li>
+</ul>
+<h1 id="1-1关系建模"><a href="#1-1关系建模" class="headerlink" title="1-1关系建模"></a>1-1关系建模</h1><ul>
+<li>一对一关系以内嵌为主,作为子文档形式或者直接在顶级</li>
+<li>如果内嵌后导致文档大小超过16M,则不建议内嵌</li>
+</ul>
+<blockquote>
+<p>mongoDB文档大小不能超过16M</p>
+</blockquote>
+<h1 id="1-N关系建模"><a href="#1-N关系建模" class="headerlink" title="1-N关系建模"></a>1-N关系建模</h1><ul>
+<li>一对多关系同样以内嵌为主</li>
+<li>用数组表示一对多</li>
+<li>同样如果文档大小超过16M或数组长度太大（数万或更多）或数组长度不确定则不使用内嵌</li>
+</ul>
+<h1 id="N-N关系模型"><a href="#N-N关系模型" class="headerlink" title="N-N关系模型"></a>N-N关系模型</h1><ul>
+<li><p>不通过映射表做，同样建议通过内嵌数组表示一对多，通过冗余来实现N-N</p>
+</li>
+<li><p>同样如果文档大小超过16M或数组长度太大（数万或更多）或数组长度不确定则不使用内嵌</p>
+<p>在mongoDB里面有些时候是允许甚至鼓励做冗余的</p>
+<p>在mongoDB建模中，内嵌是一种重要的方式,但是内嵌不是万能的，根据具体情况我也需要建立文档间的引用关系</p>
+</li>
+</ul>
+<h1 id="根据业务需求细化建模"><a href="#根据业务需求细化建模" class="headerlink" title="根据业务需求细化建模"></a>根据业务需求细化建模</h1><p>首先要收集确认需求：</p>
+<ul>
+<li><p>读写比例</p>
+</li>
+<li><p>查询方式，比如查询最近几天，查询参数,以及最频繁的查询方式是什么</p>
+</li>
+<li><p>最频繁的写入方式是什么</p>
+</li>
+<li><p>数据量大小,将低频查询且数据量较大的数据单独集合保存，建立关联关系</p>
+<p>基于这些需求，我们最终决定是使用引用来避免性能瓶颈还是使用冗余来优化访问性能.</p>
+<p>比如内嵌模型通过冗余的方式实现N-N时，加入在数据量大的情况下，我们可能面临大量的修改操作(对冗余的数据进行修改),此时就需要设计为关联的方式,<br>将关联关系独立出一张表来，然后依然通过数组冗余的方式维护关系，只不过此时我们冗余的不是具体的数据，而是冗余表的主键数组</p>
+<p>这种通过冗余+关联的设计，我们可以通过$lookup的方式进行（多表）查询，类似mysql中的join</p>
+</li>
+</ul>
+<p>总结，什么时候应该使用引用的方式查询：</p>
+<ul>
+<li>内嵌文档太大，数MB或则超过16MB</li>
+<li>内嵌文档或者数组元素会频繁修改</li>
+<li>内嵌数组元素会持续增长且没有封顶</li>
+</ul>
+<h1 id="mongoDB引用设计的限制"><a href="#mongoDB引用设计的限制" class="headerlink" title="mongoDB引用设计的限制"></a>mongoDB引用设计的限制</h1><ul>
+<li>引用集合之间无主外键检查</li>
+<li>使用$lookup的方式模仿关联查询</li>
+<li>$lookup只支持left outer join</li>
+<li>$lookup的关联目标(from)不能是分片表</li>
+</ul>
+<h1 id="常用的设计模式"><a href="#常用的设计模式" class="headerlink" title="常用的设计模式"></a>常用的设计模式</h1><h2 id="分桶模式"><a href="#分桶模式" class="headerlink" title="分桶模式"></a>分桶模式</h2><p>批量保存概念，节省索引和公共字段的存储空间。</p>
+<p>通过分桶模式可以大大减少文档数量和索引的占用空间</p>
+<h2 id="列转行"><a href="#列转行" class="headerlink" title="列转行"></a>列转行</h2><p>将多列数据转换成一行数据，将多列的信息放到行内的数组中维护</p>
+<p>这样如果我们本来需要对这些列建分别建索引（可能几十个），现在只需要建一个就够了.此模式解决的是索引过多的问题</p>
+<p>索引太多影响插入效率的问题就解决了</p>
+<p>注意的是只有这些列能抽象成一个对象表示时才可行(否则我们从语义上也无法实现列转行)</p>
+<h2 id="版本管理"><a href="#版本管理" class="headerlink" title="版本管理"></a>版本管理</h2><p>模型灵活了，如何管理文档的不同版本？</p>
+<p>可以增加一个版本字段：”schema_version”</p>
+<p>这样我们可以根据版本进行过滤，同时可以根据版本进行规则设置</p>
+<h2 id="近似计算"><a href="#近似计算" class="headerlink" title="近似计算"></a>近似计算</h2><p>对于请求量大同时准确性要求不高的统计，我们可以采用近似计算的方式：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if random(0,9) &#x3D;&#x3D; 0</span><br><span class="line">  increment by 10</span><br></pre></td></tr></table></figure>
+
+<p>可大量减少写入操作</p>
+<h2 id="预聚合"><a href="#预聚合" class="headerlink" title="预聚合"></a>预聚合</h2><p>增加统计字段，在进行数据修改的同时，修改这些统计字段的值，这样就可以避免聚合查询带来的性能和资源问题。</p>
+<p>这里是利用了mongoDB文档模型的灵活性，增加了聚合字段，而不影响正常业务数据</p>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>mongoDB</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>mongoDB系列00-MongoDB数据库选型</title>
     <url>/2021/03/20/mongoDB%E7%B3%BB%E5%88%9700-MongoDB%E6%95%B0%E6%8D%AE%E5%BA%93%E9%80%89%E5%9E%8B/</url>
     <content><![CDATA[<h1 id="基本"><a href="#基本" class="headerlink" title="基本"></a>基本</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; show dbs</span><br><span class="line">admin   0.000GB</span><br><span class="line">config  0.000GB</span><br><span class="line">local   0.000GB</span><br><span class="line">mock    0.047GB</span><br><span class="line">salary  0.000GB</span><br><span class="line">test    0.000GB</span><br><span class="line">&gt; use salary</span><br><span class="line">switched to db salary</span><br><span class="line">&gt; show collections</span><br><span class="line">payslip</span><br><span class="line">&gt; db</span><br><span class="line">salary</span><br></pre></td></tr></table></figure>
@@ -319,6 +521,82 @@
 </li>
 </ul>
 <h1 id="聚合查询"><a href="#聚合查询" class="headerlink" title="聚合查询"></a>聚合查询</h1><p>可以使用compass工具方便的生成聚合逻辑<br>//todo </p>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>mongoDB</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>mongoDB系列01-mongoDB基础</title>
+    <url>/2021/03/06/mongoDB%E7%B3%BB%E5%88%9701-mongoDB%E5%9F%BA%E7%A1%80/</url>
+    <content><![CDATA[<h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><table>
+<thead>
+<tr>
+<th>SQL术语/概念</th>
+<th align="center">MongoDB术语/概念</th>
+<th align="right">解释/说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>database</td>
+<td align="center">database</td>
+<td align="right">数据库</td>
+</tr>
+<tr>
+<td>table</td>
+<td align="center">collection</td>
+<td align="right">数据库表/集合</td>
+</tr>
+<tr>
+<td>row</td>
+<td align="center">document</td>
+<td align="right">数据记录行/文档</td>
+</tr>
+<tr>
+<td>column</td>
+<td align="center">field</td>
+<td align="right">数据字段/域</td>
+</tr>
+<tr>
+<td>index</td>
+<td align="center">index</td>
+<td align="right">索引</td>
+</tr>
+<tr>
+<td>table joins</td>
+<td align="center"></td>
+<td align="right">表连接,MongoDB不支持</td>
+</tr>
+<tr>
+<td>primary key</td>
+<td align="center">primary key</td>
+<td align="right">主键,MongoDB自动将_id字段设置为主键</td>
+</tr>
+</tbody></table>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>版本选择：</p>
+<ul>
+<li>企业版</li>
+<li>社区版 所有环境免费使用</li>
+<li>TGZ server mongos tools 和 shell</li>
+</ul>
+<p><a href="https://www.mongodb.com/try/download/community" target="_blank" rel="noopener">下载地址:https://www.mongodb.com/try/download/community</a></p>
+<p>选择好版本后可以生成下载连接,以命令行操作为例：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 创建目录,mongod 默认会使用/data/db目录进行数据存储</span></span><br><span class="line">sudo mkdir -p /data /data/db</span><br><span class="line"></span><br><span class="line">cd /data</span><br><span class="line"><span class="meta">#</span><span class="bash"> 下载安装mongodb</span></span><br><span class="line">curl -O sudo curl -O https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel80-4.2.13-rc1.tgz </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 解压缩</span></span><br><span class="line"></span><br><span class="line">(base) [richey@localhost data]$ sudo tar -xvf mongodb-linux-x86_64-rhel80-4.2.13-rc1.tgz </span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/THIRD-PARTY-NOTICES.gotools</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/README</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/THIRD-PARTY-NOTICES</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/MPL-2</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/LICENSE-Community.txt</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongodump</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongorestore</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongoexport</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongoimport</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongostat</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongotop</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/bsondump</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongofiles</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongoreplay</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongod</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongos</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongo</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/install_compass</span><br><span class="line">(base) [richey@localhost data]$ ls</span><br><span class="line">db  mongodb-linux-x86_64-rhel80-4.2.13-rc1  mongodb-linux-x86_64-rhel80-4.2.13-rc1.tgz</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 配置环境变量</span></span><br><span class="line">export PATH=$PATH:/data/mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin</span><br><span class="line"><span class="meta">#</span><span class="bash"> 永久配置</span></span><br><span class="line">sudo vim /etc/profile</span><br><span class="line">在文件最后添加：</span><br><span class="line">export PATH=$PATH:/data/mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin</span><br><span class="line">使配置立马剩下</span><br><span class="line">source /etc/profile</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 此时mongodb就配置好了,可以输入mongod启动服务</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="直接使用mongodb云服务"><a href="#直接使用mongodb云服务" class="headerlink" title="直接使用mongodb云服务"></a>直接使用mongodb云服务</h1><p>也可以在mongodb官网直接注册，可以创建一个免费的mongodb云存储服务</p>
+<p>创建好后可以配置连接方式，创建用户名密码<br><img src="https://blog-pic-1254088127.picsh.myqcloud.com/Clusters-Atlas-MongoDB-Atlas.png" alt="配置mongodb 云服务"></p>
+<p>选择连接方式<br>![配置mongodb 云服务](<a href="https://blog-pic-1254088127.picsh.myqcloud.com/Clusters-Atlas-MongoDB-Atlas" target="_blank" rel="noopener">https://blog-pic-1254088127.picsh.myqcloud.com/Clusters-Atlas-MongoDB-Atlas</a> -2.png)</p>
+<p>我们已经在本地安装了mongodb，可以选择在shell中连接，复制上面的地址在本地执行，输入密码即可连接</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">MongoDB Enterprise atlas-zh2gha-shard-0:PRIMARY&gt; show dbs</span><br><span class="line">2021-03-06T16:11:21.925+0800 I  CONNPOOL [ReplicaSetMonitor-TaskExecutor] Connecting to cluster0-shard-00-02.leoli.mongodb.net:27017</span><br><span class="line">admin  0.000GB</span><br><span class="line">local  1.253GB</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="安装图形化管理工具Compass"><a href="#安装图形化管理工具Compass" class="headerlink" title="安装图形化管理工具Compass"></a>安装图形化管理工具Compass</h1><p>去官网下载合适的包,安装即可</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">(base) [richey@localhost opt]$ sudo rpm -ivh mongodb-compass-1.26.0.x86_64.rpm </span><br><span class="line">警告：mongodb-compass-1.26.0.x86_64.rpm: 头V3 RSA&#x2F;SHA1 Signature, 密钥 ID ea312927: NOKEY</span><br><span class="line">Verifying...                          ################################# [100%]</span><br><span class="line">准备中...                          ################################# [100%]</span><br><span class="line">正在升级&#x2F;安装...</span><br><span class="line">   1:mongodb-compass-1.26.0-1.el7     ################################# [100%]</span><br></pre></td></tr></table></figure>
+
+
 ]]></content>
       <categories>
         <category>DB</category>
@@ -460,258 +738,6 @@
       </categories>
       <tags>
         <tag>mongoDB</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>mongoDB系列01-mongoDB基础</title>
-    <url>/2021/03/06/mongoDB%E7%B3%BB%E5%88%9701-mongoDB%E5%9F%BA%E7%A1%80/</url>
-    <content><![CDATA[<h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><table>
-<thead>
-<tr>
-<th>SQL术语/概念</th>
-<th align="center">MongoDB术语/概念</th>
-<th align="right">解释/说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>database</td>
-<td align="center">database</td>
-<td align="right">数据库</td>
-</tr>
-<tr>
-<td>table</td>
-<td align="center">collection</td>
-<td align="right">数据库表/集合</td>
-</tr>
-<tr>
-<td>row</td>
-<td align="center">document</td>
-<td align="right">数据记录行/文档</td>
-</tr>
-<tr>
-<td>column</td>
-<td align="center">field</td>
-<td align="right">数据字段/域</td>
-</tr>
-<tr>
-<td>index</td>
-<td align="center">index</td>
-<td align="right">索引</td>
-</tr>
-<tr>
-<td>table joins</td>
-<td align="center"></td>
-<td align="right">表连接,MongoDB不支持</td>
-</tr>
-<tr>
-<td>primary key</td>
-<td align="center">primary key</td>
-<td align="right">主键,MongoDB自动将_id字段设置为主键</td>
-</tr>
-</tbody></table>
-<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>版本选择：</p>
-<ul>
-<li>企业版</li>
-<li>社区版 所有环境免费使用</li>
-<li>TGZ server mongos tools 和 shell</li>
-</ul>
-<p><a href="https://www.mongodb.com/try/download/community" target="_blank" rel="noopener">下载地址:https://www.mongodb.com/try/download/community</a></p>
-<p>选择好版本后可以生成下载连接,以命令行操作为例：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 创建目录,mongod 默认会使用/data/db目录进行数据存储</span></span><br><span class="line">sudo mkdir -p /data /data/db</span><br><span class="line"></span><br><span class="line">cd /data</span><br><span class="line"><span class="meta">#</span><span class="bash"> 下载安装mongodb</span></span><br><span class="line">curl -O sudo curl -O https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel80-4.2.13-rc1.tgz </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 解压缩</span></span><br><span class="line"></span><br><span class="line">(base) [richey@localhost data]$ sudo tar -xvf mongodb-linux-x86_64-rhel80-4.2.13-rc1.tgz </span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/THIRD-PARTY-NOTICES.gotools</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/README</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/THIRD-PARTY-NOTICES</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/MPL-2</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/LICENSE-Community.txt</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongodump</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongorestore</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongoexport</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongoimport</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongostat</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongotop</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/bsondump</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongofiles</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongoreplay</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongod</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongos</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongo</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/install_compass</span><br><span class="line">(base) [richey@localhost data]$ ls</span><br><span class="line">db  mongodb-linux-x86_64-rhel80-4.2.13-rc1  mongodb-linux-x86_64-rhel80-4.2.13-rc1.tgz</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 配置环境变量</span></span><br><span class="line">export PATH=$PATH:/data/mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin</span><br><span class="line"><span class="meta">#</span><span class="bash"> 永久配置</span></span><br><span class="line">sudo vim /etc/profile</span><br><span class="line">在文件最后添加：</span><br><span class="line">export PATH=$PATH:/data/mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin</span><br><span class="line">使配置立马剩下</span><br><span class="line">source /etc/profile</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 此时mongodb就配置好了,可以输入mongod启动服务</span></span><br></pre></td></tr></table></figure>
-
-<h1 id="直接使用mongodb云服务"><a href="#直接使用mongodb云服务" class="headerlink" title="直接使用mongodb云服务"></a>直接使用mongodb云服务</h1><p>也可以在mongodb官网直接注册，可以创建一个免费的mongodb云存储服务</p>
-<p>创建好后可以配置连接方式，创建用户名密码<br><img src="https://blog-pic-1254088127.picsh.myqcloud.com/Clusters-Atlas-MongoDB-Atlas.png" alt="配置mongodb 云服务"></p>
-<p>选择连接方式<br>![配置mongodb 云服务](<a href="https://blog-pic-1254088127.picsh.myqcloud.com/Clusters-Atlas-MongoDB-Atlas" target="_blank" rel="noopener">https://blog-pic-1254088127.picsh.myqcloud.com/Clusters-Atlas-MongoDB-Atlas</a> -2.png)</p>
-<p>我们已经在本地安装了mongodb，可以选择在shell中连接，复制上面的地址在本地执行，输入密码即可连接</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">MongoDB Enterprise atlas-zh2gha-shard-0:PRIMARY&gt; show dbs</span><br><span class="line">2021-03-06T16:11:21.925+0800 I  CONNPOOL [ReplicaSetMonitor-TaskExecutor] Connecting to cluster0-shard-00-02.leoli.mongodb.net:27017</span><br><span class="line">admin  0.000GB</span><br><span class="line">local  1.253GB</span><br></pre></td></tr></table></figure>
-
-
-<h1 id="安装图形化管理工具Compass"><a href="#安装图形化管理工具Compass" class="headerlink" title="安装图形化管理工具Compass"></a>安装图形化管理工具Compass</h1><p>去官网下载合适的包,安装即可</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">(base) [richey@localhost opt]$ sudo rpm -ivh mongodb-compass-1.26.0.x86_64.rpm </span><br><span class="line">警告：mongodb-compass-1.26.0.x86_64.rpm: 头V3 RSA&#x2F;SHA1 Signature, 密钥 ID ea312927: NOKEY</span><br><span class="line">Verifying...                          ################################# [100%]</span><br><span class="line">准备中...                          ################################# [100%]</span><br><span class="line">正在升级&#x2F;安装...</span><br><span class="line">   1:mongodb-compass-1.26.0-1.el7     ################################# [100%]</span><br></pre></td></tr></table></figure>
-
-
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>mongoDB</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Kubernetes04-集群搭建</title>
-    <url>/2021/03/06/Kubernetes04-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/</url>
-    <content><![CDATA[<h1 id="准备3台服务器"><a href="#准备3台服务器" class="headerlink" title="准备3台服务器"></a>准备3台服务器</h1><p>这里我们用虚拟机装3个节点：node1,node2,node3</p>
-<p>如果安装的时候没有设置好主机名，可以手动再设置一下，给个名字方便操作：</p>
-<p>hostnamectl set-hostname node1  //node2 node3</p>
-<h2 id="设置静态ip"><a href="#设置静态ip" class="headerlink" title="设置静态ip"></a>设置静态ip</h2><p>最好将节点的ip设置成静态的（不能随便变）,这里3个节点装的是ubuntu 20.04 server,设置方法如下：</p>
-<p>ifconfig //列出系统中所有连接的网络接口</p>
-<p><img src="https://blog-pic-1254088127.picsh.myqcloud.com/ifconfig-20210523.png" alt="ifconfig"></p>
-<p>我们将ens33以太网网络接口配置一个静态IP</p>
-<p>vim /etc/netplan/xxx-yaml</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">network:</span><br><span class="line">  ethernets:</span><br><span class="line">    ens33:</span><br><span class="line">      addresses:</span><br><span class="line">      - 172.16.250.128&#x2F;24</span><br><span class="line">      dhcp4: false</span><br><span class="line">      gateway4: 172.16.250.2</span><br><span class="line">      nameservers:</span><br><span class="line">        addresses:</span><br><span class="line">          - 8.8.8.8</span><br><span class="line">  version: 2</span><br></pre></td></tr></table></figure>
-<p>如果YAML文件不是由发行版安装程序创建的，则可以使用此命令为渲染器生成所需的配置。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo netplan generate</span><br></pre></td></tr></table></figure>
-<p>保存该文件并退出。然后使用以下netplan命令应用最近的网络更改。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo netplan apply</span><br></pre></td></tr></table></figure>
-
-<p>将3个节点全部设置成静态ip</p>
-<h2 id="修改域名文件"><a href="#修改域名文件" class="headerlink" title="修改域名文件"></a>修改域名文件</h2><p>vim /etc/hosts</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">172.16.250.128 node1</span><br><span class="line">172.16.250.129 node2</span><br><span class="line">172.16.250.131 node3</span><br></pre></td></tr></table></figure>
-<p>scp /etc/hosts <a href="mailto:root@172.16.250.129">root@172.16.250.129</a>:/etc/hosts<br>scp /etc/hosts <a href="mailto:root@172.16.250.131">root@172.16.250.131</a>:/etc/hosts</p>
-<h1 id="时区"><a href="#时区" class="headerlink" title="时区"></a>时区</h1><p>务必保证3台服务器的时区是一样的，强制更改时区为上海，执行以下命令</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ln -snf &#x2F;usr&#x2F;share&#x2F;zoneinfo&#x2F;Asia&#x2F;Shanghai &#x2F;etc&#x2F;localtime</span><br><span class="line">bash -c &quot;echo &#39;Asia&#x2F;Shanghai&#39; &gt; &#x2F;etc&#x2F;timezone&quot;</span><br></pre></td></tr></table></figure>
-
-<p>安装ntpdate</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">apt-get install -y ntpdate</span><br></pre></td></tr></table></figure>
-<p>如果出现以下错误：</p>
-<p>E: Could not get lock /var/lib/dpkg/lock - open (11: Resource temporarily unavailable)<br>E: Unable to lock the administration directory (/var/lib/dpkg/), is another process using it?</p>
-<p>执行2个命令解决</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo rm &#x2F;var&#x2F;cache&#x2F;apt&#x2F;archives&#x2F;lock</span><br><span class="line">sudo rm &#x2F;var&#x2F;lib&#x2F;dpkg&#x2F;lock</span><br></pre></td></tr></table></figure>
-
-<p>使用阿里云的时间服务器更新</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ntpdate ntp1.aliyun.com</span><br><span class="line">i</span><br></pre></td></tr></table></figure>
-<p>3台服务器都执行一下，确保时间一致.</p>
-<h1 id="安装docker"><a href="#安装docker" class="headerlink" title="安装docker"></a>安装docker</h1><p>所有节点都要安装。<br>如果使用docker作为k8s容器，则docker是必须要安装的。</p>
-<p>更新apt源并添加https支持</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt-get update &amp;&amp; sudo apt-get install apt-transport-https ca-certificates curl software-properties-common -y</span><br></pre></td></tr></table></figure>
-
-<p>使用utc源添加GPG Key</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl -fsSL https:&#x2F;&#x2F;mirrors.ustc.edu.cn&#x2F;docker-ce&#x2F;linux&#x2F;ubuntu&#x2F;gpg | sudo apt-key add</span><br></pre></td></tr></table></figure>
-
-<p>添加Docker-ce稳定版源地址</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo add-apt-repository &quot;deb [arch&#x3D;amd64] https:&#x2F;&#x2F;mirrors.ustc.edu.cn&#x2F;docker-ce&#x2F;linux&#x2F;ubuntu $(lsb_release -cs) stable&quot;</span><br></pre></td></tr></table></figure>
-
-<p>安装docker</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line">apt-cache madison docker-ce &#x2F;&#x2F; List the versions available in your repo</span><br><span class="line">sudo apt install docker-ce&#x3D;5:19.03.9~3-0~ubuntu-focal</span><br></pre></td></tr></table></figure>
-
-
-
-<p>3个节点都要安装</p>
-<h1 id="安装kubernetes组件"><a href="#安装kubernetes组件" class="headerlink" title="安装kubernetes组件"></a>安装kubernetes组件</h1><ul>
-<li>kubeadm：引导集群的命令。</li>
-<li>kubelet：在群集中所有计算机上运行的组件，它执行诸如启动Pod和容器之类的操作。</li>
-<li>kubectl：用于与您的集群通信的命令行工具。</li>
-</ul>
-<p>所有节点都需要安装：</p>
-<p>添加apt key及源</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt update &amp;&amp; sudo apt install -y apt-transport-https curl</span><br><span class="line"></span><br><span class="line">curl -s https:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;kubernetes&#x2F;apt&#x2F;doc&#x2F;apt-key.gpg | sudo apt-key add -</span><br><span class="line"></span><br><span class="line">echo &quot;deb https:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;kubernetes&#x2F;apt&#x2F; kubernetes-xenial main&quot; &gt;&gt;&#x2F;etc&#x2F;apt&#x2F;sources.list.d&#x2F;kubernetes.list</span><br></pre></td></tr></table></figure>
-<p>安装</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">sudo apt update</span><br><span class="line">sudo apt install -y kubelet&#x3D;1.15.2-00 kubeadm&#x3D;1.15.2-00 kubectl&#x3D;1.15.2-00</span><br><span class="line">sudo apt-mark hold kubelet&#x3D;1.15.2-00 kubeadm&#x3D;1.15.2-00 kubectl&#x3D;1.15.2-00</span><br></pre></td></tr></table></figure>
-<h1 id="禁用swap"><a href="#禁用swap" class="headerlink" title="禁用swap"></a>禁用swap</h1><p>所有节点都要操作（这里node1，node2，node3）</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo sed -i &#39;&#x2F;swap&#x2F; s&#x2F;^&#x2F;#&#x2F;&#39; &#x2F;etc&#x2F;fstab</span><br><span class="line">sudo swapoff -a</span><br></pre></td></tr></table></figure>
-
-
-<h1 id="安装kubernetes集群"><a href="#安装kubernetes集群" class="headerlink" title="安装kubernetes集群"></a>安装kubernetes集群</h1><p>只在master节点安装即可，这里我们用node1做master节点</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo kubeadm init --image-repository registry.aliyuncs.com&#x2F;google_containers --kubernetes-version v1.15.2 --pod-network-cidr&#x3D;192.169.0.0&#x2F;16</span><br><span class="line"></span><br><span class="line">[init] Using Kubernetes version: v1.15.2</span><br><span class="line">[preflight] Running pre-flight checks</span><br><span class="line">	[WARNING IsDockerSystemdCheck]: detected &quot;cgroupfs&quot; as the Docker cgroup driver. The recommended driver is &quot;systemd&quot;. Please follow the guide at https:&#x2F;&#x2F;kubernetes.io&#x2F;docs&#x2F;setup&#x2F;cri&#x2F;</span><br><span class="line">	[WARNING SystemVerification]: this Docker version is not on the list of validated versions: 19.03.9. Latest validated version: 18.09</span><br><span class="line">[preflight] Pulling images required for setting up a Kubernetes cluster</span><br><span class="line">[preflight] This might take a minute or two, depending on the speed of your internet connection</span><br><span class="line">[preflight] You can also perform this action in beforehand using &#39;kubeadm config images pull&#39;</span><br><span class="line">[kubelet-start] Writing kubelet environment file with flags to file &quot;&#x2F;var&#x2F;lib&#x2F;kubelet&#x2F;kubeadm-flags.env&quot;</span><br><span class="line">[kubelet-start] Writing kubelet configuration to file &quot;&#x2F;var&#x2F;lib&#x2F;kubelet&#x2F;config.yaml&quot;</span><br><span class="line">[kubelet-start] Activating the kubelet service</span><br><span class="line">[certs] Using certificateDir folder &quot;&#x2F;etc&#x2F;kubernetes&#x2F;pki&quot;</span><br><span class="line">[certs] Generating &quot;etcd&#x2F;ca&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;etcd&#x2F;server&quot; certificate and key</span><br><span class="line">[certs] etcd&#x2F;server serving cert is signed for DNS names [node1 localhost] and IPs [172.16.250.128 127.0.0.1 ::1]</span><br><span class="line">[certs] Generating &quot;etcd&#x2F;peer&quot; certificate and key</span><br><span class="line">[certs] etcd&#x2F;peer serving cert is signed for DNS names [node1 localhost] and IPs [172.16.250.128 127.0.0.1 ::1]</span><br><span class="line">[certs] Generating &quot;etcd&#x2F;healthcheck-client&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;apiserver-etcd-client&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;ca&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;apiserver-kubelet-client&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;apiserver&quot; certificate and key</span><br><span class="line">[certs] apiserver serving cert is signed for DNS names [node1 kubernetes kubernetes.default kubernetes.default.svc kubernetes.default.svc.cluster.local] and IPs [10.96.0.1 172.16.250.128]</span><br><span class="line">[certs] Generating &quot;front-proxy-ca&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;front-proxy-client&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;sa&quot; key and public key</span><br><span class="line">[kubeconfig] Using kubeconfig folder &quot;&#x2F;etc&#x2F;kubernetes&quot;</span><br><span class="line">[kubeconfig] Writing &quot;admin.conf&quot; kubeconfig file</span><br><span class="line">[kubeconfig] Writing &quot;kubelet.conf&quot; kubeconfig file</span><br><span class="line">[kubeconfig] Writing &quot;controller-manager.conf&quot; kubeconfig file</span><br><span class="line">[kubeconfig] Writing &quot;scheduler.conf&quot; kubeconfig file</span><br><span class="line">[control-plane] Using manifest folder &quot;&#x2F;etc&#x2F;kubernetes&#x2F;manifests&quot;</span><br><span class="line">[control-plane] Creating static Pod manifest for &quot;kube-apiserver&quot;</span><br><span class="line">[control-plane] Creating static Pod manifest for &quot;kube-controller-manager&quot;</span><br><span class="line">[control-plane] Creating static Pod manifest for &quot;kube-scheduler&quot;</span><br><span class="line">[etcd] Creating static Pod manifest for local etcd in &quot;&#x2F;etc&#x2F;kubernetes&#x2F;manifests&quot;</span><br><span class="line">[wait-control-plane] Waiting for the kubelet to boot up the control plane as static Pods from directory &quot;&#x2F;etc&#x2F;kubernetes&#x2F;manifests&quot;. This can take up to 4m0s</span><br><span class="line">[apiclient] All control plane components are healthy after 16.004480 seconds</span><br><span class="line">[upload-config] Storing the configuration used in ConfigMap &quot;kubeadm-config&quot; in the &quot;kube-system&quot; Namespace</span><br><span class="line">[kubelet] Creating a ConfigMap &quot;kubelet-config-1.15&quot; in namespace kube-system with the configuration for the kubelets in the cluster</span><br><span class="line">[upload-certs] Skipping phase. Please see --upload-certs</span><br><span class="line">[mark-control-plane] Marking the node node1 as control-plane by adding the label &quot;node-role.kubernetes.io&#x2F;master&#x3D;&#39;&#39;&quot;</span><br><span class="line">[mark-control-plane] Marking the node node1 as control-plane by adding the taints [node-role.kubernetes.io&#x2F;master:NoSchedule]</span><br><span class="line">[bootstrap-token] Using token: yq1qjo.00jrgi61fik1rnuc</span><br><span class="line">[bootstrap-token] Configuring bootstrap tokens, cluster-info ConfigMap, RBAC Roles</span><br><span class="line">[bootstrap-token] configured RBAC rules to allow Node Bootstrap tokens to post CSRs in order for nodes to get long term certificate credentials</span><br><span class="line">[bootstrap-token] configured RBAC rules to allow the csrapprover controller automatically approve CSRs from a Node Bootstrap Token</span><br><span class="line">[bootstrap-token] configured RBAC rules to allow certificate rotation for all node client certificates in the cluster</span><br><span class="line">[bootstrap-token] Creating the &quot;cluster-info&quot; ConfigMap in the &quot;kube-public&quot; namespace</span><br><span class="line">[addons] Applied essential addon: CoreDNS</span><br><span class="line">[addons] Applied essential addon: kube-proxy</span><br><span class="line"></span><br><span class="line">Your Kubernetes control-plane has initialized successfully!</span><br><span class="line"></span><br><span class="line">To start using your cluster, you need to run the following as a regular user:</span><br><span class="line"></span><br><span class="line">  mkdir -p $HOME&#x2F;.kube</span><br><span class="line">  sudo cp -i &#x2F;etc&#x2F;kubernetes&#x2F;admin.conf $HOME&#x2F;.kube&#x2F;config</span><br><span class="line">  sudo chown $(id -u):$(id -g) $HOME&#x2F;.kube&#x2F;config</span><br><span class="line"></span><br><span class="line">You should now deploy a pod network to the cluster.</span><br><span class="line">Run &quot;kubectl apply -f [podnetwork].yaml&quot; with one of the options listed at:</span><br><span class="line">  https:&#x2F;&#x2F;kubernetes.io&#x2F;docs&#x2F;concepts&#x2F;cluster-administration&#x2F;addons&#x2F;</span><br><span class="line"></span><br><span class="line">Then you can join any number of worker nodes by running the following on each as root:</span><br><span class="line"></span><br><span class="line">kubeadm join 172.16.250.128:6443 --token yq1qjo.00jrgi61fik1rnuc \</span><br><span class="line">    --discovery-token-ca-cert-hash sha256:fcb73171bb839f6dc6701880d9b863258f62992530aa04695e150798e56ef6ed</span><br></pre></td></tr></table></figure>
-
-<p>这样就初始化成功了，注意警告信息：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[WARNING IsDockerSystemdCheck]: detected &quot;cgroupfs&quot; as the Docker cgroup driver. The recommended driver is &quot;systemd&quot;. Please follow the guide at https:&#x2F;&#x2F;kubernetes.io&#x2F;docs&#x2F;setup&#x2F;cri&#x2F;</span><br></pre></td></tr></table></figure>
-<p>可以忽略，解决方法：</p>
-<p>修改或者创建 vim /etc/docker/daemon.json</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;exec-opts&quot;: [&quot;native.cgroupdriver&#x3D;systemd&quot;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="拷贝kubeconfig文件到家目录的-kube目录"><a href="#拷贝kubeconfig文件到家目录的-kube目录" class="headerlink" title="拷贝kubeconfig文件到家目录的.kube目录"></a>拷贝kubeconfig文件到家目录的.kube目录</h1><p>只需要在master节点（这里我们是node1节点）</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# mkdir -p $HOME&#x2F;.kube</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# sudo cp -i &#x2F;etc&#x2F;kubernetes&#x2F;admin.conf $HOME&#x2F;.kube&#x2F;config</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# sudo chown $(id -u):$(id -g) $HOME&#x2F;.kube&#x2F;config</span><br></pre></td></tr></table></figure>
-
-<h1 id="安装网络插件，让pod之间通信"><a href="#安装网络插件，让pod之间通信" class="headerlink" title="安装网络插件，让pod之间通信"></a>安装网络插件，让pod之间通信</h1><p>只需要在master节点（这里我们是node1节点）</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">wget https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;coreos&#x2F;flannel&#x2F;master&#x2F;Documentation&#x2F;kube-flannel.yml</span><br><span class="line"></span><br><span class="line">kubectl apply -f kube-flannel.yml</span><br></pre></td></tr></table></figure>
-
-<h1 id="查看kube-system命名空间下的pod状态"><a href="#查看kube-system命名空间下的pod状态" class="headerlink" title="查看kube-system命名空间下的pod状态"></a>查看kube-system命名空间下的pod状态</h1><p>kubectl get pod -n kube-system</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get pod -n kube-system</span><br><span class="line">NAME                            READY   STATUS    RESTARTS   AGE</span><br><span class="line">coredns-bccdc95cf-6khq2         1&#x2F;1     Running   0          30m</span><br><span class="line">coredns-bccdc95cf-lk8j6         1&#x2F;1     Running   0          30m</span><br><span class="line">etcd-node1                      1&#x2F;1     Running   0          30m</span><br><span class="line">kube-apiserver-node1            1&#x2F;1     Running   0          30m</span><br><span class="line">kube-controller-manager-node1   1&#x2F;1     Running   0          29m</span><br><span class="line">kube-flannel-ds-cxt98           1&#x2F;1     Running   0          78s</span><br><span class="line">kube-proxy-56nt6                1&#x2F;1     Running   0          30m</span><br><span class="line">kube-scheduler-node1            1&#x2F;1     Running   0          29m</span><br></pre></td></tr></table></figure>
-
-<h1 id="加入node节点"><a href="#加入node节点" class="headerlink" title="加入node节点"></a>加入node节点</h1><p>仅在node节点操作，在master节点执行kubeadm init时，最后会打印出加入node节点的命令，在每个node节点执行此命令，如：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubeadm join 172.16.250.128:6443 --token yq1qjo.00jrgi61fik1rnuc \</span><br><span class="line">    --discovery-token-ca-cert-hash sha256:fcb73171bb839f6dc6701880d9b863258f62992530aa04695e150798e56ef6ed</span><br></pre></td></tr></table></figure>
-
-<p>操作完后可以在主节点查看节点信息：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get nodes</span><br><span class="line">NAME    STATUS     ROLES    AGE   VERSION</span><br><span class="line">node1   Ready      master   34m   v1.15.2</span><br><span class="line">node2   NotReady   &lt;none&gt;   31s   v1.15.2</span><br><span class="line">node3   NotReady   &lt;none&gt;   25s   v1.15.2</span><br></pre></td></tr></table></figure>
-
-<h1 id="命令补全"><a href="#命令补全" class="headerlink" title="命令补全"></a>命令补全</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">apt-get install bash-completion</span><br><span class="line"></span><br><span class="line">source &lt;(kubectl completion bash)</span><br><span class="line">echo &quot;source &lt;(kubectl completion bash)&quot; &gt;&gt; ~&#x2F;.bashrc</span><br><span class="line">source  ~&#x2F;.bashrc</span><br></pre></td></tr></table></figure>
-
-<h1 id="部署dashboard可视化插件"><a href="#部署dashboard可视化插件" class="headerlink" title="部署dashboard可视化插件"></a>部署dashboard可视化插件</h1><p><a href="https://github.com/kubernetes/dashboard" target="_blank" rel="noopener">https://github.com/kubernetes/dashboard</a></p>
-<p>安装</p>
-<pre><code></code></pre>]]></content>
-      <categories>
-        <category>SRE</category>
-      </categories>
-      <tags>
-        <tag>K8s</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Kubernetes03-Quick-Start</title>
-    <url>/2021/03/06/Kubernetes03-Quick-Start/</url>
-    <content><![CDATA[<h1 id="安装Minikube，快速启动一个单节点K8s环境"><a href="#安装Minikube，快速启动一个单节点K8s环境" class="headerlink" title="安装Minikube，快速启动一个单节点K8s环境"></a>安装Minikube，快速启动一个单节点K8s环境</h1><p><a href="https://kubernetes.io/zh/docs/tutorials/hello-minikube/" target="_blank" rel="noopener">https://kubernetes.io/zh/docs/tutorials/hello-minikube/</a></p>
-<h1 id="快速运行一个应用"><a href="#快速运行一个应用" class="headerlink" title="快速运行一个应用"></a>快速运行一个应用</h1><p>kubectl run可以创建所有组件而不需要JSON或YAML文件</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@localhost config-exercise]$ kubectl run kubia --image&#x3D;luksa&#x2F;kubia --port&#x3D;8080 --generator&#x3D;run&#x2F;v1</span><br><span class="line">Flag --generator has been deprecated, has no effect and will be removed in the future.</span><br><span class="line">pod&#x2F;kubia created</span><br></pre></td></tr></table></figure>
-
-<h1 id="查看pod"><a href="#查看pod" class="headerlink" title="查看pod"></a>查看pod</h1><p>kubectl get pods</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@localhost config-exercise]$ kubectl get pods -o wide</span><br><span class="line">NAME    READY   STATUS    RESTARTS   AGE     IP           NODE       NOMINATED NODE   READINESS GATES</span><br><span class="line">kubia   1&#x2F;1     Running   0          3m57s   172.17.0.3   minikube   &lt;none&gt;           &lt;none&gt;</span><br></pre></td></tr></table></figure>
-<p>可以看到这个pod有自己的ip，但是这个ip是集群内部的，在集群外无法访问，我们在集群外可以ping一下这个ip，是不通的。</p>
-<h1 id="创建Service"><a href="#创建Service" class="headerlink" title="创建Service"></a>创建Service</h1><p>要想从集群外部访问pod，需要在集群中创建一个Service服务，Service用于访问集群内的pod，并对外提供可访问的ip。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl expose pod kubia --type&#x3D;LoadBalancer --name kubia-http</span><br><span class="line">service&#x2F;kubia-http exposed</span><br><span class="line">[richey@localhost config-exercise]$ kubectl get svc</span><br><span class="line">NAME         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE</span><br><span class="line">kubernetes   ClusterIP      10.96.0.1       &lt;none&gt;        443&#x2F;TCP          19h</span><br><span class="line">kubia-http   LoadBalancer   10.100.122.15   &lt;pending&gt;     8080:31222&#x2F;TCP   9s</span><br></pre></td></tr></table></figure>
-
-<p>使用minikube不支持LoadBalance类型服务，因此服务不会有外部ip。可以运行minikube service kubia-http获取可以访问服务的ip和端口</p>
-]]></content>
-      <categories>
-        <category>SRE</category>
-      </categories>
-      <tags>
-        <tag>K8s</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Kubernetes02-基本概念</title>
-    <url>/2021/03/06/Kubernetes02-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</url>
-    <content><![CDATA[<h1 id="Pod"><a href="#Pod" class="headerlink" title="Pod"></a>Pod</h1><p>Kubernetes中的基本构成模块,基本操作单元。<br>一个pod就是一组紧密管理的容器（也可能是一个）,它们一起运行在一个工作节点上，及同一个Linux命名空间中。<br>一个pod就像一个独立的逻辑机器，它有独立的IP、主机名、进程等。</p>
-<h1 id="区别于容器"><a href="#区别于容器" class="headerlink" title="区别于容器"></a>区别于容器</h1><p>容器被设计成每个容器中只能运行一个进程，pod中可以运行多个容器（便于相关服务部署在一起）。</p>
-<p>容器间彼此完全隔离，pod中的容器可以共享相同的命名空间，可以共享相同的主机名和端口,同样的这些容器在相同的IPC命名空间下运行，因此可以使用IPC进行通信。</p>
-<p>可以通过localhost与同一个pod中的其它容器进行通讯。</p>
-<h1 id="平坦pod间网络"><a href="#平坦pod间网络" class="headerlink" title="平坦pod间网络"></a>平坦pod间网络</h1><p>Kubernetes集群中的所有pod都是在同一个共享网络地址空间中。所以每个pod都可以通过访问其它pod 的ip地址实现相互访问。（它们之间没有NAT）</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl get pods &#x2F;&#x2F;列出pod</span><br><span class="line">kubectl describe pod pod-name &#x2F;&#x2F;查看具体pod的详细信息</span><br><span class="line">kubectl get pod my-pode-name -o yaml &#x2F;&#x2F; 查看pod的当前yaml配置</span><br></pre></td></tr></table></figure>
-
-<h1 id="yaml文件重要参数"><a href="#yaml文件重要参数" class="headerlink" title="yaml文件重要参数"></a>yaml文件重要参数</h1><ul>
-<li>metadata<br>包括名称、命名空间、标签和关于容器的其它信息</li>
-<li>spec<br>包括pod的实际说明， 例如pod的容器、卷和其它数据</li>
-<li>status<br>运行中的pod的当前信息，例如pod所处的条件、每个容器的描述和状态，以及内部ip和其它信息</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl explain pods &#x2F;&#x2F; 查看可能的api字段</span><br><span class="line">kubectl explain pods</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="访问pod"><a href="#访问pod" class="headerlink" title="访问pod"></a>访问pod</h2><p>pod有自己的IP，但是这个ip是集群内部的，不能从集群外部访问。</p>
-<p>需要创建服务对象公开pod，服务对象是一个特殊的LoadBalanceer类型的服务，可以通过服务对外共该的ip访问pod。</p>
-<h1 id="服务"><a href="#服务" class="headerlink" title="服务"></a>服务</h1><p>服务对象是一个特殊的LoadBalanceer类型的服务，可以通过服务对外共该的ip访问pod</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl get svc &#x2F;&#x2F;列出所有服务，-o wide 可查看详细数据</span><br><span class="line">&#x2F;&#x2F; 详细数据中的EXTERNAL-IP 是对外开放的ip</span><br></pre></td></tr></table></figure>
-
-<h1 id="RS"><a href="#RS" class="headerlink" title="RS"></a>RS</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl get rs &#x2F;&#x2F;查看rs信息，比如副本数</span><br><span class="line"></span><br><span class="line">kubectl scale rs my-rs-name  --replicas&#x3D;3 &#x2F;&#x2F;修改副本数</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>SRE</category>
-      </categories>
-      <tags>
-        <tag>K8s</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Kubernetes01-命令速查</title>
-    <url>/2021/03/06/Kubernetes01-%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/</url>
-    <content><![CDATA[<h1 id="展示集群信息"><a href="#展示集群信息" class="headerlink" title="展示集群信息"></a>展示集群信息</h1><p>kubectl cluster-info</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@k8s-master-dev:&#x2F;home&#x2F;richey kubectl cluster-info</span><br><span class="line">Kubernetes master is running at https:&#x2F;&#x2F;192.168.1.217:8443</span><br><span class="line">KubeDNS is running at https:&#x2F;&#x2F;192.168.1.217:8443&#x2F;api&#x2F;v1&#x2F;namespaces&#x2F;kube-system&#x2F;services&#x2F;kube-dns:dns&#x2F;proxy</span><br></pre></td></tr></table></figure>
-<h1 id="列出集群节点"><a href="#列出集群节点" class="headerlink" title="列出集群节点"></a>列出集群节点</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl get nodes</span><br></pre></td></tr></table></figure>
-
-<h1 id="查看节点的详细信息"><a href="#查看节点的详细信息" class="headerlink" title="查看节点的详细信息"></a>查看节点的详细信息</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl describe node node-name</span><br><span class="line">kubectl describe node &#x2F;&#x2F;不指定具体的node名，将展示所有的</span><br></pre></td></tr></table></figure>
-
-<h1 id="为kubectl配置别名和命令补齐"><a href="#为kubectl配置别名和命令补齐" class="headerlink" title="为kubectl配置别名和命令补齐"></a>为kubectl配置别名和命令补齐</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">alias k&#x3D;kubectl &#x2F;&#x2F;将此命令添加到~&#x2F;.bashrc文件中</span><br></pre></td></tr></table></figure>
-
-<h1 id="列出pod"><a href="#列出pod" class="headerlink" title="列出pod"></a>列出pod</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl get pods</span><br></pre></td></tr></table></figure>
-
-<h1 id="查看pod的yaml文件"><a href="#查看pod的yaml文件" class="headerlink" title="查看pod的yaml文件"></a>查看pod的yaml文件</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl get pod my-pode-name -o yaml  &#x2F;&#x2F;通过 -o yaml参数</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>SRE</category>
-      </categories>
-      <tags>
-        <tag>K8s</tag>
       </tags>
   </entry>
   <entry>

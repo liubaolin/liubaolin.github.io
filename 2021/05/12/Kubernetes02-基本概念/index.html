@@ -83,19 +83,17 @@
 
 
 
-<meta name="description" content="准备3台服务器这里我们用虚拟机装3个节点：node1,node2,node3 如果安装的时候没有设置好主机名，可以手动再设置一下，给个名字方便操作： hostnamectl set-hostname node1  &#x2F;&#x2F;node2 node3 设置静态ip最好将节点的ip设置成静态的（不能随便变）,这里3个节点装的是ubuntu 20.04 server,设置方法如下： ifconfig &#x2F;&#x2F;列出系">
+<meta name="description" content="PodKubernetes中的基本构成模块,基本操作单元。一个pod就是一组紧密管理的容器（也可能是一个）,它们一起运行在一个工作节点上，及同一个Linux命名空间中。一个pod就像一个独立的逻辑机器，它有独立的IP、主机名、进程等。 区别于容器容器被设计成每个容器中只能运行一个进程，pod中可以运行多个容器（便于相关服务部署在一起）。 容器间彼此完全隔离，pod中的容器可以共享相同的命名空间，可">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Kubernetes04-集群搭建">
-<meta property="og:url" content="http://10000hours.top/2021/03/06/Kubernetes04-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/index.html">
+<meta property="og:title" content="Kubernetes02-基本概念">
+<meta property="og:url" content="http://10000hours.top/2021/05/12/Kubernetes02-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/index.html">
 <meta property="og:site_name" content="Richey&#39;s Blog">
-<meta property="og:description" content="准备3台服务器这里我们用虚拟机装3个节点：node1,node2,node3 如果安装的时候没有设置好主机名，可以手动再设置一下，给个名字方便操作： hostnamectl set-hostname node1  &#x2F;&#x2F;node2 node3 设置静态ip最好将节点的ip设置成静态的（不能随便变）,这里3个节点装的是ubuntu 20.04 server,设置方法如下： ifconfig &#x2F;&#x2F;列出系">
-<meta property="og:image" content="https://blog-pic-1254088127.picsh.myqcloud.com/ifconfig-20210523.png">
-<meta property="article:published_time" content="2021-03-05T16:00:00.000Z">
-<meta property="article:modified_time" content="2021-05-23T15:51:35.875Z">
+<meta property="og:description" content="PodKubernetes中的基本构成模块,基本操作单元。一个pod就是一组紧密管理的容器（也可能是一个）,它们一起运行在一个工作节点上，及同一个Linux命名空间中。一个pod就像一个独立的逻辑机器，它有独立的IP、主机名、进程等。 区别于容器容器被设计成每个容器中只能运行一个进程，pod中可以运行多个容器（便于相关服务部署在一起）。 容器间彼此完全隔离，pod中的容器可以共享相同的命名空间，可">
+<meta property="article:published_time" content="2021-05-11T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-05-24T15:24:40.786Z">
 <meta property="article:author" content="Richey Liu">
 <meta property="article:tag" content="K8s">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://blog-pic-1254088127.picsh.myqcloud.com/ifconfig-20210523.png">
 
 
 
@@ -125,13 +123,13 @@
 
 
 
-  <link rel="canonical" href="http://10000hours.top/2021/03/06/Kubernetes04-集群搭建/"/>
+  <link rel="canonical" href="http://10000hours.top/2021/05/12/Kubernetes02-基本概念/"/>
 
 
 
 
 
-  <title>Kubernetes04-集群搭建 | Richey's Blog</title>
+  <title>Kubernetes02-基本概念 | Richey's Blog</title>
   
 
 
@@ -292,7 +290,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2021/03/06/Kubernetes04-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2021/05/12/Kubernetes02-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Richey Liu">
@@ -309,7 +307,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Kubernetes04-集群搭建</h1>
+          <h1 class="post-title" itemprop="name headline">Kubernetes02-基本概念</h1>
         
 
         <div class="post-meta">
@@ -321,8 +319,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-06T00:00:00+08:00">
-                2021-03-06
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-12T00:00:00+08:00">
+                2021-05-12
               </time>
             
 
@@ -362,8 +360,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2021/03/06/Kubernetes04-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2021/03/06/Kubernetes04-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/" itemprop="commentCount"></span>
+                <a href="/2021/05/12/Kubernetes02-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2021/05/12/Kubernetes02-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -371,7 +369,7 @@
 
           
           
-             <span id="/2021/03/06/Kubernetes04-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/" class="leancloud_visitors" data-flag-title="Kubernetes04-集群搭建">
+             <span id="/2021/05/12/Kubernetes02-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" class="leancloud_visitors" data-flag-title="Kubernetes02-基本概念">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -402,96 +400,28 @@
       
 
       
-        <h1 id="准备3台服务器"><a href="#准备3台服务器" class="headerlink" title="准备3台服务器"></a>准备3台服务器</h1><p>这里我们用虚拟机装3个节点：node1,node2,node3</p>
-<p>如果安装的时候没有设置好主机名，可以手动再设置一下，给个名字方便操作：</p>
-<p>hostnamectl set-hostname node1  //node2 node3</p>
-<h2 id="设置静态ip"><a href="#设置静态ip" class="headerlink" title="设置静态ip"></a>设置静态ip</h2><p>最好将节点的ip设置成静态的（不能随便变）,这里3个节点装的是ubuntu 20.04 server,设置方法如下：</p>
-<p>ifconfig //列出系统中所有连接的网络接口</p>
-<p><img src="https://blog-pic-1254088127.picsh.myqcloud.com/ifconfig-20210523.png" alt="ifconfig"></p>
-<p>我们将ens33以太网网络接口配置一个静态IP</p>
-<p>vim /etc/netplan/xxx-yaml</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">network:</span><br><span class="line">  ethernets:</span><br><span class="line">    ens33:</span><br><span class="line">      addresses:</span><br><span class="line">      - 172.16.250.128&#x2F;24</span><br><span class="line">      dhcp4: false</span><br><span class="line">      gateway4: 172.16.250.2</span><br><span class="line">      nameservers:</span><br><span class="line">        addresses:</span><br><span class="line">          - 8.8.8.8</span><br><span class="line">  version: 2</span><br></pre></td></tr></table></figure>
-<p>如果YAML文件不是由发行版安装程序创建的，则可以使用此命令为渲染器生成所需的配置。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo netplan generate</span><br></pre></td></tr></table></figure>
-<p>保存该文件并退出。然后使用以下netplan命令应用最近的网络更改。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo netplan apply</span><br></pre></td></tr></table></figure>
+        <h1 id="Pod"><a href="#Pod" class="headerlink" title="Pod"></a>Pod</h1><p>Kubernetes中的基本构成模块,基本操作单元。<br>一个pod就是一组紧密管理的容器（也可能是一个）,它们一起运行在一个工作节点上，及同一个Linux命名空间中。<br>一个pod就像一个独立的逻辑机器，它有独立的IP、主机名、进程等。</p>
+<h1 id="区别于容器"><a href="#区别于容器" class="headerlink" title="区别于容器"></a>区别于容器</h1><p>容器被设计成每个容器中只能运行一个进程，pod中可以运行多个容器（便于相关服务部署在一起）。</p>
+<p>容器间彼此完全隔离，pod中的容器可以共享相同的命名空间，可以共享相同的主机名和端口,同样的这些容器在相同的IPC命名空间下运行，因此可以使用IPC进行通信。</p>
+<p>可以通过localhost与同一个pod中的其它容器进行通讯。</p>
+<h1 id="平坦pod间网络"><a href="#平坦pod间网络" class="headerlink" title="平坦pod间网络"></a>平坦pod间网络</h1><p>Kubernetes集群中的所有pod都是在同一个共享网络地址空间中。所以每个pod都可以通过访问其它pod 的ip地址实现相互访问。（它们之间没有NAT）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods &#x2F;&#x2F;列出pod</span><br><span class="line">kubectl describe pod pod-name &#x2F;&#x2F;查看具体pod的详细信息</span><br><span class="line">kubectl get pod my-pode-name -o yaml &#x2F;&#x2F; 查看pod的当前yaml配置</span><br></pre></td></tr></table></figure>
 
-<p>将3个节点全部设置成静态ip</p>
-<h2 id="修改域名文件"><a href="#修改域名文件" class="headerlink" title="修改域名文件"></a>修改域名文件</h2><p>vim /etc/hosts</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">172.16.250.128 node1</span><br><span class="line">172.16.250.129 node2</span><br><span class="line">172.16.250.131 node3</span><br></pre></td></tr></table></figure>
-<p>scp /etc/hosts <a href="mailto:root@172.16.250.129">root@172.16.250.129</a>:/etc/hosts<br>scp /etc/hosts <a href="mailto:root@172.16.250.131">root@172.16.250.131</a>:/etc/hosts</p>
-<h1 id="时区"><a href="#时区" class="headerlink" title="时区"></a>时区</h1><p>务必保证3台服务器的时区是一样的，强制更改时区为上海，执行以下命令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ln -snf &#x2F;usr&#x2F;share&#x2F;zoneinfo&#x2F;Asia&#x2F;Shanghai &#x2F;etc&#x2F;localtime</span><br><span class="line">bash -c &quot;echo &#39;Asia&#x2F;Shanghai&#39; &gt; &#x2F;etc&#x2F;timezone&quot;</span><br></pre></td></tr></table></figure>
-
-<p>安装ntpdate</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install -y ntpdate</span><br></pre></td></tr></table></figure>
-<p>如果出现以下错误：</p>
-<p>E: Could not get lock /var/lib/dpkg/lock - open (11: Resource temporarily unavailable)<br>E: Unable to lock the administration directory (/var/lib/dpkg/), is another process using it?</p>
-<p>执行2个命令解决</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo rm &#x2F;var&#x2F;cache&#x2F;apt&#x2F;archives&#x2F;lock</span><br><span class="line">sudo rm &#x2F;var&#x2F;lib&#x2F;dpkg&#x2F;lock</span><br></pre></td></tr></table></figure>
-
-<p>使用阿里云的时间服务器更新</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ntpdate ntp1.aliyun.com</span><br><span class="line">i</span><br></pre></td></tr></table></figure>
-<p>3台服务器都执行一下，确保时间一致.</p>
-<h1 id="安装docker"><a href="#安装docker" class="headerlink" title="安装docker"></a>安装docker</h1><p>所有节点都要安装。<br>如果使用docker作为k8s容器，则docker是必须要安装的。</p>
-<p>更新apt源并添加https支持</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update &amp;&amp; sudo apt-get install apt-transport-https ca-certificates curl software-properties-common -y</span><br></pre></td></tr></table></figure>
-
-<p>使用utc源添加GPG Key</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -fsSL https:&#x2F;&#x2F;mirrors.ustc.edu.cn&#x2F;docker-ce&#x2F;linux&#x2F;ubuntu&#x2F;gpg | sudo apt-key add</span><br></pre></td></tr></table></figure>
-
-<p>添加Docker-ce稳定版源地址</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo add-apt-repository &quot;deb [arch&#x3D;amd64] https:&#x2F;&#x2F;mirrors.ustc.edu.cn&#x2F;docker-ce&#x2F;linux&#x2F;ubuntu $(lsb_release -cs) stable&quot;</span><br></pre></td></tr></table></figure>
-
-<p>安装docker</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line">apt-cache madison docker-ce &#x2F;&#x2F; List the versions available in your repo</span><br><span class="line">sudo apt install docker-ce&#x3D;5:19.03.9~3-0~ubuntu-focal</span><br></pre></td></tr></table></figure>
-
-
-
-<p>3个节点都要安装</p>
-<h1 id="安装kubernetes组件"><a href="#安装kubernetes组件" class="headerlink" title="安装kubernetes组件"></a>安装kubernetes组件</h1><ul>
-<li>kubeadm：引导集群的命令。</li>
-<li>kubelet：在群集中所有计算机上运行的组件，它执行诸如启动Pod和容器之类的操作。</li>
-<li>kubectl：用于与您的集群通信的命令行工具。</li>
+<h1 id="yaml文件重要参数"><a href="#yaml文件重要参数" class="headerlink" title="yaml文件重要参数"></a>yaml文件重要参数</h1><ul>
+<li>metadata<br>包括名称、命名空间、标签和关于容器的其它信息</li>
+<li>spec<br>包括pod的实际说明， 例如pod的容器、卷和其它数据</li>
+<li>status<br>运行中的pod的当前信息，例如pod所处的条件、每个容器的描述和状态，以及内部ip和其它信息</li>
 </ul>
-<p>所有节点都需要安装：</p>
-<p>添加apt key及源</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sudo apt update &amp;&amp; sudo apt install -y apt-transport-https curl</span><br><span class="line"></span><br><span class="line">curl -s https:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;kubernetes&#x2F;apt&#x2F;doc&#x2F;apt-key.gpg | sudo apt-key add -</span><br><span class="line"></span><br><span class="line">echo &quot;deb https:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;kubernetes&#x2F;apt&#x2F; kubernetes-xenial main&quot; &gt;&gt;&#x2F;etc&#x2F;apt&#x2F;sources.list.d&#x2F;kubernetes.list</span><br></pre></td></tr></table></figure>
-<p>安装</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">sudo apt update</span><br><span class="line">sudo apt install -y kubelet&#x3D;1.15.2-00 kubeadm&#x3D;1.15.2-00 kubectl&#x3D;1.15.2-00</span><br><span class="line">sudo apt-mark hold kubelet&#x3D;1.15.2-00 kubeadm&#x3D;1.15.2-00 kubectl&#x3D;1.15.2-00</span><br></pre></td></tr></table></figure>
-<h1 id="禁用swap"><a href="#禁用swap" class="headerlink" title="禁用swap"></a>禁用swap</h1><p>所有节点都要操作（这里node1，node2，node3）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo sed -i &#39;&#x2F;swap&#x2F; s&#x2F;^&#x2F;#&#x2F;&#39; &#x2F;etc&#x2F;fstab</span><br><span class="line">sudo swapoff -a</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl explain pods &#x2F;&#x2F; 查看可能的api字段</span><br><span class="line">kubectl explain pods</span><br></pre></td></tr></table></figure>
 
 
-<h1 id="安装kubernetes集群"><a href="#安装kubernetes集群" class="headerlink" title="安装kubernetes集群"></a>安装kubernetes集群</h1><p>只在master节点安装即可，这里我们用node1做master节点</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">sudo kubeadm init --image-repository registry.aliyuncs.com&#x2F;google_containers --kubernetes-version v1.15.2 --pod-network-cidr&#x3D;192.169.0.0&#x2F;16</span><br><span class="line"></span><br><span class="line">[init] Using Kubernetes version: v1.15.2</span><br><span class="line">[preflight] Running pre-flight checks</span><br><span class="line">	[WARNING IsDockerSystemdCheck]: detected &quot;cgroupfs&quot; as the Docker cgroup driver. The recommended driver is &quot;systemd&quot;. Please follow the guide at https:&#x2F;&#x2F;kubernetes.io&#x2F;docs&#x2F;setup&#x2F;cri&#x2F;</span><br><span class="line">	[WARNING SystemVerification]: this Docker version is not on the list of validated versions: 19.03.9. Latest validated version: 18.09</span><br><span class="line">[preflight] Pulling images required for setting up a Kubernetes cluster</span><br><span class="line">[preflight] This might take a minute or two, depending on the speed of your internet connection</span><br><span class="line">[preflight] You can also perform this action in beforehand using &#39;kubeadm config images pull&#39;</span><br><span class="line">[kubelet-start] Writing kubelet environment file with flags to file &quot;&#x2F;var&#x2F;lib&#x2F;kubelet&#x2F;kubeadm-flags.env&quot;</span><br><span class="line">[kubelet-start] Writing kubelet configuration to file &quot;&#x2F;var&#x2F;lib&#x2F;kubelet&#x2F;config.yaml&quot;</span><br><span class="line">[kubelet-start] Activating the kubelet service</span><br><span class="line">[certs] Using certificateDir folder &quot;&#x2F;etc&#x2F;kubernetes&#x2F;pki&quot;</span><br><span class="line">[certs] Generating &quot;etcd&#x2F;ca&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;etcd&#x2F;server&quot; certificate and key</span><br><span class="line">[certs] etcd&#x2F;server serving cert is signed for DNS names [node1 localhost] and IPs [172.16.250.128 127.0.0.1 ::1]</span><br><span class="line">[certs] Generating &quot;etcd&#x2F;peer&quot; certificate and key</span><br><span class="line">[certs] etcd&#x2F;peer serving cert is signed for DNS names [node1 localhost] and IPs [172.16.250.128 127.0.0.1 ::1]</span><br><span class="line">[certs] Generating &quot;etcd&#x2F;healthcheck-client&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;apiserver-etcd-client&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;ca&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;apiserver-kubelet-client&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;apiserver&quot; certificate and key</span><br><span class="line">[certs] apiserver serving cert is signed for DNS names [node1 kubernetes kubernetes.default kubernetes.default.svc kubernetes.default.svc.cluster.local] and IPs [10.96.0.1 172.16.250.128]</span><br><span class="line">[certs] Generating &quot;front-proxy-ca&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;front-proxy-client&quot; certificate and key</span><br><span class="line">[certs] Generating &quot;sa&quot; key and public key</span><br><span class="line">[kubeconfig] Using kubeconfig folder &quot;&#x2F;etc&#x2F;kubernetes&quot;</span><br><span class="line">[kubeconfig] Writing &quot;admin.conf&quot; kubeconfig file</span><br><span class="line">[kubeconfig] Writing &quot;kubelet.conf&quot; kubeconfig file</span><br><span class="line">[kubeconfig] Writing &quot;controller-manager.conf&quot; kubeconfig file</span><br><span class="line">[kubeconfig] Writing &quot;scheduler.conf&quot; kubeconfig file</span><br><span class="line">[control-plane] Using manifest folder &quot;&#x2F;etc&#x2F;kubernetes&#x2F;manifests&quot;</span><br><span class="line">[control-plane] Creating static Pod manifest for &quot;kube-apiserver&quot;</span><br><span class="line">[control-plane] Creating static Pod manifest for &quot;kube-controller-manager&quot;</span><br><span class="line">[control-plane] Creating static Pod manifest for &quot;kube-scheduler&quot;</span><br><span class="line">[etcd] Creating static Pod manifest for local etcd in &quot;&#x2F;etc&#x2F;kubernetes&#x2F;manifests&quot;</span><br><span class="line">[wait-control-plane] Waiting for the kubelet to boot up the control plane as static Pods from directory &quot;&#x2F;etc&#x2F;kubernetes&#x2F;manifests&quot;. This can take up to 4m0s</span><br><span class="line">[apiclient] All control plane components are healthy after 16.004480 seconds</span><br><span class="line">[upload-config] Storing the configuration used in ConfigMap &quot;kubeadm-config&quot; in the &quot;kube-system&quot; Namespace</span><br><span class="line">[kubelet] Creating a ConfigMap &quot;kubelet-config-1.15&quot; in namespace kube-system with the configuration for the kubelets in the cluster</span><br><span class="line">[upload-certs] Skipping phase. Please see --upload-certs</span><br><span class="line">[mark-control-plane] Marking the node node1 as control-plane by adding the label &quot;node-role.kubernetes.io&#x2F;master&#x3D;&#39;&#39;&quot;</span><br><span class="line">[mark-control-plane] Marking the node node1 as control-plane by adding the taints [node-role.kubernetes.io&#x2F;master:NoSchedule]</span><br><span class="line">[bootstrap-token] Using token: yq1qjo.00jrgi61fik1rnuc</span><br><span class="line">[bootstrap-token] Configuring bootstrap tokens, cluster-info ConfigMap, RBAC Roles</span><br><span class="line">[bootstrap-token] configured RBAC rules to allow Node Bootstrap tokens to post CSRs in order for nodes to get long term certificate credentials</span><br><span class="line">[bootstrap-token] configured RBAC rules to allow the csrapprover controller automatically approve CSRs from a Node Bootstrap Token</span><br><span class="line">[bootstrap-token] configured RBAC rules to allow certificate rotation for all node client certificates in the cluster</span><br><span class="line">[bootstrap-token] Creating the &quot;cluster-info&quot; ConfigMap in the &quot;kube-public&quot; namespace</span><br><span class="line">[addons] Applied essential addon: CoreDNS</span><br><span class="line">[addons] Applied essential addon: kube-proxy</span><br><span class="line"></span><br><span class="line">Your Kubernetes control-plane has initialized successfully!</span><br><span class="line"></span><br><span class="line">To start using your cluster, you need to run the following as a regular user:</span><br><span class="line"></span><br><span class="line">  mkdir -p $HOME&#x2F;.kube</span><br><span class="line">  sudo cp -i &#x2F;etc&#x2F;kubernetes&#x2F;admin.conf $HOME&#x2F;.kube&#x2F;config</span><br><span class="line">  sudo chown $(id -u):$(id -g) $HOME&#x2F;.kube&#x2F;config</span><br><span class="line"></span><br><span class="line">You should now deploy a pod network to the cluster.</span><br><span class="line">Run &quot;kubectl apply -f [podnetwork].yaml&quot; with one of the options listed at:</span><br><span class="line">  https:&#x2F;&#x2F;kubernetes.io&#x2F;docs&#x2F;concepts&#x2F;cluster-administration&#x2F;addons&#x2F;</span><br><span class="line"></span><br><span class="line">Then you can join any number of worker nodes by running the following on each as root:</span><br><span class="line"></span><br><span class="line">kubeadm join 172.16.250.128:6443 --token yq1qjo.00jrgi61fik1rnuc \</span><br><span class="line">    --discovery-token-ca-cert-hash sha256:fcb73171bb839f6dc6701880d9b863258f62992530aa04695e150798e56ef6ed</span><br></pre></td></tr></table></figure>
+<h2 id="访问pod"><a href="#访问pod" class="headerlink" title="访问pod"></a>访问pod</h2><p>pod有自己的IP，但是这个ip是集群内部的，不能从集群外部访问。</p>
+<p>需要创建服务对象公开pod，服务对象是一个特殊的LoadBalanceer类型的服务，可以通过服务对外共该的ip访问pod。</p>
+<h1 id="服务"><a href="#服务" class="headerlink" title="服务"></a>服务</h1><p>服务对象是一个特殊的LoadBalanceer类型的服务，可以通过服务对外共该的ip访问pod</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl get svc &#x2F;&#x2F;列出所有服务，-o wide 可查看详细数据</span><br><span class="line">&#x2F;&#x2F; 详细数据中的EXTERNAL-IP 是对外开放的ip</span><br></pre></td></tr></table></figure>
 
-<p>这样就初始化成功了，注意警告信息：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[WARNING IsDockerSystemdCheck]: detected &quot;cgroupfs&quot; as the Docker cgroup driver. The recommended driver is &quot;systemd&quot;. Please follow the guide at https:&#x2F;&#x2F;kubernetes.io&#x2F;docs&#x2F;setup&#x2F;cri&#x2F;</span><br></pre></td></tr></table></figure>
-<p>可以忽略，解决方法：</p>
-<p>修改或者创建 vim /etc/docker/daemon.json</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;exec-opts&quot;: [&quot;native.cgroupdriver&#x3D;systemd&quot;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="RS"><a href="#RS" class="headerlink" title="RS"></a>RS</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl get rs &#x2F;&#x2F;查看rs信息，比如副本数</span><br><span class="line"></span><br><span class="line">kubectl scale rs my-rs-name  --replicas&#x3D;3 &#x2F;&#x2F;修改副本数</span><br></pre></td></tr></table></figure>
 
-<h1 id="拷贝kubeconfig文件到家目录的-kube目录"><a href="#拷贝kubeconfig文件到家目录的-kube目录" class="headerlink" title="拷贝kubeconfig文件到家目录的.kube目录"></a>拷贝kubeconfig文件到家目录的.kube目录</h1><p>只需要在master节点（这里我们是node1节点）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# mkdir -p $HOME&#x2F;.kube</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# sudo cp -i &#x2F;etc&#x2F;kubernetes&#x2F;admin.conf $HOME&#x2F;.kube&#x2F;config</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# sudo chown $(id -u):$(id -g) $HOME&#x2F;.kube&#x2F;config</span><br></pre></td></tr></table></figure>
-
-<h1 id="安装网络插件，让pod之间通信"><a href="#安装网络插件，让pod之间通信" class="headerlink" title="安装网络插件，让pod之间通信"></a>安装网络插件，让pod之间通信</h1><p>只需要在master节点（这里我们是node1节点）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;coreos&#x2F;flannel&#x2F;master&#x2F;Documentation&#x2F;kube-flannel.yml</span><br><span class="line"></span><br><span class="line">kubectl apply -f kube-flannel.yml</span><br></pre></td></tr></table></figure>
-
-<h1 id="查看kube-system命名空间下的pod状态"><a href="#查看kube-system命名空间下的pod状态" class="headerlink" title="查看kube-system命名空间下的pod状态"></a>查看kube-system命名空间下的pod状态</h1><p>kubectl get pod -n kube-system</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get pod -n kube-system</span><br><span class="line">NAME                            READY   STATUS    RESTARTS   AGE</span><br><span class="line">coredns-bccdc95cf-6khq2         1&#x2F;1     Running   0          30m</span><br><span class="line">coredns-bccdc95cf-lk8j6         1&#x2F;1     Running   0          30m</span><br><span class="line">etcd-node1                      1&#x2F;1     Running   0          30m</span><br><span class="line">kube-apiserver-node1            1&#x2F;1     Running   0          30m</span><br><span class="line">kube-controller-manager-node1   1&#x2F;1     Running   0          29m</span><br><span class="line">kube-flannel-ds-cxt98           1&#x2F;1     Running   0          78s</span><br><span class="line">kube-proxy-56nt6                1&#x2F;1     Running   0          30m</span><br><span class="line">kube-scheduler-node1            1&#x2F;1     Running   0          29m</span><br></pre></td></tr></table></figure>
-
-<h1 id="加入node节点"><a href="#加入node节点" class="headerlink" title="加入node节点"></a>加入node节点</h1><p>仅在node节点操作，在master节点执行kubeadm init时，最后会打印出加入node节点的命令，在每个node节点执行此命令，如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubeadm join 172.16.250.128:6443 --token yq1qjo.00jrgi61fik1rnuc \</span><br><span class="line">    --discovery-token-ca-cert-hash sha256:fcb73171bb839f6dc6701880d9b863258f62992530aa04695e150798e56ef6ed</span><br></pre></td></tr></table></figure>
-
-<p>操作完后可以在主节点查看节点信息：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get nodes</span><br><span class="line">NAME    STATUS     ROLES    AGE   VERSION</span><br><span class="line">node1   Ready      master   34m   v1.15.2</span><br><span class="line">node2   NotReady   &lt;none&gt;   31s   v1.15.2</span><br><span class="line">node3   NotReady   &lt;none&gt;   25s   v1.15.2</span><br></pre></td></tr></table></figure>
-
-<h1 id="命令补全"><a href="#命令补全" class="headerlink" title="命令补全"></a>命令补全</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">apt-get install bash-completion</span><br><span class="line"></span><br><span class="line">source &lt;(kubectl completion bash)</span><br><span class="line">echo &quot;source &lt;(kubectl completion bash)&quot; &gt;&gt; ~&#x2F;.bashrc</span><br><span class="line">source  ~&#x2F;.bashrc</span><br></pre></td></tr></table></figure>
-
-<h1 id="部署dashboard可视化插件"><a href="#部署dashboard可视化插件" class="headerlink" title="部署dashboard可视化插件"></a>部署dashboard可视化插件</h1><p><a href="https://github.com/kubernetes/dashboard" target="_blank" rel="noopener">https://github.com/kubernetes/dashboard</a></p>
-<p>安装</p>
-<pre><code></code></pre>
       
     </div>
     
@@ -540,7 +470,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://10000hours.top/2021/03/06/Kubernetes04-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/" title="Kubernetes04-集群搭建">http://10000hours.top/2021/03/06/Kubernetes04-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/</a>
+    <a href="http://10000hours.top/2021/05/12/Kubernetes02-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" title="Kubernetes02-基本概念">http://10000hours.top/2021/05/12/Kubernetes02-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -568,8 +498,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2021/03/06/Kubernetes03-Quick-Start/" rel="next" title="Kubernetes03-Quick-Start">
-                <i class="fa fa-chevron-left"></i> Kubernetes03-Quick-Start
+              <a href="/2021/05/06/Kubernetes01-%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/" rel="next" title="Kubernetes01-命令速查">
+                <i class="fa fa-chevron-left"></i> Kubernetes01-命令速查
               </a>
             
           </div>
@@ -578,8 +508,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2021/03/06/mongoDB%E7%B3%BB%E5%88%9701-mongoDB%E5%9F%BA%E7%A1%80/" rel="prev" title="mongoDB系列01-mongoDB基础">
-                mongoDB系列01-mongoDB基础 <i class="fa fa-chevron-right"></i>
+              <a href="/2021/05/20/Kubernetes03-Quick-Start/" rel="prev" title="Kubernetes03-Quick-Start">
+                Kubernetes03-Quick-Start <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -748,7 +678,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#准备3台服务器"><span class="nav-number">1.</span> <span class="nav-text">准备3台服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#设置静态ip"><span class="nav-number">1.1.</span> <span class="nav-text">设置静态ip</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改域名文件"><span class="nav-number">1.2.</span> <span class="nav-text">修改域名文件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#时区"><span class="nav-number">2.</span> <span class="nav-text">时区</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装docker"><span class="nav-number">3.</span> <span class="nav-text">安装docker</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装kubernetes组件"><span class="nav-number">4.</span> <span class="nav-text">安装kubernetes组件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#禁用swap"><span class="nav-number">5.</span> <span class="nav-text">禁用swap</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装kubernetes集群"><span class="nav-number">6.</span> <span class="nav-text">安装kubernetes集群</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#拷贝kubeconfig文件到家目录的-kube目录"><span class="nav-number">7.</span> <span class="nav-text">拷贝kubeconfig文件到家目录的.kube目录</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装网络插件，让pod之间通信"><span class="nav-number">8.</span> <span class="nav-text">安装网络插件，让pod之间通信</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#查看kube-system命名空间下的pod状态"><span class="nav-number">9.</span> <span class="nav-text">查看kube-system命名空间下的pod状态</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#加入node节点"><span class="nav-number">10.</span> <span class="nav-text">加入node节点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#命令补全"><span class="nav-number">11.</span> <span class="nav-text">命令补全</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#部署dashboard可视化插件"><span class="nav-number">12.</span> <span class="nav-text">部署dashboard可视化插件</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Pod"><span class="nav-number">1.</span> <span class="nav-text">Pod</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#区别于容器"><span class="nav-number">2.</span> <span class="nav-text">区别于容器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#平坦pod间网络"><span class="nav-number">3.</span> <span class="nav-text">平坦pod间网络</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#yaml文件重要参数"><span class="nav-number">4.</span> <span class="nav-text">yaml文件重要参数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#访问pod"><span class="nav-number">4.1.</span> <span class="nav-text">访问pod</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#服务"><span class="nav-number">5.</span> <span class="nav-text">服务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RS"><span class="nav-number">6.</span> <span class="nav-text">RS</span></a></li></ol></div>
             
 
           </div>
