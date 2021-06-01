@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Docker," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="Richey's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="镜像1、列出镜像sudo docker images  sudo docker images fedora &#x2F;&#x2F;列出指定镜像名（如fedora）的镜像 镜像是从仓库中下载下来。镜像保存在仓库中，而仓库位于Register中。默认的Register式Docker公司提供的register服务，即Docker Hub  为了区分同一仓库中的不同镜像，Docker提供来一种称为标签（tag）的功能  运">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker05-镜像和仓库">
+<meta property="og:url" content="http://10000hours.top/2019/02/07/Docker05-%E9%95%9C%E5%83%8F%E5%92%8C%E4%BB%93%E5%BA%93/index.html">
+<meta property="og:site_name" content="Richey&#39;s Blog">
+<meta property="og:description" content="镜像1、列出镜像sudo docker images  sudo docker images fedora &#x2F;&#x2F;列出指定镜像名（如fedora）的镜像 镜像是从仓库中下载下来。镜像保存在仓库中，而仓库位于Register中。默认的Register式Docker公司提供的register服务，即Docker Hub  为了区分同一仓库中的不同镜像，Docker提供来一种称为标签（tag）的功能  运">
+<meta property="article:published_time" content="2019-02-06T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-05-25T16:19:29.493Z">
+<meta property="article:author" content="Richey Liu">
+<meta property="article:tag" content="Docker">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://10000hours.top/2019/02/07/Docker05-镜像和仓库/"/>
+
+
+
+
+
+  <title>Docker05-镜像和仓库 | Richey's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Richey's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">吾生也有涯，而知也无涯。以有涯随无涯，殆已。</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/02/07/Docker05-%E9%95%9C%E5%83%8F%E5%92%8C%E4%BB%93%E5%BA%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Docker05-镜像和仓库</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-07T00:00:00+08:00">
+                2019-02-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%B9%E5%99%A8/" itemprop="url" rel="index">
+                    <span itemprop="name">容器</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/02/07/Docker05-%E9%95%9C%E5%83%8F%E5%92%8C%E4%BB%93%E5%BA%93/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/02/07/Docker05-%E9%95%9C%E5%83%8F%E5%92%8C%E4%BB%93%E5%BA%93/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/02/07/Docker05-%E9%95%9C%E5%83%8F%E5%92%8C%E4%BB%93%E5%BA%93/" class="leancloud_visitors" data-flag-title="Docker05-镜像和仓库">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="镜像"><a href="#镜像" class="headerlink" title="镜像"></a>镜像</h1><h2 id="1、列出镜像"><a href="#1、列出镜像" class="headerlink" title="1、列出镜像"></a>1、列出镜像</h2><pre><code>sudo docker images
+
+sudo docker images fedora //列出指定镜像名（如fedora）的镜像</code></pre><ul>
+<li><p>镜像是从仓库中下载下来。镜像保存在仓库中，而仓库位于Register中。默认的Register式Docker公司提供的register服务，即Docker Hub</p>
+</li>
+<li><p>为了区分同一仓库中的不同镜像，Docker提供来一种称为标签（tag）的功能</p>
+</li>
+<li><p>运行一个带标签的镜像</p>
+<pre><code>sudo docker run -i -t --name new_container ubuntu:12.04 /bin/bash</code></pre></li>
+<li><p>一个镜像可以有多个标签，这使我们可以方便的对镜像进行打标签，并且很容器查找镜像</p>
+</li>
+<li><p>在构建容器时，==指定镜像的标签是一个很好的习惯==，可以准确的知道容器来源于哪里。</p>
+</li>
+<li><p>Docker Hub中有两种类型的仓库：==用户仓库==（user repository）和==顶层仓库==（top-level repository).</p>
+</li>
+<li><p>用户仓库的命名由用户名和仓库名两部分组成，如richey/my_repo</p>
+</li>
+</ul>
+<h2 id="2、拉取镜像"><a href="#2、拉取镜像" class="headerlink" title="2、拉取镜像"></a>2、拉取镜像</h2><ul>
+<li><p>用docker run 命令创建并启动一个容器的时候，如果指定的镜像不在本地，Docker会先从Docker Hub下载该镜像。如果没有指定具体的镜像标签，那么Docker会自动下载latest标签的镜像。</p>
+</li>
+<li><p>也可以通过docker pull命令先将镜像拉取到本地</p>
+<pre><code>sudo docker pull ubuntu:12.04</code></pre></li>
+</ul>
+<h2 id="3、查找镜像"><a href="#3、查找镜像" class="headerlink" title="3、查找镜像"></a>3、查找镜像</h2><ul>
+<li><p>可以通过docker search命令来查找所有Docker Hub上公共的可用镜像</p>
+<pre><code>sudo docker search fedora    </code></pre></li>
+<li><p>也可以在Docker Hub网站上在线查找可用镜像</p>
+</li>
+</ul>
+<h2 id="4、构建镜像"><a href="#4、构建镜像" class="headerlink" title="4、构建镜像"></a>4、构建镜像</h2><ul>
+<li><p>登录Docker Hub</p>
+<pre><code>docker login //登录
+
+docker logout //退出</code></pre></li>
+<li><p>登录后会将用户的个人信息保存到$HOME/.docker/config.json中</p>
+</li>
+</ul>
+<ul>
+<li><p>Docker 构建镜像有两种方法</p>
+<ul>
+<li>使用docker commit命令（不推荐）</li>
+<li>使用docker build命令和Dockerfile文件</li>
+</ul>
+</li>
+</ul>
+<h3 id="使用docker-commit-命令创建镜像"><a href="#使用docker-commit-命令创建镜像" class="headerlink" title="使用docker commit 命令创建镜像"></a>使用docker commit 命令创建镜像</h3><p>可以将此想象成我们往版本控制系统里提交变更。我们先创建一个容器，并在容器里作出修改，就像改代码一样，最后将修改提交为一个新的镜像。</p>
+<ol>
+<li><p>创建一个要进行修改的容器</p>
+<pre><code>sudo docker run -i -t ubuntu /bin/bash</code></pre></li>
+<li><p>安装apache软件包</p>
+<pre><code>apt-get -y update
+
+apt-get -y install apache2</code></pre></li>
+<li><p>exit从容器里退出后运行docker commit命令</p>
+<p> sudo docker commit -m “A new custom image” -a “Richey”  2c2224ec5ea3 richey/testrepo:test-commit</p>
+<ul>
+<li>-m 用来指定创建新镜像时的提交信息</li>
+<li>-a 镜像的作者信息</li>
+</ul>
+</li>
+</ol>
+<h3 id="用Dockerfile构建镜像"><a href="#用Dockerfile构建镜像" class="headerlink" title="用Dockerfile构建镜像"></a>用Dockerfile构建镜像</h3><p>推荐使用被成为Dockerfile的定义文件和docker build命令来构建镜像，因为这种方式更具备可重复性、透明性、幂等性。</p>
+<p>一有了Dockerfile，我们就可以用docker build命令基于该Dockerfile中的指令创建一个新的镜像。</p>
+<p>这里我们以创建一个包含简单的Web服务器的Docker镜像为例，说明如何使用Dockerfile文件构建镜像：</p>
+<ul>
+<li><p>创建一个目录，并在里面创建初始的Dockerfile文件；</p>
+<pre><code>mkdir static_web_context
+cd mkdir static_web_context
+touch Dockerfile    </code></pre></li>
+</ul>
+<pre><code>static_web_context目录：这就是我们的构建环境，Docker称此环境为上下文（context）或构建上下文（build context）。Docker在构建镜像时会将该上下文和上下文中的目录及文件上传到Docker守护进程。这样守护进程就能直接访问用户想在镜像中存储的任何代码、文件或其它数据。
+
+Dockerfile：这里我们创建了一个空的Dockerfile文件，Dockerfile文件由一系列的指令和参数组成，每条指令都必须时大写字母，且后面要跟一个参数。Dockerfile中的指令会按照顺序从上往下执行。
+
+    #version:0.0.1
+    FROM ubuntu:16.04
+    MAINTAINER Richey &quot;xx.xx@gmail.com&quot;
+    RUN apt-get update &amp;&amp; apt-get install -y nginx
+    RUN echo &apos;Hi,I am in your container&apos; &gt; /usr/share/nginx/html/index.html
+    EXPOSE 80
+
+每条指令都会创建一个镜像层并对镜像进行提交，所以当通过Dockerfile构建镜像时，即使由于某些原因（比如Dockerfile中的某条命令执行失败了），没有正常结束，我们仍然可以得到一个可用的镜像。这对调试非常的有作用，我们可以通过运行该镜像得到一个可以交互的容器，然后执行失败的命令，查看失败的具体原因，以此对Dockerfile文件中的指令进行修改等操作，调试完后通过新的Dockerfile文件重新构建镜像。
+
+Dockerfile文件支持注释，以#开头的行会被认为是注释
+
+每个Dockerfile文件的第一行必须时FROM，FROM用于指定一个已存在的镜像，后续指令都将基于该镜像执行，该镜像被成为基础镜像。
+
+MAINTAIN指令用来说明该镜像的作者及邮箱等信息
+
+RUN指令会在当前镜像中运行指定的命令，RUN指令可以有多条，每条RUN指令都会创建一个新的镜像层。默认情况下RUN指令会在shell里面使用命令包装器/bin/sh -c执行。如果在不支持shell的平台运行或不希望在shell中执行，也可以使用exec格式的RUN指令，如：
+
+    RUN [&quot;apt-get&quot;,&quot;install&quot;,&quot;-y&quot;,&quot;nginx&quot;]
+
+EXPOSE指令，这条命令告诉Docker，该容器向外部宿主机公开的端口，可以公开多个端口。但并非设置该参数后，就可以随意访问该容器的这些端口，Docker并不会自打开这些端口，需要用户使用docker run时来指定需要打开哪些端口。
+
+Docker也使用EXPOSE指令来帮助将多个容器链接，用户也可以在运行时在运行docker run 命令时通过--expose选项来指定对外公开的端口。</code></pre><ul>
+<li><p>基于Dockerfile构建新镜像</p>
+<p>  上面我们已经创建了一个简单的构建上下文环境（docker context）和Dockerfile文件,下面我们基于此构建一个新的镜像。</p>
+<p>  执行docker build命令时，Dockerfile中的所有指令都会被执行且提交，该命令执行成功后会得到一个新的镜像。</p>
+<pre><code>cd static_web_context/
+sudo docker build -t &quot;richey/static_web:v1&quot; .</code></pre><p>  -t参数为镜像设置了仓库和名称,以及标签v1，如果没有指定任何标签，Docker将为镜像设置一个latest标签。</p>
+<p>  上面命令后面的点（.）告诉Docker到本地目录中去寻找Dockerfile文件，也可以指定一个Git仓库的源地址来指定Dockerfile的位置，当然该Git仓库的根目录下面要存在Dockerfile文件。</p>
+<p>  自Docker1.5.0以后,也可以通过-f参数指定一个区别于标准Dockerfile构建源的位置，如：</p>
+<pre><code>docker build -t &quot;richey/static_web&quot; -f path/file</code></pre><p>  这个文件可以不必命名为Dockerfile，但是必须要位于构建上下文（build context）中。</p>
+<p>  在构建上下文目录中，可以设置.dockerignor文件来过滤匹配模式。</p>
+</li>
+</ul>
+<h3 id="Dockerfile和构建缓存"><a href="#Dockerfile和构建缓存" class="headerlink" title="Dockerfile和构建缓存"></a>Dockerfile和构建缓存</h3><p>由于每一步的构建过程都会将结果提交为镜像，所以Docker会将每一层的镜像看作缓存，比如当我们构建出错，修改后重新构建时，不会重新从地一层开始构建，会直接基于缓存从发生变化了的指令开始构建，这样会省很多时间.</p>
+<p>如果要确保不使用缓存可以用docker build的–nocache参数:</p>
+<pre><code>docker build --nocache -t &quot;richey/static_web&quot; .</code></pre><h3 id="基于构建缓存的Dockerfile模板"><a href="#基于构建缓存的Dockerfile模板" class="headerlink" title="基于构建缓存的Dockerfile模板"></a>基于构建缓存的Dockerfile模板</h3><p>可以通过在Dockerfile文件的顶部使用相同的人指令集模板,从而尽可能的确保缓存命中,例如:</p>
+<pre><code>FROM fedora:26
+MAINTAINER Richey &quot;brin.baolin@gmail.com&quot;
+ENV REFRESHED_AT 2017-01-08
+RUN dnf -q update</code></pre><p>这里通过ENV指令设置了一个环境变量REFRESHED_AT,用来记录该模板的最后更新时间.有了这个模板,如果我们要刷新构建,只需要更改ENV指令中的日期,Docker就会从ENV指令这行开始重置缓存.</p>
+<h3 id="从镜像中启动一个容器"><a href="#从镜像中启动一个容器" class="headerlink" title="从镜像中启动一个容器"></a>从镜像中启动一个容器</h3><pre><code>sudo docker run -i -t -d -p 80 --name my_static_web  richey/static_web:v1</code></pre><p>-d:以detached,分离的方式在后台运行<br>-p:控制Docker在运行时公开哪些网络端口给宿主机</p>
+<ul>
+<li>运行一个容器时,Docker可用通过两种方式来在宿主机上分配端口:<ul>
+<li>Docker可以在宿主上随机选择一个32768~61000的一个比较大的端口来映射到容器中的80端口上</li>
+<li>可以在Docker宿主机中指定一个具体的端口号来映射到容器的80端口上</li>
+</ul>
+</li>
+</ul>
+<h3 id="推送镜像"><a href="#推送镜像" class="headerlink" title="推送镜像"></a>推送镜像</h3><pre><code>docker push  NAME[:TAG] | [REGISTRY_HOST[:REGISTRY_PORT]/]NAME[:TAG]</code></pre><h3 id="docker-rmi-删除镜像"><a href="#docker-rmi-删除镜像" class="headerlink" title="docker rmi  删除镜像"></a>docker rmi  删除镜像</h3><h1 id="命令总结"><a href="#命令总结" class="headerlink" title="命令总结"></a>命令总结</h1><ul>
+<li><p>查看系统中的镜像</p>
+<pre><code>sudo docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+richey/static_web   v1                  8cf769dd27de        26 hours ago        206 MB
+docker.io/ubuntu    16.04               00fd29ccc6f1        3 weeks ago         111 MB</code></pre></li>
+<li><p>列出指定镜像名（如fedora）的镜像</p>
+<pre><code>sudo docker images fedora</code></pre></li>
+</ul>
+<ul>
+<li><p>查看镜像详细信息</p>
+<pre><code>sudo docker inspect richey/testreps:test-commit</code></pre></li>
+<li><p>得到刚创建的容器的id</p>
+<pre><code>sudo docker ps -l -q</code></pre></li>
+</ul>
+<ul>
+<li><p>如果想探究镜像是如何被构建出来的,可以使用docker history命令</p>
+<pre><code>[richey@192 ~]$ sudo docker history 8cf769dd27de</code></pre></li>
+</ul>
+<ul>
+<li><p>运行一个带标签的镜像</p>
+<pre><code>sudo docker run -i -t --name new_container ubuntu:12.04 /bin/bash</code></pre></li>
+<li><p>拉去镜像(docker run 的时候,如果本地没有会自动从仓库拉取)</p>
+<pre><code>sudo docker pull ubuntu:12.04</code></pre></li>
+<li><p>查找镜像</p>
+<pre><code>sudo docker search fedora</code></pre></li>
+</ul>
+<h1 id="Docker私有仓库"><a href="#Docker私有仓库" class="headerlink" title="Docker私有仓库"></a>Docker私有仓库</h1><p><a href="https://docs.docker.com/registry/deploying/" target="_blank" rel="noopener">https://docs.docker.com/registry/deploying/</a></p>
+<p>Docker 官方提供了一个搭建私有仓库的镜像 registry ，只需把镜像下载下来，运行容器并暴露5000端口，就可以使用了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -v &#x2F;opt&#x2F;registry:&#x2F;var&#x2F;lib&#x2F;registry -p 5000:5000 --name myregistry registry:2</span><br></pre></td></tr></table></figure>
+
+<p>Registry服务默认会将上传的镜像保存在容器的/var/lib/registry,我们将主机的/opt/registry目录挂载到该目录，即可实现将镜像保存到主机的/opt/registry目录了。</p>
+<p>访问地址浏览器访问<a href="http://127.0.0.1:5000/v2正常即可。" target="_blank" rel="noopener">http://127.0.0.1:5000/v2正常即可。</a></p>
+<p>测试：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 1. 远程仓库拉取一个镜像</span><br><span class="line">docker pull nginx:latest</span><br><span class="line"># 2. 通过docker tag将该镜像标志为要推送到私有仓库</span><br><span class="line">docker tag nginx:latest localhost:5000&#x2F;nginx:latest</span><br><span class="line"># 3. 通过docker push命令将nginx镜像push到私有仓库中</span><br><span class="line">docker push localhost:5000&#x2F;nginx:latest</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.png" alt="Richey Liu 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Richey Liu 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Richey Liu
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://10000hours.top/2019/02/07/Docker05-%E9%95%9C%E5%83%8F%E5%92%8C%E4%BB%93%E5%BA%93/" title="Docker05-镜像和仓库">http://10000hours.top/2019/02/07/Docker05-%E9%95%9C%E5%83%8F%E5%92%8C%E4%BB%93%E5%BA%93/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Docker/" rel="tag"># Docker</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/02/06/Docker04-%E5%85%A5%E9%97%A8%EF%BC%88%E5%91%BD%E4%BB%A4%EF%BC%89/" rel="next" title="Docker04-入门（命令）">
+                <i class="fa fa-chevron-left"></i> Docker04-入门（命令）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/02/08/ES6%E7%AC%94%E8%AE%B0/" rel="prev" title="ES6笔记">
+                ES6笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Richey Liu" />
+            
+              <p class="site-author-name" itemprop="name">Richey Liu</p>
+              <p class="site-description motion-element" itemprop="description">花有重开时人无再少年</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">130</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">41</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/liubaolin" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="brin.baolin@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-globe"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#镜像"><span class="nav-number">1.</span> <span class="nav-text">镜像</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1、列出镜像"><span class="nav-number">1.1.</span> <span class="nav-text">1、列出镜像</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2、拉取镜像"><span class="nav-number">1.2.</span> <span class="nav-text">2、拉取镜像</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3、查找镜像"><span class="nav-number">1.3.</span> <span class="nav-text">3、查找镜像</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4、构建镜像"><span class="nav-number">1.4.</span> <span class="nav-text">4、构建镜像</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用docker-commit-命令创建镜像"><span class="nav-number">1.4.1.</span> <span class="nav-text">使用docker commit 命令创建镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用Dockerfile构建镜像"><span class="nav-number">1.4.2.</span> <span class="nav-text">用Dockerfile构建镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dockerfile和构建缓存"><span class="nav-number">1.4.3.</span> <span class="nav-text">Dockerfile和构建缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基于构建缓存的Dockerfile模板"><span class="nav-number">1.4.4.</span> <span class="nav-text">基于构建缓存的Dockerfile模板</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#从镜像中启动一个容器"><span class="nav-number">1.4.5.</span> <span class="nav-text">从镜像中启动一个容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#推送镜像"><span class="nav-number">1.4.6.</span> <span class="nav-text">推送镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#docker-rmi-删除镜像"><span class="nav-number">1.4.7.</span> <span class="nav-text">docker rmi  删除镜像</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#命令总结"><span class="nav-number">2.</span> <span class="nav-text">命令总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker私有仓库"><span class="nav-number">3.</span> <span class="nav-text">Docker私有仓库</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Richey Liu</span>
+
+  
+</div>
+
+
+
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'espIarB7yj7vR1el85iiMLjb-gzGzoHsz',
+        appKey: 'v35zFd1Yc4PX5KsGn2wHgrob',
+        placeholder: '欢迎留言！',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("98BykxDu7C0UsRu0zaggGlMu-gzGzoHsz", "a21Q7nym42YYGdxdx2XxxQNM");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

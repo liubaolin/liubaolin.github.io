@@ -83,17 +83,21 @@
 
 
 
-<meta name="description" content="PodKubernetes中的基本构成模块,基本操作单元。一个pod就是一组紧密管理的容器（也可能是一个）,它们一起运行在一个工作节点上，及同一个Linux命名空间中。一个pod就像一个独立的逻辑机器，它有独立的IP、主机名、进程等。 区别于容器容器被设计成每个容器中只能运行一个进程，pod中可以运行多个容器（便于相关服务部署在一起）。 容器间彼此完全隔离，pod中的容器可以共享相同的命名空间，可">
+<meta name="description" content="比较容器和虚拟机和虚拟机相比容器更加轻量级，因为每个虚拟机需要运行自己的一组系统进程，而容器只是运行在宿主机上被隔离的单个进程。 虚拟机的好处是它们提供完全隔离的环境，因为每个虚拟机都运行在它们自己的Linux内核上，而容器则是调用同一个内核。 那容器是如何实现隔离的呢？有两个机制可用：  Linux命名空间它使每个进程只看到自己的系统视图（文件、进程、网络端口、主机名等） Linux控制组（cg">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Kubernetes02-基本概念">
 <meta property="og:url" content="http://10000hours.top/2021/05/12/Kubernetes02-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/index.html">
 <meta property="og:site_name" content="Richey&#39;s Blog">
-<meta property="og:description" content="PodKubernetes中的基本构成模块,基本操作单元。一个pod就是一组紧密管理的容器（也可能是一个）,它们一起运行在一个工作节点上，及同一个Linux命名空间中。一个pod就像一个独立的逻辑机器，它有独立的IP、主机名、进程等。 区别于容器容器被设计成每个容器中只能运行一个进程，pod中可以运行多个容器（便于相关服务部署在一起）。 容器间彼此完全隔离，pod中的容器可以共享相同的命名空间，可">
+<meta property="og:description" content="比较容器和虚拟机和虚拟机相比容器更加轻量级，因为每个虚拟机需要运行自己的一组系统进程，而容器只是运行在宿主机上被隔离的单个进程。 虚拟机的好处是它们提供完全隔离的环境，因为每个虚拟机都运行在它们自己的Linux内核上，而容器则是调用同一个内核。 那容器是如何实现隔离的呢？有两个机制可用：  Linux命名空间它使每个进程只看到自己的系统视图（文件、进程、网络端口、主机名等） Linux控制组（cg">
+<meta property="og:image" content="https://blog-pic-1254088127.picsh.myqcloud.com/k8s-yaml-metadata.png">
+<meta property="og:image" content="https://blog-pic-1254088127.picsh.myqcloud.com/k8s-yaml-spec01.png">
+<meta property="og:image" content="https://blog-pic-1254088127.picsh.myqcloud.com/k8s-svc-yaml.png">
 <meta property="article:published_time" content="2021-05-11T16:00:00.000Z">
-<meta property="article:modified_time" content="2021-05-24T15:24:40.786Z">
+<meta property="article:modified_time" content="2021-05-29T09:28:09.887Z">
 <meta property="article:author" content="Richey Liu">
 <meta property="article:tag" content="K8s">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog-pic-1254088127.picsh.myqcloud.com/k8s-yaml-metadata.png">
 
 
 
@@ -400,26 +404,64 @@
       
 
       
-        <h1 id="Pod"><a href="#Pod" class="headerlink" title="Pod"></a>Pod</h1><p>Kubernetes中的基本构成模块,基本操作单元。<br>一个pod就是一组紧密管理的容器（也可能是一个）,它们一起运行在一个工作节点上，及同一个Linux命名空间中。<br>一个pod就像一个独立的逻辑机器，它有独立的IP、主机名、进程等。</p>
-<h1 id="区别于容器"><a href="#区别于容器" class="headerlink" title="区别于容器"></a>区别于容器</h1><p>容器被设计成每个容器中只能运行一个进程，pod中可以运行多个容器（便于相关服务部署在一起）。</p>
+        <h1 id="比较容器和虚拟机"><a href="#比较容器和虚拟机" class="headerlink" title="比较容器和虚拟机"></a>比较容器和虚拟机</h1><p>和虚拟机相比容器更加轻量级，因为每个虚拟机需要运行自己的一组系统进程，而容器只是运行在宿主机上被隔离的单个进程。</p>
+<p>虚拟机的好处是它们提供完全隔离的环境，因为每个虚拟机都运行在它们自己的Linux内核上，而容器则是调用同一个内核。</p>
+<p>那容器是如何实现隔离的呢？有两个机制可用：</p>
+<ol>
+<li>Linux命名空间<br>它使每个进程只看到自己的系统视图（文件、进程、网络端口、主机名等）</li>
+<li>Linux控制组（cgroups）<br>它限制了进程能使用的资源（cpu、内存、网络带宽等）</li>
+</ol>
+<h1 id="Pod"><a href="#Pod" class="headerlink" title="Pod"></a>Pod</h1><p>Kubernetes中的基本构成模块,基本操作单元。<br>一个pod就是一组紧密管理的容器（也可能是一个）,它们一起运行在一个工作节点上，及同一个Linux命名空间中。<br>一个pod就像一个独立的逻辑机器，它有独立的IP、主机名、进程等。</p>
+<h2 id="区别于容器"><a href="#区别于容器" class="headerlink" title="区别于容器"></a>区别于容器</h2><p>容器被设计成每个容器中只能运行一个进程，pod中可以运行多个容器（便于相关服务部署在一起）。</p>
 <p>容器间彼此完全隔离，pod中的容器可以共享相同的命名空间，可以共享相同的主机名和端口,同样的这些容器在相同的IPC命名空间下运行，因此可以使用IPC进行通信。</p>
 <p>可以通过localhost与同一个pod中的其它容器进行通讯。</p>
-<h1 id="平坦pod间网络"><a href="#平坦pod间网络" class="headerlink" title="平坦pod间网络"></a>平坦pod间网络</h1><p>Kubernetes集群中的所有pod都是在同一个共享网络地址空间中。所以每个pod都可以通过访问其它pod 的ip地址实现相互访问。（它们之间没有NAT）</p>
+<h2 id="平坦pod间网络"><a href="#平坦pod间网络" class="headerlink" title="平坦pod间网络"></a>平坦pod间网络</h2><p>Kubernetes集群中的所有pod都是在同一个共享网络地址空间中。所以每个pod都可以通过访问其它pod 的ip地址实现相互访问。（它们之间没有NAT）</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods &#x2F;&#x2F;列出pod</span><br><span class="line">kubectl describe pod pod-name &#x2F;&#x2F;查看具体pod的详细信息</span><br><span class="line">kubectl get pod my-pode-name -o yaml &#x2F;&#x2F; 查看pod的当前yaml配置</span><br></pre></td></tr></table></figure>
 
-<h1 id="yaml文件重要参数"><a href="#yaml文件重要参数" class="headerlink" title="yaml文件重要参数"></a>yaml文件重要参数</h1><ul>
+<h2 id="yaml文件重要参数"><a href="#yaml文件重要参数" class="headerlink" title="yaml文件重要参数"></a>yaml文件重要参数</h2><ul>
 <li>metadata<br>包括名称、命名空间、标签和关于容器的其它信息</li>
 <li>spec<br>包括pod的实际说明， 例如pod的容器、卷和其它数据</li>
 <li>status<br>运行中的pod的当前信息，例如pod所处的条件、每个容器的描述和状态，以及内部ip和其它信息</li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl explain pods &#x2F;&#x2F; 查看可能的api字段</span><br><span class="line">kubectl explain pods</span><br></pre></td></tr></table></figure>
-
-
+<h2 id="以YAML或JSON描述文件船舰pod"><a href="#以YAML或JSON描述文件船舰pod" class="headerlink" title="以YAML或JSON描述文件船舰pod"></a>以YAML或JSON描述文件船舰pod</h2><p>查看现有pod的yaml描述文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get pod kubia-6wgzj -o yaml</span><br></pre></td></tr></table></figure>
+<p><img src="https://blog-pic-1254088127.picsh.myqcloud.com/k8s-yaml-metadata.png" alt="k8s-yaml-metadata"></p>
+<p><img src="https://blog-pic-1254088127.picsh.myqcloud.com/k8s-yaml-spec01.png" alt="k8s-yaml-spec01"></p>
 <h2 id="访问pod"><a href="#访问pod" class="headerlink" title="访问pod"></a>访问pod</h2><p>pod有自己的IP，但是这个ip是集群内部的，不能从集群外部访问。</p>
 <p>需要创建服务对象公开pod，服务对象是一个特殊的LoadBalanceer类型的服务，可以通过服务对外共该的ip访问pod。</p>
-<h1 id="服务"><a href="#服务" class="headerlink" title="服务"></a>服务</h1><p>服务对象是一个特殊的LoadBalanceer类型的服务，可以通过服务对外共该的ip访问pod</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl get svc &#x2F;&#x2F;列出所有服务，-o wide 可查看详细数据</span><br><span class="line">&#x2F;&#x2F; 详细数据中的EXTERNAL-IP 是对外开放的ip</span><br></pre></td></tr></table></figure>
+<h1 id="服务"><a href="#服务" class="headerlink" title="服务"></a>服务</h1><p>pod通常需要对来自集群内部的其它pod，以及来自集群外部的http请求作出响应。</p>
+<p>pod需要一种寻找其它pod的方法来使用其它pod提供的服务，service就是用来做这件事的。</p>
+<p>service服务是一种为一组功能相同的pod提供单一不变接入点的资源，当服务存在时它的ip和端口不会变。</p>
+<p>服务对pod的请求是负载均衡的。</p>
+<h2 id="列出所有服务"><a href="#列出所有服务" class="headerlink" title="列出所有服务"></a>列出所有服务</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl get svc &#x2F;&#x2F;列出所有服务，-o wide 可查看详细数据</span><br><span class="line">&#x2F;&#x2F; 详细数据中的EXTERNAL-IP 是对外开放的ip</span><br></pre></td></tr></table></figure>
 
+<h2 id="通过kubectl-expose创建服务"><a href="#通过kubectl-expose创建服务" class="headerlink" title="通过kubectl expose创建服务"></a>通过kubectl expose创建服务</h2><h2 id="通过YAML描述文件创建服务"><a href="#通过YAML描述文件创建服务" class="headerlink" title="通过YAML描述文件创建服务"></a>通过YAML描述文件创建服务</h2><p>创建kubia-svc.yaml文件</p>
+<p><img src="https://blog-pic-1254088127.picsh.myqcloud.com/k8s-svc-yaml.png" alt="k8s-svc-yaml"></p>
+<p>使用kubectl create 创建service</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">kubectl create -f kubia-svc.yaml</span><br><span class="line">service&#x2F;kubia created</span><br><span class="line">root@node1:&#x2F;opt&#x2F;yaml&#x2F;demo# kubectl get svc</span><br><span class="line">NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE</span><br><span class="line">kubernetes   ClusterIP   10.96.0.1       &lt;none&gt;        443&#x2F;TCP   4d16h</span><br><span class="line">kubia        ClusterIP   10.111.170.56   &lt;none&gt;        80&#x2F;TCP    6s</span><br></pre></td></tr></table></figure>
+
+<p>可以发现新的kubia服务已经被分配了一个内部的集群ip，因为只有集群内部ip，所以只能在集群内被访问。</p>
+<h2 id="在已有的pod中运行命令请求service"><a href="#在已有的pod中运行命令请求service" class="headerlink" title="在已有的pod中运行命令请求service"></a>在已有的pod中运行命令请求service</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@node1:&#x2F;opt&#x2F;yaml&#x2F;demo# kubectl exec kubia-6wgzj -- curl -s http:&#x2F;&#x2F;10.111.170.56</span><br><span class="line">You&#39;ve hit kubia-6wgzj</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>– 代表kubectl命令的结束。两个横杠之后是要要pod内部执行的命令，如果要执行的命令没有以横杠开始的参数，双横杠也不是必须的</p>
+</blockquote>
+<h2 id="设置服务上的会话亲和性"><a href="#设置服务上的会话亲和性" class="headerlink" title="设置服务上的会话亲和性"></a>设置服务上的会话亲和性</h2><p>默认情况下服务会将请求随机执行pod中任意一个，即使请求来自同一个客户端。</p>
+<p>如果我们希望特定客户端的请求每次都指向同一个pod，可以设置服务的sessionAffinity属性为ClientIP（而不是None，None是默认值）。</p>
+<p>Kubernetes仅支持None和ClientIP两种形式的会话亲和性，不支持cookie的会话亲和性选项，因为Kubernetes的服务基于4层网络协议，不在HTTP层面工作。</p>
+<h2 id="同一个服务暴露多个端口"><a href="#同一个服务暴露多个端口" class="headerlink" title="同一个服务暴露多个端口"></a>同一个服务暴露多个端口</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">    name: kubia</span><br><span class="line">spec:</span><br><span class="line">    #sessionAffinity: ClientIP</span><br><span class="line">    ports:</span><br><span class="line">    - name: http</span><br><span class="line">      port: 80</span><br><span class="line">      targetPort: 8080</span><br><span class="line">    - name: https</span><br><span class="line">      port: 443</span><br><span class="line">      targetPort: 8443</span><br><span class="line">    selector:</span><br><span class="line">      run: kubia</span><br></pre></td></tr></table></figure>
+
+<p>在创建一个有多个端口的服务时，必须给端口指定名字。</p>
+<h2 id="服务发现"><a href="#服务发现" class="headerlink" title="服务发现"></a>服务发现</h2><h3 id="通过环境变量发现服务"><a href="#通过环境变量发现服务" class="headerlink" title="通过环境变量发现服务"></a>通过环境变量发现服务</h3><p>pod启动时Kubernetes会初始化一系列的环境变量指向现在存在的服务，如果service早于pod创建，则pod上的<br>进程可以根据环境变量获得服务的ip和port</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">root@node1:&#x2F;opt&#x2F;yaml&#x2F;demo# kubectl get pods</span><br><span class="line">NAME          READY   STATUS    RESTARTS   AGE</span><br><span class="line">kubia-6wgzj   1&#x2F;1     Running   1          3d16h</span><br><span class="line">kubia-j7q4s   1&#x2F;1     Running   0          167m</span><br><span class="line">kubia-rxndz   1&#x2F;1     Running   0          167m</span><br><span class="line">root@node1:&#x2F;opt&#x2F;yaml&#x2F;demo# kubectl delete pod --all</span><br><span class="line">pod &quot;kubia-6wgzj&quot; deleted</span><br><span class="line">pod &quot;kubia-j7q4s&quot; deleted</span><br><span class="line">pod &quot;kubia-rxndz&quot; deleted</span><br><span class="line">root@node1:&#x2F;opt&#x2F;yaml&#x2F;demo# kubectl get pod</span><br><span class="line">NAME          READY   STATUS        RESTARTS   AGE</span><br><span class="line">kubia-6vf4l   1&#x2F;1     Running       0          32s</span><br><span class="line">kubia-97c5t   1&#x2F;1     Running       0          32s</span><br><span class="line">kubia-wk7b4   1&#x2F;1     Running       0          32s</span><br><span class="line">root@node1:&#x2F;opt&#x2F;yaml&#x2F;demo# kubectl exec kubia-6vf4l env</span><br><span class="line">...</span><br><span class="line">KUBIA_SERVICE_PORT&#x3D;80</span><br><span class="line">KUBIA_SERVICE_HOST&#x3D;10.99.41.214</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h3 id="通过DNS发现服务"><a href="#通过DNS发现服务" class="headerlink" title="通过DNS发现服务"></a>通过DNS发现服务</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">root@node1:&#x2F;opt&#x2F;yaml&#x2F;demo# kubectl get pods -n kube-system |grep coredns</span><br><span class="line">coredns-bccdc95cf-2jznl         0&#x2F;1     Running       137        3d16h</span><br><span class="line">coredns-bccdc95cf-zv7vs         1&#x2F;1     Running       1          3d16h</span><br></pre></td></tr></table></figure>
+
+<p>k8s集群的系统命名空间下默认启动了运行dns服务的pod，在集群中的其它pod都会默认你使用其作为dns（Kubeernetes通过修改每个容器的/etc/resolv.conf文件实现）。</p>
+<p>运行在pod上的进程DNS查询都会在K8s自身的DNF服务响应，该服务知道系统中运行的所有服务.</p>
+<p>pod是否使用内部的DNS服务器是根据pod中spec的dnsPolicy属性决定的</p>
+<h3 id="通过FQDN（全限定域名）连接服务"><a href="#通过FQDN（全限定域名）连接服务" class="headerlink" title="通过FQDN（全限定域名）连接服务"></a>通过FQDN（全限定域名）连接服务</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl exec kubia-6vf4l -- curl -s http:&#x2F;&#x2F;kubia.default.svc.cluster.local</span><br></pre></td></tr></table></figure>
+
+<p>kubia是服务名，default是命名空间，svc.cluster.local是在所有集群本地服务名称中使用的可配置集群域后缀。</p>
 <h1 id="RS"><a href="#RS" class="headerlink" title="RS"></a>RS</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl get rs &#x2F;&#x2F;查看rs信息，比如副本数</span><br><span class="line"></span><br><span class="line">kubectl scale rs my-rs-name  --replicas&#x3D;3 &#x2F;&#x2F;修改副本数</span><br></pre></td></tr></table></figure>
 
       
@@ -600,7 +642,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">129</span>
+                  <span class="site-state-item-count">130</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -622,7 +664,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-count">41</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -678,7 +720,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Pod"><span class="nav-number">1.</span> <span class="nav-text">Pod</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#区别于容器"><span class="nav-number">2.</span> <span class="nav-text">区别于容器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#平坦pod间网络"><span class="nav-number">3.</span> <span class="nav-text">平坦pod间网络</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#yaml文件重要参数"><span class="nav-number">4.</span> <span class="nav-text">yaml文件重要参数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#访问pod"><span class="nav-number">4.1.</span> <span class="nav-text">访问pod</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#服务"><span class="nav-number">5.</span> <span class="nav-text">服务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RS"><span class="nav-number">6.</span> <span class="nav-text">RS</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#比较容器和虚拟机"><span class="nav-number">1.</span> <span class="nav-text">比较容器和虚拟机</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Pod"><span class="nav-number">2.</span> <span class="nav-text">Pod</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#区别于容器"><span class="nav-number">2.1.</span> <span class="nav-text">区别于容器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#平坦pod间网络"><span class="nav-number">2.2.</span> <span class="nav-text">平坦pod间网络</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#yaml文件重要参数"><span class="nav-number">2.3.</span> <span class="nav-text">yaml文件重要参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#以YAML或JSON描述文件船舰pod"><span class="nav-number">2.4.</span> <span class="nav-text">以YAML或JSON描述文件船舰pod</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#访问pod"><span class="nav-number">2.5.</span> <span class="nav-text">访问pod</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#服务"><span class="nav-number">3.</span> <span class="nav-text">服务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#列出所有服务"><span class="nav-number">3.1.</span> <span class="nav-text">列出所有服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过kubectl-expose创建服务"><span class="nav-number">3.2.</span> <span class="nav-text">通过kubectl expose创建服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过YAML描述文件创建服务"><span class="nav-number">3.3.</span> <span class="nav-text">通过YAML描述文件创建服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在已有的pod中运行命令请求service"><span class="nav-number">3.4.</span> <span class="nav-text">在已有的pod中运行命令请求service</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设置服务上的会话亲和性"><span class="nav-number">3.5.</span> <span class="nav-text">设置服务上的会话亲和性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#同一个服务暴露多个端口"><span class="nav-number">3.6.</span> <span class="nav-text">同一个服务暴露多个端口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务发现"><span class="nav-number">3.7.</span> <span class="nav-text">服务发现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#通过环境变量发现服务"><span class="nav-number">3.7.1.</span> <span class="nav-text">通过环境变量发现服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通过DNS发现服务"><span class="nav-number">3.7.2.</span> <span class="nav-text">通过DNS发现服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通过FQDN（全限定域名）连接服务"><span class="nav-number">3.7.3.</span> <span class="nav-text">通过FQDN（全限定域名）连接服务</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RS"><span class="nav-number">4.</span> <span class="nav-text">RS</span></a></li></ol></div>
             
 
           </div>

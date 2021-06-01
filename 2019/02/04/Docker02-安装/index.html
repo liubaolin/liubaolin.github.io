@@ -83,13 +83,13 @@
 
 
 
-<meta name="description" content="Docker守护进程 Docker软件包安装完毕后，默认会立即启动Docker守护进程  守护进程监听&#x2F;var&#x2F;run&#x2F;docker.sock这个Unix套接字文件，来获取来自客户端Docker的请求  如果系统中存在名为docker的用户组的话，Docker则会将该套接字文件的所有者设为该用户组，这样docker用户组的所有者就可以直接运行Docker，而无需使用Docker命令了。  安装完D">
+<meta name="description" content="安装Docker 目前Docker团队推荐在UBuntu、Debian或者RHEL系列（CentOS、Fedora等）宿主机中部署Docker。  Docker也支持一些云平台  Docker目前只能运行在64位CPU架构的计算机上  运行Linux3.8或更高版本的内核   检查前提条件 内核3.8及以上 uname -a  在Ubuntu和Debian中安装Docker在Red Hat和Red">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Docker（3）- 守护进程">
-<meta property="og:url" content="http://10000hours.top/2019/02/05/Docker%EF%BC%883%EF%BC%89-%20%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B/index.html">
+<meta property="og:title" content="Docker02-安装">
+<meta property="og:url" content="http://10000hours.top/2019/02/04/Docker02-%E5%AE%89%E8%A3%85/index.html">
 <meta property="og:site_name" content="Richey&#39;s Blog">
-<meta property="og:description" content="Docker守护进程 Docker软件包安装完毕后，默认会立即启动Docker守护进程  守护进程监听&#x2F;var&#x2F;run&#x2F;docker.sock这个Unix套接字文件，来获取来自客户端Docker的请求  如果系统中存在名为docker的用户组的话，Docker则会将该套接字文件的所有者设为该用户组，这样docker用户组的所有者就可以直接运行Docker，而无需使用Docker命令了。  安装完D">
-<meta property="article:published_time" content="2019-02-04T16:00:00.000Z">
+<meta property="og:description" content="安装Docker 目前Docker团队推荐在UBuntu、Debian或者RHEL系列（CentOS、Fedora等）宿主机中部署Docker。  Docker也支持一些云平台  Docker目前只能运行在64位CPU架构的计算机上  运行Linux3.8或更高版本的内核   检查前提条件 内核3.8及以上 uname -a  在Ubuntu和Debian中安装Docker在Red Hat和Red">
+<meta property="article:published_time" content="2019-02-03T16:00:00.000Z">
 <meta property="article:modified_time" content="2020-03-21T15:35:33.175Z">
 <meta property="article:author" content="Richey Liu">
 <meta property="article:tag" content="Docker">
@@ -123,13 +123,13 @@
 
 
 
-  <link rel="canonical" href="http://10000hours.top/2019/02/05/Docker（3）- 守护进程/"/>
+  <link rel="canonical" href="http://10000hours.top/2019/02/04/Docker02-安装/"/>
 
 
 
 
 
-  <title>Docker（3）- 守护进程 | Richey's Blog</title>
+  <title>Docker02-安装 | Richey's Blog</title>
   
 
 
@@ -290,7 +290,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/02/05/Docker%EF%BC%883%EF%BC%89-%20%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B/">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/02/04/Docker02-%E5%AE%89%E8%A3%85/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Richey Liu">
@@ -307,7 +307,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Docker（3）- 守护进程</h1>
+          <h1 class="post-title" itemprop="name headline">Docker02-安装</h1>
         
 
         <div class="post-meta">
@@ -319,8 +319,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-05T00:00:00+08:00">
-                2019-02-05
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-04T00:00:00+08:00">
+                2019-02-04
               </time>
             
 
@@ -360,8 +360,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2019/02/05/Docker%EF%BC%883%EF%BC%89-%20%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/02/05/Docker%EF%BC%883%EF%BC%89-%20%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B/" itemprop="commentCount"></span>
+                <a href="/2019/02/04/Docker02-%E5%AE%89%E8%A3%85/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/02/04/Docker02-%E5%AE%89%E8%A3%85/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -369,7 +369,7 @@
 
           
           
-             <span id="/2019/02/05/Docker%EF%BC%883%EF%BC%89-%20%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B/" class="leancloud_visitors" data-flag-title="Docker（3）- 守护进程">
+             <span id="/2019/02/04/Docker02-%E5%AE%89%E8%A3%85/" class="leancloud_visitors" data-flag-title="Docker02-安装">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -400,49 +400,50 @@
       
 
       
-        <h1 id="Docker守护进程"><a href="#Docker守护进程" class="headerlink" title="Docker守护进程"></a>Docker守护进程</h1><ul>
-<li><p>Docker软件包安装完毕后，默认会立即启动Docker守护进程</p>
+        <h1 id="安装Docker"><a href="#安装Docker" class="headerlink" title="安装Docker"></a>安装Docker</h1><ul>
+<li><p>目前Docker团队推荐在UBuntu、Debian或者RHEL系列（CentOS、Fedora等）宿主机中部署Docker。</p>
 </li>
-<li><p>守护进程监听/var/run/docker.sock这个Unix套接字文件，来获取来自客户端Docker的请求</p>
+<li><p>Docker也支持一些云平台</p>
 </li>
-<li><p>如果系统中存在名为docker的用户组的话，Docker则会将该套接字文件的所有者设为该用户组，这样docker用户组的所有者就可以直接运行Docker，而无需使用Docker命令了。</p>
+<li><p>Docker目前只能运行在64位CPU架构的计算机上</p>
 </li>
-<li><p>安装完Docker后要确认Docker的守护进程是否运行</p>
-</li>
-<li><p>Docker进程是Docker守护进程的客户端程序</p>
-</li>
-<li><p>使用 ==docker daemon==命令控制Docker守护进程（该命令已经过时了，1.6后会被弃用）</p>
+<li><p>运行Linux3.8或更高版本的内核</p>
 </li>
 </ul>
-<h2 id="配置Docker守护进程"><a href="#配置Docker守护进程" class="headerlink" title="配置Docker守护进程"></a>配置Docker守护进程</h2><ul>
-<li><p>运行Docker守护进程时，可以用-H标志调整守护进程绑定监听接口的方式</p>
-</li>
-<li><p>使用-H标志指定不同的网络接口和端口配置</p>
-<pre><code>sudo docker daemon -H tcp:0.0.0.0:2375</code></pre></li>
-<li><p>如果把守护进程或端口改成4200，那么运行客户端时就必须指定</p>
-<pre><code>docker -H :4200</code></pre></li>
-<li><p>如果不想每次运行客户端都加上-H标志，可以设置DOCKER_HOST环境变量来省略此步骤</p>
-<pre><code>export DOCKER_HOST=&quot;tcp://0.0.0.0:2375&quot;</code></pre></li>
-<li><p>也能通过-H标志指定一个Unix套接字路径</p>
-<pre><code>sudo docker daemon -H unix://home/docker/docker.sock
-
-sudo docker daemon -H tcp:0.0.0.0:2375 -H unix://home/docker/docker.sock</code></pre></li>
-<li><p>如果Docker运行在代理或者公司防火墙之后，也可以使用THHPS_PROXY、HTTP_PROX和NO_PROXY选项来控制守护进程如何连接</p>
-</li>
-<li><p>还可以用-D标志来输出Docker守护进程更详细的信息</p>
-<pre><code>sudo docker daemon -D</code></pre></li>
+<h2 id="检查前提条件"><a href="#检查前提条件" class="headerlink" title="检查前提条件"></a>检查前提条件</h2><ul>
+<li><p>内核3.8及以上</p>
+<pre><code>uname -a</code></pre></li>
 </ul>
-<h2 id="检查Docker守护进程是否在运行"><a href="#检查Docker守护进程是否在运行" class="headerlink" title="检查Docker守护进程是否在运行"></a>检查Docker守护进程是否在运行</h2><h3 id="在Ubuntu中"><a href="#在Ubuntu中" class="headerlink" title="在Ubuntu中"></a>在Ubuntu中</h3><ul>
-<li><p>如果Docker是通过软件包安装的话，可以用Upstart的status命令来检查Docker守护进程是否在运行及启动停止Docker进程等操作</p>
-<pre><code>sudo status docker
-
-sudo stop docker
-
-sudo start docker</code></pre></li>
+<h2 id="在Ubuntu和Debian中安装Docker"><a href="#在Ubuntu和Debian中安装Docker" class="headerlink" title="在Ubuntu和Debian中安装Docker"></a>在Ubuntu和Debian中安装Docker</h2><h2 id="在Red-Hat和Red-Hat系发行办版中安装Docker"><a href="#在Red-Hat和Red-Hat系发行办版中安装Docker" class="headerlink" title="在Red Hat和Red Hat系发行办版中安装Docker"></a>在Red Hat和Red Hat系发行办版中安装Docker</h2><h3 id="1、在RHEL-6和CentOS-6中安装Docker"><a href="#1、在RHEL-6和CentOS-6中安装Docker" class="headerlink" title="1、在RHEL 6和CentOS 6中安装Docker"></a>1、在RHEL 6和CentOS 6中安装Docker</h3><h3 id="2、在RHEL-7中安装Docker"><a href="#2、在RHEL-7中安装Docker" class="headerlink" title="2、在RHEL 7中安装Docker"></a>2、在RHEL 7中安装Docker</h3><h3 id="3、在Fedora中安装Docker"><a href="#3、在Fedora中安装Docker" class="headerlink" title="3、在Fedora中安装Docker"></a>3、在Fedora中安装Docker</h3><ul>
+<li><p>在Fedora 19安装Docker</p>
+<pre><code>sudo yum -y install docker-io</code></pre></li>
+<li><p>在Fedora 20或更高版本中安装Docker</p>
+<pre><code>sudo yum -y install docker</code></pre></li>
+<li><p>在Fodora 21中，软件包名称又回退到了docker-io</p>
+<pre><code>sudo yum -y install docker-io</code></pre></li>
+<li><p>最后到了Fedora 22，软件包名称则又变回了docker</p>
+<pre><code>sudo dnf install docker</code></pre></li>
 </ul>
-<h3 id="在Red-Hat和Fedora中启动和停止Docker"><a href="#在Red-Hat和Fedora中启动和停止Docker" class="headerlink" title="在Red Hat和Fedora中启动和停止Docker"></a>在Red Hat和Fedora中启动和停止Docker</h3><pre><code>sudo service docker stop
-
-sudo service docker start</code></pre>
+<blockquote>
+<p>具体的安装文档可以在官方文档中找到</p>
+</blockquote>
+<p><a href="https://docs.docker.com/engine/installation/linux/docker-ee/oracle/" target="_blank" rel="noopener">在Linux上安装Docker的文档</a></p>
+<blockquote>
+<p>也可以直接从Docker官方网站下载RHEL、CentOS和Fedora用的罪行RPM包</p>
+</blockquote>
+<h2 id="Docker安装脚本"><a href="#Docker安装脚本" class="headerlink" title="Docker安装脚本"></a>Docker安装脚本</h2><ul>
+<li><p>使用远程安装脚本在宿主机上安装Docker，<a href="get.docker.com">get.docker.com</a>网站获取这个安装脚本</p>
+</li>
+<li><p>目前该脚本只支持在Ubuntu、Fedora、Debian和Gentoo中安装Docker</p>
+</li>
+</ul>
+<h3 id="首先要确认curl命令已经安装"><a href="#首先要确认curl命令已经安装" class="headerlink" title="首先要确认curl命令已经安装"></a>首先要确认curl命令已经安装</h3><pre><code>whereis curl</code></pre><h3 id="安装curl"><a href="#安装curl" class="headerlink" title="安装curl"></a>安装curl</h3><ul>
+<li><p>Ubuntu中安装     </p>
+<pre><code>sudo apt-get -y install curl</code></pre></li>
+<li><p>Fedora中安装curl</p>
+<pre><code>sudo dnf install curl</code></pre></li>
+</ul>
+<h3 id="利用安装脚本来安装Docker"><a href="#利用安装脚本来安装Docker" class="headerlink" title="利用安装脚本来安装Docker"></a>利用安装脚本来安装Docker</h3><pre><code>curl https://get.docker.com/ | sudo sh</code></pre>
       
     </div>
     
@@ -491,7 +492,7 @@ sudo service docker start</code></pre>
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://10000hours.top/2019/02/05/Docker%EF%BC%883%EF%BC%89-%20%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B/" title="Docker（3）- 守护进程">http://10000hours.top/2019/02/05/Docker%EF%BC%883%EF%BC%89-%20%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B/</a>
+    <a href="http://10000hours.top/2019/02/04/Docker02-%E5%AE%89%E8%A3%85/" title="Docker02-安装">http://10000hours.top/2019/02/04/Docker02-%E5%AE%89%E8%A3%85/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -519,8 +520,8 @@ sudo service docker start</code></pre>
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/02/04/Docker%EF%BC%882%EF%BC%89-%20%E5%AE%89%E8%A3%85/" rel="next" title="Docker（2）- 安装">
-                <i class="fa fa-chevron-left"></i> Docker（2）- 安装
+              <a href="/2019/02/03/Docker01-%E7%AE%80%E4%BB%8B/" rel="next" title="Docker01-简介">
+                <i class="fa fa-chevron-left"></i> Docker01-简介
               </a>
             
           </div>
@@ -529,8 +530,8 @@ sudo service docker start</code></pre>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/02/06/Docker%EF%BC%884%EF%BC%89-%20%E5%85%A5%E9%97%A8%EF%BC%88%E5%91%BD%E4%BB%A4%EF%BC%89/" rel="prev" title="Docker（4）- 入门（命令）">
-                Docker（4）- 入门（命令） <i class="fa fa-chevron-right"></i>
+              <a href="/2019/02/05/Docker03-%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B/" rel="prev" title="Docker03-守护进程">
+                Docker03-守护进程 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -621,7 +622,7 @@ sudo service docker start</code></pre>
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">129</span>
+                  <span class="site-state-item-count">130</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -643,7 +644,7 @@ sudo service docker start</code></pre>
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-count">41</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -699,7 +700,7 @@ sudo service docker start</code></pre>
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker守护进程"><span class="nav-number">1.</span> <span class="nav-text">Docker守护进程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#配置Docker守护进程"><span class="nav-number">1.1.</span> <span class="nav-text">配置Docker守护进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#检查Docker守护进程是否在运行"><span class="nav-number">1.2.</span> <span class="nav-text">检查Docker守护进程是否在运行</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#在Ubuntu中"><span class="nav-number">1.2.1.</span> <span class="nav-text">在Ubuntu中</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在Red-Hat和Fedora中启动和停止Docker"><span class="nav-number">1.2.2.</span> <span class="nav-text">在Red Hat和Fedora中启动和停止Docker</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#安装Docker"><span class="nav-number">1.</span> <span class="nav-text">安装Docker</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#检查前提条件"><span class="nav-number">1.1.</span> <span class="nav-text">检查前提条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在Ubuntu和Debian中安装Docker"><span class="nav-number">1.2.</span> <span class="nav-text">在Ubuntu和Debian中安装Docker</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在Red-Hat和Red-Hat系发行办版中安装Docker"><span class="nav-number">1.3.</span> <span class="nav-text">在Red Hat和Red Hat系发行办版中安装Docker</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、在RHEL-6和CentOS-6中安装Docker"><span class="nav-number">1.3.1.</span> <span class="nav-text">1、在RHEL 6和CentOS 6中安装Docker</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、在RHEL-7中安装Docker"><span class="nav-number">1.3.2.</span> <span class="nav-text">2、在RHEL 7中安装Docker</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、在Fedora中安装Docker"><span class="nav-number">1.3.3.</span> <span class="nav-text">3、在Fedora中安装Docker</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker安装脚本"><span class="nav-number">1.4.</span> <span class="nav-text">Docker安装脚本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#首先要确认curl命令已经安装"><span class="nav-number">1.4.1.</span> <span class="nav-text">首先要确认curl命令已经安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装curl"><span class="nav-number">1.4.2.</span> <span class="nav-text">安装curl</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#利用安装脚本来安装Docker"><span class="nav-number">1.4.3.</span> <span class="nav-text">利用安装脚本来安装Docker</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
