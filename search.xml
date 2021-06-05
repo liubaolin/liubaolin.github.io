@@ -625,7 +625,7 @@
 <li>spec<br>包括pod的实际说明， 例如pod的容器、卷和其它数据</li>
 <li>status<br>运行中的pod的当前信息，例如pod所处的条件、每个容器的描述和状态，以及内部ip和其它信息</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl explain pods &#x2F;&#x2F; 查看可能的api字段</span><br><span class="line">kubectl explain pods</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl explain pod. &#x2F;&#x2F; 查看可能的api字段</span><br><span class="line">kubectl explain pod.spec</span><br></pre></td></tr></table></figure>
 <h2 id="以YAML或JSON描述文件船舰pod"><a href="#以YAML或JSON描述文件船舰pod" class="headerlink" title="以YAML或JSON描述文件船舰pod"></a>以YAML或JSON描述文件船舰pod</h2><p>查看现有pod的yaml描述文件</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get pod kubia-6wgzj -o yaml</span><br></pre></td></tr></table></figure>
 <p><img src="https://blog-pic-1254088127.picsh.myqcloud.com/k8s-yaml-metadata.png" alt="k8s-yaml-metadata"></p>
@@ -664,7 +664,69 @@
 <h3 id="通过FQDN（全限定域名）连接服务"><a href="#通过FQDN（全限定域名）连接服务" class="headerlink" title="通过FQDN（全限定域名）连接服务"></a>通过FQDN（全限定域名）连接服务</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl exec kubia-6vf4l -- curl -s http:&#x2F;&#x2F;kubia.default.svc.cluster.local</span><br></pre></td></tr></table></figure>
 
 <p>kubia是服务名，default是命名空间，svc.cluster.local是在所有集群本地服务名称中使用的可配置集群域后缀。</p>
-<h1 id="RS"><a href="#RS" class="headerlink" title="RS"></a>RS</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl get rs &#x2F;&#x2F;查看rs信息，比如副本数</span><br><span class="line"></span><br><span class="line">kubectl scale rs my-rs-name  --replicas&#x3D;3 &#x2F;&#x2F;修改副本数</span><br></pre></td></tr></table></figure>
+<h1 id="RS"><a href="#RS" class="headerlink" title="RS"></a>RS</h1><p>pod代表Kubernetes中最小的部署单元，在实际场景，我们希望部署的资源可以自动保持运行，并且保持健康，要做到这一点我们几乎不会直接创建pod<br>，而是创建ReplicaSet（老版本是ReplicationController）或Deployment这样的资源，接着由它们来创建并管理实际的pod</p>
+<h2 id="存活探针"><a href="#存活探针" class="headerlink" title="存活探针"></a>存活探针</h2><p>Kubernetes可以通过存活探针（liveness probe）检查容器是否还在运行。可以为pod中的每个容器单独指定探针，Kubernetes会定期执行探针，如果探测失败，将重启容器。</p>
+<p>三种探针</p>
+<ul>
+<li>HTTP GET探针对容器的IP地址（指定端口和路径）执行HTTP GET请求。</li>
+<li>TCP套接字探针尝试与容器指定端口建立TCP连接。如果连接建立成功，则探测成功。</li>
+<li>Exec 探针在容器内执行任意命令，并检查命令的退出状态码，如果状态码是0，则探测成功。</li>
+</ul>
+<p>创建基于HTTP的存活探针</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: kubia-liveness</span><br><span class="line">  namespace: qa</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - image: luksa&#x2F;kubia-unhealthy</span><br><span class="line">    name: kubia</span><br><span class="line">    livenessProbe:</span><br><span class="line">      httpGet:</span><br><span class="line">        path: &#x2F;</span><br><span class="line">        port: 8080</span><br></pre></td></tr></table></figure>
+<p>这里就定义了一个http get存活探针</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;opt&#x2F;yaml&#x2F;demo# kubectl apply -f kubia-pod.yaml</span><br><span class="line">pod&#x2F;kubia-liveness created</span><br><span class="line">root@node1:&#x2F;opt&#x2F;yaml&#x2F;demo# kubectl get pods -n qa</span><br><span class="line">NAME             READY   STATUS    RESTARTS   AGE</span><br><span class="line">kubia-liveness   1&#x2F;1     Running   1          2m7s</span><br></pre></td></tr></table></figure>
+<p>kubia-unhealthy服务健康检查每调用5次就会失败一次，所以这里过2分钟会发现服务被重启过一次了。<br>通过kubectl describe pod 命令可以看到容器当期的状态，重启了多少此，上次被终止的原因等等。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl describe pod kubia-liveness</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://blog-pic-1254088127.picsh.myqcloud.com/k8s-health-http.png" alt="k8s-health-http"></p>
+<p>我们还可以配置探针的delay（延迟）、timeout（超时）、period（周期）等,可以通过kubectl explain命令查看yaml详细配置说明</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;opt&#x2F;yaml&#x2F;demo# kubectl explain pod.spec.containers.livenessProbe</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>initialDelaySeconds 表示容器启动后延迟多久进行检测，默认0，及容器启动后即开始检测。</li>
+<li>timeoutSeconds 表示超时时间，超时未响应则检测失败</li>
+<li>periodSeconds 表示多久检测一次</li>
+</ul>
+<p>在生成环境中运行的pod一定要定义一个存活探针。没有探针的话Kubernetes无法知道你的应用是否存活。</p>
+<h2 id="ReplicaSet"><a href="#ReplicaSet" class="headerlink" title="ReplicaSet"></a>ReplicaSet</h2><p>ReplicaSet是一种Kubernetes资源，它可以确保pod始终保持运行状态，如果pod因为任何原因消失（比如节点从集群中消失，或者pod从节点中驱逐），<br>RS会注意缺少了pod，并创建代替。</p>
+<p>一般而言RS旨在创建和管理一个pod 的多个副本，RS的工作是确保标签的数量始终与其标签选择器匹配，如果不匹配，rs将根据所需，采取适当的操作来协调pod 的数量。</p>
+<p>RS由3部份组成</p>
+<ul>
+<li>label selector 标签选择器，用于确认rs作用域中有哪些pod</li>
+<li>replica count 副本个数，指定运行的pod数量</li>
+<li>pod template pod模板，用于创建新的pod副本</li>
+</ul>
+<p>RS可以轻松实现pod的水平伸缩</p>
+<h2 id="创建ReplicaSet"><a href="#创建ReplicaSet" class="headerlink" title="创建ReplicaSet"></a>创建ReplicaSet</h2><p>kubia-rs.yaml</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">apiVersion: apps&#x2F;v1</span><br><span class="line">kind: ReplicaSet</span><br><span class="line">metadata:</span><br><span class="line">  name: kubia</span><br><span class="line">  labels:</span><br><span class="line">    run: kubia</span><br><span class="line">spec:</span><br><span class="line">  # modify replicas according to your case</span><br><span class="line">  replicas: 3</span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      run: kubia</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        run: kubia</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - name: kubia</span><br><span class="line">        image: luksa&#x2F;kubia</span><br></pre></td></tr></table></figure>
+<p><img src="https://blog-pic-1254088127.picsh.myqcloud.com/k8s-rs-01.png" alt="k8s-rs"></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;opt&#x2F;yaml&#x2F;demo# kubectl create -f kubia-rs.yaml</span><br><span class="line">replicaset.apps&#x2F;kubia created</span><br><span class="line">root@node1:&#x2F;opt&#x2F;yaml&#x2F;demo# kubectl get pods -o wide --show-labels</span><br><span class="line">NAME          READY   STATUS    RESTARTS   AGE     IP             NODE    NOMINATED NODE   READINESS GATES   LABELS</span><br><span class="line">kubia-f5vv9   1&#x2F;1     Running   0          3m48s   192.169.1.10   node2   &lt;none&gt;           &lt;none&gt;            run&#x3D;kubia</span><br><span class="line">kubia-qd2sl   1&#x2F;1     Running   0          3m48s   192.169.2.37   node3   &lt;none&gt;           &lt;none&gt;            run&#x3D;kubia</span><br><span class="line">kubia-t7krn   1&#x2F;1     Running   0          2m40s   192.169.1.11   node2   &lt;none&gt;           &lt;none&gt;            run&#x3D;kubia</span><br></pre></td></tr></table></figure>
+<h2 id="模拟节点故障"><a href="#模拟节点故障" class="headerlink" title="模拟节点故障"></a>模拟节点故障</h2><p>下面我们模拟一个节点故障，从网络中端口其中一个节点，使用sudo ifconfig eth0 down 关闭器网络接口。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 关闭node2的网络</span><br><span class="line">root@node2:&#x2F;home&#x2F;richey# ifconfig ens33 down</span><br><span class="line"># 这时候node2节点已经NotReady不可用了 </span><br><span class="line">root@node1:&#x2F;opt&#x2F;yaml&#x2F;demo# kubectl get nodes</span><br><span class="line">NAME    STATUS     ROLES    AGE   VERSION</span><br><span class="line">node1   Ready      master   11d   v1.15.2</span><br><span class="line">node2   NotReady   &lt;none&gt;   11d   v1.15.2</span><br><span class="line">node3   Ready      &lt;none&gt;   11d   v1.15.2</span><br><span class="line"></span><br><span class="line"># kubernetes在重新调用pod之前会等待一段时间（如果节点因为网络原因或kubelet重新启动而无法访问）。大概过了几分钟后node2节点上的rs才重新在其它节点启动新的pod</span><br><span class="line">root@node1:&#x2F;opt&#x2F;yaml&#x2F;demo# kubectl get pods -o wide --show-labels</span><br><span class="line">NAME          READY   STATUS        RESTARTS   AGE   IP             NODE    NOMINATED NODE   READINESS GATES   LABELS</span><br><span class="line">kubia-2fssn   1&#x2F;1     Running       0          29s   192.169.2.39   node3   &lt;none&gt;           &lt;none&gt;            run&#x3D;kubia</span><br><span class="line">kubia-f5vv9   1&#x2F;1     Terminating   0          13m   192.169.1.10   node2   &lt;none&gt;           &lt;none&gt;            run&#x3D;kubia</span><br><span class="line">kubia-jjnjw   1&#x2F;1     Running       0          29s   192.169.2.40   node3   &lt;none&gt;           &lt;none&gt;            run&#x3D;kubia</span><br><span class="line">kubia-qd2sl   1&#x2F;1     Running       0          13m   192.169.2.37   node3   &lt;none&gt;           &lt;none&gt;            run&#x3D;kubia</span><br><span class="line">kubia-t7krn   1&#x2F;1     Terminating   0          12m   192.169.1.11   node2   &lt;none&gt;           &lt;none&gt;            run&#x3D;kubia</span><br></pre></td></tr></table></figure>
+
+<p>可以通过修改pod的标签让其脱离rs的控制，但是注意当我们修改 一个pod的标签时，rs将发现其管理的pod的数量变少，会新创建一个。</p>
+<h2 id="修改pod模板"><a href="#修改pod模板" class="headerlink" title="修改pod模板"></a>修改pod模板</h2><p>rs的pod模板可以随时改，但是它只会影响改之后的pod，对以创建的pod无影响。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;opt&#x2F;yaml&#x2F;demo# kubectl get rs</span><br><span class="line">NAME    DESIRED   CURRENT   READY   AGE</span><br><span class="line">kubia   3         3         3       27m</span><br><span class="line">root@node1:&#x2F;opt&#x2F;yaml&#x2F;demo# kubectl edit rs kubia</span><br><span class="line">\replicaset.extensions&#x2F;kubia edited</span><br></pre></td></tr></table></figure>
+
+<h2 id="水平缩放pod"><a href="#水平缩放pod" class="headerlink" title="水平缩放pod"></a>水平缩放pod</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;opt&#x2F;yaml&#x2F;demo# kubectl scale rs kubia --replicas&#x3D;10</span><br><span class="line">replicaset.extensions&#x2F;kubia scaled</span><br><span class="line">root@node1:&#x2F;opt&#x2F;yaml&#x2F;demo# kubectl get pods -o wide</span><br><span class="line">NAME          READY   STATUS              RESTARTS   AGE    IP             NODE    NOMINATED NODE   READINESS GATES</span><br><span class="line">kubia-5kgwl   0&#x2F;1     ContainerCreating   0          3s     &lt;none&gt;         node3   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">kubia-6tr6n   1&#x2F;1     Running             0          2m7s   192.169.2.44   node3   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">kubia-96hqx   0&#x2F;1     ContainerCreating   0          3s     &lt;none&gt;         node3   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">kubia-bs7ft   1&#x2F;1     Running             0          2m7s   192.169.1.16   node2   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">kubia-dhsh8   0&#x2F;1     ContainerCreating   0          3s     &lt;none&gt;         node3   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">kubia-gk67n   0&#x2F;1     ContainerCreating   0          3s     &lt;none&gt;         node2   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">kubia-h2srg   0&#x2F;1     ContainerCreating   0          3s     &lt;none&gt;         node2   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">kubia-png2f   1&#x2F;1     Running             0          2m7s   192.169.1.17   node2   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">kubia-w9pnp   0&#x2F;1     ContainerCreating   0          3s     &lt;none&gt;         node3   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">kubia-xqlwh   0&#x2F;1     ContainerCreating   0          3s     &lt;none&gt;         node2   &lt;none&gt;           &lt;none&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="删除rs"><a href="#删除rs" class="headerlink" title="删除rs"></a>删除rs</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;opt&#x2F;yaml&#x2F;demo# kubectl get pods</span><br><span class="line">NAME          READY   STATUS    RESTARTS   AGE</span><br><span class="line">kubia-5kgwl   1&#x2F;1     Running   0          2m42s</span><br><span class="line">kubia-6tr6n   1&#x2F;1     Running   0          4m46s</span><br><span class="line">kubia-96hqx   1&#x2F;1     Running   0          2m42s</span><br><span class="line">kubia-bs7ft   1&#x2F;1     Running   0          4m46s</span><br><span class="line">kubia-dhsh8   1&#x2F;1     Running   0          2m42s</span><br><span class="line">kubia-gk67n   1&#x2F;1     Running   0          2m42s</span><br><span class="line">kubia-h2srg   1&#x2F;1     Running   0          2m42s</span><br><span class="line">kubia-png2f   1&#x2F;1     Running   0          4m46s</span><br><span class="line">kubia-w9pnp   1&#x2F;1     Running   0          2m42s</span><br><span class="line">kubia-xqlwh   1&#x2F;1     Running   0          2m42s</span><br><span class="line">root@node1:&#x2F;opt&#x2F;yaml&#x2F;demo# kubectl delete rs kubia</span><br><span class="line">replicaset.extensions &quot;kubia&quot; deleted</span><br><span class="line">root@node1:&#x2F;opt&#x2F;yaml&#x2F;demo# kubectl get pods</span><br><span class="line">NAME          READY   STATUS        RESTARTS   AGE</span><br><span class="line">kubia-5kgwl   1&#x2F;1     Terminating   0          2m59s</span><br><span class="line">kubia-6tr6n   1&#x2F;1     Terminating   0          5m3s</span><br><span class="line">kubia-96hqx   1&#x2F;1     Terminating   0          2m59s</span><br><span class="line">kubia-bs7ft   1&#x2F;1     Terminating   0          5m3s</span><br><span class="line">kubia-dhsh8   1&#x2F;1     Terminating   0          2m59s</span><br><span class="line">kubia-gk67n   1&#x2F;1     Terminating   0          2m59s</span><br><span class="line">kubia-h2srg   1&#x2F;1     Terminating   0          2m59s</span><br><span class="line">kubia-png2f   1&#x2F;1     Terminating   0          5m3s</span><br><span class="line">kubia-w9pnp   1&#x2F;1     Terminating   0          2m59s</span><br><span class="line">kubia-xqlwh   1&#x2F;1     Terminating   0          2m59s</span><br></pre></td></tr></table></figure>
+<p>删除rs后，rs管理的pod也会被删除,要想删除rc保持pod运行，可以加参数–cascade=false</p>
+<h2 id="rs丰富的标签选择器"><a href="#rs丰富的标签选择器" class="headerlink" title="rs丰富的标签选择器"></a>rs丰富的标签选择器</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;opt&#x2F;yaml&#x2F;demo# kubectl explain rs.spec.selector</span><br><span class="line">...</span><br><span class="line">FIELDS:</span><br><span class="line">   matchExpressions	&lt;[]Object&gt;</span><br><span class="line"></span><br><span class="line">   matchLabels	&lt;map[string]string&gt;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>可以看到selector有两种配置方式，matchLabels可以配置键值对的label，而matchExpressions有更丰富的表达力。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">selector:</span><br><span class="line">  matchExpressions:</span><br><span class="line">    - key: app</span><br><span class="line">      operator: In</span><br><span class="line">      values:</span><br><span class="line">        - kubia</span><br></pre></td></tr></table></figure>
+
+<p>可以设置多个表达式，每个表达式都必须包含一个key，一个operator，并且可能还有一个value的列表（取决于运算符）。</p>
+<p>有4种有效的运算符：</p>
+<ul>
+<li>In Label的值必须与其中一个values值匹配</li>
+<li>NotIn Label的值与任何指定的values值不匹配 </li>
+<li>Exists pod必须包含一个指定名称的标签（值不重要）。使用此运算符，不应该指定values值</li>
+<li>DoesNotExist pod不得包含有指定名称的标签。使用此运算符，不应该指定values值</li>
+</ul>
+<p>如果指定了多个表达式，则这些表达式必须都满足才能匹配。</p>
+<h1 id="DaemonSet"><a href="#DaemonSet" class="headerlink" title="DaemonSet"></a>DaemonSet</h1><h1 id="Job"><a href="#Job" class="headerlink" title="Job"></a>Job</h1><p>*</p>
 ]]></content>
       <categories>
         <category>SRE</category>
@@ -689,6 +751,67 @@
 <h1 id="查看pod的yaml文件"><a href="#查看pod的yaml文件" class="headerlink" title="查看pod的yaml文件"></a>查看pod的yaml文件</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl get pod my-pode-name -o yaml  &#x2F;&#x2F;通过 -o yaml参数</span><br></pre></td></tr></table></figure>
 
 <h1 id="查看pod日志"><a href="#查看pod日志" class="headerlink" title="查看pod日志"></a>查看pod日志</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;opt&#x2F;yaml&#x2F;demo# kubectl get pods</span><br><span class="line">NAME          READY   STATUS    RESTARTS   AGE</span><br><span class="line">kubia-6wgzj   1&#x2F;1     Running   1          3d14h</span><br><span class="line">kubia-j7q4s   1&#x2F;1     Running   0          88m</span><br><span class="line">kubia-rxndz   1&#x2F;1     Running   0          88m</span><br><span class="line">root@node1:&#x2F;opt&#x2F;yaml&#x2F;demo# kubectl logs -f --tail 100 kubia-j7q4s</span><br><span class="line">Kubia server starting...</span><br></pre></td></tr></table></figure>
+
+<p>当健康检查失败，容器被重启后，看到的日志是当前容器的，如果我们想看前一个容器的日志，可以通过添加<br>–previous选项来完成</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl logs -f --tail 100 kubia-j7q4s  --previous</span><br></pre></td></tr></table></figure>
+
+<h1 id="创建pod时指定标签"><a href="#创建pod时指定标签" class="headerlink" title="创建pod时指定标签"></a>创建pod时指定标签</h1><p>在yaml文件中指定label，可以指定多个（多行）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">metadata:</span><br><span class="line">  creationTimestamp: &quot;2021-05-29T07:50:51Z&quot;</span><br><span class="line">  generateName: kubia-</span><br><span class="line">  labels:</span><br><span class="line">    run: kubia</span><br><span class="line">  name: kubia-6vf4l</span><br><span class="line">  namespace: default</span><br></pre></td></tr></table></figure>
+
+<h1 id="查看pod标签"><a href="#查看pod标签" class="headerlink" title="查看pod标签"></a>查看pod标签</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get pods --show-labels</span><br><span class="line">NAME          READY   STATUS    RESTARTS   AGE     LABELS</span><br><span class="line">kubia-6vf4l   1&#x2F;1     Running   1          6d19h   run&#x3D;kubia</span><br><span class="line">kubia-97c5t   1&#x2F;1     Running   1          6d19h   run&#x3D;kubia</span><br><span class="line">kubia-wk7b4   1&#x2F;1     Running   1          6d19h   run&#x3D;kubia</span><br><span class="line"></span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get pod kubia-6vf4l --show-labels</span><br><span class="line">NAME          READY   STATUS    RESTARTS   AGE     LABELS</span><br><span class="line">kubia-6vf4l   1&#x2F;1     Running   1          6d19h   run&#x3D;kubia</span><br></pre></td></tr></table></figure>
+<p>也可以查看pod的yaml文件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get pods kubia-6vf4l -o yaml</span><br></pre></td></tr></table></figure>
+<p>查看指定标签，通过-L 标签名 查看</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get pod -L run</span><br><span class="line">NAME          READY   STATUS    RESTARTS   AGE     RUN</span><br><span class="line">kubia-6vf4l   1&#x2F;1     Running   1          6d19h   kubia</span><br><span class="line">kubia-97c5t   1&#x2F;1     Running   1          6d19h   kubia</span><br><span class="line">kubia-wk7b4   1&#x2F;1     Running   1          6d19h   kubia</span><br></pre></td></tr></table></figure>
+<h1 id="添加或修改现有标签"><a href="#添加或修改现有标签" class="headerlink" title="添加或修改现有标签"></a>添加或修改现有标签</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl label pod  kubia-6vf4l kubia-custom-label&#x3D;test</span><br><span class="line">pod&#x2F;kubia-6vf4l labeled</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get pod kubia-6vf4l --show-labels</span><br><span class="line">NAME          READY   STATUS    RESTARTS   AGE     LABELS</span><br><span class="line">kubia-6vf4l   1&#x2F;1     Running   1          6d19h   kubia-custom-label&#x3D;test,run&#x3D;kubia</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl label pod  kubia-6vf4l kubia-custom-label&#x3D;test</span><br><span class="line">error: &#39;kubia-custom-label&#39; already has a value (test), and --overwrite is false</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl label pod  kubia-6vf4l kubia-custom-label&#x3D;test --overwrite</span><br><span class="line">pod&#x2F;kubia-6vf4l not labeled</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl label pod  kubia-6vf4l kubia-custom-label&#x3D;test2 --overwrite</span><br><span class="line">pod&#x2F;kubia-6vf4l labeled</span><br></pre></td></tr></table></figure>
+<p>可以看到如果要更改现有标签需要使用–overwrite选项</p>
+<h1 id="通过标签选择器列出子集"><a href="#通过标签选择器列出子集" class="headerlink" title="通过标签选择器列出子集"></a>通过标签选择器列出子集</h1><p>通过-l参数过滤</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl label pod kubia-97c5t kubia-custom-label&#x3D;test</span><br><span class="line">pod&#x2F;kubia-97c5t labeled</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl label pod kubia-wk7b4 env&#x3D;qa</span><br><span class="line">pod&#x2F;kubia-wk7b4 labeled</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get pod -l kubia-custom-label&#x3D;test</span><br><span class="line">NAME          READY   STATUS    RESTARTS   AGE</span><br><span class="line">kubia-97c5t   1&#x2F;1     Running   1          6d19h</span><br><span class="line">&#x2F;&#x2F;包含标签kubia-custom-label的</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get pod -l kubia-custom-label</span><br><span class="line">NAME          READY   STATUS    RESTARTS   AGE</span><br><span class="line">kubia-6vf4l   1&#x2F;1     Running   1          6d19h</span><br><span class="line">kubia-97c5t   1&#x2F;1     Running   1          6d19h</span><br><span class="line">&#x2F;&#x2F;不包含kubia-custom-label标签的</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get pod -l &#39;!kubia-custom-label&#39;  --show-labels</span><br><span class="line">NAME          READY   STATUS    RESTARTS   AGE     LABELS</span><br><span class="line">kubia-wk7b4   1&#x2F;1     Running   1          6d19h   env&#x3D;qa,run&#x3D;kubia</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get pod -l kubia-custom-label!&#x3D;test --show-labels</span><br><span class="line">NAME          READY   STATUS    RESTARTS   AGE     LABELS</span><br><span class="line">kubia-6vf4l   1&#x2F;1     Running   1          6d19h   kubia-custom-label&#x3D;test2,run&#x3D;kubia</span><br><span class="line">kubia-wk7b4   1&#x2F;1     Running   1          6d19h   env&#x3D;qa,run&#x3D;kubia</span><br></pre></td></tr></table></figure>
+<p>多条件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get pod -l kubia-custom-label --show-labels</span><br><span class="line">NAME          READY   STATUS    RESTARTS   AGE     LABELS</span><br><span class="line">kubia-6vf4l   1&#x2F;1     Running   1          6d19h   kubia-custom-label&#x3D;test2,run&#x3D;kubia</span><br><span class="line">kubia-97c5t   1&#x2F;1     Running   1          6d19h   kubia-custom-label&#x3D;test,run&#x3D;kubia</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get pod -l kubia-custom-label&#x3D;test,run&#x3D;kubia --show-labels</span><br><span class="line">NAME          READY   STATUS    RESTARTS   AGE     LABELS</span><br><span class="line">kubia-97c5t   1&#x2F;1     Running   1          6d19h   kubia-custom-label&#x3D;test,run&#x3D;kubia</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey#</span><br></pre></td></tr></table></figure>
+<h1 id="使用标签和选择器来约束pod调度"><a href="#使用标签和选择器来约束pod调度" class="headerlink" title="使用标签和选择器来约束pod调度"></a>使用标签和选择器来约束pod调度</h1><p>有时候我们希望将特定pod调度到特定的节点，这个时候可以使用标签和选择器实现.pod并不是唯一可以加标签的资源，标签可以添加到任何的k8s对象上。</p>
+<h2 id="使用标签分类购买工作节点"><a href="#使用标签分类购买工作节点" class="headerlink" title="使用标签分类购买工作节点"></a>使用标签分类购买工作节点</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get nodes --show-labels</span><br><span class="line">NAME    STATUS   ROLES    AGE   VERSION   LABELS</span><br><span class="line">node1   Ready    master   11d   v1.15.2   beta.kubernetes.io&#x2F;arch&#x3D;amd64,beta.kubernetes.io&#x2F;os&#x3D;linux,kubernetes.io&#x2F;arch&#x3D;amd64,kubernetes.io&#x2F;hostname&#x3D;node1,kubernetes.io&#x2F;os&#x3D;linux,node-role.kubernetes.io&#x2F;master&#x3D;</span><br><span class="line">node2   Ready    &lt;none&gt;   11d   v1.15.2   beta.kubernetes.io&#x2F;arch&#x3D;amd64,beta.kubernetes.io&#x2F;os&#x3D;linux,kubernetes.io&#x2F;arch&#x3D;amd64,kubernetes.io&#x2F;hostname&#x3D;node2,kubernetes.io&#x2F;os&#x3D;linux</span><br><span class="line">node3   Ready    &lt;none&gt;   11d   v1.15.2   beta.kubernetes.io&#x2F;arch&#x3D;amd64,beta.kubernetes.io&#x2F;os&#x3D;linux,kubernetes.io&#x2F;arch&#x3D;amd64,kubernetes.io&#x2F;hostname&#x3D;node3,kubernetes.io&#x2F;os&#x3D;linux</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl label node node1 cpu&#x3D;true</span><br><span class="line">node&#x2F;node1 labeled</span><br><span class="line">&#x2F;&#x2F;给node1节点加标签cpu&#x3D;true,将其标记为计算型节点</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get node -l cpu&#x3D;true</span><br><span class="line">NAME    STATUS   ROLES    AGE   VERSION</span><br><span class="line">node1   Ready    master   11d   v1.15.2</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get node -L cpu</span><br><span class="line">NAME    STATUS   ROLES    AGE   VERSION   CPU</span><br><span class="line">node1   Ready    master   11d   v1.15.2   true</span><br><span class="line">node2   Ready    &lt;none&gt;   11d   v1.15.2   </span><br><span class="line">node3   Ready    &lt;none&gt;   11d   v1.15.2</span><br></pre></td></tr></table></figure>
+<h2 id="将pod调度到特定节点"><a href="#将pod调度到特定节点" class="headerlink" title="将pod调度到特定节点"></a>将pod调度到特定节点</h2><p>可以在pod的yaml文件中配置要调度的节点</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">spec:</span><br><span class="line">  nodeSelector:</span><br><span class="line">    cpu: &quot;true&quot;</span><br></pre></td></tr></table></figure>
+
+<p>每个节点都有一个唯一标签，其中键为kubernetes.io/hostname,值为该节点的实际主机名</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:~# kubectl get nodes -L kubernetes.io&#x2F;hostname</span><br><span class="line">NAME    STATUS   ROLES    AGE   VERSION   HOSTNAME</span><br><span class="line">node1   Ready    master   11d   v1.15.2   node1</span><br><span class="line">node2   Ready    &lt;none&gt;   11d   v1.15.2   node2</span><br><span class="line">node3   Ready    &lt;none&gt;   11d   v1.15.2   node3</span><br></pre></td></tr></table></figure>
+
+<h1 id="注解pod"><a href="#注解pod" class="headerlink" title="注解pod"></a>注解pod</h1><p>注解可以用于pod及其它对象。注解也是键值对，但是注解并不是为了保存标识信息而存在的，它们不用像标签一样<br>用于对对象进行分组，也不存在类似于标签选择器的东西。</p>
+<p>注解可以在yaml中指定和查看</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">- apiVersion: v1</span><br><span class="line">  kind: Pod</span><br><span class="line">  metadata:</span><br><span class="line">    annotations:</span><br><span class="line">      kubernetes.io&#x2F;config.hash: 1ab8fb77541ce5e8485486c30ea8760d</span><br><span class="line">      kubernetes.io&#x2F;config.mirror: 1ab8fb77541ce5e8485486c30ea8760d</span><br><span class="line">      kubernetes.io&#x2F;config.seen: &quot;2021-05-24T14:38:01.188468672Z&quot;</span><br></pre></td></tr></table></figure>
+
+<p>注解可以包含相对较多的数据（不超过256k）</p>
+<h2 id="添加和修改注解"><a href="#添加和修改注解" class="headerlink" title="添加和修改注解"></a>添加和修改注解</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:~# kubectl get pod kubia-6vf4l -o yaml </span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  annotations:</span><br><span class="line">    10000hours.top&#x2F;someannotation: foo</span><br></pre></td></tr></table></figure>
+<h1 id="使用命名空间对资源进行分组"><a href="#使用命名空间对资源进行分组" class="headerlink" title="使用命名空间对资源进行分组"></a>使用命名空间对资源进行分组</h1><p>Kubernetes命名空间简单地为对象名称提供了一个作用域，这样我们可以在不同的命名空间中使用相同的资源名称。</p>
+<h2 id="列出集群中的所有命名空间"><a href="#列出集群中的所有命名空间" class="headerlink" title="列出集群中的所有命名空间"></a>列出集群中的所有命名空间</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:~# kubectl get ns</span><br><span class="line">NAME              STATUS   AGE</span><br><span class="line">default           Active   11d</span><br><span class="line">kube-node-lease   Active   11d</span><br><span class="line">kube-public       Active   11d</span><br><span class="line">kube-system       Active   11d</span><br></pre></td></tr></table></figure>
+<p>如果我们使用kubectl相关命令时没有指定命名空间，则kubectl总是默认为default命名空间。</p>
+<h2 id="指定命名空间"><a href="#指定命名空间" class="headerlink" title="指定命名空间"></a>指定命名空间</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:~# kubectl get pod -n kube-system</span><br><span class="line">NAME                            READY   STATUS             RESTARTS   AGE</span><br><span class="line">coredns-bccdc95cf-j4tdl         0&#x2F;1     CrashLoopBackOff   98         6d19h</span><br><span class="line">coredns-bccdc95cf-zv7vs         1&#x2F;1     Running            2          10d</span><br><span class="line">etcd-node1                      1&#x2F;1     Running            6          11d</span><br><span class="line">kube-apiserver-node1            1&#x2F;1     Running            7          11d</span><br><span class="line">kube-controller-manager-node1   1&#x2F;1     Running            6          11d</span><br><span class="line">kube-flannel-ds-2cbc6           1&#x2F;1     Running            0          10d</span><br><span class="line">kube-flannel-ds-8gwrk           1&#x2F;1     Running            4          10d</span><br><span class="line">kube-flannel-ds-xxfw9           1&#x2F;1     Running            3          10d</span><br><span class="line">kube-proxy-hj794                1&#x2F;1     Running            1          11d</span><br><span class="line">kube-proxy-hm2tn                1&#x2F;1     Running            4          11d</span><br><span class="line">kube-proxy-jsz86                1&#x2F;1     Running            6          11d</span><br><span class="line">kube-scheduler-node1            1&#x2F;1     Running            6          11d</span><br></pre></td></tr></table></figure>
+
+<h2 id="从YAML文件创建命名空间"><a href="#从YAML文件创建命名空间" class="headerlink" title="从YAML文件创建命名空间"></a>从YAML文件创建命名空间</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Namespace</span><br><span class="line">metadata:</span><br><span class="line">  name: custom-namespace</span><br></pre></td></tr></table></figure>
+<p>创建名称为custom-namespace的命名空间</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;opt&#x2F;yaml# kubectl create -f custom-namespace.yaml</span><br><span class="line">namespace&#x2F;custom-namespace created</span><br><span class="line">root@node1:&#x2F;opt&#x2F;yaml# kubectl get ns</span><br><span class="line">NAME               STATUS   AGE</span><br><span class="line">custom-namespace   Active   30s</span><br><span class="line">default            Active   11d</span><br><span class="line">kube-node-lease    Active   11d</span><br><span class="line">kube-public        Active   11d</span><br><span class="line">kube-system        Active   11d</span><br></pre></td></tr></table></figure>
+
+<h2 id="通过kubectl-cteate-namespace命令创建命名空间"><a href="#通过kubectl-cteate-namespace命令创建命名空间" class="headerlink" title="通过kubectl cteate namespace命令创建命名空间"></a>通过kubectl cteate namespace命令创建命名空间</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;opt&#x2F;yaml# kubectl create namespace custom-namespace-2</span><br><span class="line">namespace&#x2F;custom-namespace-2 created</span><br></pre></td></tr></table></figure>
+
+<h2 id="在指定命名空间中创建资源"><a href="#在指定命名空间中创建资源" class="headerlink" title="在指定命名空间中创建资源"></a>在指定命名空间中创建资源</h2><p>可以在yaml中指定，在metadata字段中添加一个namespace: custom-namespace</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">metadata:</span><br><span class="line">  namespace: custom-namespace</span><br></pre></td></tr></table></figure>
+
+<p>也可以在kubectl create 命令创建资源的时候指定</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl create -f kubia-pod.yaml -n custom-namepace</span><br></pre></td></tr></table></figure>
+
+<h2 id="命名空间提供的隔离"><a href="#命名空间提供的隔离" class="headerlink" title="命名空间提供的隔离"></a>命名空间提供的隔离</h2><p>实际上命名空间并不提供对正在运行的对象的任何隔离。</p>
+<p>例如命名空间之间是否提供网络隔离取决于Kubernetes锁使用的网络解决方案。</p>
+<h1 id="删除pod"><a href="#删除pod" class="headerlink" title="删除pod"></a>删除pod</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;opt&#x2F;yaml# kubectl delete pod kubia-6vf4l</span><br></pre></td></tr></table></figure>
+<p>使用标签选择器批量删除</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;opt&#x2F;yaml# kubectl delete pod -l run&#x3D;kubia</span><br><span class="line">pod &quot;kubia-97c5t&quot; deleted</span><br><span class="line">pod &quot;kubia-n75p4&quot; deleted</span><br><span class="line">pod &quot;kubia-wk7b4&quot; deleted</span><br></pre></td></tr></table></figure>
+<p>删除所有pod</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;opt&#x2F;yaml# kubectl delete pod --all</span><br><span class="line">pod &quot;kubia-2zwnz&quot; deleted</span><br><span class="line">pod &quot;kubia-7bpv7&quot; deleted</span><br><span class="line">pod &quot;kubia-gvsgq&quot; deleted</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="删除命名空间"><a href="#删除命名空间" class="headerlink" title="删除命名空间"></a>删除命名空间</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;opt&#x2F;yaml# kubectl delete ns custom-namespace</span><br><span class="line">namespace &quot;custom-namespace&quot; deleted</span><br></pre></td></tr></table></figure>
+<p>删除命名空间，pod及其它资源会随着命名空间自动删除。</p>
+<h2 id="删除命名空间中的（几乎）所有资源"><a href="#删除命名空间中的（几乎）所有资源" class="headerlink" title="删除命名空间中的（几乎）所有资源"></a>删除命名空间中的（几乎）所有资源</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;opt&#x2F;yaml# kubectl delete all --all</span><br><span class="line">pod &quot;kubia-lpmc2&quot; deleted</span><br><span class="line">pod &quot;kubia-mz478&quot; deleted</span><br><span class="line">pod &quot;kubia-tr4mb&quot; deleted</span><br><span class="line">replicationcontroller &quot;kubia&quot; deleted</span><br><span class="line">service &quot;kubernetes&quot; deleted</span><br><span class="line">service &quot;kubia&quot; deleted</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>SRE</category>
@@ -734,6 +857,85 @@
 
 <h2 id="删除索引"><a href="#删除索引" class="headerlink" title="删除索引"></a>删除索引</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.TestCollection98252.dropIndex(&quot;name_1&quot;)</span><br><span class="line">&#123; &quot;nIndexesWas&quot; : 2, &quot;ok&quot; : 1 &#125;</span><br><span class="line">&gt; db.TestCollection98252.getIndexes()</span><br><span class="line">[</span><br><span class="line">	&#123;</span><br><span class="line">		&quot;v&quot; : 2,</span><br><span class="line">		&quot;key&quot; : &#123;</span><br><span class="line">			&quot;_id&quot; : 1</span><br><span class="line">		&#125;,</span><br><span class="line">		&quot;name&quot; : &quot;_id_&quot;,</span><br><span class="line">		&quot;ns&quot; : &quot;test.TestCollection98252&quot;</span><br><span class="line">	&#125;</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"># 删除当前集合所有索引</span><br><span class="line">db.TestCollection98252.dropIndex()</span><br></pre></td></tr></table></figure>
 <h2 id="重建索引"><a href="#重建索引" class="headerlink" title="重建索引"></a>重建索引</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.page.reIndex()</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>mongoDB</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>mongoDB系列05-mongoDB数据模型设计</title>
+    <url>/2021/03/21/mongoDB%E7%B3%BB%E5%88%9705-mongoDB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/</url>
+    <content><![CDATA[<h1 id="JSON文档模型特点"><a href="#JSON文档模型特点" class="headerlink" title="JSON文档模型特点"></a>JSON文档模型特点</h1><p>在传统关系模型中需要多张表关联的模型，在json文档模型中可以通过一个表（集合）完成</p>
+<p>文档模型设计主要考虑两点：性能和开发易用</p>
+<h1 id="几个概念"><a href="#几个概念" class="headerlink" title="几个概念"></a>几个概念</h1><ul>
+<li>集合：同关系数据库中的表</li>
+<li>字段：同关系数据库中的列</li>
+<li>内嵌数组，引用字段：类似于关系数据库的主外键，关联关系</li>
+</ul>
+<h1 id="1-1关系建模"><a href="#1-1关系建模" class="headerlink" title="1-1关系建模"></a>1-1关系建模</h1><ul>
+<li>一对一关系以内嵌为主,作为子文档形式或者直接在顶级</li>
+<li>如果内嵌后导致文档大小超过16M,则不建议内嵌</li>
+</ul>
+<blockquote>
+<p>mongoDB文档大小不能超过16M</p>
+</blockquote>
+<h1 id="1-N关系建模"><a href="#1-N关系建模" class="headerlink" title="1-N关系建模"></a>1-N关系建模</h1><ul>
+<li>一对多关系同样以内嵌为主</li>
+<li>用数组表示一对多</li>
+<li>同样如果文档大小超过16M或数组长度太大（数万或更多）或数组长度不确定则不使用内嵌</li>
+</ul>
+<h1 id="N-N关系模型"><a href="#N-N关系模型" class="headerlink" title="N-N关系模型"></a>N-N关系模型</h1><ul>
+<li><p>不通过映射表做，同样建议通过内嵌数组表示一对多，通过冗余来实现N-N</p>
+</li>
+<li><p>同样如果文档大小超过16M或数组长度太大（数万或更多）或数组长度不确定则不使用内嵌</p>
+<p>在mongoDB里面有些时候是允许甚至鼓励做冗余的</p>
+<p>在mongoDB建模中，内嵌是一种重要的方式,但是内嵌不是万能的，根据具体情况我也需要建立文档间的引用关系</p>
+</li>
+</ul>
+<h1 id="根据业务需求细化建模"><a href="#根据业务需求细化建模" class="headerlink" title="根据业务需求细化建模"></a>根据业务需求细化建模</h1><p>首先要收集确认需求：</p>
+<ul>
+<li><p>读写比例</p>
+</li>
+<li><p>查询方式，比如查询最近几天，查询参数,以及最频繁的查询方式是什么</p>
+</li>
+<li><p>最频繁的写入方式是什么</p>
+</li>
+<li><p>数据量大小,将低频查询且数据量较大的数据单独集合保存，建立关联关系</p>
+<p>基于这些需求，我们最终决定是使用引用来避免性能瓶颈还是使用冗余来优化访问性能.</p>
+<p>比如内嵌模型通过冗余的方式实现N-N时，加入在数据量大的情况下，我们可能面临大量的修改操作(对冗余的数据进行修改),此时就需要设计为关联的方式,<br>将关联关系独立出一张表来，然后依然通过数组冗余的方式维护关系，只不过此时我们冗余的不是具体的数据，而是冗余表的主键数组</p>
+<p>这种通过冗余+关联的设计，我们可以通过$lookup的方式进行（多表）查询，类似mysql中的join</p>
+</li>
+</ul>
+<p>总结，什么时候应该使用引用的方式查询：</p>
+<ul>
+<li>内嵌文档太大，数MB或则超过16MB</li>
+<li>内嵌文档或者数组元素会频繁修改</li>
+<li>内嵌数组元素会持续增长且没有封顶</li>
+</ul>
+<h1 id="mongoDB引用设计的限制"><a href="#mongoDB引用设计的限制" class="headerlink" title="mongoDB引用设计的限制"></a>mongoDB引用设计的限制</h1><ul>
+<li>引用集合之间无主外键检查</li>
+<li>使用$lookup的方式模仿关联查询</li>
+<li>$lookup只支持left outer join</li>
+<li>$lookup的关联目标(from)不能是分片表</li>
+</ul>
+<h1 id="常用的设计模式"><a href="#常用的设计模式" class="headerlink" title="常用的设计模式"></a>常用的设计模式</h1><h2 id="分桶模式"><a href="#分桶模式" class="headerlink" title="分桶模式"></a>分桶模式</h2><p>批量保存概念，节省索引和公共字段的存储空间。</p>
+<p>通过分桶模式可以大大减少文档数量和索引的占用空间</p>
+<h2 id="列转行"><a href="#列转行" class="headerlink" title="列转行"></a>列转行</h2><p>将多列数据转换成一行数据，将多列的信息放到行内的数组中维护</p>
+<p>这样如果我们本来需要对这些列建分别建索引（可能几十个），现在只需要建一个就够了.此模式解决的是索引过多的问题</p>
+<p>索引太多影响插入效率的问题就解决了</p>
+<p>注意的是只有这些列能抽象成一个对象表示时才可行(否则我们从语义上也无法实现列转行)</p>
+<h2 id="版本管理"><a href="#版本管理" class="headerlink" title="版本管理"></a>版本管理</h2><p>模型灵活了，如何管理文档的不同版本？</p>
+<p>可以增加一个版本字段：”schema_version”</p>
+<p>这样我们可以根据版本进行过滤，同时可以根据版本进行规则设置</p>
+<h2 id="近似计算"><a href="#近似计算" class="headerlink" title="近似计算"></a>近似计算</h2><p>对于请求量大同时准确性要求不高的统计，我们可以采用近似计算的方式：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if random(0,9) &#x3D;&#x3D; 0</span><br><span class="line">  increment by 10</span><br></pre></td></tr></table></figure>
+
+<p>可大量减少写入操作</p>
+<h2 id="预聚合"><a href="#预聚合" class="headerlink" title="预聚合"></a>预聚合</h2><p>增加统计字段，在进行数据修改的同时，修改这些统计字段的值，这样就可以避免聚合查询带来的性能和资源问题。</p>
+<p>这里是利用了mongoDB文档模型的灵活性，增加了聚合字段，而不影响正常业务数据</p>
 ]]></content>
       <categories>
         <category>DB</category>
@@ -874,85 +1076,6 @@
       <categories>
         <category>Linux</category>
       </categories>
-  </entry>
-  <entry>
-    <title>mongoDB系列05-mongoDB数据模型设计</title>
-    <url>/2021/03/21/mongoDB%E7%B3%BB%E5%88%9705-mongoDB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/</url>
-    <content><![CDATA[<h1 id="JSON文档模型特点"><a href="#JSON文档模型特点" class="headerlink" title="JSON文档模型特点"></a>JSON文档模型特点</h1><p>在传统关系模型中需要多张表关联的模型，在json文档模型中可以通过一个表（集合）完成</p>
-<p>文档模型设计主要考虑两点：性能和开发易用</p>
-<h1 id="几个概念"><a href="#几个概念" class="headerlink" title="几个概念"></a>几个概念</h1><ul>
-<li>集合：同关系数据库中的表</li>
-<li>字段：同关系数据库中的列</li>
-<li>内嵌数组，引用字段：类似于关系数据库的主外键，关联关系</li>
-</ul>
-<h1 id="1-1关系建模"><a href="#1-1关系建模" class="headerlink" title="1-1关系建模"></a>1-1关系建模</h1><ul>
-<li>一对一关系以内嵌为主,作为子文档形式或者直接在顶级</li>
-<li>如果内嵌后导致文档大小超过16M,则不建议内嵌</li>
-</ul>
-<blockquote>
-<p>mongoDB文档大小不能超过16M</p>
-</blockquote>
-<h1 id="1-N关系建模"><a href="#1-N关系建模" class="headerlink" title="1-N关系建模"></a>1-N关系建模</h1><ul>
-<li>一对多关系同样以内嵌为主</li>
-<li>用数组表示一对多</li>
-<li>同样如果文档大小超过16M或数组长度太大（数万或更多）或数组长度不确定则不使用内嵌</li>
-</ul>
-<h1 id="N-N关系模型"><a href="#N-N关系模型" class="headerlink" title="N-N关系模型"></a>N-N关系模型</h1><ul>
-<li><p>不通过映射表做，同样建议通过内嵌数组表示一对多，通过冗余来实现N-N</p>
-</li>
-<li><p>同样如果文档大小超过16M或数组长度太大（数万或更多）或数组长度不确定则不使用内嵌</p>
-<p>在mongoDB里面有些时候是允许甚至鼓励做冗余的</p>
-<p>在mongoDB建模中，内嵌是一种重要的方式,但是内嵌不是万能的，根据具体情况我也需要建立文档间的引用关系</p>
-</li>
-</ul>
-<h1 id="根据业务需求细化建模"><a href="#根据业务需求细化建模" class="headerlink" title="根据业务需求细化建模"></a>根据业务需求细化建模</h1><p>首先要收集确认需求：</p>
-<ul>
-<li><p>读写比例</p>
-</li>
-<li><p>查询方式，比如查询最近几天，查询参数,以及最频繁的查询方式是什么</p>
-</li>
-<li><p>最频繁的写入方式是什么</p>
-</li>
-<li><p>数据量大小,将低频查询且数据量较大的数据单独集合保存，建立关联关系</p>
-<p>基于这些需求，我们最终决定是使用引用来避免性能瓶颈还是使用冗余来优化访问性能.</p>
-<p>比如内嵌模型通过冗余的方式实现N-N时，加入在数据量大的情况下，我们可能面临大量的修改操作(对冗余的数据进行修改),此时就需要设计为关联的方式,<br>将关联关系独立出一张表来，然后依然通过数组冗余的方式维护关系，只不过此时我们冗余的不是具体的数据，而是冗余表的主键数组</p>
-<p>这种通过冗余+关联的设计，我们可以通过$lookup的方式进行（多表）查询，类似mysql中的join</p>
-</li>
-</ul>
-<p>总结，什么时候应该使用引用的方式查询：</p>
-<ul>
-<li>内嵌文档太大，数MB或则超过16MB</li>
-<li>内嵌文档或者数组元素会频繁修改</li>
-<li>内嵌数组元素会持续增长且没有封顶</li>
-</ul>
-<h1 id="mongoDB引用设计的限制"><a href="#mongoDB引用设计的限制" class="headerlink" title="mongoDB引用设计的限制"></a>mongoDB引用设计的限制</h1><ul>
-<li>引用集合之间无主外键检查</li>
-<li>使用$lookup的方式模仿关联查询</li>
-<li>$lookup只支持left outer join</li>
-<li>$lookup的关联目标(from)不能是分片表</li>
-</ul>
-<h1 id="常用的设计模式"><a href="#常用的设计模式" class="headerlink" title="常用的设计模式"></a>常用的设计模式</h1><h2 id="分桶模式"><a href="#分桶模式" class="headerlink" title="分桶模式"></a>分桶模式</h2><p>批量保存概念，节省索引和公共字段的存储空间。</p>
-<p>通过分桶模式可以大大减少文档数量和索引的占用空间</p>
-<h2 id="列转行"><a href="#列转行" class="headerlink" title="列转行"></a>列转行</h2><p>将多列数据转换成一行数据，将多列的信息放到行内的数组中维护</p>
-<p>这样如果我们本来需要对这些列建分别建索引（可能几十个），现在只需要建一个就够了.此模式解决的是索引过多的问题</p>
-<p>索引太多影响插入效率的问题就解决了</p>
-<p>注意的是只有这些列能抽象成一个对象表示时才可行(否则我们从语义上也无法实现列转行)</p>
-<h2 id="版本管理"><a href="#版本管理" class="headerlink" title="版本管理"></a>版本管理</h2><p>模型灵活了，如何管理文档的不同版本？</p>
-<p>可以增加一个版本字段：”schema_version”</p>
-<p>这样我们可以根据版本进行过滤，同时可以根据版本进行规则设置</p>
-<h2 id="近似计算"><a href="#近似计算" class="headerlink" title="近似计算"></a>近似计算</h2><p>对于请求量大同时准确性要求不高的统计，我们可以采用近似计算的方式：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if random(0,9) &#x3D;&#x3D; 0</span><br><span class="line">  increment by 10</span><br></pre></td></tr></table></figure>
-
-<p>可大量减少写入操作</p>
-<h2 id="预聚合"><a href="#预聚合" class="headerlink" title="预聚合"></a>预聚合</h2><p>增加统计字段，在进行数据修改的同时，修改这些统计字段的值，这样就可以避免聚合查询带来的性能和资源问题。</p>
-<p>这里是利用了mongoDB文档模型的灵活性，增加了聚合字段，而不影响正常业务数据</p>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>mongoDB</tag>
-      </tags>
   </entry>
   <entry>
     <title>mongoDB系列00-MongoDB数据库选型</title>
@@ -1160,8 +1283,8 @@
       </tags>
   </entry>
   <entry>
-    <title>K8s常用命令</title>
-    <url>/2021/03/06/K8s%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    <title>MongoDB命令速查</title>
+    <url>/2021/03/06/MongoDB%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/</url>
     <content><![CDATA[<h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><table>
 <thead>
 <tr>
@@ -1253,6 +1376,23 @@
       </tags>
   </entry>
   <entry>
+    <title>jupyter环境搭建</title>
+    <url>/2021/02/20/jupyter%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</url>
+    <content><![CDATA[<ol>
+<li>安装anaconda</li>
+<li>pycharm中新建项目配置环境变量为conda</li>
+<li>安装必要的包</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip3 install -i https:&#x2F;&#x2F;pypi.doubanio.com&#x2F;simple pandas jupyter xlrd openpyxl pillow matplotlib seaborn</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Phthon</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Kafka重平衡（Rebalance）</title>
     <url>/2021/02/20/Kafka%E9%87%8D%E5%B9%B3%E8%A1%A1%EF%BC%88Rebalance%EF%BC%89/</url>
     <content><![CDATA[<h1 id="什么是Rebalance"><a href="#什么是Rebalance" class="headerlink" title="什么是Rebalance"></a>什么是Rebalance</h1><p>首先要搞清楚，为什么要Rebalance：由于消费者组订阅了topic，因topic partition数和消费者组成员个数不同而存在的分配机制。</p>
@@ -1298,23 +1438,6 @@
       </categories>
       <tags>
         <tag>kafka</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>jupyter环境搭建</title>
-    <url>/2021/02/20/jupyter%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</url>
-    <content><![CDATA[<ol>
-<li>安装anaconda</li>
-<li>pycharm中新建项目配置环境变量为conda</li>
-<li>安装必要的包</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip3 install -i https:&#x2F;&#x2F;pypi.doubanio.com&#x2F;simple pandas jupyter xlrd openpyxl pillow matplotlib seaborn</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Phthon</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
       </tags>
   </entry>
   <entry>
@@ -1830,59 +1953,6 @@ dtype: float64</code></pre><p>实际开发中，我们一般通过读取Excel创
       </tags>
   </entry>
   <entry>
-    <title>K8s基本概念</title>
-    <url>/2020/10/17/K8s%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</url>
-    <content><![CDATA[<h1 id="kubectl"><a href="#kubectl" class="headerlink" title="kubectl"></a>kubectl</h1><p><a href="https://kubernetes.io/zh/docs/reference/kubectl/overview/" target="_blank" rel="noopener">kubectl 是kubernetes命令行工具</a></p>
-<p>如果我们打算在笔记本电脑（本地）上运行 Kubernetes 集群，则需要首先安装 minikube 等工具.</p>
-<p><a href="https://kubernetes.io/zh/docs/tasks/" target="_blank" rel="noopener">文档</a></p>
-<h1 id="k8s-命令"><a href="#k8s-命令" class="headerlink" title="k8s 命令"></a>k8s 命令</h1><ul>
-<li>获取运行的默认集群名称空间的所有Pod的列表</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl get pods</span><br></pre></td></tr></table></figure>
-<ul>
-<li>查看在pod内运行的容器的输出</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl logs [pod name]</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>查看服务详细信息</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl describe svc some-app</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>集群配置上下文</li>
-</ul>
-<blockquote>
-<p>Kubernetes使用配置文件config来查找连接到集群所需的信息。该文件位于主机主文件夹的：~/.kube/config。上下文是该配置文件中的一个元素，它包含对集群，名称空间和用户的引用。如果要访问或运行单个群集，则配置文件中将只有一个上下文。我们可以定义多个指向不同集群的上下文。</p>
-</blockquote>
-<p>使用kubectl config命令可以查看这些上下文并在它们之间切换。</p>
-<h1 id="k8s常用概念"><a href="#k8s常用概念" class="headerlink" title="k8s常用概念"></a>k8s常用概念</h1><ul>
-<li>k8s集群</li>
-</ul>
-<p>K8S集群是运行容器化应用程序所需的一组物理或虚拟机以及其他基础结构资源。</p>
-<ul>
-<li>节点</li>
-</ul>
-<p>K8S集群中的每台机器都称为一个节点。每个K8S集群中有两种类型的节点：</p>
-<p>主节点：承载Kubernetes控制平面并管理集群</p>
-<p>工作节点：运行容器化应用程序</p>
-<ul>
-<li>Pods</li>
-</ul>
-<p>Pod是Kubernetes中最常见的资源之一。它们是一个或多个容器的集合。Pod中的容器共享网络和存储，同一Pod中的任何容器都可以通过localhost进行相互通信。</p>
-<p>Pod创建后，会被分配一个唯一的IP地址。pod内的容器可以监听不同的端口。要访问容器，可以使用容器的IP地址。</p>
-<p>但是，如果想在容器之间进行交互，可以使用localhost:port</p>
-<p>如果Pod重启，就会分配另一个IP地址。因此，不能依赖于IP地址。通过IP直接与Pod进行通讯可能会有问题。</p>
-<p>可以与Pod进行通信的抽象称为K8S服务。K8S服务为我们提供稳定的IP地址和DNS名称</p>
-]]></content>
-      <categories>
-        <category>容器</category>
-      </categories>
-      <tags>
-        <tag>K8s</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Linux开启ssh端口服务（22）</title>
     <url>/2020/08/31/Linux%E5%BC%80%E5%90%AFssh%E7%AB%AF%E5%8F%A3%E6%9C%8D%E5%8A%A1%EF%BC%8822%EF%BC%89/</url>
     <content><![CDATA[<h1 id="OpenSSH"><a href="#OpenSSH" class="headerlink" title="OpenSSH"></a>OpenSSH</h1><p>OpenSSH是SSH(Secure SHell)协议的免费开源实现。SSH协议族可以用来进行远程控制。</p>
@@ -1905,6 +1975,50 @@ dtype: float64</code></pre><p>实际开发中，我们一般通过读取Excel创
       </categories>
       <tags>
         <tag>分布式锁</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mysql（14）-Mysql位（bit）数据类型</title>
+    <url>/2020/06/07/Mysql%EF%BC%8814%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/</url>
+    <content><![CDATA[<p>最近在线上碰到了一个诡异的问题，线上有个业务模块突然查询不出数据。问题反馈的时候是上午，前一天晚上进行了上线操作，基本可以判断跟上线有关系。</p>
+<h1 id="问题定位"><a href="#问题定位" class="headerlink" title="问题定位"></a>问题定位</h1><p>先看日志，没有任何报错，接口都能正常返回。并且此处没有降级机制，arthas跟踪到数据库查询确实没有返回。</p>
+<p>拿到具体的生产查询sql，直接在生产数据库查询，没有结果。但是同样的sql放到beta可以查询出结果。</p>
+<p>这里基本可以定位到是sql查询的问题了。</p>
+<p>先分析了下sql，简单的单表查询，where里有四个查询条件，其中一个字段引起了注意，如下：</p>
+<p>select * from table_staff where companyId = ‘demo-companyId’ and isDelete = ‘0’;</p>
+<p>isDelte在业务中是一个boolean类型，对应数据库中用的是位数据类型：bit(1)，首先尝试将查询条件isDelete=’0’改为isDelete=0或者isDelete=false，<br>可以在生产数据库查出结果。</p>
+<p>进一步比对生产和beta环境该表的DDL，发现isDelete字段的数据类型是一致的，但是生产比beta数据库多了一个索引 idx_companId_isDelete(companyId和isDelete的一个联合索引，而且不是唯一索引)，<br>基本确认索引问题导致。</p>
+<p>此时运维确认这个索引是前天晚上上线，为了提高跑批效率手动在生产加上去的，删掉idx_companId_isDelete索引后问题解决。</p>
+<h1 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h1><p>首先肯定是走了索引，导致数据查询不出来</p>
+<p>数据库中isDelete数据类型是bit(1),查询该类型的知识点：</p>
+<blockquote>
+<p>MySQL有少数几种存储类型使用紧凑的位存储数据。所有这些位类型，不管底层存储格式和处理方式如何，从技术上来说都是字符串类型。<br>MySQL把bit类型当作字符串类型，而不是数字类型。当检索BIT(1)的值时，结果是一个包含二进制0或者1值的字符串，而不是ASCII码的“0”或者“1”。<br>–《高性能MySQL》 P123 4.1.5-位数据类型</p>
+</blockquote>
+<p>MySQL把bit类型当作字符串类型，所以上例中当我们加了一个字符串索引，并且查询条件也使用的字符串查询时（isDelete=’0’），命中索引。而当我们把引号去掉或者使用false时（isDelete=0或isDelete=false）索引失效，进行了全表扫描。</p>
+<p>问题在于，正常字符串索引即便是查询中使用了数字，也无非就是索引失效走全表扫描，不会查不出数据，这里明显是bit(1)数据类型的问题。</p>
+<h1 id="场景还原"><a href="#场景还原" class="headerlink" title="场景还原"></a>场景还原</h1><p>在uat库加了跟生产同样的索引，还原了数据查询不出来的场景。</p>
+<p>Explain 看了下命中索引是的执行计划，Extra中看到这样的描述</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Impossible WHERE noticed after reading const tables</span><br></pre></td></tr></table></figure>
+
+<p>走了常量表，查询mysql Manual，发现了对这段描述的解释：</p>
+<p>![Mysql-extra-impossible](<a href="http://blog-pic-1254088127.picsh.myqcloud.com/mysql-impossible-const.png）" target="_blank" rel="noopener">http://blog-pic-1254088127.picsh.myqcloud.com/mysql-impossible-const.png）</a></p>
+<p>但是，上例中的查询并不符合这段解释中的要求</p>
+<p>![Mysql索引常量](<a href="http://blog-pic-1254088127.picsh.myqcloud.com/mysql-index-const.png）" target="_blank" rel="noopener">http://blog-pic-1254088127.picsh.myqcloud.com/mysql-index-const.png）</a></p>
+<h1 id="实践和结论"><a href="#实践和结论" class="headerlink" title="实践和结论"></a>实践和结论</h1><p>MySQL官方文档及其它资料中找不到合理的解释，这里给个实践结论。</p>
+<p>对bit类型的字段的查询：</p>
+<ul>
+<li>不使用索引<br>查询bit的参数值是无论是数值还是字符，mysql都会进行类型转化,将字符转换为数值，并比较数值对应的ascii码</li>
+<li>使用索引<br>检索BIT(1)列的值, 索引存的结果是一个字符串且内容是二进制位0或1, 而不是ASCII值”0″或”1″. 这就导致了为什么我们使用ASCII值”0”没有查询出结果。</li>
+</ul>
+<p>简言之：bit类型索引里存的是二进制类型的值（位类型bit），我们查询参数给的是ASCII码值</p>
+<p>结论：<br>1、定义为text和image和bit数据类型的列不应该增加索引<br>2、加完索引一定要explain看一下<br>3、使用unsigned tinyint代替bit(1) 来表示是否<br>   @Column(columnDefinition= “TINYINT”,length = 1)    暂未验证</p>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
+        <tag>索引</tag>
       </tags>
   </entry>
   <entry>
@@ -1964,50 +2078,6 @@ dtype: float64</code></pre><p>实际开发中，我们一般通过读取Excel创
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">mysql&gt; select 0 is false, &#39;0&#39; is false ,&#39;123&#39; is false;</span><br><span class="line">+------------+--------------+----------------+</span><br><span class="line">| 0 is false | &#39;0&#39; is false | &#39;123&#39; is false |</span><br><span class="line">+------------+--------------+----------------+</span><br><span class="line">|          1 |            1 |              0 |</span><br><span class="line">+------------+--------------+----------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; select 1 is true,2 is true ,&#39;1&#39; is true,&#39;123&#39; is true,-1 is true;</span><br><span class="line">+-----------+-----------+-------------+---------------+------------+</span><br><span class="line">| 1 is true | 2 is true | &#39;1&#39; is true | &#39;123&#39; is true | -1 is true |</span><br><span class="line">+-----------+-----------+-------------+---------------+------------+</span><br><span class="line">|         1 |         1 |           1 |             1 |          1 |</span><br><span class="line">+-----------+-----------+-------------+---------------+------------+</span><br><span class="line"></span><br><span class="line">mysql&gt; select 1 !&#x3D; 0,2 !&#x3D;0 ,&#39;1&#39; !&#x3D; 0,&#39;123&#39; !&#x3D; 0,-1 !&#x3D; 0;</span><br><span class="line">+--------+-------+----------+------------+---------+</span><br><span class="line">| 1 !&#x3D; 0 | 2 !&#x3D;0 | &#39;1&#39; !&#x3D; 0 | &#39;123&#39; !&#x3D; 0 | -1 !&#x3D; 0 |</span><br><span class="line">+--------+-------+----------+------------+---------+</span><br><span class="line">|      1 |     1 |        1 |          1 |       1 |</span><br><span class="line">+--------+-------+----------+------------+---------+</span><br></pre></td></tr></table></figure>
 
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>综上，在mysql中不要使用bit(1)表示boolean类型，实际上不建议在任何场景使用bit类型的字段。查询会造成不必要的困扰和麻烦，令人难以理解。</p>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-        <tag>索引</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Mysql（14）-Mysql位（bit）数据类型</title>
-    <url>/2020/06/07/Mysql%EF%BC%8814%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/</url>
-    <content><![CDATA[<p>最近在线上碰到了一个诡异的问题，线上有个业务模块突然查询不出数据。问题反馈的时候是上午，前一天晚上进行了上线操作，基本可以判断跟上线有关系。</p>
-<h1 id="问题定位"><a href="#问题定位" class="headerlink" title="问题定位"></a>问题定位</h1><p>先看日志，没有任何报错，接口都能正常返回。并且此处没有降级机制，arthas跟踪到数据库查询确实没有返回。</p>
-<p>拿到具体的生产查询sql，直接在生产数据库查询，没有结果。但是同样的sql放到beta可以查询出结果。</p>
-<p>这里基本可以定位到是sql查询的问题了。</p>
-<p>先分析了下sql，简单的单表查询，where里有四个查询条件，其中一个字段引起了注意，如下：</p>
-<p>select * from table_staff where companyId = ‘demo-companyId’ and isDelete = ‘0’;</p>
-<p>isDelte在业务中是一个boolean类型，对应数据库中用的是位数据类型：bit(1)，首先尝试将查询条件isDelete=’0’改为isDelete=0或者isDelete=false，<br>可以在生产数据库查出结果。</p>
-<p>进一步比对生产和beta环境该表的DDL，发现isDelete字段的数据类型是一致的，但是生产比beta数据库多了一个索引 idx_companId_isDelete(companyId和isDelete的一个联合索引，而且不是唯一索引)，<br>基本确认索引问题导致。</p>
-<p>此时运维确认这个索引是前天晚上上线，为了提高跑批效率手动在生产加上去的，删掉idx_companId_isDelete索引后问题解决。</p>
-<h1 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h1><p>首先肯定是走了索引，导致数据查询不出来</p>
-<p>数据库中isDelete数据类型是bit(1),查询该类型的知识点：</p>
-<blockquote>
-<p>MySQL有少数几种存储类型使用紧凑的位存储数据。所有这些位类型，不管底层存储格式和处理方式如何，从技术上来说都是字符串类型。<br>MySQL把bit类型当作字符串类型，而不是数字类型。当检索BIT(1)的值时，结果是一个包含二进制0或者1值的字符串，而不是ASCII码的“0”或者“1”。<br>–《高性能MySQL》 P123 4.1.5-位数据类型</p>
-</blockquote>
-<p>MySQL把bit类型当作字符串类型，所以上例中当我们加了一个字符串索引，并且查询条件也使用的字符串查询时（isDelete=’0’），命中索引。而当我们把引号去掉或者使用false时（isDelete=0或isDelete=false）索引失效，进行了全表扫描。</p>
-<p>问题在于，正常字符串索引即便是查询中使用了数字，也无非就是索引失效走全表扫描，不会查不出数据，这里明显是bit(1)数据类型的问题。</p>
-<h1 id="场景还原"><a href="#场景还原" class="headerlink" title="场景还原"></a>场景还原</h1><p>在uat库加了跟生产同样的索引，还原了数据查询不出来的场景。</p>
-<p>Explain 看了下命中索引是的执行计划，Extra中看到这样的描述</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Impossible WHERE noticed after reading const tables</span><br></pre></td></tr></table></figure>
-
-<p>走了常量表，查询mysql Manual，发现了对这段描述的解释：</p>
-<p>![Mysql-extra-impossible](<a href="http://blog-pic-1254088127.picsh.myqcloud.com/mysql-impossible-const.png）" target="_blank" rel="noopener">http://blog-pic-1254088127.picsh.myqcloud.com/mysql-impossible-const.png）</a></p>
-<p>但是，上例中的查询并不符合这段解释中的要求</p>
-<p>![Mysql索引常量](<a href="http://blog-pic-1254088127.picsh.myqcloud.com/mysql-index-const.png）" target="_blank" rel="noopener">http://blog-pic-1254088127.picsh.myqcloud.com/mysql-index-const.png）</a></p>
-<h1 id="实践和结论"><a href="#实践和结论" class="headerlink" title="实践和结论"></a>实践和结论</h1><p>MySQL官方文档及其它资料中找不到合理的解释，这里给个实践结论。</p>
-<p>对bit类型的字段的查询：</p>
-<ul>
-<li>不使用索引<br>查询bit的参数值是无论是数值还是字符，mysql都会进行类型转化,将字符转换为数值，并比较数值对应的ascii码</li>
-<li>使用索引<br>检索BIT(1)列的值, 索引存的结果是一个字符串且内容是二进制位0或1, 而不是ASCII值”0″或”1″. 这就导致了为什么我们使用ASCII值”0”没有查询出结果。</li>
-</ul>
-<p>简言之：bit类型索引里存的是二进制类型的值（位类型bit），我们查询参数给的是ASCII码值</p>
-<p>结论：<br>1、定义为text和image和bit数据类型的列不应该增加索引<br>2、加完索引一定要explain看一下<br>3、使用unsigned tinyint代替bit(1) 来表示是否<br>   @Column(columnDefinition= “TINYINT”,length = 1)    暂未验证</p>
 ]]></content>
       <categories>
         <category>DB</category>
@@ -3063,6 +3133,52 @@ public class EvolutionaryExpiredSessionStrategy implements SessionInformationExp
       </tags>
   </entry>
   <entry>
+    <title>策略模式</title>
+    <url>/2019/06/10/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p>
+<h2 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h2><ul>
+<li><p>抽象策略略⻆色<br>  这个是⼀一个抽象的角色，通常情况下使⽤接口或者抽象类去实现。比如我们的Comparator接⼝口。</p>
+</li>
+<li><p>具体策略略⻆色<br>  包装了了具体的算法和⾏行行为。比如实现了Comparator接口的一组实现类。</p>
+</li>
+<li><p>环境⻆角⾊色Context<br>  内部会持有⼀个抽象⻆色的引⽤用，给客户端调⽤策略模式用于封装系列的算法，这些算法通常被封装在一个被称为 Context 类中，<br>客户端程序可以⾃由选择其中一种算法，或让 Context 为客户端选择一个最佳的算法——使⽤策略模式的优势是为了⽀支持算法的自由切换。</p>
+</li>
+</ul>
+<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><ul>
+<li><p>Resource和策略略模式<br>  Resource 接口就是策略模式的典型应用，Resource 接口就代表资源访问策略，但具体采⽤用哪种策略实现，Resource 接口并不理理会。<br>客户端程序只和Resource 接口耦合，并不知道底层采⽤何种资源访问策略，这样应用可以在不同的资源访问策略之间自由切换。</p>
+</li>
+<li><p>Spring 框架的 Context 如何“智能”地选择资源访问策略<br>  Spring提供两个标志性接口：</p>
+<ul>
+<li>ResourceLoader：该接口实现类的实例可以获得⼀个 Resource 实例例。</li>
+<li>ResourceLoaderAware：该接口实现类的实例将获得一个 ResourceLoader 的引用。<br>在 ResourceLoader 接口里有如下方法：Resource getResource(String location)：该接口仅包含这个⽅法，该方法⽤于返回一个 Resource 实例例。</li>
+</ul>
+<p>ApplicationContext 的实现类都实现 ResourceLoader 接⼝，因此 ApplicationContext 可⽤于直接获取 Resource 实例。</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用jdk自带工具jvisualvm查看.hprof文件</title>
+    <url>/2019/06/10/%E4%BD%BF%E7%94%A8jdk%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7jvisualvm%E6%9F%A5%E7%9C%8B.hprof%E6%96%87%E4%BB%B6/</url>
+    <content><![CDATA[<p>使用jdk自带的jvisualvm.exe程序来查看内存溢出文件</p>
+<p>位置：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$JAVA_HOME&#x2F;bin&#x2F;jvisualvm</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>JVM</category>
+      </categories>
+      <tags>
+        <tag>JVM</tag>
+        <tag>工具</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Spring Security（10）－短信登录开发</title>
     <url>/2019/06/10/Spring%20Security%EF%BC%8810%EF%BC%89%EF%BC%8D%E7%9F%AD%E4%BF%A1%E7%99%BB%E5%BD%95%E5%BC%80%E5%8F%91/</url>
     <content><![CDATA[<p>Spring Security默认没有支持基于短信的认证方式，我们先回顾一下Spring Security开发基于表单的认流程：</p>
@@ -3095,52 +3211,6 @@ http.authenticationProvider(smsCodeAuthenticationProvider)
       </tags>
   </entry>
   <entry>
-    <title>使用jdk自带工具jvisualvm查看.hprof文件</title>
-    <url>/2019/06/10/%E4%BD%BF%E7%94%A8jdk%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7jvisualvm%E6%9F%A5%E7%9C%8B.hprof%E6%96%87%E4%BB%B6/</url>
-    <content><![CDATA[<p>使用jdk自带的jvisualvm.exe程序来查看内存溢出文件</p>
-<p>位置：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$JAVA_HOME&#x2F;bin&#x2F;jvisualvm</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>JVM</category>
-      </categories>
-      <tags>
-        <tag>JVM</tag>
-        <tag>工具</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>策略模式</title>
-    <url>/2019/06/10/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/</url>
-    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p>
-<h2 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h2><ul>
-<li><p>抽象策略略⻆色<br>  这个是⼀一个抽象的角色，通常情况下使⽤接口或者抽象类去实现。比如我们的Comparator接⼝口。</p>
-</li>
-<li><p>具体策略略⻆色<br>  包装了了具体的算法和⾏行行为。比如实现了Comparator接口的一组实现类。</p>
-</li>
-<li><p>环境⻆角⾊色Context<br>  内部会持有⼀个抽象⻆色的引⽤用，给客户端调⽤策略模式用于封装系列的算法，这些算法通常被封装在一个被称为 Context 类中，<br>客户端程序可以⾃由选择其中一种算法，或让 Context 为客户端选择一个最佳的算法——使⽤策略模式的优势是为了⽀支持算法的自由切换。</p>
-</li>
-</ul>
-<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><ul>
-<li><p>Resource和策略略模式<br>  Resource 接口就是策略模式的典型应用，Resource 接口就代表资源访问策略，但具体采⽤用哪种策略实现，Resource 接口并不理理会。<br>客户端程序只和Resource 接口耦合，并不知道底层采⽤何种资源访问策略，这样应用可以在不同的资源访问策略之间自由切换。</p>
-</li>
-<li><p>Spring 框架的 Context 如何“智能”地选择资源访问策略<br>  Spring提供两个标志性接口：</p>
-<ul>
-<li>ResourceLoader：该接口实现类的实例可以获得⼀个 Resource 实例例。</li>
-<li>ResourceLoaderAware：该接口实现类的实例将获得一个 ResourceLoader 的引用。<br>在 ResourceLoader 接口里有如下方法：Resource getResource(String location)：该接口仅包含这个⽅法，该方法⽤于返回一个 Resource 实例例。</li>
-</ul>
-<p>ApplicationContext 的实现类都实现 ResourceLoader 接⼝，因此 ApplicationContext 可⽤于直接获取 Resource 实例。</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>设计模式</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Spring Security（9）－验证码处理</title>
     <url>/2019/06/09/Spring%20Security%EF%BC%889%EF%BC%89%EF%BC%8D%E9%AA%8C%E8%AF%81%E7%A0%81%E5%A4%84%E7%90%86/</url>
     <content><![CDATA[<p>先看一下短信接口的代码结构图：</p>
@@ -3153,27 +3223,6 @@ http.authenticationProvider(smsCodeAuthenticationProvider)
       </categories>
       <tags>
         <tag>Spring-Security</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>生产故障排查流程</title>
-    <url>/2019/06/08/%E7%94%9F%E4%BA%A7%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h1 id="使用-top-查看系统中消耗cpu比较多的进程PID"><a href="#使用-top-查看系统中消耗cpu比较多的进程PID" class="headerlink" title="使用 top 查看系统中消耗cpu比较多的进程PID"></a>使用 top 查看系统中消耗cpu比较多的进程PID</h1><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">[richey@localhost ~]$ top |grep java</span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   2.7  11.3   5:49.83 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:49.87 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.7  11.3   5:49.92 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:49.96 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:50.00 java                                                                             </span><br><span class="line"> 7439 richey    20   0 7785472 346788  21388 S   0.3   2.1   0:06.05 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:50.04 java</span><br></pre></td></tr></table></figure>
-<h1 id="使用-ps-查看java相关进程的详细信息"><a href="#使用-ps-查看java相关进程的详细信息" class="headerlink" title="使用 ps 查看java相关进程的详细信息"></a>使用 ps 查看java相关进程的详细信息</h1><p>可以看出java进程JVM的详细配置</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[richey@localhost ~]$ ps -ef|grep java|grep 6274</span><br><span class="line"></span><br><span class="line">[richey@localhost ~]$ ps -ef|grep java|grep 6274</span><br><span class="line">richey    6274  6220 39 23:32 ?        00:05:52 /opt/idea-IU-172.4155.36/jre64/bin/java -Xbootclasspath/a:/opt/idea-IU-172.4155.36/lib/boot.jar -classpath /opt/idea-IU-172.4155.36/lib/bootstrap.jar:/opt/idea-IU-172.4155.36/lib/extensions.jar:/opt/idea-IU-172.4155.36/lib/util.jar:/opt/idea-IU-172.4155.36/lib/jdom.jar:/opt/idea-IU-172.4155.36/lib/log4j.jar:/opt/idea-IU-172.4155.36/lib/trove4j.jar:/opt/idea-IU-172.4155.36/lib/jna.jar:/opt/idea-IU-172.4155.36/jre64/lib/tools.jar -Xms2048m -Xmx6144m -XX:ReservedCodeCacheSize=240m -XX:+UseConcMarkSweepGC -XX:SoftRefLRUPolicyMSPerMB=50 -ea -Dsun.io.useCanonCaches=false -Djava.net.preferIPv4Stack=true -XX:+HeapDumpOnOutOfMemoryError -XX:-OmitStackTraceInFastThrow -Dawt.useSystemAAFontSettings=lcd -Dsun.java2d.renderer=sun.java2d.marlin.MarlinRenderingEngine -XX:ErrorFile=/home/richey/java_error_in_IDEA_%p.log -XX:HeapDumpPath=/home/richey/java_error_in_IDEA.hprof -Didea.paths.selector=IntelliJIdea2017.2 -Djb.vmOptionsFile=/opt/idea-IU-172.4155.36/bin/idea64.vmoptions -Didea.jre.check=true com.intellij.idea.Main</span><br></pre></td></tr></table></figure>
-
-<h1 id="使用-top-H-p-PID-来查看当前进程中比较消耗cpu的线程"><a href="#使用-top-H-p-PID-来查看当前进程中比较消耗cpu的线程" class="headerlink" title="使用 top -H -p PID 来查看当前进程中比较消耗cpu的线程"></a>使用 top -H -p PID 来查看当前进程中比较消耗cpu的线程</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">top -H -p 6274</span><br></pre></td></tr></table></figure>
-
-<p>拿到消耗cpu比较高的线程pid,先转换成16进制的</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 将16进制的pid 1077 转换成10进制</span><br><span class="line">rintf &quot;%x\n&quot; 1077</span><br></pre></td></tr></table></figure>
-
-<p>最后使用jstack pid|grep 16进制的线程id，就可以定位到问题代码。</p>
-]]></content>
-      <categories>
-        <category>生产故障</category>
-      </categories>
-      <tags>
-        <tag>问题定位</tag>
       </tags>
   </entry>
   <entry>
@@ -3352,6 +3401,27 @@ http.authenticationProvider(smsCodeAuthenticationProvider)
       </categories>
       <tags>
         <tag>Spring-Security</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>生产故障排查流程</title>
+    <url>/2019/06/08/%E7%94%9F%E4%BA%A7%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="使用-top-查看系统中消耗cpu比较多的进程PID"><a href="#使用-top-查看系统中消耗cpu比较多的进程PID" class="headerlink" title="使用 top 查看系统中消耗cpu比较多的进程PID"></a>使用 top 查看系统中消耗cpu比较多的进程PID</h1><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">[richey@localhost ~]$ top |grep java</span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   2.7  11.3   5:49.83 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:49.87 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.7  11.3   5:49.92 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:49.96 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:50.00 java                                                                             </span><br><span class="line"> 7439 richey    20   0 7785472 346788  21388 S   0.3   2.1   0:06.05 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:50.04 java</span><br></pre></td></tr></table></figure>
+<h1 id="使用-ps-查看java相关进程的详细信息"><a href="#使用-ps-查看java相关进程的详细信息" class="headerlink" title="使用 ps 查看java相关进程的详细信息"></a>使用 ps 查看java相关进程的详细信息</h1><p>可以看出java进程JVM的详细配置</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[richey@localhost ~]$ ps -ef|grep java|grep 6274</span><br><span class="line"></span><br><span class="line">[richey@localhost ~]$ ps -ef|grep java|grep 6274</span><br><span class="line">richey    6274  6220 39 23:32 ?        00:05:52 /opt/idea-IU-172.4155.36/jre64/bin/java -Xbootclasspath/a:/opt/idea-IU-172.4155.36/lib/boot.jar -classpath /opt/idea-IU-172.4155.36/lib/bootstrap.jar:/opt/idea-IU-172.4155.36/lib/extensions.jar:/opt/idea-IU-172.4155.36/lib/util.jar:/opt/idea-IU-172.4155.36/lib/jdom.jar:/opt/idea-IU-172.4155.36/lib/log4j.jar:/opt/idea-IU-172.4155.36/lib/trove4j.jar:/opt/idea-IU-172.4155.36/lib/jna.jar:/opt/idea-IU-172.4155.36/jre64/lib/tools.jar -Xms2048m -Xmx6144m -XX:ReservedCodeCacheSize=240m -XX:+UseConcMarkSweepGC -XX:SoftRefLRUPolicyMSPerMB=50 -ea -Dsun.io.useCanonCaches=false -Djava.net.preferIPv4Stack=true -XX:+HeapDumpOnOutOfMemoryError -XX:-OmitStackTraceInFastThrow -Dawt.useSystemAAFontSettings=lcd -Dsun.java2d.renderer=sun.java2d.marlin.MarlinRenderingEngine -XX:ErrorFile=/home/richey/java_error_in_IDEA_%p.log -XX:HeapDumpPath=/home/richey/java_error_in_IDEA.hprof -Didea.paths.selector=IntelliJIdea2017.2 -Djb.vmOptionsFile=/opt/idea-IU-172.4155.36/bin/idea64.vmoptions -Didea.jre.check=true com.intellij.idea.Main</span><br></pre></td></tr></table></figure>
+
+<h1 id="使用-top-H-p-PID-来查看当前进程中比较消耗cpu的线程"><a href="#使用-top-H-p-PID-来查看当前进程中比较消耗cpu的线程" class="headerlink" title="使用 top -H -p PID 来查看当前进程中比较消耗cpu的线程"></a>使用 top -H -p PID 来查看当前进程中比较消耗cpu的线程</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">top -H -p 6274</span><br></pre></td></tr></table></figure>
+
+<p>拿到消耗cpu比较高的线程pid,先转换成16进制的</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 将16进制的pid 1077 转换成10进制</span><br><span class="line">rintf &quot;%x\n&quot; 1077</span><br></pre></td></tr></table></figure>
+
+<p>最后使用jstack pid|grep 16进制的线程id，就可以定位到问题代码。</p>
+]]></content>
+      <categories>
+        <category>生产故障</category>
+      </categories>
+      <tags>
+        <tag>问题定位</tag>
       </tags>
   </entry>
   <entry>
@@ -5235,62 +5305,6 @@ public class SpringBootDemoApplication {
       </tags>
   </entry>
   <entry>
-    <title>maven必知必会</title>
-    <url>/2019/04/06/maven%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A/</url>
-    <content><![CDATA[<h1 id="仓库"><a href="#仓库" class="headerlink" title="仓库"></a>仓库</h1><p>对于Maven来说，仓库只分为两类：本地仓库和远程仓库。当Maven需要根据坐标寻找构件的时候，它首先会查找本地仓库，如果本地仓库有此构件，则直接使用；</p>
-<p>如果本地仓库没有此构件或许需要查看此构件是否有更新版本Maven会去远程仓库查找，发现需要的构件后，会先下载到本地仓库再使用。如果本地仓库和远程仓库都没有找到需要的构件，则Maven会报错。</p>
-<iframe id="embed_dom" name="embed_dom" frameborder="0" style="display:block;width:525px; height:245px;" src="https://www.processon.com/embed/5ca8497de4b0ec8ff3663e7d"></iframe>
-
-<h1 id="远程仓库"><a href="#远程仓库" class="headerlink" title="远程仓库"></a>远程仓库</h1><h2 id="中央仓库"><a href="#中央仓库" class="headerlink" title="中央仓库"></a>中央仓库</h2><p>中央仓库是默认的远程仓库，Maven安装文件中自带的超级POM中自带了中央仓库的配置，所有的Maven项目都会继承Maven的这个超级POM.</p>
-<p>超级POM中的中央仓库配置：</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repositories</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;<span class="name">repository</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span> central<span class="tag">&lt;/<span class="name">id</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span> Maven Repository Switchboard<span class="tag">&lt;/<span class="name">name</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">layout</span>&gt;</span> default<span class="tag">&lt;/<span class="name">layout</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span> http://repo1.maven.org/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">      <span class="comment">&lt;!-- 不从该仓库下载快照版本的构件 --&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">enabled</span>&gt;</span> false<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;/<span class="name">repository</span>&gt;</span>        </span><br><span class="line"><span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>覆盖中央仓库的默认地址</p>
-<p>在setting.xml里面配置：</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">settings</span>&gt;</span>        </span><br><span class="line">…        </span><br><span class="line">  <span class="tag">&lt;<span class="name">mirrors</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">mirror</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span> maven-net-cn<span class="tag">&lt;/<span class="name">id</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">name</span>&gt;</span> Maven China Mirror<span class="tag">&lt;/<span class="name">name</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">url</span>&gt;</span> http://maven.net.cn/content/groups/public/<span class="tag">&lt;/<span class="name">url</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">mirrorOf</span>&gt;</span> central<span class="tag">&lt;/<span class="name">mirrorOf</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;/<span class="name">mirror</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;/<span class="name">mirrors</span>&gt;</span>        </span><br><span class="line">…        </span><br><span class="line"><span class="tag">&lt;/<span class="name">settings</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>central表示只为central仓库做镜像，如果想为所有的仓库做镜像可以将central改为： *</p>
-<h2 id="配置远程仓库"><a href="#配置远程仓库" class="headerlink" title="配置远程仓库"></a>配置远程仓库</h2><p>在repositories元素下，可以使用repository子元素声明一个或多个远程仓库。</p>
-<p>作用于当先项目</p>
-<p>添加如下配置到pom的第一层（xml），只作用于当前项目</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 可添加多个 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>jboss<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>JBoss Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 仓库地址 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://repository.jboss.com/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 是否下载该仓库的release类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">updatePolicy</span>&gt;</span>daily<span class="tag">&lt;/<span class="name">updatePolicy</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">checksumPolicy</span>&gt;</span>ignore<span class="tag">&lt;/<span class="name">checksumPolicy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 是否下载该仓库的snapshots类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">           <span class="comment">&lt;!-- Maven从远程仓库检查的频率，默认是daily --&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">updatePolicy</span>&gt;</span>daily<span class="tag">&lt;/<span class="name">updatePolicy</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">checksumPolicy</span>&gt;</span>ignore<span class="tag">&lt;/<span class="name">checksumPolicy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h2 id="snapshots和releases元素的子元素："><a href="#snapshots和releases元素的子元素：" class="headerlink" title="snapshots和releases元素的子元素："></a>snapshots和releases元素的子元素：</h2><ul>
-<li><p>updatePolicy</p>
-<p>Maven从远程仓库检查的频率，默认是daily，表示Maven每天检查一次。其它可用的值包括：never——从不检查更新；<br>always——每次构建都检查更新；X——每隔X分钟检查一次（X为任意整数）。</p>
-</li>
-<li><p>checksumPolicy<br>用来配置Mavne校验和文件的策略。当部署构件到仓库时会同时部署校验和文件。下载构件时Maven会验证校验和文件。如果验证失败，怎么办？<br>当checksumPolicy的值为默认的warn时，Maven会在执行构建时输出警告信息，其它可能的值包括：fail——验证不通过时，让构建失败；ignore——使<br>Maven完全忽略验证错误。</p>
-</li>
-<li><p>作用于全局</p>
-<p>在settings文件中添加配置，添加profiles后，mirrors可以省略</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">profiles</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">profile</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>besttop_nexus<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 激活此profile --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">activation</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">activeByDefault</span>&gt;</span>true<span class="tag">&lt;/<span class="name">activeByDefault</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">activation</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--all requests to nexus via the mirror --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 可添加多个 --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">id</span>&gt;</span>jboss<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">name</span>&gt;</span>JBoss Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 仓库地址 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://repository.jboss.com/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 是否下载该仓库的release类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 是否下载该仓库的snapshots类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">profile</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">profiles</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h2 id="远程仓库的认证"><a href="#远程仓库的认证" class="headerlink" title="远程仓库的认证"></a>远程仓库的认证</h2><p>大部分远程仓库无需认证就可以访问，但有时候出于安全方面的考虑，我们需要提供认证信息才能访问一些仓库。比如组织内部的私有仓库。</p>
-</li>
-</ul>
-<p>仓库信息可以配置子啊POM中，但是认证信息必须配置在setting.xml文件中。</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">servers</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">server</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span>my-proj<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">username</span>&gt;</span>admin<span class="tag">&lt;/<span class="name">username</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">password</span>&gt;</span>pwd<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">server</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">servers</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>注意：</p>
-<p>这里的关键是id，这里的id必须要与POM中需要认证的repository元素的id完全一致。换句话说，正是这个id将认证信息与仓库联系在一起。</p>
-<p>部署至远程仓库<br>私服的一大作用就是部署第三方构件，包括组织内部生成的构件及一些无法从外部仓库直接获取的构件。<br>无论是日常开发中生成的构件，还是正式版本发布的构件，都需要部署到仓库中，供其它团队成员使用。</p>
-<p>配置distributionManagement元素：</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">distributionManagement</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 发布版本的构件仓库 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">repository</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">uniqueVersion</span>&gt;</span>false<span class="tag">&lt;/<span class="name">uniqueVersion</span>&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- id是仓库的唯一标识 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>corp1<span class="tag">&lt;/<span class="name">id</span>&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- name是为了方便人阅读 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>Corporate Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- 表示该仓库的地址 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span>scp://repo/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">layout</span>&gt;</span>default<span class="tag">&lt;/<span class="name">layout</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;/<span class="name">repository</span>&gt;</span>  </span><br><span class="line">  <span class="comment">&lt;!-- 快照版本的构件仓库 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">snapshotRepository</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">uniqueVersion</span>&gt;</span>true<span class="tag">&lt;/<span class="name">uniqueVersion</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>propSnap<span class="tag">&lt;/<span class="name">id</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>Propellors Snapshots<span class="tag">&lt;/<span class="name">name</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span>sftp://propellers.net/maven<span class="tag">&lt;/<span class="name">url</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;/<span class="name">snapshotRepository</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;/<span class="name">distributionManagement</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>Maven的快照版本，在发布的过程中会自动打上时间戳，有了时间戳，Maven就能找到相同快照版本的最新文件。<br>当我们下载某一个版本的快照时，Maven会从远程仓库检查该构件是否有更新，有的话会先下载更新到本地仓库。<br>注意Maven并不会每次都去检查，默认会每天检查一次（根据updatePolicy配置），我们可以使用-U命令，让Maven强制更新，比如：mvn clean install -U.</p>
-<p>其它Maven配置详解</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">settings</span> <span class="attr">xmlns</span>=<span class="string">"http://maven.apache.org/POM/4.0.0"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://maven.apache.org/POM/4.0.0</span></span></span><br><span class="line"><span class="tag"><span class="string">                               http://maven.apache.org/xsd/settings-1.0.0.xsd"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">localRepository</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">interactiveMode</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">usePluginRegistry</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">offline</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">pluginGroups</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">servers</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">mirrors</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">proxies</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">profiles</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">activeProfiles</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">settings</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>localRepository</p>
-<p>表示本地库的保存位置，也就是maven2主要的jar保存位置，默认在${user.dir}/.m2/repository，如果需要另外设置，就换成其他的路径。</p>
-</li>
-<li><p>offline</p>
-<p>设置为true后，不会每次编译，都去查找远程中心库。当然前提是你已经下载了必须的依赖包。实际开发过程中迭代频繁的情况下，构件经常变动，不建议设置为true。</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>ci/cd</category>
-      </categories>
-      <tags>
-        <tag>maven</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Redis02-命令速查</title>
     <url>/2019/04/06/Redis02-%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/</url>
     <content><![CDATA[<h1 id="过期时间"><a href="#过期时间" class="headerlink" title="过期时间"></a>过期时间</h1><pre><code>127.0.0.1:6379&gt; SET expirecode foo
@@ -5611,6 +5625,62 @@ hgetall(key)：返回名称为key的hash中所有的键（field）及其对应�
       </tags>
   </entry>
   <entry>
+    <title>maven必知必会</title>
+    <url>/2019/04/06/maven%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A/</url>
+    <content><![CDATA[<h1 id="仓库"><a href="#仓库" class="headerlink" title="仓库"></a>仓库</h1><p>对于Maven来说，仓库只分为两类：本地仓库和远程仓库。当Maven需要根据坐标寻找构件的时候，它首先会查找本地仓库，如果本地仓库有此构件，则直接使用；</p>
+<p>如果本地仓库没有此构件或许需要查看此构件是否有更新版本Maven会去远程仓库查找，发现需要的构件后，会先下载到本地仓库再使用。如果本地仓库和远程仓库都没有找到需要的构件，则Maven会报错。</p>
+<iframe id="embed_dom" name="embed_dom" frameborder="0" style="display:block;width:525px; height:245px;" src="https://www.processon.com/embed/5ca8497de4b0ec8ff3663e7d"></iframe>
+
+<h1 id="远程仓库"><a href="#远程仓库" class="headerlink" title="远程仓库"></a>远程仓库</h1><h2 id="中央仓库"><a href="#中央仓库" class="headerlink" title="中央仓库"></a>中央仓库</h2><p>中央仓库是默认的远程仓库，Maven安装文件中自带的超级POM中自带了中央仓库的配置，所有的Maven项目都会继承Maven的这个超级POM.</p>
+<p>超级POM中的中央仓库配置：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repositories</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;<span class="name">repository</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span> central<span class="tag">&lt;/<span class="name">id</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span> Maven Repository Switchboard<span class="tag">&lt;/<span class="name">name</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">layout</span>&gt;</span> default<span class="tag">&lt;/<span class="name">layout</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span> http://repo1.maven.org/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">      <span class="comment">&lt;!-- 不从该仓库下载快照版本的构件 --&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">enabled</span>&gt;</span> false<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;/<span class="name">repository</span>&gt;</span>        </span><br><span class="line"><span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>覆盖中央仓库的默认地址</p>
+<p>在setting.xml里面配置：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">settings</span>&gt;</span>        </span><br><span class="line">…        </span><br><span class="line">  <span class="tag">&lt;<span class="name">mirrors</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">mirror</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span> maven-net-cn<span class="tag">&lt;/<span class="name">id</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">name</span>&gt;</span> Maven China Mirror<span class="tag">&lt;/<span class="name">name</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">url</span>&gt;</span> http://maven.net.cn/content/groups/public/<span class="tag">&lt;/<span class="name">url</span>&gt;</span>        </span><br><span class="line">      <span class="tag">&lt;<span class="name">mirrorOf</span>&gt;</span> central<span class="tag">&lt;/<span class="name">mirrorOf</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;/<span class="name">mirror</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;/<span class="name">mirrors</span>&gt;</span>        </span><br><span class="line">…        </span><br><span class="line"><span class="tag">&lt;/<span class="name">settings</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>central表示只为central仓库做镜像，如果想为所有的仓库做镜像可以将central改为： *</p>
+<h2 id="配置远程仓库"><a href="#配置远程仓库" class="headerlink" title="配置远程仓库"></a>配置远程仓库</h2><p>在repositories元素下，可以使用repository子元素声明一个或多个远程仓库。</p>
+<p>作用于当先项目</p>
+<p>添加如下配置到pom的第一层（xml），只作用于当前项目</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 可添加多个 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>jboss<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>JBoss Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 仓库地址 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://repository.jboss.com/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 是否下载该仓库的release类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">updatePolicy</span>&gt;</span>daily<span class="tag">&lt;/<span class="name">updatePolicy</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">checksumPolicy</span>&gt;</span>ignore<span class="tag">&lt;/<span class="name">checksumPolicy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 是否下载该仓库的snapshots类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">           <span class="comment">&lt;!-- Maven从远程仓库检查的频率，默认是daily --&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">updatePolicy</span>&gt;</span>daily<span class="tag">&lt;/<span class="name">updatePolicy</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">checksumPolicy</span>&gt;</span>ignore<span class="tag">&lt;/<span class="name">checksumPolicy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="snapshots和releases元素的子元素："><a href="#snapshots和releases元素的子元素：" class="headerlink" title="snapshots和releases元素的子元素："></a>snapshots和releases元素的子元素：</h2><ul>
+<li><p>updatePolicy</p>
+<p>Maven从远程仓库检查的频率，默认是daily，表示Maven每天检查一次。其它可用的值包括：never——从不检查更新；<br>always——每次构建都检查更新；X——每隔X分钟检查一次（X为任意整数）。</p>
+</li>
+<li><p>checksumPolicy<br>用来配置Mavne校验和文件的策略。当部署构件到仓库时会同时部署校验和文件。下载构件时Maven会验证校验和文件。如果验证失败，怎么办？<br>当checksumPolicy的值为默认的warn时，Maven会在执行构建时输出警告信息，其它可能的值包括：fail——验证不通过时，让构建失败；ignore——使<br>Maven完全忽略验证错误。</p>
+</li>
+<li><p>作用于全局</p>
+<p>在settings文件中添加配置，添加profiles后，mirrors可以省略</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">profiles</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">profile</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>besttop_nexus<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 激活此profile --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">activation</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">activeByDefault</span>&gt;</span>true<span class="tag">&lt;/<span class="name">activeByDefault</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">activation</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--all requests to nexus via the mirror --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 可添加多个 --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">id</span>&gt;</span>jboss<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 自定义 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">name</span>&gt;</span>JBoss Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 仓库地址 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://repository.jboss.com/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 是否下载该仓库的release类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 是否下载该仓库的snapshots类型包，true下载，false不下载 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">profile</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">profiles</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="远程仓库的认证"><a href="#远程仓库的认证" class="headerlink" title="远程仓库的认证"></a>远程仓库的认证</h2><p>大部分远程仓库无需认证就可以访问，但有时候出于安全方面的考虑，我们需要提供认证信息才能访问一些仓库。比如组织内部的私有仓库。</p>
+</li>
+</ul>
+<p>仓库信息可以配置子啊POM中，但是认证信息必须配置在setting.xml文件中。</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">servers</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">server</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span>my-proj<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">username</span>&gt;</span>admin<span class="tag">&lt;/<span class="name">username</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">password</span>&gt;</span>pwd<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">server</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">servers</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>注意：</p>
+<p>这里的关键是id，这里的id必须要与POM中需要认证的repository元素的id完全一致。换句话说，正是这个id将认证信息与仓库联系在一起。</p>
+<p>部署至远程仓库<br>私服的一大作用就是部署第三方构件，包括组织内部生成的构件及一些无法从外部仓库直接获取的构件。<br>无论是日常开发中生成的构件，还是正式版本发布的构件，都需要部署到仓库中，供其它团队成员使用。</p>
+<p>配置distributionManagement元素：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">distributionManagement</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 发布版本的构件仓库 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">repository</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">uniqueVersion</span>&gt;</span>false<span class="tag">&lt;/<span class="name">uniqueVersion</span>&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- id是仓库的唯一标识 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>corp1<span class="tag">&lt;/<span class="name">id</span>&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- name是为了方便人阅读 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>Corporate Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- 表示该仓库的地址 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span>scp://repo/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">layout</span>&gt;</span>default<span class="tag">&lt;/<span class="name">layout</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;/<span class="name">repository</span>&gt;</span>  </span><br><span class="line">  <span class="comment">&lt;!-- 快照版本的构件仓库 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">snapshotRepository</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">uniqueVersion</span>&gt;</span>true<span class="tag">&lt;/<span class="name">uniqueVersion</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>propSnap<span class="tag">&lt;/<span class="name">id</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>Propellors Snapshots<span class="tag">&lt;/<span class="name">name</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span>sftp://propellers.net/maven<span class="tag">&lt;/<span class="name">url</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;/<span class="name">snapshotRepository</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;/<span class="name">distributionManagement</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>Maven的快照版本，在发布的过程中会自动打上时间戳，有了时间戳，Maven就能找到相同快照版本的最新文件。<br>当我们下载某一个版本的快照时，Maven会从远程仓库检查该构件是否有更新，有的话会先下载更新到本地仓库。<br>注意Maven并不会每次都去检查，默认会每天检查一次（根据updatePolicy配置），我们可以使用-U命令，让Maven强制更新，比如：mvn clean install -U.</p>
+<p>其它Maven配置详解</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">settings</span> <span class="attr">xmlns</span>=<span class="string">"http://maven.apache.org/POM/4.0.0"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://maven.apache.org/POM/4.0.0</span></span></span><br><span class="line"><span class="tag"><span class="string">                               http://maven.apache.org/xsd/settings-1.0.0.xsd"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">localRepository</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">interactiveMode</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">usePluginRegistry</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">offline</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">pluginGroups</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">servers</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">mirrors</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">proxies</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">profiles</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">activeProfiles</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">settings</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>localRepository</p>
+<p>表示本地库的保存位置，也就是maven2主要的jar保存位置，默认在${user.dir}/.m2/repository，如果需要另外设置，就换成其他的路径。</p>
+</li>
+<li><p>offline</p>
+<p>设置为true后，不会每次编译，都去查找远程中心库。当然前提是你已经下载了必须的依赖包。实际开发过程中迭代频繁的情况下，构件经常变动，不建议设置为true。</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>ci/cd</category>
+      </categories>
+      <tags>
+        <tag>maven</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Redis01-入门及基础数据结构</title>
     <url>/2019/04/05/Redis01-%E5%85%A5%E9%97%A8%E5%8F%8A%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</url>
     <content><![CDATA[<h1 id="一、安装"><a href="#一、安装" class="headerlink" title="一、安装"></a>一、安装</h1><ol>
@@ -5921,6 +5991,28 @@ OK
       </tags>
   </entry>
   <entry>
+    <title>Mysql（5）-数据库索引（必知必会）</title>
+    <url>/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/</url>
+    <content><![CDATA[<h2 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h2><p>二级索引已经“覆盖了”我们的查询需求，不需要再回表查整行记录，我们称为覆盖索引。</p>
+<p>覆盖索引可以减少树的搜索次数，显著提升查询性能，所以使用覆盖索引是一个常用的性能优化手段。</p>
+<h2 id="最左前缀原则"><a href="#最左前缀原则" class="headerlink" title="最左前缀原则"></a>最左前缀原则</h2><p>索引项是按照索引定义里面出现的字段顺序排序的。正因为如此根据最左前缀，我们找到第一条数据位置，然后遍历到最后一条匹配到最左前缀的就可以了（因为按照顺序相同最左前缀的都排在一块）。</p>
+<p>不只是索引的全部定义，只要满足最左前缀，就可以利用索引来加速检索。这个最左前缀可以是联合索引的最左 N 个字段，也可以是字符串索引的最左 M 个字符。</p>
+<h3 id="在建立联合索引的时候，如何安排索引内的字段顺序。"><a href="#在建立联合索引的时候，如何安排索引内的字段顺序。" class="headerlink" title="在建立联合索引的时候，如何安排索引内的字段顺序。"></a>在建立联合索引的时候，如何安排索引内的字段顺序。</h3><p>第一原则是，如果通过调整顺序，可以少维护一个索引，那么这个顺序往往就是需要优先考虑采用的。提高索引的复用能力，比如根据最左前缀原则，当已经有了 (a,b)这个联合索引后，一般就不需要单独在 a 上建立索引了。</p>
+<p>第二原则，考虑的是空间。</p>
+<p>如果a，b要建联合索引，且单查a或b的时候都要走索引，那么就要再a或b上再加一个索引，此时就要考虑空间。比如a字段b字段更占空间那就建一个（a，b）的联合索引和一个b的索引。</p>
+<h2 id="索引下推"><a href="#索引下推" class="headerlink" title="索引下推"></a>索引下推</h2><p>MySQL 5.6引入的索引下推优化（index condition pushdown)，可以在索引遍历过程中，对索引中包含的字段先做判断，直接过滤掉不满足条件的记录，减少回表次数。</p>
+<h2 id="重建索引"><a href="#重建索引" class="headerlink" title="重建索引"></a>重建索引</h2><p>索引可能因为删除，或者页分裂等原因，导致数据页有空洞，重建索引的过程会创建一个新的索引，把数据按顺序插入，这样页面的利用率最高，也就是索引更紧凑、更省空间。</p>
+<h3 id="重建二级索引索引"><a href="#重建二级索引索引" class="headerlink" title="重建二级索引索引"></a>重建二级索引索引</h3><p>alter table T drop index k;<br>alter table T add index(k);</p>
+<h3 id="重建主键索引："><a href="#重建主键索引：" class="headerlink" title="重建主键索引："></a>重建主键索引：</h3><p>alter table T engine=InnoDB</p>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Mysql（6）-数据库索引（数据结构）</title>
     <url>/2019/03/28/Mysql%EF%BC%886%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%89/</url>
     <content><![CDATA[<h2 id="索引的作用"><a href="#索引的作用" class="headerlink" title="索引的作用"></a>索引的作用</h2><p>索引是为了提高数据库的查询效率。</p>
@@ -5963,28 +6055,6 @@ OK
 <li>该索引是唯一索引</li>
 </ol>
 <p>就是典型的 KV 场景。由于没有其他索引，所以也就不用考虑其他索引的叶子节点大小的问题。</p>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Mysql（5）-数据库索引（必知必会）</title>
-    <url>/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/</url>
-    <content><![CDATA[<h2 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h2><p>二级索引已经“覆盖了”我们的查询需求，不需要再回表查整行记录，我们称为覆盖索引。</p>
-<p>覆盖索引可以减少树的搜索次数，显著提升查询性能，所以使用覆盖索引是一个常用的性能优化手段。</p>
-<h2 id="最左前缀原则"><a href="#最左前缀原则" class="headerlink" title="最左前缀原则"></a>最左前缀原则</h2><p>索引项是按照索引定义里面出现的字段顺序排序的。正因为如此根据最左前缀，我们找到第一条数据位置，然后遍历到最后一条匹配到最左前缀的就可以了（因为按照顺序相同最左前缀的都排在一块）。</p>
-<p>不只是索引的全部定义，只要满足最左前缀，就可以利用索引来加速检索。这个最左前缀可以是联合索引的最左 N 个字段，也可以是字符串索引的最左 M 个字符。</p>
-<h3 id="在建立联合索引的时候，如何安排索引内的字段顺序。"><a href="#在建立联合索引的时候，如何安排索引内的字段顺序。" class="headerlink" title="在建立联合索引的时候，如何安排索引内的字段顺序。"></a>在建立联合索引的时候，如何安排索引内的字段顺序。</h3><p>第一原则是，如果通过调整顺序，可以少维护一个索引，那么这个顺序往往就是需要优先考虑采用的。提高索引的复用能力，比如根据最左前缀原则，当已经有了 (a,b)这个联合索引后，一般就不需要单独在 a 上建立索引了。</p>
-<p>第二原则，考虑的是空间。</p>
-<p>如果a，b要建联合索引，且单查a或b的时候都要走索引，那么就要再a或b上再加一个索引，此时就要考虑空间。比如a字段b字段更占空间那就建一个（a，b）的联合索引和一个b的索引。</p>
-<h2 id="索引下推"><a href="#索引下推" class="headerlink" title="索引下推"></a>索引下推</h2><p>MySQL 5.6引入的索引下推优化（index condition pushdown)，可以在索引遍历过程中，对索引中包含的字段先做判断，直接过滤掉不满足条件的记录，减少回表次数。</p>
-<h2 id="重建索引"><a href="#重建索引" class="headerlink" title="重建索引"></a>重建索引</h2><p>索引可能因为删除，或者页分裂等原因，导致数据页有空洞，重建索引的过程会创建一个新的索引，把数据按顺序插入，这样页面的利用率最高，也就是索引更紧凑、更省空间。</p>
-<h3 id="重建二级索引索引"><a href="#重建二级索引索引" class="headerlink" title="重建二级索引索引"></a>重建二级索引索引</h3><p>alter table T drop index k;<br>alter table T add index(k);</p>
-<h3 id="重建主键索引："><a href="#重建主键索引：" class="headerlink" title="重建主键索引："></a>重建主键索引：</h3><p>alter table T engine=InnoDB</p>
 ]]></content>
       <categories>
         <category>DB</category>
@@ -6129,6 +6199,63 @@ OK
       </tags>
   </entry>
   <entry>
+    <title>Mysql（2）-基本架构</title>
+    <url>/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/</url>
+    <content><![CDATA[<h2 id="Mysql基本架构是什么样子的（简述Mysql基本架构）"><a href="#Mysql基本架构是什么样子的（简述Mysql基本架构）" class="headerlink" title="Mysql基本架构是什么样子的（简述Mysql基本架构）"></a>Mysql基本架构是什么样子的（简述Mysql基本架构）</h2><p>Mysql由服务层（Service层）和存储引擎层构成。</p>
+<ul>
+<li><p>Service层涵盖Mysql的大多数核心功能，及所有的内置函数</p>
+<p>包含连接器、查询缓存、分析器、优化器、执行器；</p>
+<p>所有跨存储引擎的功能都在这一层实现；</p>
+</li>
+<li><p>存储引擎层，负责数据的存储和提取</p>
+<p>采用插件式设计，支持InnoDB、MYISAM、Memory等多个存储引擎；</p>
+<p>建表时，如果不制定引擎类型，会默认使用InnoDB</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#指定存储引擎</span><br><span class="line">create table foo（id int primary key,name var(10) not null）engine&#x3D;InnoDB;</span><br></pre></td></tr></table></figure>
+<p>不同的存储引擎共用一个service层</p>
+</li>
+</ul>
+<h2 id="Mysql由哪些组件组成-各个组件的作用是什么"><a href="#Mysql由哪些组件组成-各个组件的作用是什么" class="headerlink" title="Mysql由哪些组件组成,各个组件的作用是什么"></a>Mysql由哪些组件组成,各个组件的作用是什么</h2><h3 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h3><p>  负责跟客户端建立连接，获取权限，维持和管理连接；</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#mysql客户端工具连接</span><br><span class="line">mysql -h$ip -P$port -u$user -p</span><br></pre></td></tr></table></figure>
+
+<p>  客户端同服务端建立连接，在完成TCP握手后，连接器就开始认证身份，需要我们提供用户名密码；</p>
+<p>  认证通过后，连接器会到权限表里查出所有你拥有的权限，之后这个连接里的所有权限判断，都将依赖于此时读到的权限。也就是说连接成功后权限就不会改变了，如果修改了权限，需要重新连接。</p>
+<p>  关于连接的一些参数：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">show processlist; --查看所有链接状态</span><br><span class="line"></span><br><span class="line">-- 查看mysql參數</span><br><span class="line">show variables like &quot;%timeout%&quot;；</span><br><span class="line">-- wait_timeout：设置非交互连接（就是指那些连接池方式、非客户端方式连接的）的超时时间，默认是28800，就是8小时，超过这个时间，mysql服务器会主动切断那些已经连接的，但是状态是sleep的连接。</span><br><span class="line"></span><br><span class="line">-- interactive_timeout:交互链接超时时间;</span><br><span class="line"></span><br><span class="line">-- connection_timeout：“连接过程中”的等待时间</span><br></pre></td></tr></table></figure>
+
+<p>  建立连接的过程通常是比较复杂的，所以建议你在使用中要尽量减少建立连接的动作，也就是尽量使用长连接。</p>
+<p>  MySQL 在执行过程中临时使用的内存是管理在连接对象里面的。这些资源会在连接断开的时候才释放。所以如果长连接累积下来，可能导致内存占用太大，被系统强行杀掉（OOM），从现象看就是 MySQL 异常重启了。</p>
+<pre><code>解决：
+定期断开长连接。使用一段时间，或者程序里面判断执行过一个占用内存的大查询后，断开连接，之后要查询再重连。
+
+如果你用的是 MySQL 5.7 或更新版本，可以在每次执行一个比较大的操作后，通过执行 mysql_reset_connection 来重新初始化连接资源。这个过程不需要重连和重新做权限验证，但是会将连接恢复到刚刚创建完时的状态。</code></pre><h3 id="查询缓存"><a href="#查询缓存" class="headerlink" title="查询缓存"></a>查询缓存</h3><p>  键值对的形式，key是查询语句，valve是结果；</p>
+<p>  查询缓存的失效非常频繁，只要有对一个表的更新，这个表上所有的查询缓存都会被清空。</p>
+<p>  可以将参数 query_cache_type 设置成 DEMAND，这样对于默认的 SQL 语句都不使用查询缓存。</p>
+<p>  MySQL 8.0版本直接将查询缓存的整块功能删掉了，也就是说 8.0 开始彻底没有这个功能了。</p>
+<p>  如果命中查询缓存，会在查询缓存返回结果的时候，做权限验证。</p>
+<p>  关于查询缓存的一些参数：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">query_catche_size&#x3D;0; -- 最好设置为1024的倍数，参考值32M</span><br><span class="line">query_catch_type&#x3D;0; -- 0禁用 1缓存所有查询 2只缓存通过SQL_CACHE指定需要缓存的查询</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="分析器"><a href="#分析器" class="headerlink" title="分析器"></a>分析器</h3><p>  词法分析；</p>
+<pre><code>读取表定义，识别关键字及表和列信息等</code></pre><p>  语法分析；</p>
+<pre><code>ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &apos;elect * from t where ID=1&apos; at line 1</code></pre><h3 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h3><p>  查询会在优化器之前调用 precheck 验证权限；</p>
+<p>  选择索引，决定表的连接顺序。</p>
+<h3 id="执行器"><a href="#执行器" class="headerlink" title="执行器"></a>执行器</h3><p>  权限检查；</p>
+<p>  开表；</p>
+<p>  重复调用表定义的引擎接口，直到表的最后一行，拿到所有满足条件的接口，组成结果集返回给客户端；</p>
+<h2 id="Mysql权限是怎么控制的？"><a href="#Mysql权限是怎么控制的？" class="headerlink" title="Mysql权限是怎么控制的？"></a>Mysql权限是怎么控制的？</h2><p>  客户端通过认证后，会去权限表读取权限，此后所有的权限判断都基于此时读取的权限。除非重新连接，否则不会改变。</p>
+<p>  命中缓存后，返回结果前会校验权限；</p>
+<p>  优化器之前会调用precheck权限验证；</p>
+<p>  执行器开表前会进行权限验证。</p>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Nginx-3：Nginx中的正则表达式</title>
     <url>/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/</url>
     <content><![CDATA[<p>正则表达式可以让我们匹配的功能更加强大</p>
@@ -6234,63 +6361,6 @@ OK
       </categories>
       <tags>
         <tag>nginx</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Mysql（2）-基本架构</title>
-    <url>/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/</url>
-    <content><![CDATA[<h2 id="Mysql基本架构是什么样子的（简述Mysql基本架构）"><a href="#Mysql基本架构是什么样子的（简述Mysql基本架构）" class="headerlink" title="Mysql基本架构是什么样子的（简述Mysql基本架构）"></a>Mysql基本架构是什么样子的（简述Mysql基本架构）</h2><p>Mysql由服务层（Service层）和存储引擎层构成。</p>
-<ul>
-<li><p>Service层涵盖Mysql的大多数核心功能，及所有的内置函数</p>
-<p>包含连接器、查询缓存、分析器、优化器、执行器；</p>
-<p>所有跨存储引擎的功能都在这一层实现；</p>
-</li>
-<li><p>存储引擎层，负责数据的存储和提取</p>
-<p>采用插件式设计，支持InnoDB、MYISAM、Memory等多个存储引擎；</p>
-<p>建表时，如果不制定引擎类型，会默认使用InnoDB</p>
-  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#指定存储引擎</span><br><span class="line">create table foo（id int primary key,name var(10) not null）engine&#x3D;InnoDB;</span><br></pre></td></tr></table></figure>
-<p>不同的存储引擎共用一个service层</p>
-</li>
-</ul>
-<h2 id="Mysql由哪些组件组成-各个组件的作用是什么"><a href="#Mysql由哪些组件组成-各个组件的作用是什么" class="headerlink" title="Mysql由哪些组件组成,各个组件的作用是什么"></a>Mysql由哪些组件组成,各个组件的作用是什么</h2><h3 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h3><p>  负责跟客户端建立连接，获取权限，维持和管理连接；</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#mysql客户端工具连接</span><br><span class="line">mysql -h$ip -P$port -u$user -p</span><br></pre></td></tr></table></figure>
-
-<p>  客户端同服务端建立连接，在完成TCP握手后，连接器就开始认证身份，需要我们提供用户名密码；</p>
-<p>  认证通过后，连接器会到权限表里查出所有你拥有的权限，之后这个连接里的所有权限判断，都将依赖于此时读到的权限。也就是说连接成功后权限就不会改变了，如果修改了权限，需要重新连接。</p>
-<p>  关于连接的一些参数：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">show processlist; --查看所有链接状态</span><br><span class="line"></span><br><span class="line">-- 查看mysql參數</span><br><span class="line">show variables like &quot;%timeout%&quot;；</span><br><span class="line">-- wait_timeout：设置非交互连接（就是指那些连接池方式、非客户端方式连接的）的超时时间，默认是28800，就是8小时，超过这个时间，mysql服务器会主动切断那些已经连接的，但是状态是sleep的连接。</span><br><span class="line"></span><br><span class="line">-- interactive_timeout:交互链接超时时间;</span><br><span class="line"></span><br><span class="line">-- connection_timeout：“连接过程中”的等待时间</span><br></pre></td></tr></table></figure>
-
-<p>  建立连接的过程通常是比较复杂的，所以建议你在使用中要尽量减少建立连接的动作，也就是尽量使用长连接。</p>
-<p>  MySQL 在执行过程中临时使用的内存是管理在连接对象里面的。这些资源会在连接断开的时候才释放。所以如果长连接累积下来，可能导致内存占用太大，被系统强行杀掉（OOM），从现象看就是 MySQL 异常重启了。</p>
-<pre><code>解决：
-定期断开长连接。使用一段时间，或者程序里面判断执行过一个占用内存的大查询后，断开连接，之后要查询再重连。
-
-如果你用的是 MySQL 5.7 或更新版本，可以在每次执行一个比较大的操作后，通过执行 mysql_reset_connection 来重新初始化连接资源。这个过程不需要重连和重新做权限验证，但是会将连接恢复到刚刚创建完时的状态。</code></pre><h3 id="查询缓存"><a href="#查询缓存" class="headerlink" title="查询缓存"></a>查询缓存</h3><p>  键值对的形式，key是查询语句，valve是结果；</p>
-<p>  查询缓存的失效非常频繁，只要有对一个表的更新，这个表上所有的查询缓存都会被清空。</p>
-<p>  可以将参数 query_cache_type 设置成 DEMAND，这样对于默认的 SQL 语句都不使用查询缓存。</p>
-<p>  MySQL 8.0版本直接将查询缓存的整块功能删掉了，也就是说 8.0 开始彻底没有这个功能了。</p>
-<p>  如果命中查询缓存，会在查询缓存返回结果的时候，做权限验证。</p>
-<p>  关于查询缓存的一些参数：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">query_catche_size&#x3D;0; -- 最好设置为1024的倍数，参考值32M</span><br><span class="line">query_catch_type&#x3D;0; -- 0禁用 1缓存所有查询 2只缓存通过SQL_CACHE指定需要缓存的查询</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="分析器"><a href="#分析器" class="headerlink" title="分析器"></a>分析器</h3><p>  词法分析；</p>
-<pre><code>读取表定义，识别关键字及表和列信息等</code></pre><p>  语法分析；</p>
-<pre><code>ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &apos;elect * from t where ID=1&apos; at line 1</code></pre><h3 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h3><p>  查询会在优化器之前调用 precheck 验证权限；</p>
-<p>  选择索引，决定表的连接顺序。</p>
-<h3 id="执行器"><a href="#执行器" class="headerlink" title="执行器"></a>执行器</h3><p>  权限检查；</p>
-<p>  开表；</p>
-<p>  重复调用表定义的引擎接口，直到表的最后一行，拿到所有满足条件的接口，组成结果集返回给客户端；</p>
-<h2 id="Mysql权限是怎么控制的？"><a href="#Mysql权限是怎么控制的？" class="headerlink" title="Mysql权限是怎么控制的？"></a>Mysql权限是怎么控制的？</h2><p>  客户端通过认证后，会去权限表读取权限，此后所有的权限判断都基于此时读取的权限。除非重新连接，否则不会改变。</p>
-<p>  命中缓存后，返回结果前会校验权限；</p>
-<p>  优化器之前会调用precheck权限验证；</p>
-<p>  执行器开表前会进行权限验证。</p>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
       </tags>
   </entry>
   <entry>
@@ -7164,6 +7234,27 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
       </tags>
   </entry>
   <entry>
+    <title>hexo命令</title>
+    <url>/2019/03/08/hexo%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<ul>
+<li><p>hexo g 生成静态文件</p>
+</li>
+<li><p>hexo s 启动本地服务</p>
+</li>
+<li><p>hexo clean 清除缓存文件(db.json)和已生成的静态文件(public)</p>
+</li>
+<li><p>hexo g -d 生成文件并部署到github</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>其它</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Java基础</title>
     <url>/2019/03/08/Java%E5%9F%BA%E7%A1%80/</url>
     <content><![CDATA[<h1 id="HashMap、Hashtable、ConcurrentHashMap的原理与区别"><a href="#HashMap、Hashtable、ConcurrentHashMap的原理与区别" class="headerlink" title="HashMap、Hashtable、ConcurrentHashMap的原理与区别"></a>HashMap、Hashtable、ConcurrentHashMap的原理与区别</h1><h2 id="简述HashMap实现原理"><a href="#简述HashMap实现原理" class="headerlink" title="简述HashMap实现原理"></a>简述HashMap实现原理</h2><p>HashMap的底层是通过数组和链表实现的。其实就是维护了一个数组，put操作的时候根据key的哈希值和数组的长度（具体看源码）算出下标，判断该位置有没有对象，没有的话直接创建一个Entry对象（该对象保存了key，hash，value，下标等属性），如果有对象则判断是否有hash冲突（不同的key，但是hash值相同），有冲突则则该闻之用链表存储。</p>
@@ -7189,27 +7280,6 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
       </categories>
       <tags>
         <tag>lambda</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>hexo命令</title>
-    <url>/2019/03/08/hexo%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<ul>
-<li><p>hexo g 生成静态文件</p>
-</li>
-<li><p>hexo s 启动本地服务</p>
-</li>
-<li><p>hexo clean 清除缓存文件(db.json)和已生成的静态文件(public)</p>
-</li>
-<li><p>hexo g -d 生成文件并部署到github</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>其它</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
