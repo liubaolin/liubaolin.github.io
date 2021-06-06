@@ -452,8 +452,8 @@
       </tags>
   </entry>
   <entry>
-    <title>Kubernetes04-集群搭建</title>
-    <url>/2021/05/24/Kubernetes04-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/</url>
+    <title>Kubernetes03-集群搭建</title>
+    <url>/2021/05/24/Kubernetes03-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/</url>
     <content><![CDATA[<h1 id="准备3台服务器"><a href="#准备3台服务器" class="headerlink" title="准备3台服务器"></a>准备3台服务器</h1><p>这里我们用虚拟机装3个节点：node1,node2,node3</p>
 <p>如果安装的时候没有设置好主机名，可以手动再设置一下，给个名字方便操作：</p>
 <p>hostnamectl set-hostname node1  //node2 node3</p>
@@ -578,34 +578,8 @@
       </tags>
   </entry>
   <entry>
-    <title>Kubernetes03-Quick-Start</title>
-    <url>/2021/05/20/Kubernetes03-Quick-Start/</url>
-    <content><![CDATA[<h1 id="部署3个节点的k8s节点"><a href="#部署3个节点的k8s节点" class="headerlink" title="部署3个节点的k8s节点"></a>部署3个节点的k8s节点</h1><p><a href="https://10000hours.top/2021/03/06/Kubernetes04-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/">https://10000hours.top/2021/03/06/Kubernetes04-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/</a></p>
-<h1 id="快速运行一个应用"><a href="#快速运行一个应用" class="headerlink" title="快速运行一个应用"></a>快速运行一个应用</h1><p>kubectl run可以创建所有组件而不需要JSON或YAML文件</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl run kubia --image&#x3D;luksa&#x2F;kubia --port&#x3D;8080 --generator&#x3D;run&#x2F;v1</span><br><span class="line">kubectl run --generator&#x3D;run&#x2F;v1 is DEPRECATED and will be removed in a future version. Use kubectl run --generator&#x3D;run-pod&#x2F;v1 or kubectl create instead.</span><br><span class="line">replicationcontroller&#x2F;kubia created</span><br></pre></td></tr></table></figure>
-
-<h1 id="查看pod"><a href="#查看pod" class="headerlink" title="查看pod"></a>查看pod</h1><p>kubectl get pods</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get pods -o wide </span><br><span class="line">NAME          READY   STATUS    RESTARTS   AGE     IP             NODE    NOMINATED NODE   READINESS GATES</span><br><span class="line">kubia-6wgzj   1&#x2F;1     Running   1          3d13h   192.169.2.20   node3   &lt;none&gt;           &lt;none&gt;</span><br></pre></td></tr></table></figure>
-<p>可以看到这个pod有自己的ip，但是这个ip是集群内部的，在集群外无法访问，我们在集群外可以ping一下这个ip，是不通的。</p>
-<h1 id="创建Service"><a href="#创建Service" class="headerlink" title="创建Service"></a>创建Service</h1><p>要想从集群外部访问pod，需要在集群中创建一个Service服务，Service用于访问集群内的pod，并对外提供可访问的ip。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl expose pod kubia-6wgzj --type&#x3D;LoadBalancer --name kubia-http</span><br><span class="line">service&#x2F;kubia-http exposed</span><br><span class="line"></span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get svc</span><br><span class="line">NAME         TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE</span><br><span class="line">kubernetes   ClusterIP      10.96.0.1      &lt;none&gt;        443&#x2F;TCP          4d14h</span><br><span class="line">kubia-http   LoadBalancer   10.98.93.230   &lt;pending&gt;     8080:31910&#x2F;TCP   118s</span><br></pre></td></tr></table></figure>
-<p>这时的EXTERNAL-IP还好似pending状态，需要一点时间，创建成功后就可以通过这个外部ip地址访问了。</p>
-<p>服务表示一组或多组提供相同服务的pod的静态地址。</p>
-<h1 id="水平伸缩应用"><a href="#水平伸缩应用" class="headerlink" title="水平伸缩应用"></a>水平伸缩应用</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get rc</span><br><span class="line">NAME    DESIRED   CURRENT   READY   AGE</span><br><span class="line">kubia   1         1         1       4d14h</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl scale rc kubia --replicas&#x3D;3</span><br><span class="line">replicationcontroller&#x2F;kubia scaled</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get rc</span><br><span class="line">NAME    DESIRED   CURRENT   READY   AGE</span><br><span class="line">kubia   3         3         1       4d14h</span><br><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get pods </span><br><span class="line">NAME          READY   STATUS    RESTARTS   AGE</span><br><span class="line">kubia-6wgzj   1&#x2F;1     Running   1          3d13h</span><br><span class="line">kubia-j7q4s   1&#x2F;1     Running   0          11s</span><br><span class="line">kubia-rxndz   1&#x2F;1     Running   0          11s</span><br></pre></td></tr></table></figure>
-
-
-
-]]></content>
-      <categories>
-        <category>SRE</category>
-      </categories>
-      <tags>
-        <tag>K8s</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Kubernetes02-基本概念</title>
-    <url>/2021/05/12/Kubernetes02-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</url>
+    <title>Kubernetes02-核心概念</title>
+    <url>/2021/05/12/Kubernetes02-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/</url>
     <content><![CDATA[<p><img src="http://assets.processon.com/chart_image/5c75503fe4b0f9fba693aa6b.png" alt="k8s集群架构"></p>
 <h1 id="比较容器和虚拟机"><a href="#比较容器和虚拟机" class="headerlink" title="比较容器和虚拟机"></a>比较容器和虚拟机</h1><p>和虚拟机相比容器更加轻量级，因为每个虚拟机需要运行自己的一组系统进程，而容器只是运行在宿主机上被隔离的单个进程。</p>
 <p>虚拟机的好处是它们提供完全隔离的环境，因为每个虚拟机都运行在它们自己的Linux内核上，而容器则是调用同一个内核。</p>
@@ -1030,6 +1004,30 @@
       </tags>
   </entry>
   <entry>
+    <title>ulimit详解</title>
+    <url>/2021/03/21/ulimit%E8%AF%A6%E8%A7%A3/</url>
+    <content><![CDATA[<p>本地测试mongodb，大量创建Collection的时候报错open: Too many open files.这个问题主要指的是进程企图打开一个文件，或者叫句柄，但是现在进程打开的句柄已经达到了上限，已经无法打开新句柄了。</p>
+<h1 id="Linux句柄介绍"><a href="#Linux句柄介绍" class="headerlink" title="Linux句柄介绍"></a>Linux句柄介绍</h1><p>Linux中所有的事物或资源都是以文件的形式存在，比如消息、共享内存、连接等，句柄可以理解为指向这些文件的指针。</p>
+<h1 id="ulimit"><a href="#ulimit" class="headerlink" title="ulimit"></a>ulimit</h1><p>对于这些句柄，Linux是有数量限制的，单个进程默认可以打开的句柄数上限，可以用以下命令来查看：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@localhost ~]$ ulimit -a</span><br><span class="line">core file size          (blocks, -c) unlimited</span><br><span class="line">data seg size           (kbytes, -d) unlimited</span><br><span class="line">scheduling priority             (-e) 0</span><br><span class="line">file size               (blocks, -f) unlimited</span><br><span class="line">pending signals                 (-i) 62939</span><br><span class="line">max locked memory       (kbytes, -l) 16384</span><br><span class="line">max memory size         (kbytes, -m) unlimited</span><br><span class="line">open files                      (-n) 2000</span><br><span class="line">pipe size            (512 bytes, -p) 8</span><br><span class="line">POSIX message queues     (bytes, -q) 819200</span><br><span class="line">real-time priority              (-r) 0</span><br><span class="line">stack size              (kbytes, -s) 8192</span><br><span class="line">cpu time               (seconds, -t) unlimited</span><br><span class="line">max user processes              (-u) 62939</span><br><span class="line">virtual memory          (kbytes, -v) unlimited</span><br><span class="line">file locks                      (-x) unlimited</span><br></pre></td></tr></table></figure>
+<p>其中的open files一项就是默认的句柄数</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ulimit: ulimit [-SHabcdefiklmnpqrstuvxPT] [限制]</span><br><span class="line">    修改 shell 资源限制。</span><br><span class="line">    </span><br><span class="line">    在允许此类控制的系统上，提供对于 shell 及其创建的进程所可用的</span><br><span class="line">    资源的控制。</span><br><span class="line">    </span><br><span class="line">    选项：</span><br><span class="line">      -S	使用软 (&#96;soft&#39;) 资源限制</span><br><span class="line">      -H	使用硬 (&#96;hard&#39;) 资源限制</span><br><span class="line">      -a	所有当前限制都被报告</span><br><span class="line">      -b	套接字缓存尺寸</span><br><span class="line">      -c	创建的核文件的最大尺寸</span><br><span class="line">      -d	一个进程的数据区的最大尺寸</span><br><span class="line">      -e	最高的调度优先级 (&#96;nice&#39;)</span><br><span class="line">      -f	有 shell 及其子进程可以写的最大文件尺寸</span><br><span class="line">      -i	最多的可以挂起的信号数</span><br><span class="line">      -k	分配给此进程的最大 kqueue 数量</span><br><span class="line">      -l	一个进程可以锁定的最大内存尺寸</span><br><span class="line">      -m	最大的内存进驻尺寸</span><br><span class="line">      -n	最多的打开的文件描述符个数</span><br><span class="line">      -p	管道缓冲区尺寸</span><br><span class="line">      -q	POSIX 信息队列的最大字节数</span><br><span class="line">      -r	实时调度的最大优先级</span><br><span class="line">      -s	最大栈尺寸</span><br><span class="line">      -t	最大的CPU时间，以秒为单位</span><br><span class="line">      -u	最大用户进程数</span><br><span class="line">      -v	虚拟内存尺寸</span><br><span class="line">      -x	最大的文件锁数量</span><br><span class="line">      -P	最大伪终端数量</span><br><span class="line">      -T	最大线程数量</span><br><span class="line">    </span><br><span class="line">    并非所有选项在所有系统上可用。</span><br><span class="line">    </span><br><span class="line">    如果提供了 LIMIT 变量，则它为指定资源的新的值；特别的 LIMIT 值为</span><br><span class="line">    &#96;soft&#39;、&#96;hard&#39;和&#96;unlimited&#39;，分别表示当前的软限制，硬限制和无限制。</span><br><span class="line">    否则打印指定资源的当前限制值，不带选项则假定为 -f</span><br><span class="line">    </span><br><span class="line">    取值都是 1024 字节为单位，除了 -t 以秒为单位，-p 以 512 字节递增，</span><br><span class="line">    -u 为无范围的进程数量。</span><br></pre></td></tr></table></figure>
+<p>设置某个进程的句柄上限</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ulimit –a PID</span><br></pre></td></tr></table></figure>
+
+<h1 id="ulimit配置文件"><a href="#ulimit配置文件" class="headerlink" title="ulimit配置文件"></a>ulimit配置文件</h1><p>使用ulimit方式修改句柄设置，在系统重启后会失效，可以通过修改配置文件的方式进行永久设置</p>
+<p>配置文件地址：/etc/security/limits.conf</p>
+<p>格式：<br>domain：可以是用户或者用户组 <em>代表所有<br>type：可以有三个值，soft 、 hard和-,其中hard的设置是实际的默认值，也就是上限，而soft的配置只是用来警告的，如果超过了soft的值，会有warn，而第三种用短横线– 的配置，则是hard和soft同时配置的方式。<br>item：表示要限定的资源 可以有很多候选值，如 stack（最大堆栈大小），cpu（占用cpu的时间），nofile（最大打开文件数） 等等<br>例：</em> hard nofile 100 该行配置语句限定了任意用户所能创建的最大文件数是 100。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">* soft nofile 196605</span><br><span class="line">* hard nofile 196605</span><br></pre></td></tr></table></figure>
+
+<p>修改后重启或重新ssh连接服务器，使用命令ulimit -a即可看到效果</p>
+<h1 id="查询某个进程占用的句柄"><a href="#查询某个进程占用的句柄" class="headerlink" title="查询某个进程占用的句柄"></a>查询某个进程占用的句柄</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">lsof |grep pid</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+  </entry>
+  <entry>
     <title>mongoDB系列04-mongoDB复制集</title>
     <url>/2021/03/21/mongoDB%E7%B3%BB%E5%88%9704-mongoDB%E5%A4%8D%E5%88%B6%E9%9B%86/</url>
     <content><![CDATA[<h1 id="复制集的作用"><a href="#复制集的作用" class="headerlink" title="复制集的作用"></a>复制集的作用</h1><ul>
@@ -1139,30 +1137,6 @@
       </tags>
   </entry>
   <entry>
-    <title>ulimit详解</title>
-    <url>/2021/03/21/ulimit%E8%AF%A6%E8%A7%A3/</url>
-    <content><![CDATA[<p>本地测试mongodb，大量创建Collection的时候报错open: Too many open files.这个问题主要指的是进程企图打开一个文件，或者叫句柄，但是现在进程打开的句柄已经达到了上限，已经无法打开新句柄了。</p>
-<h1 id="Linux句柄介绍"><a href="#Linux句柄介绍" class="headerlink" title="Linux句柄介绍"></a>Linux句柄介绍</h1><p>Linux中所有的事物或资源都是以文件的形式存在，比如消息、共享内存、连接等，句柄可以理解为指向这些文件的指针。</p>
-<h1 id="ulimit"><a href="#ulimit" class="headerlink" title="ulimit"></a>ulimit</h1><p>对于这些句柄，Linux是有数量限制的，单个进程默认可以打开的句柄数上限，可以用以下命令来查看：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@localhost ~]$ ulimit -a</span><br><span class="line">core file size          (blocks, -c) unlimited</span><br><span class="line">data seg size           (kbytes, -d) unlimited</span><br><span class="line">scheduling priority             (-e) 0</span><br><span class="line">file size               (blocks, -f) unlimited</span><br><span class="line">pending signals                 (-i) 62939</span><br><span class="line">max locked memory       (kbytes, -l) 16384</span><br><span class="line">max memory size         (kbytes, -m) unlimited</span><br><span class="line">open files                      (-n) 2000</span><br><span class="line">pipe size            (512 bytes, -p) 8</span><br><span class="line">POSIX message queues     (bytes, -q) 819200</span><br><span class="line">real-time priority              (-r) 0</span><br><span class="line">stack size              (kbytes, -s) 8192</span><br><span class="line">cpu time               (seconds, -t) unlimited</span><br><span class="line">max user processes              (-u) 62939</span><br><span class="line">virtual memory          (kbytes, -v) unlimited</span><br><span class="line">file locks                      (-x) unlimited</span><br></pre></td></tr></table></figure>
-<p>其中的open files一项就是默认的句柄数</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ulimit: ulimit [-SHabcdefiklmnpqrstuvxPT] [限制]</span><br><span class="line">    修改 shell 资源限制。</span><br><span class="line">    </span><br><span class="line">    在允许此类控制的系统上，提供对于 shell 及其创建的进程所可用的</span><br><span class="line">    资源的控制。</span><br><span class="line">    </span><br><span class="line">    选项：</span><br><span class="line">      -S	使用软 (&#96;soft&#39;) 资源限制</span><br><span class="line">      -H	使用硬 (&#96;hard&#39;) 资源限制</span><br><span class="line">      -a	所有当前限制都被报告</span><br><span class="line">      -b	套接字缓存尺寸</span><br><span class="line">      -c	创建的核文件的最大尺寸</span><br><span class="line">      -d	一个进程的数据区的最大尺寸</span><br><span class="line">      -e	最高的调度优先级 (&#96;nice&#39;)</span><br><span class="line">      -f	有 shell 及其子进程可以写的最大文件尺寸</span><br><span class="line">      -i	最多的可以挂起的信号数</span><br><span class="line">      -k	分配给此进程的最大 kqueue 数量</span><br><span class="line">      -l	一个进程可以锁定的最大内存尺寸</span><br><span class="line">      -m	最大的内存进驻尺寸</span><br><span class="line">      -n	最多的打开的文件描述符个数</span><br><span class="line">      -p	管道缓冲区尺寸</span><br><span class="line">      -q	POSIX 信息队列的最大字节数</span><br><span class="line">      -r	实时调度的最大优先级</span><br><span class="line">      -s	最大栈尺寸</span><br><span class="line">      -t	最大的CPU时间，以秒为单位</span><br><span class="line">      -u	最大用户进程数</span><br><span class="line">      -v	虚拟内存尺寸</span><br><span class="line">      -x	最大的文件锁数量</span><br><span class="line">      -P	最大伪终端数量</span><br><span class="line">      -T	最大线程数量</span><br><span class="line">    </span><br><span class="line">    并非所有选项在所有系统上可用。</span><br><span class="line">    </span><br><span class="line">    如果提供了 LIMIT 变量，则它为指定资源的新的值；特别的 LIMIT 值为</span><br><span class="line">    &#96;soft&#39;、&#96;hard&#39;和&#96;unlimited&#39;，分别表示当前的软限制，硬限制和无限制。</span><br><span class="line">    否则打印指定资源的当前限制值，不带选项则假定为 -f</span><br><span class="line">    </span><br><span class="line">    取值都是 1024 字节为单位，除了 -t 以秒为单位，-p 以 512 字节递增，</span><br><span class="line">    -u 为无范围的进程数量。</span><br></pre></td></tr></table></figure>
-<p>设置某个进程的句柄上限</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ulimit –a PID</span><br></pre></td></tr></table></figure>
-
-<h1 id="ulimit配置文件"><a href="#ulimit配置文件" class="headerlink" title="ulimit配置文件"></a>ulimit配置文件</h1><p>使用ulimit方式修改句柄设置，在系统重启后会失效，可以通过修改配置文件的方式进行永久设置</p>
-<p>配置文件地址：/etc/security/limits.conf</p>
-<p>格式：<br>domain：可以是用户或者用户组 <em>代表所有<br>type：可以有三个值，soft 、 hard和-,其中hard的设置是实际的默认值，也就是上限，而soft的配置只是用来警告的，如果超过了soft的值，会有warn，而第三种用短横线– 的配置，则是hard和soft同时配置的方式。<br>item：表示要限定的资源 可以有很多候选值，如 stack（最大堆栈大小），cpu（占用cpu的时间），nofile（最大打开文件数） 等等<br>例：</em> hard nofile 100 该行配置语句限定了任意用户所能创建的最大文件数是 100。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">* soft nofile 196605</span><br><span class="line">* hard nofile 196605</span><br></pre></td></tr></table></figure>
-
-<p>修改后重启或重新ssh连接服务器，使用命令ulimit -a即可看到效果</p>
-<h1 id="查询某个进程占用的句柄"><a href="#查询某个进程占用的句柄" class="headerlink" title="查询某个进程占用的句柄"></a>查询某个进程占用的句柄</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">lsof |grep pid</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
-  </entry>
-  <entry>
     <title>mongoDB系列00-MongoDB数据库选型</title>
     <url>/2021/03/20/mongoDB%E7%B3%BB%E5%88%9700-MongoDB%E6%95%B0%E6%8D%AE%E5%BA%93%E9%80%89%E5%9E%8B/</url>
     <content><![CDATA[<h1 id="基本"><a href="#基本" class="headerlink" title="基本"></a>基本</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; show dbs</span><br><span class="line">admin   0.000GB</span><br><span class="line">config  0.000GB</span><br><span class="line">local   0.000GB</span><br><span class="line">mock    0.047GB</span><br><span class="line">salary  0.000GB</span><br><span class="line">test    0.000GB</span><br><span class="line">&gt; use salary</span><br><span class="line">switched to db salary</span><br><span class="line">&gt; show collections</span><br><span class="line">payslip</span><br><span class="line">&gt; db</span><br><span class="line">salary</span><br></pre></td></tr></table></figure>
@@ -1224,65 +1198,6 @@
 </li>
 </ul>
 <h1 id="聚合查询"><a href="#聚合查询" class="headerlink" title="聚合查询"></a>聚合查询</h1><p>可以使用compass工具方便的生成聚合逻辑<br>//todo </p>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>mongoDB</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>mongoDB系列02-mongoDB基本操作</title>
-    <url>/2021/03/06/mongoDB%E7%B3%BB%E5%88%9702-mongoDB%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/</url>
-    <content><![CDATA[<h1 id="intert插入操作"><a href="#intert插入操作" class="headerlink" title="intert插入操作"></a>intert插入操作</h1><p>db.&lt;集合&gt;.insertOne(&lt;JSON对象&gt;)<br>db.&lt;集合&gt;.insertMany([&lt;JSON 1&gt;,…<JSON n>])</p>
-<p>demo:</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.staff.insertOne(&#123;name:&quot;Richey&quot;&#125;)</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedId&quot; : ObjectId(&quot;60434c93b562b8d1012436aa&quot;)</span><br><span class="line">&#125;</span><br><span class="line">&gt; db.staff.insertMany([&#123;name:&quot;Kelly&quot;&#125;,&#123;name:&quot;Darwin&quot;&#125;,&#123;name:&quot;Freeman&quot;&#125;])</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedIds&quot; : [</span><br><span class="line">		ObjectId(&quot;60434cffb562b8d1012436ab&quot;),</span><br><span class="line">		ObjectId(&quot;60434cffb562b8d1012436ac&quot;),</span><br><span class="line">		ObjectId(&quot;60434cffb562b8d1012436ad&quot;)</span><br><span class="line">	]</span><br><span class="line">&#125;</span><br><span class="line">&gt; db.staff.find()</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434c93b562b8d1012436aa&quot;), &quot;name&quot; : &quot;Richey&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ab&quot;), &quot;name&quot; : &quot;Kelly&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ac&quot;), &quot;name&quot; : &quot;Darwin&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ad&quot;), &quot;name&quot; : &quot;Freeman&quot; &#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="find查找数据"><a href="#find查找数据" class="headerlink" title="find查找数据"></a>find查找数据</h1><p>查询所有数据</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">db.&lt;集合&gt;.find()</span><br></pre></td></tr></table></figure>
-<h2 id="条件查询"><a href="#条件查询" class="headerlink" title="条件查询"></a>条件查询</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.staff.insertMany([&#123;name:&quot;Jobs&quot;,age:18&#125;,&#123;name:&quot;Lili&quot;,gender:&quot;Female&quot;&#125;])</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedIds&quot; : [</span><br><span class="line">		ObjectId(&quot;60434f08b562b8d1012436ae&quot;),</span><br><span class="line">		ObjectId(&quot;60434f08b562b8d1012436af&quot;)</span><br><span class="line">	]</span><br><span class="line">&#125;</span><br><span class="line">#单条件查询</span><br><span class="line"></span><br><span class="line">&gt; db.staff.find(&#123;&quot;age&quot;:18&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436ae&quot;), &quot;name&quot; : &quot;Jobs&quot;, &quot;age&quot; : 18 &#125;</span><br><span class="line">#多条件and查询</span><br><span class="line">&gt; db.staff.find(&#123;&quot;name&quot;:&quot;Jobs&quot;,&quot;age&quot;:18&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436ae&quot;), &quot;name&quot; : &quot;Jobs&quot;, &quot;age&quot; : 18 &#125;</span><br><span class="line">&gt; db.staff.find(&#123;$and:[&#123;&quot;name&quot;:&quot;Jobs&quot;&#125;,&#123;&quot;age&quot;:18&#125;]&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436ae&quot;), &quot;name&quot; : &quot;Jobs&quot;, &quot;age&quot; : 18 &#125;</span><br><span class="line">#多条件or查询</span><br><span class="line">&gt; db.staff.find(&#123;$or:[&#123;&quot;age&quot;:18&#125;,&#123;&quot;gender&quot;:&quot;Female&quot;&#125;]&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436ae&quot;), &quot;name&quot; : &quot;Jobs&quot;, &quot;age&quot; : 18 &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436af&quot;), &quot;name&quot; : &quot;Lili&quot;, &quot;gender&quot; : &quot;Female&quot; &#125;</span><br><span class="line">#按正则表达式查询</span><br><span class="line"></span><br><span class="line">&gt; db.staff.find(&#123;&quot;name&quot;:&#x2F;^\b&#x2F;&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434c93b562b8d1012436aa&quot;), &quot;name&quot; : &quot;Richey&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ab&quot;), &quot;name&quot; : &quot;Kelly&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ac&quot;), &quot;name&quot; : &quot;Darwin&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ad&quot;), &quot;name&quot; : &quot;Freeman&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436ae&quot;), &quot;name&quot; : &quot;Jobs&quot;, &quot;age&quot; : 18 &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436af&quot;), &quot;name&quot; : &quot;Lili&quot;, &quot;gender&quot; : &quot;Female&quot; &#125;</span><br></pre></td></tr></table></figure>
-<h2 id="find搜索子文档"><a href="#find搜索子文档" class="headerlink" title="find搜索子文档"></a>find搜索子文档</h2><p>find支持使用”field.sub_field”形式查询子文档</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">db.staff.insertOne(&#123;&quot;name&quot;:&quot;ZSan&quot;,&quot;age&quot;:28,&quot;addr&quot;:&#123;&quot;city&quot;:&quot;ShangHai&quot;,&quot;street&quot;:&quot;华夏西路188号&quot;&#125;&#125;)</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedId&quot; : ObjectId(&quot;60435997b562b8d1012436b0&quot;)</span><br><span class="line">&#125;</span><br><span class="line">&gt; db.staff.find(&#123;&quot;addr.city&quot;:&quot;ShangHai&quot;&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435997b562b8d1012436b0&quot;), &quot;name&quot; : &quot;ZSan&quot;, &quot;age&quot; : 28, &quot;addr&quot; : &#123; &quot;city&quot; : &quot;ShangHai&quot;, &quot;street&quot; : &quot;华夏西路188号&quot; &#125; &#125;</span><br><span class="line"># 下面这种写法是错误的，子文档的查询应该用上面的写法</span><br><span class="line">&gt; db.staff.find(&#123;&quot;addr&quot;:&#123;&quot;city&quot;:&quot;ShangHai&quot;&#125;&#125;)</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
-
-<h2 id="find搜索数组"><a href="#find搜索数组" class="headerlink" title="find搜索数组"></a>find搜索数组</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.staff.insertOne(&#123;&quot;name&quot;:&quot;LSi&quot;,&quot;food&quot;:[&quot;egg&quot;,&quot;bread&quot;,&quot;milk&quot;]&#125;)</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedId&quot; : ObjectId(&quot;60435bbbb562b8d1012436b1&quot;)</span><br><span class="line">&#125;</span><br><span class="line">&gt; db.staff.find(&#123;&quot;food&quot;:&quot;egg&quot;&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435bbbb562b8d1012436b1&quot;), &quot;name&quot; : &quot;LSi&quot;, &quot;food&quot; : [ &quot;egg&quot;, &quot;bread&quot;, &quot;milk&quot; ] &#125;</span><br><span class="line">&gt; db.staff.find(&#123;$or:[&#123;&quot;food&quot;:&quot;egg&quot;&#125;,&#123;&quot;food&quot;:&quot;milk&quot;&#125;]&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435bbbb562b8d1012436b1&quot;), &quot;name&quot; : &quot;LSi&quot;, &quot;food&quot; : [ &quot;egg&quot;, &quot;bread&quot;, &quot;milk&quot; ] &#125;</span><br></pre></td></tr></table></figure>
-<p>数组中搜索子对象的多个字段时，用$elemMatch表示必须是同一个子对象满足多个条件</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.staff.insertOne(&#123;&quot;name&quot;:&quot;WWu&quot;,&quot;favorite_books&quot;:[&#123;&quot;title&quot;:&quot;The Old Man and the Sea&quot;,&quot;author&quot;:&quot;Hemingway&quot;&#125;,&#123;&quot;title&quot;:&quot;围城&quot;,&quot;author&quot;:&quot;钱锺书&quot;&#125;]&#125;)</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedId&quot; : ObjectId(&quot;60435df1b562b8d1012436b2&quot;)</span><br><span class="line">&#125;</span><br><span class="line">&gt; db.staff.find(&#123;&quot;favorite_books.title&quot;:&quot;The Old Man and the Sea&quot;,&quot;favorite_books.author&quot;:&quot;钱锺书&quot;&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435df1b562b8d1012436b2&quot;), &quot;name&quot; : &quot;WWu&quot;, &quot;favorite_books&quot; : [ &#123; &quot;title&quot; : &quot;The Old Man and the Sea&quot;, &quot;author&quot; : &quot;Hemingway&quot; &#125;, &#123; &quot;title&quot; : &quot;围城&quot;, &quot;author&quot; : &quot;钱锺书&quot; &#125; ] &#125;</span><br><span class="line">&gt; db.staff.find(&#123;&quot;favorite_books&quot;:&#123;$elemMatch:&#123;&quot;title&quot;:&quot;The Old Man and the Sea&quot;,&quot;author&quot;:&quot;钱锺书&quot;&#125;&#125;&#125;)</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
-
-<h2 id="控制find返回的字段-投影projection"><a href="#控制find返回的字段-投影projection" class="headerlink" title="控制find返回的字段(投影projection)"></a>控制find返回的字段(投影projection)</h2><p>find可以指定只返回指定的字段</p>
-<p>_id字段必须明确指定不返回，否则默认返回</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.staff.find(&#123;$or:[&#123;&quot;food&quot;:&quot;egg&quot;&#125;,&#123;&quot;food&quot;:&quot;milk&quot;&#125;]&#125;,&#123;&quot;_id&quot;:0,&quot;name&quot;:1,&quot;food&quot;:1&#125;)</span><br><span class="line">&#123; &quot;name&quot; : &quot;LSi&quot;, &quot;food&quot; : [ &quot;egg&quot;, &quot;bread&quot;, &quot;milk&quot; ] &#125;</span><br><span class="line"></span><br><span class="line">&gt; db.staff.find(&#123;&#125;,&#123;&quot;_id&quot;:0,&quot;name&quot;:1,&quot;food&quot;:1&#125;)</span><br><span class="line">&#123; &quot;name&quot; : &quot;Richey&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;Kelly&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;Darwin&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;Freeman&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;Jobs&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;Lili&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;ZSan&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;LSi&quot;, &quot;food&quot; : [ &quot;egg&quot;, &quot;bread&quot;, &quot;milk&quot; ] &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;WWu&quot; &#125;</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
-
-<h1 id="使用remove删除文档"><a href="#使用remove删除文档" class="headerlink" title="使用remove删除文档"></a>使用remove删除文档</h1><p>remove 命令必须配合查询条件使用，否则mongo会报错，需要要删除全部可以使用空条件</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.staff.find()</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434c93b562b8d1012436aa&quot;), &quot;name&quot; : &quot;Richey&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ab&quot;), &quot;name&quot; : &quot;Kelly&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ac&quot;), &quot;name&quot; : &quot;Darwin&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ad&quot;), &quot;name&quot; : &quot;Freeman&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436ae&quot;), &quot;name&quot; : &quot;Jobs&quot;, &quot;age&quot; : 18 &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436af&quot;), &quot;name&quot; : &quot;Lili&quot;, &quot;gender&quot; : &quot;Female&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435997b562b8d1012436b0&quot;), &quot;name&quot; : &quot;ZSan&quot;, &quot;age&quot; : 28, &quot;addr&quot; : &#123; &quot;city&quot; : &quot;ShangHai&quot;, &quot;street&quot; : &quot;华夏西路188号&quot; &#125; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435bbbb562b8d1012436b1&quot;), &quot;name&quot; : &quot;LSi&quot;, &quot;food&quot; : [ &quot;egg&quot;, &quot;bread&quot;, &quot;milk&quot; ] &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435df1b562b8d1012436b2&quot;), &quot;name&quot; : &quot;WWu&quot;, &quot;favorite_books&quot; : [ &#123; &quot;title&quot; : &quot;The Old Man and the Sea&quot;, &quot;author&quot; : &quot;Hemingway&quot; &#125;, &#123; &quot;title&quot; : &quot;围城&quot;, &quot;author&quot; : &quot;钱锺书&quot; &#125; ] &#125;</span><br><span class="line">&gt; db.staff.remove(&#123;&quot;name&quot;:&quot;Jobs&quot;&#125;)</span><br><span class="line">WriteResult(&#123; &quot;nRemoved&quot; : 1 &#125;)</span><br><span class="line">&gt; db.staff.find()</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434c93b562b8d1012436aa&quot;), &quot;name&quot; : &quot;Richey&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ab&quot;), &quot;name&quot; : &quot;Kelly&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ac&quot;), &quot;name&quot; : &quot;Darwin&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ad&quot;), &quot;name&quot; : &quot;Freeman&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436af&quot;), &quot;name&quot; : &quot;Lili&quot;, &quot;gender&quot; : &quot;Female&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435997b562b8d1012436b0&quot;), &quot;name&quot; : &quot;ZSan&quot;, &quot;age&quot; : 28, &quot;addr&quot; : &#123; &quot;city&quot; : &quot;ShangHai&quot;, &quot;street&quot; : &quot;华夏西路188号&quot; &#125; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435bbbb562b8d1012436b1&quot;), &quot;name&quot; : &quot;LSi&quot;, &quot;food&quot; : [ &quot;egg&quot;, &quot;bread&quot;, &quot;milk&quot; ] &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435df1b562b8d1012436b2&quot;), &quot;name&quot; : &quot;WWu&quot;, &quot;favorite_books&quot; : [ &#123; &quot;title&quot; : &quot;The Old Man and the Sea&quot;, &quot;author&quot; : &quot;Hemingway&quot; &#125;, &#123; &quot;title&quot; : &quot;围城&quot;, &quot;author&quot; : &quot;钱锺书&quot; &#125; ] &#125;</span><br><span class="line">&gt; db.staff.remove(&#123;&#125;)</span><br><span class="line">WriteResult(&#123; &quot;nRemoved&quot; : 8 &#125;)</span><br><span class="line">&gt; db.staff.find()</span><br></pre></td></tr></table></figure>
-
-<h1 id="使用update更新文档"><a href="#使用update更新文档" class="headerlink" title="使用update更新文档"></a>使用update更新文档</h1><p>db.&lt;集合&gt;.updat(&lt;查询条件&gt;,&lt;更新字段&gt;)</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.staff.insertMany([&#123;&quot;name&quot;:&quot;Richey&quot;,&quot;age&quot;:18&#125;,&#123;&quot;name&quot;:&quot;Kelly&quot;,&quot;age&quot;:20&#125;])</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedIds&quot; : [</span><br><span class="line">		ObjectId(&quot;60439f09b562b8d1012436b3&quot;),</span><br><span class="line">		ObjectId(&quot;60439f09b562b8d1012436b4&quot;)</span><br><span class="line">	]</span><br><span class="line">&#125;</span><br><span class="line">&gt; db.staff.updateOne(&#123;&quot;name&quot;:&quot;Richey&quot;&#125;,&#123;$set:&#123;&quot;age&quot;:24&#125;&#125;)</span><br><span class="line">WriteResult(&#123; &quot;nMatched&quot; : 1, &quot;nUpserted&quot; : 0, &quot;nModified&quot; : 1 &#125;)</span><br><span class="line">&gt; db.staff.find(&#123;&quot;name&quot;:&quot;Richey&quot;&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60439f09b562b8d1012436b3&quot;), &quot;name&quot; : &quot;Richey&quot;, &quot;age&quot; : 24 &#125;</span><br></pre></td></tr></table></figure>
-
-<p>使用updateOne无论条件匹配多少条，都只会更新第一条</p>
-<p>使用updateMany表示条件匹配多少条就更新多少条</p>
-<p>使用updateOne/updateMany发方法要求更新条件部份（第二个参数）必须具有以下之一，否则报错：</p>
-<ul>
-<li>$set/$unset</li>
-<li>$push/$pushAll/$pop</li>
-<li>$pull/$pullAll</li>
-<li>$addToSet</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$push :增加一个对象到数据底部</span><br><span class="line">$pushAll： 增加多个对象到数组底部</span><br><span class="line">$pop： 从数组底部删除一个对象</span><br><span class="line">$pull： 如果匹配指定的值，则从数组中删除相应的对象</span><br><span class="line">$pullAll： 如果匹配任意的值，则从数组中三处相应的对象</span><br><span class="line">$addToSet： 如果不存在则增加一个值到数组</span><br></pre></td></tr></table></figure>
-
-<h1 id="使用drop删除集合"><a href="#使用drop删除集合" class="headerlink" title="使用drop删除集合"></a>使用drop删除集合</h1><p>db.&lt;集合&gt;.drop()</p>
-<p>集合中的全部文档都会被删除</p>
-<p>集合相关的索引也会被删除</p>
-<p>一定要谨慎使用</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; use test</span><br><span class="line">switched to db test</span><br><span class="line">&gt; show collections</span><br><span class="line">staff</span><br><span class="line">&gt; db.staff.drop()</span><br><span class="line">true</span><br><span class="line">&gt; show collections</span><br></pre></td></tr></table></figure>
-
-<h1 id="使用dropDatabase删除数据库"><a href="#使用dropDatabase删除数据库" class="headerlink" title="使用dropDatabase删除数据库"></a>使用dropDatabase删除数据库</h1><p>db.dropDatabase()</p>
-<p>数据库相应的文件也会被删除，磁盘空间将被释放</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; show dbs</span><br><span class="line">admin   0.000GB</span><br><span class="line">config  0.000GB</span><br><span class="line">local   0.000GB</span><br><span class="line">mock    0.047GB</span><br><span class="line">test    0.000GB</span><br><span class="line">&gt; use test</span><br><span class="line">switched to db test</span><br><span class="line">&gt; db.dropDatabase()</span><br><span class="line">&#123; &quot;dropped&quot; : &quot;test&quot;, &quot;ok&quot; : 1 &#125;</span><br><span class="line">&gt; show dbs</span><br><span class="line">admin   0.000GB</span><br><span class="line">config  0.000GB</span><br><span class="line">local   0.000GB</span><br><span class="line">mock    0.047GB</span><br><span class="line">&gt; show collections</span><br></pre></td></tr></table></figure>
-
-
-<h1 id="SQL和MQL查询逻辑对照"><a href="#SQL和MQL查询逻辑对照" class="headerlink" title="SQL和MQL查询逻辑对照"></a>SQL和MQL查询逻辑对照</h1><p><a href="https://docs.mongodb.com/manual/reference/sql-comparison/" target="_blank" rel="noopener">官方文档</a></p>
-<p><img src="https://blog-pic-1254088127.picsh.myqcloud.com/sql-mapping-mql.png" alt="SQL-MAPPING-MQL"></p>
 ]]></content>
       <categories>
         <category>DB</category>
@@ -1435,6 +1350,65 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">(base) [richey@localhost opt]$ sudo rpm -ivh mongodb-compass-1.26.0.x86_64.rpm </span><br><span class="line">警告：mongodb-compass-1.26.0.x86_64.rpm: 头V3 RSA&#x2F;SHA1 Signature, 密钥 ID ea312927: NOKEY</span><br><span class="line">Verifying...                          ################################# [100%]</span><br><span class="line">准备中...                          ################################# [100%]</span><br><span class="line">正在升级&#x2F;安装...</span><br><span class="line">   1:mongodb-compass-1.26.0-1.el7     ################################# [100%]</span><br></pre></td></tr></table></figure>
 
 
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>mongoDB</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>mongoDB系列02-mongoDB基本操作</title>
+    <url>/2021/03/06/mongoDB%E7%B3%BB%E5%88%9702-mongoDB%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/</url>
+    <content><![CDATA[<h1 id="intert插入操作"><a href="#intert插入操作" class="headerlink" title="intert插入操作"></a>intert插入操作</h1><p>db.&lt;集合&gt;.insertOne(&lt;JSON对象&gt;)<br>db.&lt;集合&gt;.insertMany([&lt;JSON 1&gt;,…<JSON n>])</p>
+<p>demo:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.staff.insertOne(&#123;name:&quot;Richey&quot;&#125;)</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedId&quot; : ObjectId(&quot;60434c93b562b8d1012436aa&quot;)</span><br><span class="line">&#125;</span><br><span class="line">&gt; db.staff.insertMany([&#123;name:&quot;Kelly&quot;&#125;,&#123;name:&quot;Darwin&quot;&#125;,&#123;name:&quot;Freeman&quot;&#125;])</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedIds&quot; : [</span><br><span class="line">		ObjectId(&quot;60434cffb562b8d1012436ab&quot;),</span><br><span class="line">		ObjectId(&quot;60434cffb562b8d1012436ac&quot;),</span><br><span class="line">		ObjectId(&quot;60434cffb562b8d1012436ad&quot;)</span><br><span class="line">	]</span><br><span class="line">&#125;</span><br><span class="line">&gt; db.staff.find()</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434c93b562b8d1012436aa&quot;), &quot;name&quot; : &quot;Richey&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ab&quot;), &quot;name&quot; : &quot;Kelly&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ac&quot;), &quot;name&quot; : &quot;Darwin&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ad&quot;), &quot;name&quot; : &quot;Freeman&quot; &#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="find查找数据"><a href="#find查找数据" class="headerlink" title="find查找数据"></a>find查找数据</h1><p>查询所有数据</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">db.&lt;集合&gt;.find()</span><br></pre></td></tr></table></figure>
+<h2 id="条件查询"><a href="#条件查询" class="headerlink" title="条件查询"></a>条件查询</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.staff.insertMany([&#123;name:&quot;Jobs&quot;,age:18&#125;,&#123;name:&quot;Lili&quot;,gender:&quot;Female&quot;&#125;])</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedIds&quot; : [</span><br><span class="line">		ObjectId(&quot;60434f08b562b8d1012436ae&quot;),</span><br><span class="line">		ObjectId(&quot;60434f08b562b8d1012436af&quot;)</span><br><span class="line">	]</span><br><span class="line">&#125;</span><br><span class="line">#单条件查询</span><br><span class="line"></span><br><span class="line">&gt; db.staff.find(&#123;&quot;age&quot;:18&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436ae&quot;), &quot;name&quot; : &quot;Jobs&quot;, &quot;age&quot; : 18 &#125;</span><br><span class="line">#多条件and查询</span><br><span class="line">&gt; db.staff.find(&#123;&quot;name&quot;:&quot;Jobs&quot;,&quot;age&quot;:18&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436ae&quot;), &quot;name&quot; : &quot;Jobs&quot;, &quot;age&quot; : 18 &#125;</span><br><span class="line">&gt; db.staff.find(&#123;$and:[&#123;&quot;name&quot;:&quot;Jobs&quot;&#125;,&#123;&quot;age&quot;:18&#125;]&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436ae&quot;), &quot;name&quot; : &quot;Jobs&quot;, &quot;age&quot; : 18 &#125;</span><br><span class="line">#多条件or查询</span><br><span class="line">&gt; db.staff.find(&#123;$or:[&#123;&quot;age&quot;:18&#125;,&#123;&quot;gender&quot;:&quot;Female&quot;&#125;]&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436ae&quot;), &quot;name&quot; : &quot;Jobs&quot;, &quot;age&quot; : 18 &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436af&quot;), &quot;name&quot; : &quot;Lili&quot;, &quot;gender&quot; : &quot;Female&quot; &#125;</span><br><span class="line">#按正则表达式查询</span><br><span class="line"></span><br><span class="line">&gt; db.staff.find(&#123;&quot;name&quot;:&#x2F;^\b&#x2F;&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434c93b562b8d1012436aa&quot;), &quot;name&quot; : &quot;Richey&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ab&quot;), &quot;name&quot; : &quot;Kelly&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ac&quot;), &quot;name&quot; : &quot;Darwin&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ad&quot;), &quot;name&quot; : &quot;Freeman&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436ae&quot;), &quot;name&quot; : &quot;Jobs&quot;, &quot;age&quot; : 18 &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436af&quot;), &quot;name&quot; : &quot;Lili&quot;, &quot;gender&quot; : &quot;Female&quot; &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="find搜索子文档"><a href="#find搜索子文档" class="headerlink" title="find搜索子文档"></a>find搜索子文档</h2><p>find支持使用”field.sub_field”形式查询子文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">db.staff.insertOne(&#123;&quot;name&quot;:&quot;ZSan&quot;,&quot;age&quot;:28,&quot;addr&quot;:&#123;&quot;city&quot;:&quot;ShangHai&quot;,&quot;street&quot;:&quot;华夏西路188号&quot;&#125;&#125;)</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedId&quot; : ObjectId(&quot;60435997b562b8d1012436b0&quot;)</span><br><span class="line">&#125;</span><br><span class="line">&gt; db.staff.find(&#123;&quot;addr.city&quot;:&quot;ShangHai&quot;&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435997b562b8d1012436b0&quot;), &quot;name&quot; : &quot;ZSan&quot;, &quot;age&quot; : 28, &quot;addr&quot; : &#123; &quot;city&quot; : &quot;ShangHai&quot;, &quot;street&quot; : &quot;华夏西路188号&quot; &#125; &#125;</span><br><span class="line"># 下面这种写法是错误的，子文档的查询应该用上面的写法</span><br><span class="line">&gt; db.staff.find(&#123;&quot;addr&quot;:&#123;&quot;city&quot;:&quot;ShangHai&quot;&#125;&#125;)</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="find搜索数组"><a href="#find搜索数组" class="headerlink" title="find搜索数组"></a>find搜索数组</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.staff.insertOne(&#123;&quot;name&quot;:&quot;LSi&quot;,&quot;food&quot;:[&quot;egg&quot;,&quot;bread&quot;,&quot;milk&quot;]&#125;)</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedId&quot; : ObjectId(&quot;60435bbbb562b8d1012436b1&quot;)</span><br><span class="line">&#125;</span><br><span class="line">&gt; db.staff.find(&#123;&quot;food&quot;:&quot;egg&quot;&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435bbbb562b8d1012436b1&quot;), &quot;name&quot; : &quot;LSi&quot;, &quot;food&quot; : [ &quot;egg&quot;, &quot;bread&quot;, &quot;milk&quot; ] &#125;</span><br><span class="line">&gt; db.staff.find(&#123;$or:[&#123;&quot;food&quot;:&quot;egg&quot;&#125;,&#123;&quot;food&quot;:&quot;milk&quot;&#125;]&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435bbbb562b8d1012436b1&quot;), &quot;name&quot; : &quot;LSi&quot;, &quot;food&quot; : [ &quot;egg&quot;, &quot;bread&quot;, &quot;milk&quot; ] &#125;</span><br></pre></td></tr></table></figure>
+<p>数组中搜索子对象的多个字段时，用$elemMatch表示必须是同一个子对象满足多个条件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.staff.insertOne(&#123;&quot;name&quot;:&quot;WWu&quot;,&quot;favorite_books&quot;:[&#123;&quot;title&quot;:&quot;The Old Man and the Sea&quot;,&quot;author&quot;:&quot;Hemingway&quot;&#125;,&#123;&quot;title&quot;:&quot;围城&quot;,&quot;author&quot;:&quot;钱锺书&quot;&#125;]&#125;)</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedId&quot; : ObjectId(&quot;60435df1b562b8d1012436b2&quot;)</span><br><span class="line">&#125;</span><br><span class="line">&gt; db.staff.find(&#123;&quot;favorite_books.title&quot;:&quot;The Old Man and the Sea&quot;,&quot;favorite_books.author&quot;:&quot;钱锺书&quot;&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435df1b562b8d1012436b2&quot;), &quot;name&quot; : &quot;WWu&quot;, &quot;favorite_books&quot; : [ &#123; &quot;title&quot; : &quot;The Old Man and the Sea&quot;, &quot;author&quot; : &quot;Hemingway&quot; &#125;, &#123; &quot;title&quot; : &quot;围城&quot;, &quot;author&quot; : &quot;钱锺书&quot; &#125; ] &#125;</span><br><span class="line">&gt; db.staff.find(&#123;&quot;favorite_books&quot;:&#123;$elemMatch:&#123;&quot;title&quot;:&quot;The Old Man and the Sea&quot;,&quot;author&quot;:&quot;钱锺书&quot;&#125;&#125;&#125;)</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="控制find返回的字段-投影projection"><a href="#控制find返回的字段-投影projection" class="headerlink" title="控制find返回的字段(投影projection)"></a>控制find返回的字段(投影projection)</h2><p>find可以指定只返回指定的字段</p>
+<p>_id字段必须明确指定不返回，否则默认返回</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.staff.find(&#123;$or:[&#123;&quot;food&quot;:&quot;egg&quot;&#125;,&#123;&quot;food&quot;:&quot;milk&quot;&#125;]&#125;,&#123;&quot;_id&quot;:0,&quot;name&quot;:1,&quot;food&quot;:1&#125;)</span><br><span class="line">&#123; &quot;name&quot; : &quot;LSi&quot;, &quot;food&quot; : [ &quot;egg&quot;, &quot;bread&quot;, &quot;milk&quot; ] &#125;</span><br><span class="line"></span><br><span class="line">&gt; db.staff.find(&#123;&#125;,&#123;&quot;_id&quot;:0,&quot;name&quot;:1,&quot;food&quot;:1&#125;)</span><br><span class="line">&#123; &quot;name&quot; : &quot;Richey&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;Kelly&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;Darwin&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;Freeman&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;Jobs&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;Lili&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;ZSan&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;LSi&quot;, &quot;food&quot; : [ &quot;egg&quot;, &quot;bread&quot;, &quot;milk&quot; ] &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;WWu&quot; &#125;</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+
+<h1 id="使用remove删除文档"><a href="#使用remove删除文档" class="headerlink" title="使用remove删除文档"></a>使用remove删除文档</h1><p>remove 命令必须配合查询条件使用，否则mongo会报错，需要要删除全部可以使用空条件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.staff.find()</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434c93b562b8d1012436aa&quot;), &quot;name&quot; : &quot;Richey&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ab&quot;), &quot;name&quot; : &quot;Kelly&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ac&quot;), &quot;name&quot; : &quot;Darwin&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ad&quot;), &quot;name&quot; : &quot;Freeman&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436ae&quot;), &quot;name&quot; : &quot;Jobs&quot;, &quot;age&quot; : 18 &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436af&quot;), &quot;name&quot; : &quot;Lili&quot;, &quot;gender&quot; : &quot;Female&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435997b562b8d1012436b0&quot;), &quot;name&quot; : &quot;ZSan&quot;, &quot;age&quot; : 28, &quot;addr&quot; : &#123; &quot;city&quot; : &quot;ShangHai&quot;, &quot;street&quot; : &quot;华夏西路188号&quot; &#125; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435bbbb562b8d1012436b1&quot;), &quot;name&quot; : &quot;LSi&quot;, &quot;food&quot; : [ &quot;egg&quot;, &quot;bread&quot;, &quot;milk&quot; ] &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435df1b562b8d1012436b2&quot;), &quot;name&quot; : &quot;WWu&quot;, &quot;favorite_books&quot; : [ &#123; &quot;title&quot; : &quot;The Old Man and the Sea&quot;, &quot;author&quot; : &quot;Hemingway&quot; &#125;, &#123; &quot;title&quot; : &quot;围城&quot;, &quot;author&quot; : &quot;钱锺书&quot; &#125; ] &#125;</span><br><span class="line">&gt; db.staff.remove(&#123;&quot;name&quot;:&quot;Jobs&quot;&#125;)</span><br><span class="line">WriteResult(&#123; &quot;nRemoved&quot; : 1 &#125;)</span><br><span class="line">&gt; db.staff.find()</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434c93b562b8d1012436aa&quot;), &quot;name&quot; : &quot;Richey&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ab&quot;), &quot;name&quot; : &quot;Kelly&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ac&quot;), &quot;name&quot; : &quot;Darwin&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ad&quot;), &quot;name&quot; : &quot;Freeman&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436af&quot;), &quot;name&quot; : &quot;Lili&quot;, &quot;gender&quot; : &quot;Female&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435997b562b8d1012436b0&quot;), &quot;name&quot; : &quot;ZSan&quot;, &quot;age&quot; : 28, &quot;addr&quot; : &#123; &quot;city&quot; : &quot;ShangHai&quot;, &quot;street&quot; : &quot;华夏西路188号&quot; &#125; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435bbbb562b8d1012436b1&quot;), &quot;name&quot; : &quot;LSi&quot;, &quot;food&quot; : [ &quot;egg&quot;, &quot;bread&quot;, &quot;milk&quot; ] &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435df1b562b8d1012436b2&quot;), &quot;name&quot; : &quot;WWu&quot;, &quot;favorite_books&quot; : [ &#123; &quot;title&quot; : &quot;The Old Man and the Sea&quot;, &quot;author&quot; : &quot;Hemingway&quot; &#125;, &#123; &quot;title&quot; : &quot;围城&quot;, &quot;author&quot; : &quot;钱锺书&quot; &#125; ] &#125;</span><br><span class="line">&gt; db.staff.remove(&#123;&#125;)</span><br><span class="line">WriteResult(&#123; &quot;nRemoved&quot; : 8 &#125;)</span><br><span class="line">&gt; db.staff.find()</span><br></pre></td></tr></table></figure>
+
+<h1 id="使用update更新文档"><a href="#使用update更新文档" class="headerlink" title="使用update更新文档"></a>使用update更新文档</h1><p>db.&lt;集合&gt;.updat(&lt;查询条件&gt;,&lt;更新字段&gt;)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; db.staff.insertMany([&#123;&quot;name&quot;:&quot;Richey&quot;,&quot;age&quot;:18&#125;,&#123;&quot;name&quot;:&quot;Kelly&quot;,&quot;age&quot;:20&#125;])</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedIds&quot; : [</span><br><span class="line">		ObjectId(&quot;60439f09b562b8d1012436b3&quot;),</span><br><span class="line">		ObjectId(&quot;60439f09b562b8d1012436b4&quot;)</span><br><span class="line">	]</span><br><span class="line">&#125;</span><br><span class="line">&gt; db.staff.updateOne(&#123;&quot;name&quot;:&quot;Richey&quot;&#125;,&#123;$set:&#123;&quot;age&quot;:24&#125;&#125;)</span><br><span class="line">WriteResult(&#123; &quot;nMatched&quot; : 1, &quot;nUpserted&quot; : 0, &quot;nModified&quot; : 1 &#125;)</span><br><span class="line">&gt; db.staff.find(&#123;&quot;name&quot;:&quot;Richey&quot;&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60439f09b562b8d1012436b3&quot;), &quot;name&quot; : &quot;Richey&quot;, &quot;age&quot; : 24 &#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用updateOne无论条件匹配多少条，都只会更新第一条</p>
+<p>使用updateMany表示条件匹配多少条就更新多少条</p>
+<p>使用updateOne/updateMany发方法要求更新条件部份（第二个参数）必须具有以下之一，否则报错：</p>
+<ul>
+<li>$set/$unset</li>
+<li>$push/$pushAll/$pop</li>
+<li>$pull/$pullAll</li>
+<li>$addToSet</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$push :增加一个对象到数据底部</span><br><span class="line">$pushAll： 增加多个对象到数组底部</span><br><span class="line">$pop： 从数组底部删除一个对象</span><br><span class="line">$pull： 如果匹配指定的值，则从数组中删除相应的对象</span><br><span class="line">$pullAll： 如果匹配任意的值，则从数组中三处相应的对象</span><br><span class="line">$addToSet： 如果不存在则增加一个值到数组</span><br></pre></td></tr></table></figure>
+
+<h1 id="使用drop删除集合"><a href="#使用drop删除集合" class="headerlink" title="使用drop删除集合"></a>使用drop删除集合</h1><p>db.&lt;集合&gt;.drop()</p>
+<p>集合中的全部文档都会被删除</p>
+<p>集合相关的索引也会被删除</p>
+<p>一定要谨慎使用</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; use test</span><br><span class="line">switched to db test</span><br><span class="line">&gt; show collections</span><br><span class="line">staff</span><br><span class="line">&gt; db.staff.drop()</span><br><span class="line">true</span><br><span class="line">&gt; show collections</span><br></pre></td></tr></table></figure>
+
+<h1 id="使用dropDatabase删除数据库"><a href="#使用dropDatabase删除数据库" class="headerlink" title="使用dropDatabase删除数据库"></a>使用dropDatabase删除数据库</h1><p>db.dropDatabase()</p>
+<p>数据库相应的文件也会被删除，磁盘空间将被释放</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; show dbs</span><br><span class="line">admin   0.000GB</span><br><span class="line">config  0.000GB</span><br><span class="line">local   0.000GB</span><br><span class="line">mock    0.047GB</span><br><span class="line">test    0.000GB</span><br><span class="line">&gt; use test</span><br><span class="line">switched to db test</span><br><span class="line">&gt; db.dropDatabase()</span><br><span class="line">&#123; &quot;dropped&quot; : &quot;test&quot;, &quot;ok&quot; : 1 &#125;</span><br><span class="line">&gt; show dbs</span><br><span class="line">admin   0.000GB</span><br><span class="line">config  0.000GB</span><br><span class="line">local   0.000GB</span><br><span class="line">mock    0.047GB</span><br><span class="line">&gt; show collections</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="SQL和MQL查询逻辑对照"><a href="#SQL和MQL查询逻辑对照" class="headerlink" title="SQL和MQL查询逻辑对照"></a>SQL和MQL查询逻辑对照</h1><p><a href="https://docs.mongodb.com/manual/reference/sql-comparison/" target="_blank" rel="noopener">官方文档</a></p>
+<p><img src="https://blog-pic-1254088127.picsh.myqcloud.com/sql-mapping-mql.png" alt="SQL-MAPPING-MQL"></p>
 ]]></content>
       <categories>
         <category>DB</category>
@@ -2291,24 +2265,6 @@ dtype: float64</code></pre><p>实际开发中，我们一般通过读取Excel创
       </tags>
   </entry>
   <entry>
-    <title>安装zookeeper</title>
-    <url>/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/</url>
-    <content><![CDATA[<h1 id="安装zookeeper"><a href="#安装zookeeper" class="headerlink" title="安装zookeeper"></a>安装zookeeper</h1><h2 id="单机服务"><a href="#单机服务" class="headerlink" title="单机服务"></a>单机服务</h2><p>从apache.org下载zookeeper,这里下载的是zookeeper-3.4.14.tar</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#tar -zxf zookeeper-3.4.14.tar.gz</span><br><span class="line">#mv zookeeper-3.4.14 &#x2F;usr&#x2F;local&#x2F;zookeeper</span><br><span class="line">#cat &gt; &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;conf&#x2F;zoo.cfg &lt;&lt; EOF</span><br><span class="line">&gt; tickTime&#x3D;2000</span><br><span class="line">&gt; dataDir&#x3D;&#x2F;var&#x2F;lib&#x2F;zookeeper</span><br><span class="line">&gt; clientPort&#x3D;2181</span><br><span class="line">&gt; EOF</span><br><span class="line">#&#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh start</span><br><span class="line">ZooKeeper JMX enabled by default</span><br><span class="line">Using config: &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;..&#x2F;conf&#x2F;zoo.cfg</span><br><span class="line">Starting zookeeper ... STARTED</span><br><span class="line">#</span><br></pre></td></tr></table></figure>
-
-<p>现在可以连接到zookeeper端口上，通过发送四字命令srvr来验证zookeeper是否安装正确。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#telnet localhost 2181</span><br><span class="line">Trying ::1...</span><br><span class="line">Connected to localhost.</span><br><span class="line">Escape character is &#39;^]&#39;.</span><br><span class="line">srvr</span><br><span class="line">Zookeeper version: 3.4.14-4c25d480e66aadd371de8bd2fd8da255ac140bcf, built on 03&#x2F;06&#x2F;2019 16:18 GMT</span><br><span class="line">Latency min&#x2F;avg&#x2F;max: 0&#x2F;0&#x2F;0</span><br><span class="line">Received: 1</span><br><span class="line">Sent: 0</span><br><span class="line">Connections: 1</span><br><span class="line">Outstanding: 0</span><br><span class="line">Zxid: 0x0</span><br><span class="line">Mode: standalone</span><br><span class="line">Node count: 4</span><br><span class="line">Connection closed by foreign host.</span><br></pre></td></tr></table></figure>
-
-<h2 id="Zookeeper群组"><a href="#Zookeeper群组" class="headerlink" title="Zookeeper群组"></a>Zookeeper群组</h2><p>Zookeeper集群被称为Zookeeper群组，Zookeeper使用的是一致性协议，所以每个群组里应该包含奇数个节点。因为只有群组里的大多数节点处于可用状态，zookeeper才能处理外部请求。</p>
-]]></content>
-      <categories>
-        <category>架构</category>
-      </categories>
-      <tags>
-        <tag>zookeeper</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>安装配置Kafka Broker</title>
     <url>/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/</url>
     <content><![CDATA[<h1 id="安装Kafka-Broker"><a href="#安装Kafka-Broker" class="headerlink" title="安装Kafka Broker"></a>安装Kafka Broker</h1><p>需要先安装号java和Zookeeper</p>
@@ -2347,6 +2303,161 @@ dtype: float64</code></pre><p>实际开发中，我们一般通过读取Excel创
       </categories>
       <tags>
         <tag>kafka</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>安装zookeeper</title>
+    <url>/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/</url>
+    <content><![CDATA[<h1 id="安装zookeeper"><a href="#安装zookeeper" class="headerlink" title="安装zookeeper"></a>安装zookeeper</h1><h2 id="单机服务"><a href="#单机服务" class="headerlink" title="单机服务"></a>单机服务</h2><p>从apache.org下载zookeeper,这里下载的是zookeeper-3.4.14.tar</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#tar -zxf zookeeper-3.4.14.tar.gz</span><br><span class="line">#mv zookeeper-3.4.14 &#x2F;usr&#x2F;local&#x2F;zookeeper</span><br><span class="line">#cat &gt; &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;conf&#x2F;zoo.cfg &lt;&lt; EOF</span><br><span class="line">&gt; tickTime&#x3D;2000</span><br><span class="line">&gt; dataDir&#x3D;&#x2F;var&#x2F;lib&#x2F;zookeeper</span><br><span class="line">&gt; clientPort&#x3D;2181</span><br><span class="line">&gt; EOF</span><br><span class="line">#&#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh start</span><br><span class="line">ZooKeeper JMX enabled by default</span><br><span class="line">Using config: &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;..&#x2F;conf&#x2F;zoo.cfg</span><br><span class="line">Starting zookeeper ... STARTED</span><br><span class="line">#</span><br></pre></td></tr></table></figure>
+
+<p>现在可以连接到zookeeper端口上，通过发送四字命令srvr来验证zookeeper是否安装正确。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#telnet localhost 2181</span><br><span class="line">Trying ::1...</span><br><span class="line">Connected to localhost.</span><br><span class="line">Escape character is &#39;^]&#39;.</span><br><span class="line">srvr</span><br><span class="line">Zookeeper version: 3.4.14-4c25d480e66aadd371de8bd2fd8da255ac140bcf, built on 03&#x2F;06&#x2F;2019 16:18 GMT</span><br><span class="line">Latency min&#x2F;avg&#x2F;max: 0&#x2F;0&#x2F;0</span><br><span class="line">Received: 1</span><br><span class="line">Sent: 0</span><br><span class="line">Connections: 1</span><br><span class="line">Outstanding: 0</span><br><span class="line">Zxid: 0x0</span><br><span class="line">Mode: standalone</span><br><span class="line">Node count: 4</span><br><span class="line">Connection closed by foreign host.</span><br></pre></td></tr></table></figure>
+
+<h2 id="Zookeeper群组"><a href="#Zookeeper群组" class="headerlink" title="Zookeeper群组"></a>Zookeeper群组</h2><p>Zookeeper集群被称为Zookeeper群组，Zookeeper使用的是一致性协议，所以每个群组里应该包含奇数个节点。因为只有群组里的大多数节点处于可用状态，zookeeper才能处理外部请求。</p>
+]]></content>
+      <categories>
+        <category>架构</category>
+      </categories>
+      <tags>
+        <tag>zookeeper</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>vim命令</title>
+    <url>/2019/07/05/vim%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<p>vim本身提供了入门级教程，通过命令vimtutor就可以查看。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vimtutor</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h1 id="命令和对象"><a href="#命令和对象" class="headerlink" title="命令和对象"></a>命令和对象</h1><p>许多文本命令都由一个操作符和一个命令组成，例如删除操作符d，配合动作命令w 组成dw，即删除当前位置至下一个单词起始位置.</p>
+<p>简单的命令列表：</p>
+<ul>
+<li>w 当前位置至下一个单词的开始，不包含第一个字符</li>
+<li>e 当前位置只单词末尾，包含最后一个字符</li>
+<li>$ 当前位置至行末尾</li>
+</ul>
+<h1 id="在动作面前输入数字，可以使命令执行多次"><a href="#在动作面前输入数字，可以使命令执行多次" class="headerlink" title="在动作面前输入数字，可以使命令执行多次"></a>在动作面前输入数字，可以使命令执行多次</h1><ul>
+<li>2w 移动两个单词，至第三个单词的开始处</li>
+<li>3e 光标移动到第三个单词的末尾</li>
+<li>0　光标移动到行首</li>
+</ul>
+<h1 id="删除类"><a href="#删除类" class="headerlink" title="删除类"></a>删除类</h1><ul>
+<li><p>dw 删除光标至当前单词结尾</p>
+</li>
+<li><p>d$ 删除光标至当前行结尾</p>
+</li>
+</ul>
+<h1 id="撤销类"><a href="#撤销类" class="headerlink" title="撤销类"></a>撤销类</h1><ul>
+<li>u 撤销操作</li>
+<li>U 撤销整行操作</li>
+<li>Ctrl + R 撤销反向操作</li>
+</ul>
+<h1 id="查看类"><a href="#查看类" class="headerlink" title="查看类"></a>查看类</h1><ul>
+<li>移动到当前行最后  shift+a</li>
+</ul>
+<ul>
+<li><p>整页翻页 ctrl-f ctrl-b</p>
+<p>  f就是forword b就是backward</p>
+</li>
+<li><p>翻半页 ctrl-d ctlr-u</p>
+<p>  d=down u=up</p>
+</li>
+<li><p>滚一行 ctrl-e ctrl-y</p>
+</li>
+<li><p>zz 让光标所在的行居屏幕中央</p>
+</li>
+<li><p>zt 让光标所杂的行居屏幕最上一行 t=top</p>
+</li>
+<li><p>zb 让光标所杂的行居屏幕最下一行 b=bottom</p>
+</li>
+</ul>
+<h1 id="置入类"><a href="#置入类" class="headerlink" title="置入类"></a>置入类</h1><ul>
+<li>p 输入p将最后一次删除的内容置入光标之后</li>
+</ul>
+<h1 id="更改类"><a href="#更改类" class="headerlink" title="更改类"></a>更改类</h1><ul>
+<li>c [number] motion 同删除命令一样的用法</li>
+<li>ce 要改变文本直到一个单词的末尾，请输入 ce</li>
+<li>cw 要改变文本直到下一个单词的开始，请输入cw </li>
+<li>c$ 改变当前至行尾</li>
+</ul>
+<h1 id="定位及文件状态"><a href="#定位及文件状态" class="headerlink" title="定位及文件状态"></a>定位及文件状态</h1><ul>
+<li>ctrl + g 显示当前编辑文件名，及当前光标位置</li>
+<li>大写G跳到文件最后一行</li>
+<li>gg跳到文件首行</li>
+<li>行号 + 大写G 跳到指定行</li>
+<li>显示行号 :set number</li>
+<li>不显示行号 :set number</li>
+</ul>
+<h1 id="搜索类命令"><a href="#搜索类命令" class="headerlink" title="搜索类命令"></a>搜索类命令</h1><ul>
+<li>输入 / 加上一个字符串可以用以在当前文件中查找该字符串</li>
+<li>下一个n</li>
+<li>上一个N</li>
+<li>如果您想逆向查找字符串，请使用 ? 代替 / 进行</li>
+</ul>
+<h1 id="配对括号的查找"><a href="#配对括号的查找" class="headerlink" title="配对括号的查找"></a>配对括号的查找</h1><ul>
+<li>输入 % 可以查找配对的括号 )、]、}</li>
+</ul>
+<h1 id="替换命令"><a href="#替换命令" class="headerlink" title="替换命令"></a>替换命令</h1><ul>
+<li><p>r 输入r和一个字符替换光标所在位置的字符</p>
+</li>
+<li><p>R 输入R可连续替换多个字符</p>
+</li>
+<li><p>输入 :s/old/new/g 可以替换 old 为 new</p>
+</li>
+<li><p>输入 :s/thee/the &lt;回车&gt; 。请注意该命令只改变光标所在行的第一个匹配串</p>
+</li>
+<li><p>输入 :s/old/new/g 则是替换全行的匹配串，该行中所有的 “old” 都会被改变 </p>
+</li>
+<li><p>输入 :#,#s/old/new/g    #,# 代表的是替换操作的若干行中首尾两行的行号。</p>
+</li>
+<li><p>输入 :%s/old/new/g    替换整个文件中的每个匹配串。</p>
+</li>
+<li><p>输入 :%s/old/new/gc   找到整个文件中的每个匹配串，并且对每个匹配串提示是否进行替换。</p>
+</li>
+</ul>
+<h1 id="vim内执行外部命令"><a href="#vim内执行外部命令" class="headerlink" title="vim内执行外部命令"></a>vim内执行外部命令</h1><ul>
+<li>:!+shell命令即可</li>
+</ul>
+<h1 id="保存文件"><a href="#保存文件" class="headerlink" title="保存文件"></a>保存文件</h1><ul>
+<li>:w FILENAME 将文件以FILENAME为名称保存 </li>
+<li>按v进行可视模式，移动光标选择要保存的内容，再按:w FILENAME 即可把选择的内容保存到名称为FILENAME的文件中</li>
+</ul>
+<h1 id="可视模式"><a href="#可视模式" class="headerlink" title="可视模式"></a>可视模式</h1><ul>
+<li>按v键，进入字符可视模式，移动光标可进行选择</li>
+<li>按V键，进入行可视模式,移动光标可进行选择</li>
+<li>按Ctrl+v键，进入行可视模式,移动光标可进行选择<br>SHIFT+i(I) 输入要插入的内容<br>ESC 按两次，会在每行的选定的区域出现插入的内容</li>
+<li>选择后，可以输入一个操作符对选中的文本进行操作，比如d 删除</li>
+<li>u或U，字母大小写切换</li>
+<li>d删除选中字符，D删除整行</li>
+<li>y复制文本，p粘贴文本</li>
+<li>还可以把 y 当作操作符来使用；例如 yw 可以用来复制一个单词</li>
+</ul>
+<h1 id="提取和合并文件"><a href="#提取和合并文件" class="headerlink" title="提取和合并文件"></a>提取和合并文件</h1><ul>
+<li>:r FILENAME 要向当前文件中插入另外的文件的内容</li>
+</ul>
+<h1 id="打开类命令"><a href="#打开类命令" class="headerlink" title="打开类命令"></a>打开类命令</h1><ul>
+<li>输入 o 将在光标的下方打开新的一行并进入插入模式</li>
+<li>输入 O 将在光标的上方打开新的一行并进入插入模式</li>
+</ul>
+<h1 id="设置类命令的选项"><a href="#设置类命令的选项" class="headerlink" title="设置类命令的选项"></a>设置类命令的选项</h1><ul>
+<li>要查找单词 ignore 可在正常模式下输入 /ignore &lt;回车&gt;, 要重复查找该词，可以重复按 n 键</li>
+<li>然后设置 ic 选项(Ignore Case，忽略大小写)，请输入： :set ic</li>
+<li>要禁用忽略大小写，请输入： :set noic</li>
+<li>设置 hlsearch 和 incsearch 这两个选项，请输入： :set hls is</li>
+<li>要移除匹配项的高亮显示，请输入：  :nohlsearch<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#39;ic&#39; &#39;ignorecase&#39;       查找时忽略字母大小写</span><br><span class="line">&#39;is&#39; &#39;incsearch&#39;        查找短语时显示部分匹配</span><br><span class="line">&#39;hls&#39; &#39;hlsearch&#39;        高亮显示所有的匹配短语</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>工具</category>
+      </categories>
+      <tags>
+        <tag>vim</tag>
       </tags>
   </entry>
   <entry>
@@ -2513,143 +2624,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
       </categories>
       <tags>
         <tag>Spring-Security</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>vim命令</title>
-    <url>/2019/07/05/vim%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<p>vim本身提供了入门级教程，通过命令vimtutor就可以查看。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vimtutor</span><br></pre></td></tr></table></figure>
-
-
-
-
-<h1 id="命令和对象"><a href="#命令和对象" class="headerlink" title="命令和对象"></a>命令和对象</h1><p>许多文本命令都由一个操作符和一个命令组成，例如删除操作符d，配合动作命令w 组成dw，即删除当前位置至下一个单词起始位置.</p>
-<p>简单的命令列表：</p>
-<ul>
-<li>w 当前位置至下一个单词的开始，不包含第一个字符</li>
-<li>e 当前位置只单词末尾，包含最后一个字符</li>
-<li>$ 当前位置至行末尾</li>
-</ul>
-<h1 id="在动作面前输入数字，可以使命令执行多次"><a href="#在动作面前输入数字，可以使命令执行多次" class="headerlink" title="在动作面前输入数字，可以使命令执行多次"></a>在动作面前输入数字，可以使命令执行多次</h1><ul>
-<li>2w 移动两个单词，至第三个单词的开始处</li>
-<li>3e 光标移动到第三个单词的末尾</li>
-<li>0　光标移动到行首</li>
-</ul>
-<h1 id="删除类"><a href="#删除类" class="headerlink" title="删除类"></a>删除类</h1><ul>
-<li><p>dw 删除光标至当前单词结尾</p>
-</li>
-<li><p>d$ 删除光标至当前行结尾</p>
-</li>
-</ul>
-<h1 id="撤销类"><a href="#撤销类" class="headerlink" title="撤销类"></a>撤销类</h1><ul>
-<li>u 撤销操作</li>
-<li>U 撤销整行操作</li>
-<li>Ctrl + R 撤销反向操作</li>
-</ul>
-<h1 id="查看类"><a href="#查看类" class="headerlink" title="查看类"></a>查看类</h1><ul>
-<li>移动到当前行最后  shift+a</li>
-</ul>
-<ul>
-<li><p>整页翻页 ctrl-f ctrl-b</p>
-<p>  f就是forword b就是backward</p>
-</li>
-<li><p>翻半页 ctrl-d ctlr-u</p>
-<p>  d=down u=up</p>
-</li>
-<li><p>滚一行 ctrl-e ctrl-y</p>
-</li>
-<li><p>zz 让光标所在的行居屏幕中央</p>
-</li>
-<li><p>zt 让光标所杂的行居屏幕最上一行 t=top</p>
-</li>
-<li><p>zb 让光标所杂的行居屏幕最下一行 b=bottom</p>
-</li>
-</ul>
-<h1 id="置入类"><a href="#置入类" class="headerlink" title="置入类"></a>置入类</h1><ul>
-<li>p 输入p将最后一次删除的内容置入光标之后</li>
-</ul>
-<h1 id="更改类"><a href="#更改类" class="headerlink" title="更改类"></a>更改类</h1><ul>
-<li>c [number] motion 同删除命令一样的用法</li>
-<li>ce 要改变文本直到一个单词的末尾，请输入 ce</li>
-<li>cw 要改变文本直到下一个单词的开始，请输入cw </li>
-<li>c$ 改变当前至行尾</li>
-</ul>
-<h1 id="定位及文件状态"><a href="#定位及文件状态" class="headerlink" title="定位及文件状态"></a>定位及文件状态</h1><ul>
-<li>ctrl + g 显示当前编辑文件名，及当前光标位置</li>
-<li>大写G跳到文件最后一行</li>
-<li>gg跳到文件首行</li>
-<li>行号 + 大写G 跳到指定行</li>
-<li>显示行号 :set number</li>
-<li>不显示行号 :set number</li>
-</ul>
-<h1 id="搜索类命令"><a href="#搜索类命令" class="headerlink" title="搜索类命令"></a>搜索类命令</h1><ul>
-<li>输入 / 加上一个字符串可以用以在当前文件中查找该字符串</li>
-<li>下一个n</li>
-<li>上一个N</li>
-<li>如果您想逆向查找字符串，请使用 ? 代替 / 进行</li>
-</ul>
-<h1 id="配对括号的查找"><a href="#配对括号的查找" class="headerlink" title="配对括号的查找"></a>配对括号的查找</h1><ul>
-<li>输入 % 可以查找配对的括号 )、]、}</li>
-</ul>
-<h1 id="替换命令"><a href="#替换命令" class="headerlink" title="替换命令"></a>替换命令</h1><ul>
-<li><p>r 输入r和一个字符替换光标所在位置的字符</p>
-</li>
-<li><p>R 输入R可连续替换多个字符</p>
-</li>
-<li><p>输入 :s/old/new/g 可以替换 old 为 new</p>
-</li>
-<li><p>输入 :s/thee/the &lt;回车&gt; 。请注意该命令只改变光标所在行的第一个匹配串</p>
-</li>
-<li><p>输入 :s/old/new/g 则是替换全行的匹配串，该行中所有的 “old” 都会被改变 </p>
-</li>
-<li><p>输入 :#,#s/old/new/g    #,# 代表的是替换操作的若干行中首尾两行的行号。</p>
-</li>
-<li><p>输入 :%s/old/new/g    替换整个文件中的每个匹配串。</p>
-</li>
-<li><p>输入 :%s/old/new/gc   找到整个文件中的每个匹配串，并且对每个匹配串提示是否进行替换。</p>
-</li>
-</ul>
-<h1 id="vim内执行外部命令"><a href="#vim内执行外部命令" class="headerlink" title="vim内执行外部命令"></a>vim内执行外部命令</h1><ul>
-<li>:!+shell命令即可</li>
-</ul>
-<h1 id="保存文件"><a href="#保存文件" class="headerlink" title="保存文件"></a>保存文件</h1><ul>
-<li>:w FILENAME 将文件以FILENAME为名称保存 </li>
-<li>按v进行可视模式，移动光标选择要保存的内容，再按:w FILENAME 即可把选择的内容保存到名称为FILENAME的文件中</li>
-</ul>
-<h1 id="可视模式"><a href="#可视模式" class="headerlink" title="可视模式"></a>可视模式</h1><ul>
-<li>按v键，进入字符可视模式，移动光标可进行选择</li>
-<li>按V键，进入行可视模式,移动光标可进行选择</li>
-<li>按Ctrl+v键，进入行可视模式,移动光标可进行选择<br>SHIFT+i(I) 输入要插入的内容<br>ESC 按两次，会在每行的选定的区域出现插入的内容</li>
-<li>选择后，可以输入一个操作符对选中的文本进行操作，比如d 删除</li>
-<li>u或U，字母大小写切换</li>
-<li>d删除选中字符，D删除整行</li>
-<li>y复制文本，p粘贴文本</li>
-<li>还可以把 y 当作操作符来使用；例如 yw 可以用来复制一个单词</li>
-</ul>
-<h1 id="提取和合并文件"><a href="#提取和合并文件" class="headerlink" title="提取和合并文件"></a>提取和合并文件</h1><ul>
-<li>:r FILENAME 要向当前文件中插入另外的文件的内容</li>
-</ul>
-<h1 id="打开类命令"><a href="#打开类命令" class="headerlink" title="打开类命令"></a>打开类命令</h1><ul>
-<li>输入 o 将在光标的下方打开新的一行并进入插入模式</li>
-<li>输入 O 将在光标的上方打开新的一行并进入插入模式</li>
-</ul>
-<h1 id="设置类命令的选项"><a href="#设置类命令的选项" class="headerlink" title="设置类命令的选项"></a>设置类命令的选项</h1><ul>
-<li>要查找单词 ignore 可在正常模式下输入 /ignore &lt;回车&gt;, 要重复查找该词，可以重复按 n 键</li>
-<li>然后设置 ic 选项(Ignore Case，忽略大小写)，请输入： :set ic</li>
-<li>要禁用忽略大小写，请输入： :set noic</li>
-<li>设置 hlsearch 和 incsearch 这两个选项，请输入： :set hls is</li>
-<li>要移除匹配项的高亮显示，请输入：  :nohlsearch<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#39;ic&#39; &#39;ignorecase&#39;       查找时忽略字母大小写</span><br><span class="line">&#39;is&#39; &#39;incsearch&#39;        查找短语时显示部分匹配</span><br><span class="line">&#39;hls&#39; &#39;hlsearch&#39;        高亮显示所有的匹配短语</span><br></pre></td></tr></table></figure>
-
-
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>工具</category>
-      </categories>
-      <tags>
-        <tag>vim</tag>
       </tags>
   </entry>
   <entry>
@@ -3218,52 +3192,6 @@ public class EvolutionaryExpiredSessionStrategy implements SessionInformationExp
       </tags>
   </entry>
   <entry>
-    <title>策略模式</title>
-    <url>/2019/06/10/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/</url>
-    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p>
-<h2 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h2><ul>
-<li><p>抽象策略略⻆色<br>  这个是⼀一个抽象的角色，通常情况下使⽤接口或者抽象类去实现。比如我们的Comparator接⼝口。</p>
-</li>
-<li><p>具体策略略⻆色<br>  包装了了具体的算法和⾏行行为。比如实现了Comparator接口的一组实现类。</p>
-</li>
-<li><p>环境⻆角⾊色Context<br>  内部会持有⼀个抽象⻆色的引⽤用，给客户端调⽤策略模式用于封装系列的算法，这些算法通常被封装在一个被称为 Context 类中，<br>客户端程序可以⾃由选择其中一种算法，或让 Context 为客户端选择一个最佳的算法——使⽤策略模式的优势是为了⽀支持算法的自由切换。</p>
-</li>
-</ul>
-<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><ul>
-<li><p>Resource和策略略模式<br>  Resource 接口就是策略模式的典型应用，Resource 接口就代表资源访问策略，但具体采⽤用哪种策略实现，Resource 接口并不理理会。<br>客户端程序只和Resource 接口耦合，并不知道底层采⽤何种资源访问策略，这样应用可以在不同的资源访问策略之间自由切换。</p>
-</li>
-<li><p>Spring 框架的 Context 如何“智能”地选择资源访问策略<br>  Spring提供两个标志性接口：</p>
-<ul>
-<li>ResourceLoader：该接口实现类的实例可以获得⼀个 Resource 实例例。</li>
-<li>ResourceLoaderAware：该接口实现类的实例将获得一个 ResourceLoader 的引用。<br>在 ResourceLoader 接口里有如下方法：Resource getResource(String location)：该接口仅包含这个⽅法，该方法⽤于返回一个 Resource 实例例。</li>
-</ul>
-<p>ApplicationContext 的实现类都实现 ResourceLoader 接⼝，因此 ApplicationContext 可⽤于直接获取 Resource 实例。</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>设计模式</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用jdk自带工具jvisualvm查看.hprof文件</title>
-    <url>/2019/06/10/%E4%BD%BF%E7%94%A8jdk%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7jvisualvm%E6%9F%A5%E7%9C%8B.hprof%E6%96%87%E4%BB%B6/</url>
-    <content><![CDATA[<p>使用jdk自带的jvisualvm.exe程序来查看内存溢出文件</p>
-<p>位置：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$JAVA_HOME&#x2F;bin&#x2F;jvisualvm</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>JVM</category>
-      </categories>
-      <tags>
-        <tag>JVM</tag>
-        <tag>工具</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Spring Security（10）－短信登录开发</title>
     <url>/2019/06/10/Spring%20Security%EF%BC%8810%EF%BC%89%EF%BC%8D%E7%9F%AD%E4%BF%A1%E7%99%BB%E5%BD%95%E5%BC%80%E5%8F%91/</url>
     <content><![CDATA[<p>Spring Security默认没有支持基于短信的认证方式，我们先回顾一下Spring Security开发基于表单的认流程：</p>
@@ -3293,6 +3221,52 @@ http.authenticationProvider(smsCodeAuthenticationProvider)
       </categories>
       <tags>
         <tag>Spring-Security</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用jdk自带工具jvisualvm查看.hprof文件</title>
+    <url>/2019/06/10/%E4%BD%BF%E7%94%A8jdk%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7jvisualvm%E6%9F%A5%E7%9C%8B.hprof%E6%96%87%E4%BB%B6/</url>
+    <content><![CDATA[<p>使用jdk自带的jvisualvm.exe程序来查看内存溢出文件</p>
+<p>位置：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$JAVA_HOME&#x2F;bin&#x2F;jvisualvm</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>JVM</category>
+      </categories>
+      <tags>
+        <tag>JVM</tag>
+        <tag>工具</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>策略模式</title>
+    <url>/2019/06/10/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p>
+<h2 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h2><ul>
+<li><p>抽象策略略⻆色<br>  这个是⼀一个抽象的角色，通常情况下使⽤接口或者抽象类去实现。比如我们的Comparator接⼝口。</p>
+</li>
+<li><p>具体策略略⻆色<br>  包装了了具体的算法和⾏行行为。比如实现了Comparator接口的一组实现类。</p>
+</li>
+<li><p>环境⻆角⾊色Context<br>  内部会持有⼀个抽象⻆色的引⽤用，给客户端调⽤策略模式用于封装系列的算法，这些算法通常被封装在一个被称为 Context 类中，<br>客户端程序可以⾃由选择其中一种算法，或让 Context 为客户端选择一个最佳的算法——使⽤策略模式的优势是为了⽀支持算法的自由切换。</p>
+</li>
+</ul>
+<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><ul>
+<li><p>Resource和策略略模式<br>  Resource 接口就是策略模式的典型应用，Resource 接口就代表资源访问策略，但具体采⽤用哪种策略实现，Resource 接口并不理理会。<br>客户端程序只和Resource 接口耦合，并不知道底层采⽤何种资源访问策略，这样应用可以在不同的资源访问策略之间自由切换。</p>
+</li>
+<li><p>Spring 框架的 Context 如何“智能”地选择资源访问策略<br>  Spring提供两个标志性接口：</p>
+<ul>
+<li>ResourceLoader：该接口实现类的实例可以获得⼀个 Resource 实例例。</li>
+<li>ResourceLoaderAware：该接口实现类的实例将获得一个 ResourceLoader 的引用。<br>在 ResourceLoader 接口里有如下方法：Resource getResource(String location)：该接口仅包含这个⽅法，该方法⽤于返回一个 Resource 实例例。</li>
+</ul>
+<p>ApplicationContext 的实现类都实现 ResourceLoader 接⼝，因此 ApplicationContext 可⽤于直接获取 Resource 实例。</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
       </tags>
   </entry>
   <entry>
@@ -3883,6 +3857,47 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
       </tags>
   </entry>
   <entry>
+    <title>Mysql（12）-Mysql事务隔离是如何实现的</title>
+    <url>/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/</url>
+    <content><![CDATA[<h1 id="事务的启动时机。"><a href="#事务的启动时机。" class="headerlink" title="事务的启动时机。"></a>事务的启动时机。</h1><p>begin/start transaction 命令并不是一个事务的起点，在执行到它们之后的第一个操作 InnoDB 表的语句，事务才真正启动。如果你想要马上启动一个事务，可以使用 start transaction with consistent snapshot 这个命令。</p>
+<p>第一种启动方式，一致性视图是在第执行第一个快照读语句时创建的；<br>第二种启动方式，一致性视图是在执行 start transaction with consistent snapshot 时创建的。</p>
+<h1 id="在-MySQL-里，有两个“视图”的概念"><a href="#在-MySQL-里，有两个“视图”的概念" class="headerlink" title="在 MySQL 里，有两个“视图”的概念"></a>在 MySQL 里，有两个“视图”的概念</h1><p>一个是 view。它是一个用查询语句定义的虚拟表，在调用的时候执行查询语句并生成结果。创建视图的语法是 create view … ，而它的查询方法与表一样。</p>
+<p>另一个是 InnoDB 在实现 MVCC 时用到的一致性读视图，即 consistent read view，用于支持 RC（Read Committed，读提交）和 RR（Repeatable Read，可重复读）隔离级别的实现。</p>
+<h1 id="“快照”在-MVCC-里是怎么工作的？"><a href="#“快照”在-MVCC-里是怎么工作的？" class="headerlink" title="“快照”在 MVCC 里是怎么工作的？"></a>“快照”在 MVCC 里是怎么工作的？</h1><p>在可重复读隔离级别下，事务在启动的时候就“拍了个快照”。注意，这个快照是基于整库的。</p>
+<p>InnoDB 里面每个事务有一个唯一的事务 ID，叫作 transaction id。它是在事务开始的时候向 InnoDB 的事务系统申请的，是按申请顺序严格递增的。</p>
+<p>而每行数据也都是有多个版本的。每次事务更新数据的时候，都会生成一个新的数据版本，并且把 transaction id 赋值给这个数据版本的事务 ID，记为 row trx_id。同时，旧的数据版本要保留，并且在新的数据版本中，能够有信息可以直接拿到它。</p>
+<p>也就是说，数据表中的一行记录，其实可能有多个版本 (row)，每个版本有自己的 row trx_id。</p>
+<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg" alt="Mysql数据MVVC"></p>
+<p>中的三个虚线箭头，就是 undo log；而 V1、V2、V3 并不是物理上真实存在的，而是每次需要的时候根据当前版本和 undo log 计算出来的。比如，需要 V2 的时候，就是通过 V4 依次执行 U3、U2 算出来。</p>
+<p>可重复读的定义：一个事务启动的时候，能够看到所有已经提交的事务结果。但是之后，这个事务执行期间，其他事务的更新对它不可见。</p>
+<p>因此，一个事务只需要在启动的时候声明说，“以我启动的时刻为准，如果一个数据版本是在我启动之前生成的，就认；如果是我启动以后才生成的，我就不认，我必须要找到它的上一个版本”。</p>
+<p>一个数据版本，对于一个事务视图来说，除了自己的更新总是可见以外，有三种情况：</p>
+<ol>
+<li>版本未提交，不可见；</li>
+<li>版本已提交，但是是在视图创建后提交的，不可见；</li>
+<li>版本已提交，而且是在视图创建前提交的，可见。</li>
+</ol>
+<p>更新数据都是先读后写的，而这个读，只能读当前的值，称为“当前读”（current read）。</p>
+<p>这里我们提到了一个概念，叫作当前读。其实，除了 update 语句外，select 语句如果加锁，也是当前读。</p>
+<h1 id="事务的可重复读的能力是怎么实现的？"><a href="#事务的可重复读的能力是怎么实现的？" class="headerlink" title="事务的可重复读的能力是怎么实现的？"></a>事务的可重复读的能力是怎么实现的？</h1><p>可重复读的核心就是一致性读（consistent read）；而事务更新数据的时候，只能用当前读。如果当前的记录的行锁被其他事务占用的话，就需要进入锁等待。</p>
+<h1 id="读提交的逻辑和可重复读的区别"><a href="#读提交的逻辑和可重复读的区别" class="headerlink" title="读提交的逻辑和可重复读的区别"></a>读提交的逻辑和可重复读的区别</h1><p>在可重复读隔离级别下，只需要在事务开始的时候创建一致性视图，之后事务里的其他查询都共用这个一致性视图；</p>
+<p>在读提交隔离级别下，每一个语句执行前都会重新算出一个新的视图。</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>InnoDB 的行数据有多个版本，每个数据版本有自己的 row trx_id，每个事务或者语句有自己的一致性视图。普通查询语句是一致性读，一致性读会根据 row trx_id 和一致性视图确定数据版本的可见性。</p>
+<ul>
+<li>对于可重复读，查询只承认在事务启动前就已经提交完成的数据；</li>
+<li>对于读提交，查询只承认在语句启动前就已经提交完成的数据；</li>
+<li>而当前读，总是读取已经提交完成的最新版本。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
+        <tag>事务</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Spring Security（5）－认证流程源码详解</title>
     <url>/2019/06/05/Spring%20Security%EF%BC%885%EF%BC%89%EF%BC%8D%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3/</url>
     <content><![CDATA[<p>概要：</p>
@@ -4045,47 +4060,6 @@ public Object getCurrentUserToo(@AuthenticationPrincipal UserDetails userDetails
       </categories>
       <tags>
         <tag>Spring-Security</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Mysql（12）-Mysql事务隔离是如何实现的</title>
-    <url>/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/</url>
-    <content><![CDATA[<h1 id="事务的启动时机。"><a href="#事务的启动时机。" class="headerlink" title="事务的启动时机。"></a>事务的启动时机。</h1><p>begin/start transaction 命令并不是一个事务的起点，在执行到它们之后的第一个操作 InnoDB 表的语句，事务才真正启动。如果你想要马上启动一个事务，可以使用 start transaction with consistent snapshot 这个命令。</p>
-<p>第一种启动方式，一致性视图是在第执行第一个快照读语句时创建的；<br>第二种启动方式，一致性视图是在执行 start transaction with consistent snapshot 时创建的。</p>
-<h1 id="在-MySQL-里，有两个“视图”的概念"><a href="#在-MySQL-里，有两个“视图”的概念" class="headerlink" title="在 MySQL 里，有两个“视图”的概念"></a>在 MySQL 里，有两个“视图”的概念</h1><p>一个是 view。它是一个用查询语句定义的虚拟表，在调用的时候执行查询语句并生成结果。创建视图的语法是 create view … ，而它的查询方法与表一样。</p>
-<p>另一个是 InnoDB 在实现 MVCC 时用到的一致性读视图，即 consistent read view，用于支持 RC（Read Committed，读提交）和 RR（Repeatable Read，可重复读）隔离级别的实现。</p>
-<h1 id="“快照”在-MVCC-里是怎么工作的？"><a href="#“快照”在-MVCC-里是怎么工作的？" class="headerlink" title="“快照”在 MVCC 里是怎么工作的？"></a>“快照”在 MVCC 里是怎么工作的？</h1><p>在可重复读隔离级别下，事务在启动的时候就“拍了个快照”。注意，这个快照是基于整库的。</p>
-<p>InnoDB 里面每个事务有一个唯一的事务 ID，叫作 transaction id。它是在事务开始的时候向 InnoDB 的事务系统申请的，是按申请顺序严格递增的。</p>
-<p>而每行数据也都是有多个版本的。每次事务更新数据的时候，都会生成一个新的数据版本，并且把 transaction id 赋值给这个数据版本的事务 ID，记为 row trx_id。同时，旧的数据版本要保留，并且在新的数据版本中，能够有信息可以直接拿到它。</p>
-<p>也就是说，数据表中的一行记录，其实可能有多个版本 (row)，每个版本有自己的 row trx_id。</p>
-<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg" alt="Mysql数据MVVC"></p>
-<p>中的三个虚线箭头，就是 undo log；而 V1、V2、V3 并不是物理上真实存在的，而是每次需要的时候根据当前版本和 undo log 计算出来的。比如，需要 V2 的时候，就是通过 V4 依次执行 U3、U2 算出来。</p>
-<p>可重复读的定义：一个事务启动的时候，能够看到所有已经提交的事务结果。但是之后，这个事务执行期间，其他事务的更新对它不可见。</p>
-<p>因此，一个事务只需要在启动的时候声明说，“以我启动的时刻为准，如果一个数据版本是在我启动之前生成的，就认；如果是我启动以后才生成的，我就不认，我必须要找到它的上一个版本”。</p>
-<p>一个数据版本，对于一个事务视图来说，除了自己的更新总是可见以外，有三种情况：</p>
-<ol>
-<li>版本未提交，不可见；</li>
-<li>版本已提交，但是是在视图创建后提交的，不可见；</li>
-<li>版本已提交，而且是在视图创建前提交的，可见。</li>
-</ol>
-<p>更新数据都是先读后写的，而这个读，只能读当前的值，称为“当前读”（current read）。</p>
-<p>这里我们提到了一个概念，叫作当前读。其实，除了 update 语句外，select 语句如果加锁，也是当前读。</p>
-<h1 id="事务的可重复读的能力是怎么实现的？"><a href="#事务的可重复读的能力是怎么实现的？" class="headerlink" title="事务的可重复读的能力是怎么实现的？"></a>事务的可重复读的能力是怎么实现的？</h1><p>可重复读的核心就是一致性读（consistent read）；而事务更新数据的时候，只能用当前读。如果当前的记录的行锁被其他事务占用的话，就需要进入锁等待。</p>
-<h1 id="读提交的逻辑和可重复读的区别"><a href="#读提交的逻辑和可重复读的区别" class="headerlink" title="读提交的逻辑和可重复读的区别"></a>读提交的逻辑和可重复读的区别</h1><p>在可重复读隔离级别下，只需要在事务开始的时候创建一致性视图，之后事务里的其他查询都共用这个一致性视图；</p>
-<p>在读提交隔离级别下，每一个语句执行前都会重新算出一个新的视图。</p>
-<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>InnoDB 的行数据有多个版本，每个数据版本有自己的 row trx_id，每个事务或者语句有自己的一致性视图。普通查询语句是一致性读，一致性读会根据 row trx_id 和一致性视图确定数据版本的可见性。</p>
-<ul>
-<li>对于可重复读，查询只承认在事务启动前就已经提交完成的数据；</li>
-<li>对于读提交，查询只承认在语句启动前就已经提交完成的数据；</li>
-<li>而当前读，总是读取已经提交完成的最新版本。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-        <tag>事务</tag>
       </tags>
   </entry>
   <entry>
@@ -5390,6 +5364,149 @@ public class SpringBootDemoApplication {
       </tags>
   </entry>
   <entry>
+    <title>Mysql（8）-搞定Mysql字符集及校对规则</title>
+    <url>/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/</url>
+    <content><![CDATA[<h1 id="MySQL的字符集（Character-Set"><a href="#MySQL的字符集（Character-Set" class="headerlink" title="MySQL的字符集（Character Set)"></a>MySQL的字符集（Character Set)</h1><p>关于字符集，之前转载了一篇文章讲的非常好——<a href="">关于字符编码，你所需要知道的（ASCII,Unicode,Utf-8,GB2312…）</a></p>
+<p>常见字符集：</p>
+<ul>
+<li>ASCII字符集：基于罗马字母表的一套字符集，它采用1个字节的低7位表示字符，高位始终为0。</li>
+<li>LATIN1字符集：相对于ASCII字符集做了扩展，仍然使用一个字节表示字符，但启用了高位，扩展了字符集的表示范围。</li>
+<li>GBK字符集：支持中文，字符有一字节编码和两字节编码方式。</li>
+<li>UTF8字符集：Unicode字符集的一种，是计算机科学领域里的一项业界标准，支持了所有国家的文字字符，utf8采用1-4个字节表示字符。</li>
+</ul>
+<h1 id="MySQL与字符集"><a href="#MySQL与字符集" class="headerlink" title="MySQL与字符集"></a>MySQL与字符集</h1><p>查看NySQL系统变量：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| Variable_name            | Value                      |</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| character_set_client     | utf8                       |</span><br><span class="line">| character_set_connection | utf8                       |</span><br><span class="line">| character_set_database   | latin1                     |</span><br><span class="line">| character_set_filesystem | binary                     |</span><br><span class="line">| character_set_results    | utf8                       |</span><br><span class="line">| character_set_server     | latin1                     |</span><br><span class="line">| character_set_system     | utf8                       |</span><br><span class="line">| character_sets_dir       | &#x2F;usr&#x2F;share&#x2F;mysql&#x2F;charsets&#x2F; |</span><br><span class="line">+--------------------------+----------------------------+</span><br></pre></td></tr></table></figure>
+<p>正确使用字符集</p>
+<table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>变量作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>character_set_client</td>
+<td>客户端来源数据使用的字符集</td>
+</tr>
+<tr>
+<td>character_set_connection</td>
+<td>连接层字符集</td>
+</tr>
+<tr>
+<td>character_set_database</td>
+<td>当前选中数据库的默认字符集</td>
+</tr>
+<tr>
+<td>character_set_results</td>
+<td>查询结果字符集</td>
+</tr>
+<tr>
+<td>character_set_server</td>
+<td>默认的内部操作字符集</td>
+</tr>
+<tr>
+<td>character_set_system</td>
+<td>数据元数据（字段名等）字符集</td>
+</tr>
+</tbody></table>
+<p>这些字符集参数的作用说明：</p>
+<ol>
+<li>设置库、表、列字符集<ul>
+<li>建库时，若未明确指定字符集，则采用character_set_server指定的字符集。</li>
+<li>建表时，若未明确指定字符集，则采用当前库所采用的字符集。</li>
+<li>新增时，修改表字段时，若未明确指定字符集，则采用当前表所采用的字符集。</li>
+</ul>
+</li>
+<li>更新查询涉及的字符集变量<ul>
+<li>更新流程字符集转换过程：character_set_client–&gt;character_set_connection–&gt;表字符集。</li>
+<li>查询流程字符集转换过程：表字符集–&gt;character_set_result</li>
+</ul>
+</li>
+<li>character_set_database<ul>
+<li>当前默认数据库的字符集，比如执行use xxx后，当前数据库变为xxx，若xxx的字符集为utf8，那么此变量值就变为utf8(供系统设置，无需人工设置)。</li>
+</ul>
+</li>
+</ol>
+<h1 id="MySQL客户端与字符集"><a href="#MySQL客户端与字符集" class="headerlink" title="MySQL客户端与字符集"></a>MySQL客户端与字符集</h1><p>1.对于输入来说：</p>
+<p>客户端使用的字符集必须通过character_set_client、character_set_connection体现出来：</p>
+<ul>
+<li>在客户端对数据进行编码（Linux：utf8、windows：gbk）</li>
+<li>MySQL接到SQL语句后(比如insert)，发现有字符，询问客户端通过什么方式对字符编码：客户端通过character_set_client参数告知MySQL客户端的编码方式(所以此参数需要正确反映客户端对应的编码)</li>
+<li>当MySQL发现客户端的client所传输的字符集与自己的connection不一样时，会将client的字符集转换为connection的字符集</li>
+<li>MySQL将转换后的编码存储到MySQL表的列上，在存储的时候再判断编码是否与内部存储字符集（按照优先级判断字符集类型）上的编码一致，如果不一致需要再次转换</li>
+</ul>
+<p>2.对于查询来说：</p>
+<p>客户端使用的字符集必须通过character_set_results来体现，服务器询问客户端字符集，通过character_set_results将结果转换为与客户端相同的字符集传递给客户端。(character_set_results默认等于character_set_client)</p>
+<h1 id="字符集常见处理操作"><a href="#字符集常见处理操作" class="headerlink" title="字符集常见处理操作"></a>字符集常见处理操作</h1><p>查看字符集编码设置</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br></pre></td></tr></table></figure>
+
+<p>运行时设置字符集编码</p>
+<p>运行时修改（重启后会失效，如果想要重启后保持不变，需要写进配置文件里）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; set names &#39;utf8&#39;;</span><br><span class="line"></span><br><span class="line">相当于同时：</span><br><span class="line"></span><br><span class="line">set character_set_client &#x3D; utf8;</span><br><span class="line">set character_set_results &#x3D; utf8;</span><br><span class="line">set character_set_connection &#x3D; utf8;</span><br></pre></td></tr></table></figure>
+<p>修改数据库字符集</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; alter database database_name character set xxx;</span><br></pre></td></tr></table></figure>
+<p>只修改库的字符集，影响后续创建的表的默认定义；对于已创建的表的字符集不受影响。（一般在数据库实现字符集即可，表和列都默认采用数据库的字符集）</p>
+<p>修改表的字符集</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-- 只修改表的字符集，影响后续该表新增列的默认定义，已有列的字符集不受影响。</span><br><span class="line">mysql&gt; alter table table_name character set xxx；</span><br><span class="line"></span><br><span class="line">-- 同时修改表字符集和已有列字符集，并将已有数据进行字符集编码转换。</span><br><span class="line">mysql&gt; alter table table_name convert to character set xxx;</span><br></pre></td></tr></table></figure>
+<p>修改列的字符集</p>
+<p>格式：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ALTER TABLE table_name MODIFY</span><br><span class="line">column_name &#123;CHAR | VARCHAR | TEXT&#125; (column_length)</span><br><span class="line">    [CHARACTER SET charset_name]</span><br><span class="line">    [COLLATE collation_name]</span><br><span class="line">mysql&gt; alter table table_name modify col_name varchar(col_length) character set xxx;</span><br></pre></td></tr></table></figure>
+<p>启动服务时指定字符集</p>
+<p>可以在MySQL服务启动时，指定server字符集、字符序。如不指定，默认的字符序分别为latin1、latin1_swedish_ci</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1 \</span><br><span class="line">       --collation-server&#x3D;latin1_swedish_ci</span><br></pre></td></tr></table></figure>
+<p>单独指定server字符集，此时，server字符序为latin1的默认字符序latin1_swedish_ci。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1</span><br></pre></td></tr></table></figure>
+<p>配置文件指定字符集</p>
+<p>除了在命令行参数里指定，也可以在配置文件里指定，如下所示。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysql]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">collation-server &#x3D; utf8_unicode_ci</span><br><span class="line">init-connect&#x3D;&#39;SET NAMES utf8&#39;</span><br><span class="line">character-set-server &#x3D; utf8</span><br></pre></td></tr></table></figure>
+<p>字符集的正确实践<br>MySQL软件工具本身是没有字符集的，主要是因为工具所在的OS的字符集（Windows：gbk、Linux：utf8），所以字符集的正确实践非常重要：</p>
+<ol>
+<li>对于insert来说，character_set_client、character_set_connection相同，而且正确反映客户端使用的字符集</li>
+<li>对于select来说，character_set_results正确反映客户端字符集</li>
+<li>数据库字符集取决于我们要存储的字符类型</li>
+<li>字符集转换最多发生一次，这就要求character_set_client、character_set_connection相同</li>
+<li>所有的字符集转换都发生在数据库端</li>
+</ol>
+<p>综述：</p>
+<ol>
+<li>建立数据库的时候注意字符集（gbk、utf8）；</li>
+<li>连接数据库以后，无论是执行dml还是select，只要涉及到varchar、char列，就需要设置正确的字符集参数。</li>
+</ol>
+<h1 id="MySQL的校对规则"><a href="#MySQL的校对规则" class="headerlink" title="MySQL的校对规则"></a>MySQL的校对规则</h1><p>字符集是一套符号和对应的编号</p>
+<ol start="4">
+<li><p>查看数据库支持的所有字符集(charset)：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show character set;</span><br></pre></td></tr></table></figure>
+<p>校对规则(collation)是在字符集内用于字符比较和排序的一套规则，比如有的规则区分大小写，有的则无视。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; create table t1(id int,name varchar(20)); -- t1建表没有指定校对规则</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    1 | A    |</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
+<p>查看数据库支持的校对规则</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show collation;</span><br></pre></td></tr></table></figure>
+<p>查看当前字符集和校对规则设置</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; mysql&gt; show variables like &#39;collation_%&#39;;</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| Variable_name        | Value             |</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| collation_connection | utf8_general_ci   |</span><br><span class="line">| collation_database   | utf8_general_ci   |</span><br><span class="line">| collation_server     | latin1_swedish_ci |</span><br><span class="line">+----------------------+-------------------+</span><br></pre></td></tr></table></figure>
+<p>校对规则特征：</p>
+</li>
+<li><p>两个不同的字符集不能有相同的校对规则；</p>
+</li>
+<li><p>每个字符集有一个默认校对规则；</p>
+</li>
+<li><p>存在校对规则命名约定：以其相关的字符集名开始，中间包括一个语言名，并且以_ci（大小写不敏感）、_cs（大小写敏感）或_bin（二元）结束。<br>注意：</p>
+</li>
+</ol>
+<p>系统使用utf8字符集，若使用utf8_bin校对规则执行SQL查询时区分大小写，使用utf8_general_ci不区分大小写(默认的utf8字符集对应的校对规则是utf8_general_ci)。</p>
+<p>示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; create table t2(id int,name varchar(20)) character set&#x3D;utf8 collate&#x3D;utf8_bin;</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line"></span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
+<p>相关连接</p>
+<p><a href="https://www.cnblogs.com/chyingp/p/mysql-character-set-collation.html" target="_blank" rel="noopener">再见乱码：5分钟读懂MySQL字符集设置</a></p>
+<p><a href="https://www.cnblogs.com/geaozhang/p/6724393.html" target="_blank" rel="noopener">MySQL字符集及校对规则的理解</a></p>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
+        <tag>编码</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Redis02-命令速查</title>
     <url>/2019/04/06/Redis02-%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/</url>
     <content><![CDATA[<h1 id="过期时间"><a href="#过期时间" class="headerlink" title="过期时间"></a>过期时间</h1><pre><code>127.0.0.1:6379&gt; SET expirecode foo
@@ -5564,149 +5681,6 @@ hgetall(key)：返回名称为key的hash中所有的键（field）及其对应�
       </categories>
       <tags>
         <tag>redis</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Mysql（8）-搞定Mysql字符集及校对规则</title>
-    <url>/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/</url>
-    <content><![CDATA[<h1 id="MySQL的字符集（Character-Set"><a href="#MySQL的字符集（Character-Set" class="headerlink" title="MySQL的字符集（Character Set)"></a>MySQL的字符集（Character Set)</h1><p>关于字符集，之前转载了一篇文章讲的非常好——<a href="">关于字符编码，你所需要知道的（ASCII,Unicode,Utf-8,GB2312…）</a></p>
-<p>常见字符集：</p>
-<ul>
-<li>ASCII字符集：基于罗马字母表的一套字符集，它采用1个字节的低7位表示字符，高位始终为0。</li>
-<li>LATIN1字符集：相对于ASCII字符集做了扩展，仍然使用一个字节表示字符，但启用了高位，扩展了字符集的表示范围。</li>
-<li>GBK字符集：支持中文，字符有一字节编码和两字节编码方式。</li>
-<li>UTF8字符集：Unicode字符集的一种，是计算机科学领域里的一项业界标准，支持了所有国家的文字字符，utf8采用1-4个字节表示字符。</li>
-</ul>
-<h1 id="MySQL与字符集"><a href="#MySQL与字符集" class="headerlink" title="MySQL与字符集"></a>MySQL与字符集</h1><p>查看NySQL系统变量：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| Variable_name            | Value                      |</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| character_set_client     | utf8                       |</span><br><span class="line">| character_set_connection | utf8                       |</span><br><span class="line">| character_set_database   | latin1                     |</span><br><span class="line">| character_set_filesystem | binary                     |</span><br><span class="line">| character_set_results    | utf8                       |</span><br><span class="line">| character_set_server     | latin1                     |</span><br><span class="line">| character_set_system     | utf8                       |</span><br><span class="line">| character_sets_dir       | &#x2F;usr&#x2F;share&#x2F;mysql&#x2F;charsets&#x2F; |</span><br><span class="line">+--------------------------+----------------------------+</span><br></pre></td></tr></table></figure>
-<p>正确使用字符集</p>
-<table>
-<thead>
-<tr>
-<th>参数名</th>
-<th>变量作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>character_set_client</td>
-<td>客户端来源数据使用的字符集</td>
-</tr>
-<tr>
-<td>character_set_connection</td>
-<td>连接层字符集</td>
-</tr>
-<tr>
-<td>character_set_database</td>
-<td>当前选中数据库的默认字符集</td>
-</tr>
-<tr>
-<td>character_set_results</td>
-<td>查询结果字符集</td>
-</tr>
-<tr>
-<td>character_set_server</td>
-<td>默认的内部操作字符集</td>
-</tr>
-<tr>
-<td>character_set_system</td>
-<td>数据元数据（字段名等）字符集</td>
-</tr>
-</tbody></table>
-<p>这些字符集参数的作用说明：</p>
-<ol>
-<li>设置库、表、列字符集<ul>
-<li>建库时，若未明确指定字符集，则采用character_set_server指定的字符集。</li>
-<li>建表时，若未明确指定字符集，则采用当前库所采用的字符集。</li>
-<li>新增时，修改表字段时，若未明确指定字符集，则采用当前表所采用的字符集。</li>
-</ul>
-</li>
-<li>更新查询涉及的字符集变量<ul>
-<li>更新流程字符集转换过程：character_set_client–&gt;character_set_connection–&gt;表字符集。</li>
-<li>查询流程字符集转换过程：表字符集–&gt;character_set_result</li>
-</ul>
-</li>
-<li>character_set_database<ul>
-<li>当前默认数据库的字符集，比如执行use xxx后，当前数据库变为xxx，若xxx的字符集为utf8，那么此变量值就变为utf8(供系统设置，无需人工设置)。</li>
-</ul>
-</li>
-</ol>
-<h1 id="MySQL客户端与字符集"><a href="#MySQL客户端与字符集" class="headerlink" title="MySQL客户端与字符集"></a>MySQL客户端与字符集</h1><p>1.对于输入来说：</p>
-<p>客户端使用的字符集必须通过character_set_client、character_set_connection体现出来：</p>
-<ul>
-<li>在客户端对数据进行编码（Linux：utf8、windows：gbk）</li>
-<li>MySQL接到SQL语句后(比如insert)，发现有字符，询问客户端通过什么方式对字符编码：客户端通过character_set_client参数告知MySQL客户端的编码方式(所以此参数需要正确反映客户端对应的编码)</li>
-<li>当MySQL发现客户端的client所传输的字符集与自己的connection不一样时，会将client的字符集转换为connection的字符集</li>
-<li>MySQL将转换后的编码存储到MySQL表的列上，在存储的时候再判断编码是否与内部存储字符集（按照优先级判断字符集类型）上的编码一致，如果不一致需要再次转换</li>
-</ul>
-<p>2.对于查询来说：</p>
-<p>客户端使用的字符集必须通过character_set_results来体现，服务器询问客户端字符集，通过character_set_results将结果转换为与客户端相同的字符集传递给客户端。(character_set_results默认等于character_set_client)</p>
-<h1 id="字符集常见处理操作"><a href="#字符集常见处理操作" class="headerlink" title="字符集常见处理操作"></a>字符集常见处理操作</h1><p>查看字符集编码设置</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br></pre></td></tr></table></figure>
-
-<p>运行时设置字符集编码</p>
-<p>运行时修改（重启后会失效，如果想要重启后保持不变，需要写进配置文件里）</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; set names &#39;utf8&#39;;</span><br><span class="line"></span><br><span class="line">相当于同时：</span><br><span class="line"></span><br><span class="line">set character_set_client &#x3D; utf8;</span><br><span class="line">set character_set_results &#x3D; utf8;</span><br><span class="line">set character_set_connection &#x3D; utf8;</span><br></pre></td></tr></table></figure>
-<p>修改数据库字符集</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; alter database database_name character set xxx;</span><br></pre></td></tr></table></figure>
-<p>只修改库的字符集，影响后续创建的表的默认定义；对于已创建的表的字符集不受影响。（一般在数据库实现字符集即可，表和列都默认采用数据库的字符集）</p>
-<p>修改表的字符集</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-- 只修改表的字符集，影响后续该表新增列的默认定义，已有列的字符集不受影响。</span><br><span class="line">mysql&gt; alter table table_name character set xxx；</span><br><span class="line"></span><br><span class="line">-- 同时修改表字符集和已有列字符集，并将已有数据进行字符集编码转换。</span><br><span class="line">mysql&gt; alter table table_name convert to character set xxx;</span><br></pre></td></tr></table></figure>
-<p>修改列的字符集</p>
-<p>格式：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ALTER TABLE table_name MODIFY</span><br><span class="line">column_name &#123;CHAR | VARCHAR | TEXT&#125; (column_length)</span><br><span class="line">    [CHARACTER SET charset_name]</span><br><span class="line">    [COLLATE collation_name]</span><br><span class="line">mysql&gt; alter table table_name modify col_name varchar(col_length) character set xxx;</span><br></pre></td></tr></table></figure>
-<p>启动服务时指定字符集</p>
-<p>可以在MySQL服务启动时，指定server字符集、字符序。如不指定，默认的字符序分别为latin1、latin1_swedish_ci</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1 \</span><br><span class="line">       --collation-server&#x3D;latin1_swedish_ci</span><br></pre></td></tr></table></figure>
-<p>单独指定server字符集，此时，server字符序为latin1的默认字符序latin1_swedish_ci。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1</span><br></pre></td></tr></table></figure>
-<p>配置文件指定字符集</p>
-<p>除了在命令行参数里指定，也可以在配置文件里指定，如下所示。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysql]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">collation-server &#x3D; utf8_unicode_ci</span><br><span class="line">init-connect&#x3D;&#39;SET NAMES utf8&#39;</span><br><span class="line">character-set-server &#x3D; utf8</span><br></pre></td></tr></table></figure>
-<p>字符集的正确实践<br>MySQL软件工具本身是没有字符集的，主要是因为工具所在的OS的字符集（Windows：gbk、Linux：utf8），所以字符集的正确实践非常重要：</p>
-<ol>
-<li>对于insert来说，character_set_client、character_set_connection相同，而且正确反映客户端使用的字符集</li>
-<li>对于select来说，character_set_results正确反映客户端字符集</li>
-<li>数据库字符集取决于我们要存储的字符类型</li>
-<li>字符集转换最多发生一次，这就要求character_set_client、character_set_connection相同</li>
-<li>所有的字符集转换都发生在数据库端</li>
-</ol>
-<p>综述：</p>
-<ol>
-<li>建立数据库的时候注意字符集（gbk、utf8）；</li>
-<li>连接数据库以后，无论是执行dml还是select，只要涉及到varchar、char列，就需要设置正确的字符集参数。</li>
-</ol>
-<h1 id="MySQL的校对规则"><a href="#MySQL的校对规则" class="headerlink" title="MySQL的校对规则"></a>MySQL的校对规则</h1><p>字符集是一套符号和对应的编号</p>
-<ol start="4">
-<li><p>查看数据库支持的所有字符集(charset)：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show character set;</span><br></pre></td></tr></table></figure>
-<p>校对规则(collation)是在字符集内用于字符比较和排序的一套规则，比如有的规则区分大小写，有的则无视。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; create table t1(id int,name varchar(20)); -- t1建表没有指定校对规则</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    1 | A    |</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
-<p>查看数据库支持的校对规则</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show collation;</span><br></pre></td></tr></table></figure>
-<p>查看当前字符集和校对规则设置</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; mysql&gt; show variables like &#39;collation_%&#39;;</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| Variable_name        | Value             |</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| collation_connection | utf8_general_ci   |</span><br><span class="line">| collation_database   | utf8_general_ci   |</span><br><span class="line">| collation_server     | latin1_swedish_ci |</span><br><span class="line">+----------------------+-------------------+</span><br></pre></td></tr></table></figure>
-<p>校对规则特征：</p>
-</li>
-<li><p>两个不同的字符集不能有相同的校对规则；</p>
-</li>
-<li><p>每个字符集有一个默认校对规则；</p>
-</li>
-<li><p>存在校对规则命名约定：以其相关的字符集名开始，中间包括一个语言名，并且以_ci（大小写不敏感）、_cs（大小写敏感）或_bin（二元）结束。<br>注意：</p>
-</li>
-</ol>
-<p>系统使用utf8字符集，若使用utf8_bin校对规则执行SQL查询时区分大小写，使用utf8_general_ci不区分大小写(默认的utf8字符集对应的校对规则是utf8_general_ci)。</p>
-<p>示例：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; create table t2(id int,name varchar(20)) character set&#x3D;utf8 collate&#x3D;utf8_bin;</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line"></span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
-<p>相关连接</p>
-<p><a href="https://www.cnblogs.com/chyingp/p/mysql-character-set-collation.html" target="_blank" rel="noopener">再见乱码：5分钟读懂MySQL字符集设置</a></p>
-<p><a href="https://www.cnblogs.com/geaozhang/p/6724393.html" target="_blank" rel="noopener">MySQL字符集及校对规则的理解</a></p>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-        <tag>编码</tag>
       </tags>
   </entry>
   <entry>
@@ -6284,93 +6258,6 @@ OK
       </tags>
   </entry>
   <entry>
-    <title>Mysql（2）-基本架构</title>
-    <url>/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/</url>
-    <content><![CDATA[<h2 id="Mysql基本架构是什么样子的（简述Mysql基本架构）"><a href="#Mysql基本架构是什么样子的（简述Mysql基本架构）" class="headerlink" title="Mysql基本架构是什么样子的（简述Mysql基本架构）"></a>Mysql基本架构是什么样子的（简述Mysql基本架构）</h2><p>Mysql由服务层（Service层）和存储引擎层构成。</p>
-<ul>
-<li><p>Service层涵盖Mysql的大多数核心功能，及所有的内置函数</p>
-<p>包含连接器、查询缓存、分析器、优化器、执行器；</p>
-<p>所有跨存储引擎的功能都在这一层实现；</p>
-</li>
-<li><p>存储引擎层，负责数据的存储和提取</p>
-<p>采用插件式设计，支持InnoDB、MYISAM、Memory等多个存储引擎；</p>
-<p>建表时，如果不制定引擎类型，会默认使用InnoDB</p>
-  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#指定存储引擎</span><br><span class="line">create table foo（id int primary key,name var(10) not null）engine&#x3D;InnoDB;</span><br></pre></td></tr></table></figure>
-<p>不同的存储引擎共用一个service层</p>
-</li>
-</ul>
-<h2 id="Mysql由哪些组件组成-各个组件的作用是什么"><a href="#Mysql由哪些组件组成-各个组件的作用是什么" class="headerlink" title="Mysql由哪些组件组成,各个组件的作用是什么"></a>Mysql由哪些组件组成,各个组件的作用是什么</h2><h3 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h3><p>  负责跟客户端建立连接，获取权限，维持和管理连接；</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#mysql客户端工具连接</span><br><span class="line">mysql -h$ip -P$port -u$user -p</span><br></pre></td></tr></table></figure>
-
-<p>  客户端同服务端建立连接，在完成TCP握手后，连接器就开始认证身份，需要我们提供用户名密码；</p>
-<p>  认证通过后，连接器会到权限表里查出所有你拥有的权限，之后这个连接里的所有权限判断，都将依赖于此时读到的权限。也就是说连接成功后权限就不会改变了，如果修改了权限，需要重新连接。</p>
-<p>  关于连接的一些参数：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">show processlist; --查看所有链接状态</span><br><span class="line"></span><br><span class="line">-- 查看mysql參數</span><br><span class="line">show variables like &quot;%timeout%&quot;；</span><br><span class="line">-- wait_timeout：设置非交互连接（就是指那些连接池方式、非客户端方式连接的）的超时时间，默认是28800，就是8小时，超过这个时间，mysql服务器会主动切断那些已经连接的，但是状态是sleep的连接。</span><br><span class="line"></span><br><span class="line">-- interactive_timeout:交互链接超时时间;</span><br><span class="line"></span><br><span class="line">-- connection_timeout：“连接过程中”的等待时间</span><br></pre></td></tr></table></figure>
-
-<p>  建立连接的过程通常是比较复杂的，所以建议你在使用中要尽量减少建立连接的动作，也就是尽量使用长连接。</p>
-<p>  MySQL 在执行过程中临时使用的内存是管理在连接对象里面的。这些资源会在连接断开的时候才释放。所以如果长连接累积下来，可能导致内存占用太大，被系统强行杀掉（OOM），从现象看就是 MySQL 异常重启了。</p>
-<pre><code>解决：
-定期断开长连接。使用一段时间，或者程序里面判断执行过一个占用内存的大查询后，断开连接，之后要查询再重连。
-
-如果你用的是 MySQL 5.7 或更新版本，可以在每次执行一个比较大的操作后，通过执行 mysql_reset_connection 来重新初始化连接资源。这个过程不需要重连和重新做权限验证，但是会将连接恢复到刚刚创建完时的状态。</code></pre><h3 id="查询缓存"><a href="#查询缓存" class="headerlink" title="查询缓存"></a>查询缓存</h3><p>  键值对的形式，key是查询语句，valve是结果；</p>
-<p>  查询缓存的失效非常频繁，只要有对一个表的更新，这个表上所有的查询缓存都会被清空。</p>
-<p>  可以将参数 query_cache_type 设置成 DEMAND，这样对于默认的 SQL 语句都不使用查询缓存。</p>
-<p>  MySQL 8.0版本直接将查询缓存的整块功能删掉了，也就是说 8.0 开始彻底没有这个功能了。</p>
-<p>  如果命中查询缓存，会在查询缓存返回结果的时候，做权限验证。</p>
-<p>  关于查询缓存的一些参数：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">query_catche_size&#x3D;0; -- 最好设置为1024的倍数，参考值32M</span><br><span class="line">query_catch_type&#x3D;0; -- 0禁用 1缓存所有查询 2只缓存通过SQL_CACHE指定需要缓存的查询</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="分析器"><a href="#分析器" class="headerlink" title="分析器"></a>分析器</h3><p>  词法分析；</p>
-<pre><code>读取表定义，识别关键字及表和列信息等</code></pre><p>  语法分析；</p>
-<pre><code>ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &apos;elect * from t where ID=1&apos; at line 1</code></pre><h3 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h3><p>  查询会在优化器之前调用 precheck 验证权限；</p>
-<p>  选择索引，决定表的连接顺序。</p>
-<h3 id="执行器"><a href="#执行器" class="headerlink" title="执行器"></a>执行器</h3><p>  权限检查；</p>
-<p>  开表；</p>
-<p>  重复调用表定义的引擎接口，直到表的最后一行，拿到所有满足条件的接口，组成结果集返回给客户端；</p>
-<h2 id="Mysql权限是怎么控制的？"><a href="#Mysql权限是怎么控制的？" class="headerlink" title="Mysql权限是怎么控制的？"></a>Mysql权限是怎么控制的？</h2><p>  客户端通过认证后，会去权限表读取权限，此后所有的权限判断都基于此时读取的权限。除非重新连接，否则不会改变。</p>
-<p>  命中缓存后，返回结果前会校验权限；</p>
-<p>  优化器之前会调用precheck权限验证；</p>
-<p>  执行器开表前会进行权限验证。</p>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Nginx-3：Nginx中的正则表达式</title>
-    <url>/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/</url>
-    <content><![CDATA[<p>正则表达式可以让我们匹配的功能更加强大</p>
-<h1 id="元字符"><a href="#元字符" class="headerlink" title="元字符"></a>元字符</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.   匹配除换行符之外的任意字符</span><br><span class="line">\w  匹配字母、数字、下划线或汉字</span><br><span class="line">\s  匹配任意的空白字符</span><br><span class="line">\d  匹配数字</span><br><span class="line">\b  匹配单词的开始或结束</span><br><span class="line">^   匹配字符串的开始</span><br><span class="line">$   匹配字符串的结束</span><br></pre></td></tr></table></figure>
-
-<h1 id="重复"><a href="#重复" class="headerlink" title="重复"></a>重复</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">*      重复0次或多次</span><br><span class="line">+      重复1次或多次</span><br><span class="line">？     重复0次或1次</span><br><span class="line">&#123;n&#125;    重复n次</span><br><span class="line">&#123;n,&#125;   重复n次或更多次</span><br><span class="line">&#123;n,m&#125;  重复n到m次</span><br></pre></td></tr></table></figure>
-
-<h1 id="转义符号"><a href="#转义符号" class="headerlink" title="转义符号"></a>转义符号</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">\: 取消元字符的特殊含义</span><br></pre></td></tr></table></figure>
-
-<h1 id="分组与取值"><a href="#分组与取值" class="headerlink" title="分组与取值"></a>分组与取值</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">():用来通过$方式取表达式中的值，或者进行分组</span><br></pre></td></tr></table></figure>
-
-<h1 id="pcretest"><a href="#pcretest" class="headerlink" title="pcretest"></a>pcretest</h1><p>PCRE(Perl Compatible Regular Expressions)是一个Perl库，包括 perl 兼容的正则表达式库。我们可以通过pcretest工具来测试<br>我们写的正则表达式的可用性。</p>
-<p>我们安装pcre-tools后就可以使用pcretools了：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo dnf install pcre-tools</span><br></pre></td></tr></table></figure>
-
-<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><p>原始url： /web/assets/view/salary/month-8/payslip/basicsalary.jpg<br>转换后的url： /web/assets/view/cnb-salary/payslip/basicsalary/month/8.jpg<br>匹配原始url的正则表达式：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;^\&#x2F;web\&#x2F;assets\&#x2F;view\&#x2F;salary\&#x2F;(\w+)-(\d&#123;1,2&#125;)\&#x2F;payslip\&#x2F;(\w+)\.(png|jpg|gif|jpeg|bmp)$&#x2F;</span><br><span class="line"></span><br><span class="line">rewrite ^&#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;(\w+)-(\d&#123;1,2&#125;)&#x2F;payslip&#x2F;(\w+).(png|jpg|gif|jpeg|bmp)$  &#x2F;web&#x2F;assets&#x2F;view&#x2F;cnb-salary&#x2F;payslip&#x2F;$3&#x2F;$1&#x2F;$2.$4 last;</span><br></pre></td></tr></table></figure>
-<p>我们通过pcretest进行测试</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@192 ~]$ pcretest</span><br><span class="line">PCRE version 8.43 2019-02-23</span><br><span class="line"></span><br><span class="line">  re&gt; &#x2F;^\&#x2F;web\&#x2F;assets\&#x2F;view\&#x2F;salary\&#x2F;(\w+)-(\d&#123;1,2&#125;)\&#x2F;payslip\&#x2F;(\w+)\.(png|jpg|gif|jpeg|bmp)$&#x2F;</span><br><span class="line">data&gt; &#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;month-8&#x2F;payslip&#x2F;basicsalary.jpg</span><br><span class="line"> 0: &#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;month-8&#x2F;payslip&#x2F;basicsalary.jpg</span><br><span class="line"> 1: month</span><br><span class="line"> 2: 8</span><br><span class="line"> 3: basicsalary</span><br><span class="line"> 4: jpg</span><br></pre></td></tr></table></figure>
-<p>可以看到通过正则表达式（）匹配到的各个值，然后就可以通过$1,$2…的方式使用这些值，达到rewrite的目的。</p>
-<p>注意在nginx中使用正则表达式是不需要使用反斜杠转义的，这里是为了在pcretest中测试</p>
-]]></content>
-      <categories>
-        <category>web</category>
-      </categories>
-      <tags>
-        <tag>nginx</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Nginx-2：Nginx安装</title>
     <url>/2019/03/25/Nginx-2%EF%BC%9ANginx%E5%AE%89%E8%A3%85/</url>
     <content><![CDATA[<p>安装nginx有两种方式：</p>
@@ -6446,6 +6333,93 @@ OK
       </categories>
       <tags>
         <tag>nginx</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Nginx-3：Nginx中的正则表达式</title>
+    <url>/2019/03/25/Nginx-3%EF%BC%9ANginx%E4%B8%AD%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/</url>
+    <content><![CDATA[<p>正则表达式可以让我们匹配的功能更加强大</p>
+<h1 id="元字符"><a href="#元字符" class="headerlink" title="元字符"></a>元字符</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.   匹配除换行符之外的任意字符</span><br><span class="line">\w  匹配字母、数字、下划线或汉字</span><br><span class="line">\s  匹配任意的空白字符</span><br><span class="line">\d  匹配数字</span><br><span class="line">\b  匹配单词的开始或结束</span><br><span class="line">^   匹配字符串的开始</span><br><span class="line">$   匹配字符串的结束</span><br></pre></td></tr></table></figure>
+
+<h1 id="重复"><a href="#重复" class="headerlink" title="重复"></a>重复</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">*      重复0次或多次</span><br><span class="line">+      重复1次或多次</span><br><span class="line">？     重复0次或1次</span><br><span class="line">&#123;n&#125;    重复n次</span><br><span class="line">&#123;n,&#125;   重复n次或更多次</span><br><span class="line">&#123;n,m&#125;  重复n到m次</span><br></pre></td></tr></table></figure>
+
+<h1 id="转义符号"><a href="#转义符号" class="headerlink" title="转义符号"></a>转义符号</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">\: 取消元字符的特殊含义</span><br></pre></td></tr></table></figure>
+
+<h1 id="分组与取值"><a href="#分组与取值" class="headerlink" title="分组与取值"></a>分组与取值</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">():用来通过$方式取表达式中的值，或者进行分组</span><br></pre></td></tr></table></figure>
+
+<h1 id="pcretest"><a href="#pcretest" class="headerlink" title="pcretest"></a>pcretest</h1><p>PCRE(Perl Compatible Regular Expressions)是一个Perl库，包括 perl 兼容的正则表达式库。我们可以通过pcretest工具来测试<br>我们写的正则表达式的可用性。</p>
+<p>我们安装pcre-tools后就可以使用pcretools了：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo dnf install pcre-tools</span><br></pre></td></tr></table></figure>
+
+<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><p>原始url： /web/assets/view/salary/month-8/payslip/basicsalary.jpg<br>转换后的url： /web/assets/view/cnb-salary/payslip/basicsalary/month/8.jpg<br>匹配原始url的正则表达式：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;^\&#x2F;web\&#x2F;assets\&#x2F;view\&#x2F;salary\&#x2F;(\w+)-(\d&#123;1,2&#125;)\&#x2F;payslip\&#x2F;(\w+)\.(png|jpg|gif|jpeg|bmp)$&#x2F;</span><br><span class="line"></span><br><span class="line">rewrite ^&#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;(\w+)-(\d&#123;1,2&#125;)&#x2F;payslip&#x2F;(\w+).(png|jpg|gif|jpeg|bmp)$  &#x2F;web&#x2F;assets&#x2F;view&#x2F;cnb-salary&#x2F;payslip&#x2F;$3&#x2F;$1&#x2F;$2.$4 last;</span><br></pre></td></tr></table></figure>
+<p>我们通过pcretest进行测试</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[richey@192 ~]$ pcretest</span><br><span class="line">PCRE version 8.43 2019-02-23</span><br><span class="line"></span><br><span class="line">  re&gt; &#x2F;^\&#x2F;web\&#x2F;assets\&#x2F;view\&#x2F;salary\&#x2F;(\w+)-(\d&#123;1,2&#125;)\&#x2F;payslip\&#x2F;(\w+)\.(png|jpg|gif|jpeg|bmp)$&#x2F;</span><br><span class="line">data&gt; &#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;month-8&#x2F;payslip&#x2F;basicsalary.jpg</span><br><span class="line"> 0: &#x2F;web&#x2F;assets&#x2F;view&#x2F;salary&#x2F;month-8&#x2F;payslip&#x2F;basicsalary.jpg</span><br><span class="line"> 1: month</span><br><span class="line"> 2: 8</span><br><span class="line"> 3: basicsalary</span><br><span class="line"> 4: jpg</span><br></pre></td></tr></table></figure>
+<p>可以看到通过正则表达式（）匹配到的各个值，然后就可以通过$1,$2…的方式使用这些值，达到rewrite的目的。</p>
+<p>注意在nginx中使用正则表达式是不需要使用反斜杠转义的，这里是为了在pcretest中测试</p>
+]]></content>
+      <categories>
+        <category>web</category>
+      </categories>
+      <tags>
+        <tag>nginx</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mysql（2）-基本架构</title>
+    <url>/2019/03/25/Mysql%EF%BC%882%EF%BC%89-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84/</url>
+    <content><![CDATA[<h2 id="Mysql基本架构是什么样子的（简述Mysql基本架构）"><a href="#Mysql基本架构是什么样子的（简述Mysql基本架构）" class="headerlink" title="Mysql基本架构是什么样子的（简述Mysql基本架构）"></a>Mysql基本架构是什么样子的（简述Mysql基本架构）</h2><p>Mysql由服务层（Service层）和存储引擎层构成。</p>
+<ul>
+<li><p>Service层涵盖Mysql的大多数核心功能，及所有的内置函数</p>
+<p>包含连接器、查询缓存、分析器、优化器、执行器；</p>
+<p>所有跨存储引擎的功能都在这一层实现；</p>
+</li>
+<li><p>存储引擎层，负责数据的存储和提取</p>
+<p>采用插件式设计，支持InnoDB、MYISAM、Memory等多个存储引擎；</p>
+<p>建表时，如果不制定引擎类型，会默认使用InnoDB</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#指定存储引擎</span><br><span class="line">create table foo（id int primary key,name var(10) not null）engine&#x3D;InnoDB;</span><br></pre></td></tr></table></figure>
+<p>不同的存储引擎共用一个service层</p>
+</li>
+</ul>
+<h2 id="Mysql由哪些组件组成-各个组件的作用是什么"><a href="#Mysql由哪些组件组成-各个组件的作用是什么" class="headerlink" title="Mysql由哪些组件组成,各个组件的作用是什么"></a>Mysql由哪些组件组成,各个组件的作用是什么</h2><h3 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h3><p>  负责跟客户端建立连接，获取权限，维持和管理连接；</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#mysql客户端工具连接</span><br><span class="line">mysql -h$ip -P$port -u$user -p</span><br></pre></td></tr></table></figure>
+
+<p>  客户端同服务端建立连接，在完成TCP握手后，连接器就开始认证身份，需要我们提供用户名密码；</p>
+<p>  认证通过后，连接器会到权限表里查出所有你拥有的权限，之后这个连接里的所有权限判断，都将依赖于此时读到的权限。也就是说连接成功后权限就不会改变了，如果修改了权限，需要重新连接。</p>
+<p>  关于连接的一些参数：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">show processlist; --查看所有链接状态</span><br><span class="line"></span><br><span class="line">-- 查看mysql參數</span><br><span class="line">show variables like &quot;%timeout%&quot;；</span><br><span class="line">-- wait_timeout：设置非交互连接（就是指那些连接池方式、非客户端方式连接的）的超时时间，默认是28800，就是8小时，超过这个时间，mysql服务器会主动切断那些已经连接的，但是状态是sleep的连接。</span><br><span class="line"></span><br><span class="line">-- interactive_timeout:交互链接超时时间;</span><br><span class="line"></span><br><span class="line">-- connection_timeout：“连接过程中”的等待时间</span><br></pre></td></tr></table></figure>
+
+<p>  建立连接的过程通常是比较复杂的，所以建议你在使用中要尽量减少建立连接的动作，也就是尽量使用长连接。</p>
+<p>  MySQL 在执行过程中临时使用的内存是管理在连接对象里面的。这些资源会在连接断开的时候才释放。所以如果长连接累积下来，可能导致内存占用太大，被系统强行杀掉（OOM），从现象看就是 MySQL 异常重启了。</p>
+<pre><code>解决：
+定期断开长连接。使用一段时间，或者程序里面判断执行过一个占用内存的大查询后，断开连接，之后要查询再重连。
+
+如果你用的是 MySQL 5.7 或更新版本，可以在每次执行一个比较大的操作后，通过执行 mysql_reset_connection 来重新初始化连接资源。这个过程不需要重连和重新做权限验证，但是会将连接恢复到刚刚创建完时的状态。</code></pre><h3 id="查询缓存"><a href="#查询缓存" class="headerlink" title="查询缓存"></a>查询缓存</h3><p>  键值对的形式，key是查询语句，valve是结果；</p>
+<p>  查询缓存的失效非常频繁，只要有对一个表的更新，这个表上所有的查询缓存都会被清空。</p>
+<p>  可以将参数 query_cache_type 设置成 DEMAND，这样对于默认的 SQL 语句都不使用查询缓存。</p>
+<p>  MySQL 8.0版本直接将查询缓存的整块功能删掉了，也就是说 8.0 开始彻底没有这个功能了。</p>
+<p>  如果命中查询缓存，会在查询缓存返回结果的时候，做权限验证。</p>
+<p>  关于查询缓存的一些参数：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">query_catche_size&#x3D;0; -- 最好设置为1024的倍数，参考值32M</span><br><span class="line">query_catch_type&#x3D;0; -- 0禁用 1缓存所有查询 2只缓存通过SQL_CACHE指定需要缓存的查询</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="分析器"><a href="#分析器" class="headerlink" title="分析器"></a>分析器</h3><p>  词法分析；</p>
+<pre><code>读取表定义，识别关键字及表和列信息等</code></pre><p>  语法分析；</p>
+<pre><code>ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &apos;elect * from t where ID=1&apos; at line 1</code></pre><h3 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h3><p>  查询会在优化器之前调用 precheck 验证权限；</p>
+<p>  选择索引，决定表的连接顺序。</p>
+<h3 id="执行器"><a href="#执行器" class="headerlink" title="执行器"></a>执行器</h3><p>  权限检查；</p>
+<p>  开表；</p>
+<p>  重复调用表定义的引擎接口，直到表的最后一行，拿到所有满足条件的接口，组成结果集返回给客户端；</p>
+<h2 id="Mysql权限是怎么控制的？"><a href="#Mysql权限是怎么控制的？" class="headerlink" title="Mysql权限是怎么控制的？"></a>Mysql权限是怎么控制的？</h2><p>  客户端通过认证后，会去权限表读取权限，此后所有的权限判断都基于此时读取的权限。除非重新连接，否则不会改变。</p>
+<p>  命中缓存后，返回结果前会校验权限；</p>
+<p>  优化器之前会调用precheck权限验证；</p>
+<p>  执行器开表前会进行权限验证。</p>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
       </tags>
   </entry>
   <entry>
@@ -7104,6 +7078,27 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
       </tags>
   </entry>
   <entry>
+    <title>hexo命令</title>
+    <url>/2019/03/08/hexo%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<ul>
+<li><p>hexo g 生成静态文件</p>
+</li>
+<li><p>hexo s 启动本地服务</p>
+</li>
+<li><p>hexo clean 清除缓存文件(db.json)和已生成的静态文件(public)</p>
+</li>
+<li><p>hexo g -d 生成文件并部署到github</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>其它</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Java Stream</title>
     <url>/2019/03/08/Java%20Stream/</url>
     <content><![CDATA[<h1 id="1、Java-Stream-API-入门"><a href="#1、Java-Stream-API-入门" class="headerlink" title="1、Java Stream API 入门"></a>1、Java Stream API 入门</h1><h2 id="Java8引入函数式编程"><a href="#Java8引入函数式编程" class="headerlink" title="Java8引入函数式编程"></a>Java8引入函数式编程</h2><ul>
@@ -7316,27 +7311,6 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
       </categories>
       <tags>
         <tag>lambda</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>hexo命令</title>
-    <url>/2019/03/08/hexo%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<ul>
-<li><p>hexo g 生成静态文件</p>
-</li>
-<li><p>hexo s 启动本地服务</p>
-</li>
-<li><p>hexo clean 清除缓存文件(db.json)和已生成的静态文件(public)</p>
-</li>
-<li><p>hexo g -d 生成文件并部署到github</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>其它</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>

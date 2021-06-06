@@ -85,8 +85,8 @@
 
 <meta name="description" content="比较容器和虚拟机和虚拟机相比容器更加轻量级，因为每个虚拟机需要运行自己的一组系统进程，而容器只是运行在宿主机上被隔离的单个进程。 虚拟机的好处是它们提供完全隔离的环境，因为每个虚拟机都运行在它们自己的Linux内核上，而容器则是调用同一个内核。 那容器是如何实现隔离的呢？有两个机制可用：  Linux命名空间它使每个进程只看到自己的系统视图（文件、进程、网络端口、主机名等） Linux控制组（c">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Kubernetes02-基本概念">
-<meta property="og:url" content="http://10000hours.top/2021/05/12/Kubernetes02-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/index.html">
+<meta property="og:title" content="Kubernetes02-核心概念">
+<meta property="og:url" content="http://10000hours.top/2021/05/12/Kubernetes02-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/index.html">
 <meta property="og:site_name" content="Richey&#39;s Blog">
 <meta property="og:description" content="比较容器和虚拟机和虚拟机相比容器更加轻量级，因为每个虚拟机需要运行自己的一组系统进程，而容器只是运行在宿主机上被隔离的单个进程。 虚拟机的好处是它们提供完全隔离的环境，因为每个虚拟机都运行在它们自己的Linux内核上，而容器则是调用同一个内核。 那容器是如何实现隔离的呢？有两个机制可用：  Linux命名空间它使每个进程只看到自己的系统视图（文件、进程、网络端口、主机名等） Linux控制组（c">
 <meta property="og:image" content="http://assets.processon.com/chart_image/5c75503fe4b0f9fba693aa6b.png">
@@ -135,13 +135,13 @@
 
 
 
-  <link rel="canonical" href="http://10000hours.top/2021/05/12/Kubernetes02-基本概念/"/>
+  <link rel="canonical" href="http://10000hours.top/2021/05/12/Kubernetes02-核心概念/"/>
 
 
 
 
 
-  <title>Kubernetes02-基本概念 | Richey's Blog</title>
+  <title>Kubernetes02-核心概念 | Richey's Blog</title>
   
 
 
@@ -302,7 +302,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2021/05/12/Kubernetes02-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2021/05/12/Kubernetes02-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Richey Liu">
@@ -319,7 +319,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Kubernetes02-基本概念</h1>
+          <h1 class="post-title" itemprop="name headline">Kubernetes02-核心概念</h1>
         
 
         <div class="post-meta">
@@ -372,8 +372,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2021/05/12/Kubernetes02-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2021/05/12/Kubernetes02-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" itemprop="commentCount"></span>
+                <a href="/2021/05/12/Kubernetes02-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2021/05/12/Kubernetes02-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -381,7 +381,7 @@
 
           
           
-             <span id="/2021/05/12/Kubernetes02-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" class="leancloud_visitors" data-flag-title="Kubernetes02-基本概念">
+             <span id="/2021/05/12/Kubernetes02-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/" class="leancloud_visitors" data-flag-title="Kubernetes02-核心概念">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -667,7 +667,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://10000hours.top/2021/05/12/Kubernetes02-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" title="Kubernetes02-基本概念">http://10000hours.top/2021/05/12/Kubernetes02-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</a>
+    <a href="http://10000hours.top/2021/05/12/Kubernetes02-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/" title="Kubernetes02-核心概念">http://10000hours.top/2021/05/12/Kubernetes02-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -705,8 +705,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2021/05/20/Kubernetes03-Quick-Start/" rel="prev" title="Kubernetes03-Quick-Start">
-                Kubernetes03-Quick-Start <i class="fa fa-chevron-right"></i>
+              <a href="/2021/05/24/Kubernetes03-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/" rel="prev" title="Kubernetes03-集群搭建">
+                Kubernetes03-集群搭建 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -797,7 +797,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">129</span>
+                  <span class="site-state-item-count">128</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
