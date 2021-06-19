@@ -83,15 +83,15 @@
 
 
 
-<meta name="description" content="准备3台服务器这里我们用虚拟机装3个节点：node1,node2,node3 如果安装的时候没有设置好主机名，可以手动再设置一下，给个名字方便操作： hostnamectl set-hostname node1  &#x2F;&#x2F;node2 node3 设置静态ip最好将节点的ip设置成静态的（不能随便变）,这里3个节点装的是ubuntu 20.04 server,设置方法如下： ifconfig &#x2F;&#x2F;列出系">
+<meta name="description" content="发现一个很好的安装教程： https:&#x2F;&#x2F;kuboard.cn&#x2F;install&#x2F;install-k8s.html 准备3台服务器这里我们用虚拟机装3个节点：node1,node2,node3 如果安装的时候没有设置好主机名，可以手动再设置一下，给个名字方便操作： hostnamectl set-hostname node1  &#x2F;&#x2F;node2 node3 设置静态ip最好将节点的ip设置成静态的（不">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Kubernetes03-集群搭建">
 <meta property="og:url" content="http://10000hours.top/2021/05/24/Kubernetes03-%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/index.html">
 <meta property="og:site_name" content="Richey&#39;s Blog">
-<meta property="og:description" content="准备3台服务器这里我们用虚拟机装3个节点：node1,node2,node3 如果安装的时候没有设置好主机名，可以手动再设置一下，给个名字方便操作： hostnamectl set-hostname node1  &#x2F;&#x2F;node2 node3 设置静态ip最好将节点的ip设置成静态的（不能随便变）,这里3个节点装的是ubuntu 20.04 server,设置方法如下： ifconfig &#x2F;&#x2F;列出系">
+<meta property="og:description" content="发现一个很好的安装教程： https:&#x2F;&#x2F;kuboard.cn&#x2F;install&#x2F;install-k8s.html 准备3台服务器这里我们用虚拟机装3个节点：node1,node2,node3 如果安装的时候没有设置好主机名，可以手动再设置一下，给个名字方便操作： hostnamectl set-hostname node1  &#x2F;&#x2F;node2 node3 设置静态ip最好将节点的ip设置成静态的（不">
 <meta property="og:image" content="https://blog-pic-1254088127.picsh.myqcloud.com/ifconfig-20210523.png">
 <meta property="article:published_time" content="2021-05-23T16:00:00.000Z">
-<meta property="article:modified_time" content="2021-05-24T15:25:20.282Z">
+<meta property="article:modified_time" content="2021-06-13T05:00:05.970Z">
 <meta property="article:author" content="Richey Liu">
 <meta property="article:tag" content="K8s">
 <meta name="twitter:card" content="summary">
@@ -402,7 +402,9 @@
       
 
       
-        <h1 id="准备3台服务器"><a href="#准备3台服务器" class="headerlink" title="准备3台服务器"></a>准备3台服务器</h1><p>这里我们用虚拟机装3个节点：node1,node2,node3</p>
+        <p>发现一个很好的安装教程：</p>
+<p><a href="https://kuboard.cn/install/install-k8s.html" target="_blank" rel="noopener">https://kuboard.cn/install/install-k8s.html</a></p>
+<h1 id="准备3台服务器"><a href="#准备3台服务器" class="headerlink" title="准备3台服务器"></a>准备3台服务器</h1><p>这里我们用虚拟机装3个节点：node1,node2,node3</p>
 <p>如果安装的时候没有设置好主机名，可以手动再设置一下，给个名字方便操作：</p>
 <p>hostnamectl set-hostname node1  //node2 node3</p>
 <h2 id="设置静态ip"><a href="#设置静态ip" class="headerlink" title="设置静态ip"></a>设置静态ip</h2><p>最好将节点的ip设置成静态的（不能随便变）,这里3个节点装的是ubuntu 20.04 server,设置方法如下：</p>
@@ -517,6 +519,21 @@
 
 <p>需要手动删除$HOME/.kube/config</p>
 <p>注意要在3个节点都执行kubeadm reset</p>
+<h1 id="问题处理"><a href="#问题处理" class="headerlink" title="问题处理"></a>问题处理</h1><h2 id="coredns-pod启动失败"><a href="#coredns-pod启动失败" class="headerlink" title="coredns pod启动失败"></a>coredns pod启动失败</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">root@node1:&#x2F;home&#x2F;richey# kubectl get pods -A -o wide</span><br><span class="line">NAMESPACE       NAME                                        READY   STATUS             RESTARTS   AGE     IP               NODE    NOMINATED NODE   READINESS GATES</span><br><span class="line">kube-system     coredns-bccdc95cf-26tt4                     0&#x2F;1     CrashLoopBackOff   14         6d23h   192.169.2.70     node3   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">kube-system     coredns-bccdc95cf-64tv5                     0&#x2F;1     CrashLoopBackOff   13         6d23h   192.169.1.33     node2   &lt;none&gt;           &lt;none&gt;</span><br></pre></td></tr></table></figure>
+
+<p>查看iptables的策略</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">root@node3:&#x2F;home&#x2F;richey# iptables -nL</span><br><span class="line">Chain INPUT (policy ACCEPT)</span><br><span class="line">target     prot opt source               destination         </span><br><span class="line">KUBE-SERVICES  all  --  0.0.0.0&#x2F;0            0.0.0.0&#x2F;0            ctstate NEW &#x2F;* kubernetes service portals *&#x2F;</span><br><span class="line">KUBE-EXTERNAL-SERVICES  all  --  0.0.0.0&#x2F;0            0.0.0.0&#x2F;0            ctstate NEW &#x2F;* kubernetes externally-visible service portals *&#x2F;</span><br><span class="line">KUBE-FIREWALL  all  --  0.0.0.0&#x2F;0            0.0.0.0&#x2F;0           </span><br><span class="line"></span><br><span class="line">Chain FORWARD (policy DROP)</span><br><span class="line">target     prot opt source               destination         </span><br><span class="line">KUBE-FORWARD  all  --  0.0.0.0&#x2F;0            0.0.0.0&#x2F;0            &#x2F;* kubernetes forwarding rules *&#x2F;</span><br><span class="line">KUBE-SERVICES  all  --  0.0.0.0&#x2F;0            0.0.0.0&#x2F;0            ctstate NEW &#x2F;* kubernetes service portals *&#x2F;</span><br><span class="line">DOCKER-USER  all  --  0.0.0.0&#x2F;0            0.0.0.0&#x2F;0           </span><br><span class="line">DOCKER-ISOLATION-STAGE-1  all  --  0.0.0.0&#x2F;0            0.0.0.0&#x2F;0           </span><br><span class="line">ACCEPT     all  --  0.0.0.0&#x2F;0            0.0.0.0&#x2F;0            ctstate RELATED,ESTABLISHED</span><br><span class="line">DOCKER     all  --  0.0.0.0&#x2F;0            0.0.0.0&#x2F;0           </span><br><span class="line">ACCEPT     all  --  0.0.0.0&#x2F;0            0.0.0.0&#x2F;0           </span><br><span class="line">ACCEPT     all  --  0.0.0.0&#x2F;0            0.0.0.0&#x2F;0           </span><br><span class="line">ACCEPT     all  --  10.244.0.0&#x2F;16        0.0.0.0&#x2F;0           </span><br><span class="line">ACCEPT     all  --  0.0.0.0&#x2F;0            10.244.0.0&#x2F;16</span><br></pre></td></tr></table></figure>
+
+<p>如果FORWORD 策略为DROP说明你需要修改这个问题</p>
+<p>修改docker配置文件</p>
+<p>vim /lib/systemd/system/docker.service</p>
+<p>在[Service]标签下加入如下参数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ExecStartPost&#x3D;&#x2F;sbin&#x2F;iptables -P FORWARD ACCEPT</span><br></pre></td></tr></table></figure>
+
+<p>使配置生效</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl daemon-reload</span><br><span class="line">systemctl restart docker</span><br></pre></td></tr></table></figure>
+
+<p>问题解决</p>
 
       
     </div>
@@ -696,7 +713,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">128</span>
+                  <span class="site-state-item-count">130</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -707,7 +724,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-count">24</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -718,7 +735,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">41</span>
+                  <span class="site-state-item-count">42</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -774,7 +791,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#准备3台服务器"><span class="nav-number">1.</span> <span class="nav-text">准备3台服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#设置静态ip"><span class="nav-number">1.1.</span> <span class="nav-text">设置静态ip</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改域名文件"><span class="nav-number">1.2.</span> <span class="nav-text">修改域名文件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#时区"><span class="nav-number">2.</span> <span class="nav-text">时区</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装docker"><span class="nav-number">3.</span> <span class="nav-text">安装docker</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装kubernetes组件"><span class="nav-number">4.</span> <span class="nav-text">安装kubernetes组件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#禁用swap"><span class="nav-number">5.</span> <span class="nav-text">禁用swap</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装kubernetes集群"><span class="nav-number">6.</span> <span class="nav-text">安装kubernetes集群</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#拷贝kubeconfig文件到家目录的-kube目录"><span class="nav-number">7.</span> <span class="nav-text">拷贝kubeconfig文件到家目录的.kube目录</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装网络插件，让pod之间通信"><span class="nav-number">8.</span> <span class="nav-text">安装网络插件，让pod之间通信</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#查看kube-system命名空间下的pod状态"><span class="nav-number">9.</span> <span class="nav-text">查看kube-system命名空间下的pod状态</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#加入node节点"><span class="nav-number">10.</span> <span class="nav-text">加入node节点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#命令补全"><span class="nav-number">11.</span> <span class="nav-text">命令补全</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#部署dashboard可视化插件"><span class="nav-number">12.</span> <span class="nav-text">部署dashboard可视化插件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#重启"><span class="nav-number">13.</span> <span class="nav-text">重启</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#重置"><span class="nav-number">14.</span> <span class="nav-text">重置</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#准备3台服务器"><span class="nav-number">1.</span> <span class="nav-text">准备3台服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#设置静态ip"><span class="nav-number">1.1.</span> <span class="nav-text">设置静态ip</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改域名文件"><span class="nav-number">1.2.</span> <span class="nav-text">修改域名文件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#时区"><span class="nav-number">2.</span> <span class="nav-text">时区</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装docker"><span class="nav-number">3.</span> <span class="nav-text">安装docker</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装kubernetes组件"><span class="nav-number">4.</span> <span class="nav-text">安装kubernetes组件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#禁用swap"><span class="nav-number">5.</span> <span class="nav-text">禁用swap</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装kubernetes集群"><span class="nav-number">6.</span> <span class="nav-text">安装kubernetes集群</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#拷贝kubeconfig文件到家目录的-kube目录"><span class="nav-number">7.</span> <span class="nav-text">拷贝kubeconfig文件到家目录的.kube目录</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装网络插件，让pod之间通信"><span class="nav-number">8.</span> <span class="nav-text">安装网络插件，让pod之间通信</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#查看kube-system命名空间下的pod状态"><span class="nav-number">9.</span> <span class="nav-text">查看kube-system命名空间下的pod状态</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#加入node节点"><span class="nav-number">10.</span> <span class="nav-text">加入node节点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#命令补全"><span class="nav-number">11.</span> <span class="nav-text">命令补全</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#部署dashboard可视化插件"><span class="nav-number">12.</span> <span class="nav-text">部署dashboard可视化插件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#重启"><span class="nav-number">13.</span> <span class="nav-text">重启</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#重置"><span class="nav-number">14.</span> <span class="nav-text">重置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题处理"><span class="nav-number">15.</span> <span class="nav-text">问题处理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#coredns-pod启动失败"><span class="nav-number">15.1.</span> <span class="nav-text">coredns pod启动失败</span></a></li></ol></li></ol></div>
             
 
           </div>
