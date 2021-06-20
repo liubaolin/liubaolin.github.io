@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Flink," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="Richey's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="时间事件时间（event time）事件发生的顺序，这个顺序是不会变的，计算结果是可复现的 处理时间（processing time）基于Flink部署的本地机器时间,每次可能不一样，不提供确定性的保障 123456789StreamExecutionEnvironment env &#x3D; StreamExecutionEnvironment.getExecutionEnvironment(">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flink03-Flink流处理基础">
+<meta property="og:url" content="http://10000hours.top/2021/06/12/Flink03-Flink%E6%B5%81%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="Richey&#39;s Blog">
+<meta property="og:description" content="时间事件时间（event time）事件发生的顺序，这个顺序是不会变的，计算结果是可复现的 处理时间（processing time）基于Flink部署的本地机器时间,每次可能不一样，不提供确定性的保障 123456789StreamExecutionEnvironment env &#x3D; StreamExecutionEnvironment.getExecutionEnvironment(">
+<meta property="article:published_time" content="2021-06-11T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-06-20T10:27:19.376Z">
+<meta property="article:author" content="Richey Liu">
+<meta property="article:tag" content="Flink">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://10000hours.top/2021/06/12/Flink03-Flink流处理基础/"/>
+
+
+
+
+
+  <title>Flink03-Flink流处理基础 | Richey's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Richey's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">吾生也有涯，而知也无涯。以有涯随无涯，殆已。</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2021/06/12/Flink03-Flink%E6%B5%81%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Flink03-Flink流处理基础</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-06-12T00:00:00+08:00">
+                2021-06-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86/" itemprop="url" rel="index">
+                    <span itemprop="name">数据处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2021/06/12/Flink03-Flink%E6%B5%81%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2021/06/12/Flink03-Flink%E6%B5%81%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2021/06/12/Flink03-Flink%E6%B5%81%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80/" class="leancloud_visitors" data-flag-title="Flink03-Flink流处理基础">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="时间"><a href="#时间" class="headerlink" title="时间"></a>时间</h1><h2 id="事件时间（event-time）"><a href="#事件时间（event-time）" class="headerlink" title="事件时间（event time）"></a>事件时间（event time）</h2><p>事件发生的顺序，这个顺序是不会变的，计算结果是可复现的</p>
+<h2 id="处理时间（processing-time）"><a href="#处理时间（processing-time）" class="headerlink" title="处理时间（processing time）"></a>处理时间（processing time）</h2><p>基于Flink部署的本地机器时间,每次可能不一样，不提供确定性的保障</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">StreamExecutionEnvironment env &#x3D; StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;设置时间语义</span><br><span class="line">&#x2F;&#x2F;数据产生的时间</span><br><span class="line">env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);</span><br><span class="line">&#x2F;&#x2F;数据接入数据源的时间</span><br><span class="line">env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);</span><br><span class="line">&#x2F;&#x2F;flink处理的时间</span><br><span class="line">env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);</span><br></pre></td></tr></table></figure>
+
+<h1 id="水位线（Watermark）"><a href="#水位线（Watermark）" class="headerlink" title="水位线（Watermark）"></a>水位线（Watermark）</h1><p>在使用Event Time时间概念时，Flink需要知道：</p>
+<ol>
+<li>每个StreamElement的EventTime时间</li>
+<li>接入的数据何时可以开始计算（什么时间算结束）</li>
+</ol>
+<ul>
+<li>Watermark用于标记Event-Time的前进进程；</li>
+<li>Watermark跟随DataStream Event-Time变动，并自身携带TimeStamp；</li>
+<li>Watermark用于表明所有某个（较早）时间点之前的事件（可能）已经到达；</li>
+<li>Watermark本身也属于特殊事件</li>
+</ul>
+<p>数据流事件本身有顺序的情况下，可以得到完美的Watermark。</p>
+<p>当数据流事件无序的时候，通常认为它们有一定的无序性，可以通过设置maxOutOfOrderness最大时延要求来产生Watermark，并且只有新的最大时间戳出现时，<br>才会产生新的Watermark</p>
+<p>如果消息的时间小于等于当前Watermark的时间，则该事件会被标记为迟到事件,不会被纳入窗口计算</p>
+<h1 id="Wartermark与window之间的关系"><a href="#Wartermark与window之间的关系" class="headerlink" title="Wartermark与window之间的关系"></a>Wartermark与window之间的关系</h1><p>wartermark大于等于window结束时间会触发统计</p>
+<p>对于事件时间小于wartermark时间的事件，不会纳入相关窗口的统计</p>
+<p>Wartermark使用总结</p>
+<ul>
+<li>Watermark = Max EventTime = Late Threshold （接入数据最大等待时延的容忍）</li>
+<li>Late Threshold越高，数据处理延迟越高</li>
+<li>解决一定范围内的乱序事件</li>
+<li>窗口触发条件：Current Watermark &gt; Window EndTime</li>
+<li>Watermark的主要目的是告诉窗口不会再有比当前Watermark更晚的数据到达</li>
+<li>idel Watermark（理想的Watermark）仅会发生在顺序事件中</li>
+</ul>
+<h1 id="如何定义和使用Watermark"><a href="#如何定义和使用Watermark" class="headerlink" title="如何定义和使用Watermark"></a>如何定义和使用Watermark</h1><p>两种策略</p>
+<ul>
+<li>Periodic Watermarks</li>
+</ul>
+<p>基于事件时间和最大时延</p>
+<ul>
+<li>Punctuated Watermarks</li>
+</ul>
+<p>基于固定的事件，在事件流里通过固定的信息标记</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">        DataStream&lt;MyEvent&gt; stream &#x3D; env.readFile(myFormat,</span><br><span class="line">                myFilePath,</span><br><span class="line">                FileProcessingMode.PROCESS_CONTINUOUSLY, 100,</span><br><span class="line">                FilePathFilter.createDefaultFilter(),</span><br><span class="line">                typeInfo);</span><br><span class="line"></span><br><span class="line">        DataStream&lt;MyEvent&gt; withTimestampsAndWatermarks</span><br><span class="line">                &#x3D; stream.filter(event -&gt; event.getStatus() &#x3D;&#x3D; CollectionStatus.STEADY)</span><br><span class="line">                &#x2F;&#x2F;下面两种设置watermart的方式都过时了</span><br><span class="line">                .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessGenerator());</span><br><span class="line">&#x2F;&#x2F;                .assignTimestampsAndWatermarks(new PunctuatedAssigner());</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        withTimestampsAndWatermarks.keyBy((event) -&gt; event.getCollectionCode())</span><br><span class="line">                .timeWindow(Time.seconds(10))</span><br><span class="line">                .reduce((a,b) -&gt; a.add(b))</span><br><span class="line">                .addSink(...);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author richey</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class BoundedOutOfOrdernessGenerator implements AssignerWithPeriodicWatermarks&lt;MyEvent&gt; &#123;</span><br><span class="line">    &#x2F;&#x2F;最大时延</span><br><span class="line">    private final long maxOutofOrderness &#x3D; 3500;&#x2F;&#x2F;3.5 seconds</span><br><span class="line">    private long currentMaxTimestamp;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Nullable</span><br><span class="line">    @Override</span><br><span class="line">    public Watermark getCurrentWatermark() &#123;</span><br><span class="line">        return new Watermark(currentMaxTimestamp - maxOutofOrderness);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public long extractTimestamp(MyEvent element, long previousRecordTimestamp) &#123;</span><br><span class="line">        long timestamp &#x3D; element.getCreationTime();</span><br><span class="line">        currentMaxTimestamp &#x3D; Math.max(timestamp, currentMaxTimestamp);</span><br><span class="line">        return timestamp;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author richey</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class PunctuatedAssigner implements AssignerWithPunctuatedWatermarks&lt;MyEvent&gt; &#123;</span><br><span class="line">    @Nullable</span><br><span class="line">    @Override</span><br><span class="line">    public Watermark checkAndGetNextWatermark(MyEvent lastElement, long extractedTimestamp) &#123;</span><br><span class="line">        return lastElement.hasWatermarkMarker() ? new Watermark(extractedTimestamp) : null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public long extractTimestamp(MyEvent element, long previousRecordTimestamp) &#123;</span><br><span class="line">        return element.getCreationTime();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面都是通过外部的方式去DataStream API里面去指定EventTime的抽取逻辑以及Watermark的生成逻辑。<br>对于大部分消息中间件来讲，比如kafka，可以在生成消息的时候就把Watermrk和Timestamp生成和抽取出来.</p>
+<p>在Source Functions中定义Timestamps和Watermarks</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public void run(SourceFunction.SourceContext&lt;MyEvent&gt; ctx) throws Exception&#123;</span><br><span class="line">    while (&#x2F;* condition *&#x2F;)&#123;</span><br><span class="line">        MyType next &#x3D; getNext();</span><br><span class="line">        ctx.collectWithTimestamp(next,next.getEventTimestamp());</span><br><span class="line">        </span><br><span class="line">        if(next.hasWatermarkTime())&#123;</span><br><span class="line">            ctx.emitWatermark(new Watermark(next.getWatermarkTime()))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>1.11版本新的设置Timestamp和Watermark的api：Watermark Strategies</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">        DataStream&lt;MyEvent&gt; withTimestampsAndWatermarks</span><br><span class="line">                &#x3D; stream.filter(event -&gt; event.getStatus() &#x3D;&#x3D; CollectionStatus.STEADY)</span><br><span class="line">                &#x2F;&#x2F;下面两种设置watermart的方式都过时了</span><br><span class="line">&#x2F;&#x2F;                .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessGenerator());</span><br><span class="line">&#x2F;&#x2F;                .assignTimestampsAndWatermarks(new PunctuatedAssigner());</span><br><span class="line">                .assignTimestampsAndWatermarks(</span><br><span class="line">                        WatermarkStrategy.&lt;Tuple2&lt;Long, String&gt;&gt;forBoundedOutOfOrderness(Duration.ofSeconds(20))</span><br><span class="line">                                .withTimestampAssigner((event, timestamp) -&gt; event.f0));</span><br><span class="line"></span><br><span class="line">        FlinkKafkaConsumer010&lt;MyEvent&gt; kafkaSource &#x3D; new FlinkKafkaConsumer010&lt;MyEvent&gt;(&quot;myTopic&quot;,</span><br><span class="line">                schema,props);</span><br><span class="line">        kafkaSource.assignTimestampsAndWatermarks(WatermarkStrategy.&lt;MyEvent&gt;forBoundedOutOfOrderness(Duration.ofSeconds(20)));</span><br><span class="line">        DataStream&lt;MyEvent&gt; stream &#x3D;  env.addSource(kafkaSource);</span><br></pre></td></tr></table></figure>
+
+<h1 id="window-窗口计算"><a href="#window-窗口计算" class="headerlink" title="window 窗口计算"></a>window 窗口计算</h1><p>窗口将无界的数据流，分隔成有界的数据（按时间或数量）进行计算</p>
+<p>窗口计算类型：</p>
+<ul>
+<li><p>聚合统计</p>
+</li>
+<li><p>记录合并</p>
+</li>
+<li><p>双流join</p>
+</li>
+</ul>
+<h1 id="Window-Assigner"><a href="#Window-Assigner" class="headerlink" title="Window Assigner"></a>Window Assigner</h1><p>Flink窗口骨架结构中有两个必须的操作：</p>
+<ol>
+<li><p>使用窗口分配器（WindowAssigner）将数据流中的元素分配到对应的窗口</p>
+</li>
+<li><p>当满足窗口触发条件后，对窗口内的数据使用窗口处理函数（Window Function）进行处理，常用的Window Function有reduce、aggregate、process。</p>
+</li>
+</ol>
+<p>Flink支持的窗口类型：</p>
+<ol>
+<li>time window</li>
+</ol>
+<ul>
+<li>Tumbling Windows（滚动窗口）</li>
+<li>Sliding Windows（滑动窗口）</li>
+<li>Session Windows（会话窗口）</li>
+<li>Global Windows（全局窗口）</li>
+</ul>
+<ol start="2">
+<li>count window</li>
+</ol>
+<ul>
+<li>滚动count</li>
+<li>滑动count</li>
+</ul>
+<p>所有的窗口类型都分为Keyed Windows和Non-Keyed Windows</p>
+<h1 id="Window-Trigger"><a href="#Window-Trigger" class="headerlink" title="Window Trigger"></a>Window Trigger</h1><p>窗口触发器决定了何时启动Window Function来处理Window中的数据，以及何时清理Window中的数据</p>
+<ul>
+<li>通常情况下WindowAssigner中已经默认包含相应的Windwo Trigger，且适用于大部分场景</li>
+<li>所有基于Event Time时间的WindowAssigner默认Trigger都是EventTimeTrigger</li>
+<li>GlobalWindow默认为NeverTrigger，也就是不触发，因此使用GlobalWindow必须指定CustomTrigger，否则窗口永远不触发</li>
+<li>通过WindowStream提供的trgger（）方法能够接受新的Trigger实现，但是会覆盖WindowAssigner自带的默认Trigger</li>
+</ul>
+<h1 id="Window-Evictors"><a href="#Window-Evictors" class="headerlink" title="Window Evictors"></a>Window Evictors</h1><p>数据剔除器（可选组件），决定了数据清理策略。</p>
+<p>Flink内置了几个数据剔除器</p>
+<ul>
+<li>CountEvictor</li>
+<li>TimeEvictor</li>
+<li>DeltaEvictor </li>
+</ul>
+<h1 id="Window-Function"><a href="#Window-Function" class="headerlink" title="Window Function"></a>Window Function</h1><p>增量计算（会维护状态信息，基于状态的统计）</p>
+<ul>
+<li>ReduceFunction</li>
+<li>AggregateFunction</li>
+<li>Foldfunction</li>
+</ul>
+<p>全量计算</p>
+<ul>
+<li>ProcessWindowFunction<br>对窗口内所有的数据进行计算，会带来比较大的性能上的开销</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author richey</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class MyProcessWindowFunction extends ProcessWindowFunction&lt;Tuple2&lt;String, Long&gt;, String, String, TimeWindow&gt; &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void process(String key, Context context, Iterable&lt;Tuple2&lt;String, Long&gt;&gt; input, Collector&lt;String&gt; out) throws Exception &#123;</span><br><span class="line">        long count &#x3D; 0;</span><br><span class="line">        for (Tuple2&lt;String, Long&gt; stringLongTuple2 : input) &#123;</span><br><span class="line">            count++;</span><br><span class="line">        &#125;</span><br><span class="line">        out.collect(&quot;Window:&quot; + context.window() + &quot;count:&quot; + count);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Window-多流合并"><a href="#Window-多流合并" class="headerlink" title="Window 多流合并"></a>Window 多流合并</h1><h2 id="Window-Join"><a href="#Window-Join" class="headerlink" title="Window Join"></a>Window Join</h2><p>必须共用一个窗口，窗口类型必须统一。</p>
+<ul>
+<li>Tumbling Window Join</li>
+<li>Sliding Window Join</li>
+<li>Session Window Join<h2 id="Interval-Join"><a href="#Interval-Join" class="headerlink" title="Interval Join"></a>Interval Join</h2></li>
+</ul>
+<h2 id="在Flink-DataStream-API中使用"><a href="#在Flink-DataStream-API中使用" class="headerlink" title="在Flink DataStream API中使用"></a>在Flink DataStream API中使用</h2><ul>
+<li>ProcessJoinFunction</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">streamA.join(streamB)</span><br><span class="line">        .where(&lt;KeySelector&gt;)</span><br><span class="line">        .equalTo(&lt;KeySelector&gt;)</span><br><span class="line">        .window(&lt;WindowAssigner&gt;)</span><br><span class="line">        .apply(&lt;&lt;JoinFunction&gt;)</span><br></pre></td></tr></table></figure>
+
+<h1 id="Process-Function应用"><a href="#Process-Function应用" class="headerlink" title="Process Function应用"></a>Process Function应用</h1><p>ProcessFunction函数是低阶流处理算子</p>
+<ul>
+<li>事件（数据流元素）</li>
+<li>状态（容错和一致性）</li>
+<li>定时器（事件时间和处理时间)</li>
+</ul>
+<p>总结：</p>
+<p>对于每一个接入的数据元素：</p>
+<ul>
+<li>更新数据状态</li>
+<li>注册未来某一时间需要调用的callback回调函数</li>
+</ul>
+<p>当某一时间来到后：</p>
+<ul>
+<li>检查是否满足条件，并执行对应的行为，例如输出数据元素等</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author richey</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class CountWithTimeoutFnction extends ProcessFunction&lt;Tuple2&lt;String, String&gt;, Tuple2&lt;String, Long&gt;&gt; &#123;</span><br><span class="line"></span><br><span class="line">    private ValueState&lt;CountWithTimestamp&gt; state;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;参数初始化，包括状态参数初始化</span><br><span class="line">    @Override</span><br><span class="line">    public void open(Configuration parameters) throws Exception &#123;</span><br><span class="line">        state &#x3D; getRuntimeContext().getState(</span><br><span class="line">                new ValueStateDescriptor&lt;CountWithTimestamp&gt;(&quot;myState&quot;, CountWithTimestamp.class)</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 对每一个接入的事件元素进行处理</span><br><span class="line">     *</span><br><span class="line">     * @param value 接入的事件元素</span><br><span class="line">     * @param ctx   上下文对象</span><br><span class="line">     * @param out   数据输出回收器</span><br><span class="line">     * @throws Exception</span><br><span class="line">     *&#x2F;</span><br><span class="line">    @Override</span><br><span class="line">    public void processElement(Tuple2&lt;String, String&gt; value, Context ctx, Collector&lt;Tuple2&lt;String, Long&gt;&gt; out) throws Exception &#123;</span><br><span class="line">        CountWithTimestamp current &#x3D; state.value();</span><br><span class="line">        if (current &#x3D;&#x3D; null) &#123;</span><br><span class="line">            current &#x3D; new CountWithTimestamp();</span><br><span class="line">            current.key &#x3D; value.f0;</span><br><span class="line">        &#125;</span><br><span class="line">        current.count++;</span><br><span class="line">        current.lastModified &#x3D; ctx.timestamp();</span><br><span class="line">        state.update(current);</span><br><span class="line">        ctx.timerService().registerEventTimeTimer(current.lastModified + 100);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;</span><br><span class="line">    @Override</span><br><span class="line">    public void onTimer(long timestamp, OnTimerContext ctx, Collector&lt;Tuple2&lt;String, Long&gt;&gt; out) throws Exception &#123;</span><br><span class="line">        CountWithTimestamp result &#x3D; state.value();</span><br><span class="line">        if (timestamp &#x3D;&#x3D; result.lastModified + 100) &#123;</span><br><span class="line">            out.collect(new Tuple2&lt;String, Long&gt;(result.key, result.count));</span><br><span class="line">            state.clear();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="SideOutput旁路输出"><a href="#SideOutput旁路输出" class="headerlink" title="SideOutput旁路输出"></a>SideOutput旁路输出</h1><p>按照给定的数据切分逻辑，将输入数据切分成不同的子集</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">StreamExecutionEnvironment env &#x3D; StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line"></span><br><span class="line">List&lt;Integer&gt; elements &#x3D; Lists.newArrayList();</span><br><span class="line">DataStream&lt;Integer&gt; dataStream &#x3D; env.fromCollection(elements);</span><br><span class="line">final OutputTag&lt;String&gt; sideOutputTag &#x3D; new OutputTag&lt;String&gt;(&quot;side&quot;) &#123;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">SingleOutputStreamOperator&lt;Integer&gt; passThroughtStream &#x3D; dataStream.process(new ProcessFunction&lt;Integer, Integer&gt;() &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void processElement(Integer value, Context ctx, Collector&lt;Integer&gt; out) throws Exception &#123;</span><br><span class="line">        out.collect(value);</span><br><span class="line">        ctx.output(sideOutputTag, &quot;sideout-&quot; + String.valueOf(value));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">passThroughtStream.getSideOutput(sideOutputTag).addSink(sideOutputResultSink1);</span><br><span class="line">passThroughtStream.getSideOutput(sideOutputTag).addSink(sideOutputResultSink2);</span><br></pre></td></tr></table></figure>
+
+<h1 id="Asynchronous-I-O异步操作"><a href="#Asynchronous-I-O异步操作" class="headerlink" title="Asynchronous I/O异步操作"></a>Asynchronous I/O异步操作</h1><p>Stream Enrichment Pattern 对流处理过程的数据进行补充丰富，以提供更多的指标计算维度</p>
+<p>外部信息特点：</p>
+<ul>
+<li>数据量巨大（亿级别）</li>
+<li>通常维护和存储在外部的服务或者DB中</li>
+<li>单条查询有一定的时延（ms/s级别）</li>
+</ul>
+<p>可以通过算子中直接关联数据库的方式对数据进行补充，但是存在性能瓶颈，如果查询缓慢会导致整个算子的执行效率降低，进而导致资源利用率下降，并发的Task都会被block住。</p>
+<p>数据库连接会严重控制和影响整个应用的throughput和latency。</p>
+<p>可以通过异步的方式，并行的将结果取回来并缓存。Flink可以通过异步的方式同数据库进行交互。</p>
+<p>异步交互前提条件是数据库的客户端要支持异步请求。</p>
+<h2 id="AsyncFunction-API调用"><a href="#AsyncFunction-API调用" class="headerlink" title="AsyncFunction API调用"></a>AsyncFunction API调用</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">        StreamExecutionEnvironment env &#x3D; StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">        List&lt;Integer&gt; elements &#x3D; Lists.newArrayList();</span><br><span class="line">        DataStream&lt;Integer&gt; stream &#x3D; env.fromCollection(elements);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;        AsyncDataStream.unorderedWait(stream,</span><br><span class="line">        AsyncDataStream.orderedWait(stream,</span><br><span class="line">                new HBashAsynnFunc(),</span><br><span class="line">                1000, &#x2F;&#x2F;最大等待时间</span><br><span class="line">                TimeUnit.MILLISECONDS, 100);&#x2F;&#x2F;最大request数量，最大异步请求数量</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author richey</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class HBashAsynnFunc implements AsyncFunction&lt;String,String&gt; &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void asyncInvoke(String row, ResultFuture&lt;String&gt; resultFuture) throws Exception &#123;</span><br><span class="line">        HBaseCallback cb &#x3D; new HBaseCallback(result);</span><br><span class="line">        Get get &#x3D; new Get(...)</span><br><span class="line">        hbase.AsyncGet(get,cb);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="自定义SourceFunction"><a href="#自定义SourceFunction" class="headerlink" title="自定义SourceFunction"></a>自定义SourceFunction</h1><p>通过实现SourceFunctin接口来实现对外部数据源的读取，并转换成对于的DataStream数据集</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.png" alt="Richey Liu 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Richey Liu 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Richey Liu
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://10000hours.top/2021/06/12/Flink03-Flink%E6%B5%81%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80/" title="Flink03-Flink流处理基础">http://10000hours.top/2021/06/12/Flink03-Flink%E6%B5%81%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Flink/" rel="tag"># Flink</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/06/05/Flink02-Flink-On-Kubernetes-Native%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/" rel="next" title="Flink02-Flink-On-Kubernetes-Native集群部署">
+                <i class="fa fa-chevron-left"></i> Flink02-Flink-On-Kubernetes-Native集群部署
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Richey Liu" />
+            
+              <p class="site-author-name" itemprop="name">Richey Liu</p>
+              <p class="site-description motion-element" itemprop="description">花有重开时人无再少年</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">131</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/liubaolin" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="brin.baolin@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-globe"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#时间"><span class="nav-number">1.</span> <span class="nav-text">时间</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#事件时间（event-time）"><span class="nav-number">1.1.</span> <span class="nav-text">事件时间（event time）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#处理时间（processing-time）"><span class="nav-number">1.2.</span> <span class="nav-text">处理时间（processing time）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#水位线（Watermark）"><span class="nav-number">2.</span> <span class="nav-text">水位线（Watermark）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Wartermark与window之间的关系"><span class="nav-number">3.</span> <span class="nav-text">Wartermark与window之间的关系</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何定义和使用Watermark"><span class="nav-number">4.</span> <span class="nav-text">如何定义和使用Watermark</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#window-窗口计算"><span class="nav-number">5.</span> <span class="nav-text">window 窗口计算</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Window-Assigner"><span class="nav-number">6.</span> <span class="nav-text">Window Assigner</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Window-Trigger"><span class="nav-number">7.</span> <span class="nav-text">Window Trigger</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Window-Evictors"><span class="nav-number">8.</span> <span class="nav-text">Window Evictors</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Window-Function"><span class="nav-number">9.</span> <span class="nav-text">Window Function</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Window-多流合并"><span class="nav-number">10.</span> <span class="nav-text">Window 多流合并</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Window-Join"><span class="nav-number">10.1.</span> <span class="nav-text">Window Join</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Interval-Join"><span class="nav-number">10.2.</span> <span class="nav-text">Interval Join</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在Flink-DataStream-API中使用"><span class="nav-number">10.3.</span> <span class="nav-text">在Flink DataStream API中使用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Process-Function应用"><span class="nav-number">11.</span> <span class="nav-text">Process Function应用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SideOutput旁路输出"><span class="nav-number">12.</span> <span class="nav-text">SideOutput旁路输出</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Asynchronous-I-O异步操作"><span class="nav-number">13.</span> <span class="nav-text">Asynchronous I&#x2F;O异步操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#AsyncFunction-API调用"><span class="nav-number">13.1.</span> <span class="nav-text">AsyncFunction API调用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#自定义SourceFunction"><span class="nav-number">14.</span> <span class="nav-text">自定义SourceFunction</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Richey Liu</span>
+
+  
+</div>
+
+
+
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'espIarB7yj7vR1el85iiMLjb-gzGzoHsz',
+        appKey: 'v35zFd1Yc4PX5KsGn2wHgrob',
+        placeholder: '欢迎留言！',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("98BykxDu7C0UsRu0zaggGlMu-gzGzoHsz", "a21Q7nym42YYGdxdx2XxxQNM");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

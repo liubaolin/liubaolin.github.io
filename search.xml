@@ -1,36 +1,163 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Flink01-集群运行模式</title>
-    <url>/2021/06/05/Flink01-%E9%9B%86%E7%BE%A4%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F/</url>
-    <content><![CDATA[<h1 id="Session-Mode"><a href="#Session-Mode" class="headerlink" title="Session Mode"></a>Session Mode</h1><p>JobManager和TaskManager共享</p>
-<h2 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h2><ul>
-<li>资源充分共享，提示资源利用率</li>
-<li>Job在Flink Session集群中管理，运维简单</li>
+    <title>Flink03-Flink流处理基础</title>
+    <url>/2021/06/12/Flink03-Flink%E6%B5%81%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80/</url>
+    <content><![CDATA[<h1 id="时间"><a href="#时间" class="headerlink" title="时间"></a>时间</h1><h2 id="事件时间（event-time）"><a href="#事件时间（event-time）" class="headerlink" title="事件时间（event time）"></a>事件时间（event time）</h2><p>事件发生的顺序，这个顺序是不会变的，计算结果是可复现的</p>
+<h2 id="处理时间（processing-time）"><a href="#处理时间（processing-time）" class="headerlink" title="处理时间（processing time）"></a>处理时间（processing time）</h2><p>基于Flink部署的本地机器时间,每次可能不一样，不提供确定性的保障</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">StreamExecutionEnvironment env &#x3D; StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;设置时间语义</span><br><span class="line">&#x2F;&#x2F;数据产生的时间</span><br><span class="line">env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);</span><br><span class="line">&#x2F;&#x2F;数据接入数据源的时间</span><br><span class="line">env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);</span><br><span class="line">&#x2F;&#x2F;flink处理的时间</span><br><span class="line">env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);</span><br></pre></td></tr></table></figure>
+
+<h1 id="水位线（Watermark）"><a href="#水位线（Watermark）" class="headerlink" title="水位线（Watermark）"></a>水位线（Watermark）</h1><p>在使用Event Time时间概念时，Flink需要知道：</p>
+<ol>
+<li>每个StreamElement的EventTime时间</li>
+<li>接入的数据何时可以开始计算（什么时间算结束）</li>
+</ol>
+<ul>
+<li>Watermark用于标记Event-Time的前进进程；</li>
+<li>Watermark跟随DataStream Event-Time变动，并自身携带TimeStamp；</li>
+<li>Watermark用于表明所有某个（较早）时间点之前的事件（可能）已经到达；</li>
+<li>Watermark本身也属于特殊事件</li>
 </ul>
-<h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><ul>
-<li>资源隔离性相对较差（job资源不相互隔离）</li>
-<li>非Native部署，TM不易扩展(TM数量在启动时已经固定并启动起来了)，Slot计算资源伸缩性较差</li>
+<p>数据流事件本身有顺序的情况下，可以得到完美的Watermark。</p>
+<p>当数据流事件无序的时候，通常认为它们有一定的无序性，可以通过设置maxOutOfOrderness最大时延要求来产生Watermark，并且只有新的最大时间戳出现时，<br>才会产生新的Watermark</p>
+<p>如果消息的时间小于等于当前Watermark的时间，则该事件会被标记为迟到事件,不会被纳入窗口计算</p>
+<h1 id="Wartermark与window之间的关系"><a href="#Wartermark与window之间的关系" class="headerlink" title="Wartermark与window之间的关系"></a>Wartermark与window之间的关系</h1><p>wartermark大于等于window结束时间会触发统计</p>
+<p>对于事件时间小于wartermark时间的事件，不会纳入相关窗口的统计</p>
+<p>Wartermark使用总结</p>
+<ul>
+<li>Watermark = Max EventTime = Late Threshold （接入数据最大等待时延的容忍）</li>
+<li>Late Threshold越高，数据处理延迟越高</li>
+<li>解决一定范围内的乱序事件</li>
+<li>窗口触发条件：Current Watermark &gt; Window EndTime</li>
+<li>Watermark的主要目的是告诉窗口不会再有比当前Watermark更晚的数据到达</li>
+<li>idel Watermark（理想的Watermark）仅会发生在顺序事件中</li>
 </ul>
-<h1 id="Per-Job-Mode"><a href="#Per-Job-Mode" class="headerlink" title="Per-Job Mode"></a>Per-Job Mode</h1><ul>
-<li>单个Job独享JobManager和TaskManager</li>
-<li>TM中的Slot资源根据Job指定</li>
+<h1 id="如何定义和使用Watermark"><a href="#如何定义和使用Watermark" class="headerlink" title="如何定义和使用Watermark"></a>如何定义和使用Watermark</h1><p>两种策略</p>
+<ul>
+<li>Periodic Watermarks</li>
 </ul>
-<h2 id="优点-1"><a href="#优点-1" class="headerlink" title="优点"></a>优点</h2><ul>
-<li>Job与Job之间的资源充分隔离</li>
-<li>资源根据Job需要进行申请，TM Slots数量可以不同</li>
+<p>基于事件时间和最大时延</p>
+<ul>
+<li>Punctuated Watermarks</li>
 </ul>
-<h2 id="缺点-1"><a href="#缺点-1" class="headerlink" title="缺点"></a>缺点</h2><ul>
-<li>资源相对比较浪费，Job Manager需要消耗资源</li>
-<li>Job管理完全交给ClusterManagement，管理复杂</li>
+<p>基于固定的事件，在事件流里通过固定的信息标记</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">        DataStream&lt;MyEvent&gt; stream &#x3D; env.readFile(myFormat,</span><br><span class="line">                myFilePath,</span><br><span class="line">                FileProcessingMode.PROCESS_CONTINUOUSLY, 100,</span><br><span class="line">                FilePathFilter.createDefaultFilter(),</span><br><span class="line">                typeInfo);</span><br><span class="line"></span><br><span class="line">        DataStream&lt;MyEvent&gt; withTimestampsAndWatermarks</span><br><span class="line">                &#x3D; stream.filter(event -&gt; event.getStatus() &#x3D;&#x3D; CollectionStatus.STEADY)</span><br><span class="line">                &#x2F;&#x2F;下面两种设置watermart的方式都过时了</span><br><span class="line">                .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessGenerator());</span><br><span class="line">&#x2F;&#x2F;                .assignTimestampsAndWatermarks(new PunctuatedAssigner());</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        withTimestampsAndWatermarks.keyBy((event) -&gt; event.getCollectionCode())</span><br><span class="line">                .timeWindow(Time.seconds(10))</span><br><span class="line">                .reduce((a,b) -&gt; a.add(b))</span><br><span class="line">                .addSink(...);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author richey</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class BoundedOutOfOrdernessGenerator implements AssignerWithPeriodicWatermarks&lt;MyEvent&gt; &#123;</span><br><span class="line">    &#x2F;&#x2F;最大时延</span><br><span class="line">    private final long maxOutofOrderness &#x3D; 3500;&#x2F;&#x2F;3.5 seconds</span><br><span class="line">    private long currentMaxTimestamp;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Nullable</span><br><span class="line">    @Override</span><br><span class="line">    public Watermark getCurrentWatermark() &#123;</span><br><span class="line">        return new Watermark(currentMaxTimestamp - maxOutofOrderness);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public long extractTimestamp(MyEvent element, long previousRecordTimestamp) &#123;</span><br><span class="line">        long timestamp &#x3D; element.getCreationTime();</span><br><span class="line">        currentMaxTimestamp &#x3D; Math.max(timestamp, currentMaxTimestamp);</span><br><span class="line">        return timestamp;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author richey</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class PunctuatedAssigner implements AssignerWithPunctuatedWatermarks&lt;MyEvent&gt; &#123;</span><br><span class="line">    @Nullable</span><br><span class="line">    @Override</span><br><span class="line">    public Watermark checkAndGetNextWatermark(MyEvent lastElement, long extractedTimestamp) &#123;</span><br><span class="line">        return lastElement.hasWatermarkMarker() ? new Watermark(extractedTimestamp) : null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public long extractTimestamp(MyEvent element, long previousRecordTimestamp) &#123;</span><br><span class="line">        return element.getCreationTime();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面都是通过外部的方式去DataStream API里面去指定EventTime的抽取逻辑以及Watermark的生成逻辑。<br>对于大部分消息中间件来讲，比如kafka，可以在生成消息的时候就把Watermrk和Timestamp生成和抽取出来.</p>
+<p>在Source Functions中定义Timestamps和Watermarks</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">public void run(SourceFunction.SourceContext&lt;MyEvent&gt; ctx) throws Exception&#123;</span><br><span class="line">    while (&#x2F;* condition *&#x2F;)&#123;</span><br><span class="line">        MyType next &#x3D; getNext();</span><br><span class="line">        ctx.collectWithTimestamp(next,next.getEventTimestamp());</span><br><span class="line">        </span><br><span class="line">        if(next.hasWatermarkTime())&#123;</span><br><span class="line">            ctx.emitWatermark(new Watermark(next.getWatermarkTime()))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>1.11版本新的设置Timestamp和Watermark的api：Watermark Strategies</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">        DataStream&lt;MyEvent&gt; withTimestampsAndWatermarks</span><br><span class="line">                &#x3D; stream.filter(event -&gt; event.getStatus() &#x3D;&#x3D; CollectionStatus.STEADY)</span><br><span class="line">                &#x2F;&#x2F;下面两种设置watermart的方式都过时了</span><br><span class="line">&#x2F;&#x2F;                .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessGenerator());</span><br><span class="line">&#x2F;&#x2F;                .assignTimestampsAndWatermarks(new PunctuatedAssigner());</span><br><span class="line">                .assignTimestampsAndWatermarks(</span><br><span class="line">                        WatermarkStrategy.&lt;Tuple2&lt;Long, String&gt;&gt;forBoundedOutOfOrderness(Duration.ofSeconds(20))</span><br><span class="line">                                .withTimestampAssigner((event, timestamp) -&gt; event.f0));</span><br><span class="line"></span><br><span class="line">        FlinkKafkaConsumer010&lt;MyEvent&gt; kafkaSource &#x3D; new FlinkKafkaConsumer010&lt;MyEvent&gt;(&quot;myTopic&quot;,</span><br><span class="line">                schema,props);</span><br><span class="line">        kafkaSource.assignTimestampsAndWatermarks(WatermarkStrategy.&lt;MyEvent&gt;forBoundedOutOfOrderness(Duration.ofSeconds(20)));</span><br><span class="line">        DataStream&lt;MyEvent&gt; stream &#x3D;  env.addSource(kafkaSource);</span><br></pre></td></tr></table></figure>
+
+<h1 id="window-窗口计算"><a href="#window-窗口计算" class="headerlink" title="window 窗口计算"></a>window 窗口计算</h1><p>窗口将无界的数据流，分隔成有界的数据（按时间或数量）进行计算</p>
+<p>窗口计算类型：</p>
+<ul>
+<li><p>聚合统计</p>
+</li>
+<li><p>记录合并</p>
+</li>
+<li><p>双流join</p>
+</li>
 </ul>
-<h1 id="Application-Mode（1-11版本提出）"><a href="#Application-Mode（1-11版本提出）" class="headerlink" title="Application Mode（1.11版本提出）"></a>Application Mode（1.11版本提出）</h1><h2 id="优点-2"><a href="#优点-2" class="headerlink" title="优点"></a>优点</h2><ul>
-<li>有效的降低宽带和客户端负载</li>
-<li>Application实现资源隔离，Application中实现资源共享</li>
+<h1 id="Window-Assigner"><a href="#Window-Assigner" class="headerlink" title="Window Assigner"></a>Window Assigner</h1><p>Flink窗口骨架结构中有两个必须的操作：</p>
+<ol>
+<li><p>使用窗口分配器（WindowAssigner）将数据流中的元素分配到对应的窗口</p>
+</li>
+<li><p>当满足窗口触发条件后，对窗口内的数据使用窗口处理函数（Window Function）进行处理，常用的Window Function有reduce、aggregate、process。</p>
+</li>
+</ol>
+<p>Flink支持的窗口类型：</p>
+<ol>
+<li>time window</li>
+</ol>
+<ul>
+<li>Tumbling Windows（滚动窗口）</li>
+<li>Sliding Windows（滑动窗口）</li>
+<li>Session Windows（会话窗口）</li>
+<li>Global Windows（全局窗口）</li>
 </ul>
-<h2 id="缺点-2"><a href="#缺点-2" class="headerlink" title="缺点"></a>缺点</h2><ul>
-<li>仅支持Yarn和K8s部署</li>
+<ol start="2">
+<li>count window</li>
+</ol>
+<ul>
+<li>滚动count</li>
+<li>滑动count</li>
 </ul>
+<p>所有的窗口类型都分为Keyed Windows和Non-Keyed Windows</p>
+<h1 id="Window-Trigger"><a href="#Window-Trigger" class="headerlink" title="Window Trigger"></a>Window Trigger</h1><p>窗口触发器决定了何时启动Window Function来处理Window中的数据，以及何时清理Window中的数据</p>
+<ul>
+<li>通常情况下WindowAssigner中已经默认包含相应的Windwo Trigger，且适用于大部分场景</li>
+<li>所有基于Event Time时间的WindowAssigner默认Trigger都是EventTimeTrigger</li>
+<li>GlobalWindow默认为NeverTrigger，也就是不触发，因此使用GlobalWindow必须指定CustomTrigger，否则窗口永远不触发</li>
+<li>通过WindowStream提供的trgger（）方法能够接受新的Trigger实现，但是会覆盖WindowAssigner自带的默认Trigger</li>
+</ul>
+<h1 id="Window-Evictors"><a href="#Window-Evictors" class="headerlink" title="Window Evictors"></a>Window Evictors</h1><p>数据剔除器（可选组件），决定了数据清理策略。</p>
+<p>Flink内置了几个数据剔除器</p>
+<ul>
+<li>CountEvictor</li>
+<li>TimeEvictor</li>
+<li>DeltaEvictor </li>
+</ul>
+<h1 id="Window-Function"><a href="#Window-Function" class="headerlink" title="Window Function"></a>Window Function</h1><p>增量计算（会维护状态信息，基于状态的统计）</p>
+<ul>
+<li>ReduceFunction</li>
+<li>AggregateFunction</li>
+<li>Foldfunction</li>
+</ul>
+<p>全量计算</p>
+<ul>
+<li>ProcessWindowFunction<br>对窗口内所有的数据进行计算，会带来比较大的性能上的开销</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author richey</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class MyProcessWindowFunction extends ProcessWindowFunction&lt;Tuple2&lt;String, Long&gt;, String, String, TimeWindow&gt; &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void process(String key, Context context, Iterable&lt;Tuple2&lt;String, Long&gt;&gt; input, Collector&lt;String&gt; out) throws Exception &#123;</span><br><span class="line">        long count &#x3D; 0;</span><br><span class="line">        for (Tuple2&lt;String, Long&gt; stringLongTuple2 : input) &#123;</span><br><span class="line">            count++;</span><br><span class="line">        &#125;</span><br><span class="line">        out.collect(&quot;Window:&quot; + context.window() + &quot;count:&quot; + count);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Window-多流合并"><a href="#Window-多流合并" class="headerlink" title="Window 多流合并"></a>Window 多流合并</h1><h2 id="Window-Join"><a href="#Window-Join" class="headerlink" title="Window Join"></a>Window Join</h2><p>必须共用一个窗口，窗口类型必须统一。</p>
+<ul>
+<li>Tumbling Window Join</li>
+<li>Sliding Window Join</li>
+<li>Session Window Join<h2 id="Interval-Join"><a href="#Interval-Join" class="headerlink" title="Interval Join"></a>Interval Join</h2></li>
+</ul>
+<h2 id="在Flink-DataStream-API中使用"><a href="#在Flink-DataStream-API中使用" class="headerlink" title="在Flink DataStream API中使用"></a>在Flink DataStream API中使用</h2><ul>
+<li>ProcessJoinFunction</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">streamA.join(streamB)</span><br><span class="line">        .where(&lt;KeySelector&gt;)</span><br><span class="line">        .equalTo(&lt;KeySelector&gt;)</span><br><span class="line">        .window(&lt;WindowAssigner&gt;)</span><br><span class="line">        .apply(&lt;&lt;JoinFunction&gt;)</span><br></pre></td></tr></table></figure>
+
+<h1 id="Process-Function应用"><a href="#Process-Function应用" class="headerlink" title="Process Function应用"></a>Process Function应用</h1><p>ProcessFunction函数是低阶流处理算子</p>
+<ul>
+<li>事件（数据流元素）</li>
+<li>状态（容错和一致性）</li>
+<li>定时器（事件时间和处理时间)</li>
+</ul>
+<p>总结：</p>
+<p>对于每一个接入的数据元素：</p>
+<ul>
+<li>更新数据状态</li>
+<li>注册未来某一时间需要调用的callback回调函数</li>
+</ul>
+<p>当某一时间来到后：</p>
+<ul>
+<li>检查是否满足条件，并执行对应的行为，例如输出数据元素等</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author richey</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class CountWithTimeoutFnction extends ProcessFunction&lt;Tuple2&lt;String, String&gt;, Tuple2&lt;String, Long&gt;&gt; &#123;</span><br><span class="line"></span><br><span class="line">    private ValueState&lt;CountWithTimestamp&gt; state;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;参数初始化，包括状态参数初始化</span><br><span class="line">    @Override</span><br><span class="line">    public void open(Configuration parameters) throws Exception &#123;</span><br><span class="line">        state &#x3D; getRuntimeContext().getState(</span><br><span class="line">                new ValueStateDescriptor&lt;CountWithTimestamp&gt;(&quot;myState&quot;, CountWithTimestamp.class)</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 对每一个接入的事件元素进行处理</span><br><span class="line">     *</span><br><span class="line">     * @param value 接入的事件元素</span><br><span class="line">     * @param ctx   上下文对象</span><br><span class="line">     * @param out   数据输出回收器</span><br><span class="line">     * @throws Exception</span><br><span class="line">     *&#x2F;</span><br><span class="line">    @Override</span><br><span class="line">    public void processElement(Tuple2&lt;String, String&gt; value, Context ctx, Collector&lt;Tuple2&lt;String, Long&gt;&gt; out) throws Exception &#123;</span><br><span class="line">        CountWithTimestamp current &#x3D; state.value();</span><br><span class="line">        if (current &#x3D;&#x3D; null) &#123;</span><br><span class="line">            current &#x3D; new CountWithTimestamp();</span><br><span class="line">            current.key &#x3D; value.f0;</span><br><span class="line">        &#125;</span><br><span class="line">        current.count++;</span><br><span class="line">        current.lastModified &#x3D; ctx.timestamp();</span><br><span class="line">        state.update(current);</span><br><span class="line">        ctx.timerService().registerEventTimeTimer(current.lastModified + 100);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;</span><br><span class="line">    @Override</span><br><span class="line">    public void onTimer(long timestamp, OnTimerContext ctx, Collector&lt;Tuple2&lt;String, Long&gt;&gt; out) throws Exception &#123;</span><br><span class="line">        CountWithTimestamp result &#x3D; state.value();</span><br><span class="line">        if (timestamp &#x3D;&#x3D; result.lastModified + 100) &#123;</span><br><span class="line">            out.collect(new Tuple2&lt;String, Long&gt;(result.key, result.count));</span><br><span class="line">            state.clear();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="SideOutput旁路输出"><a href="#SideOutput旁路输出" class="headerlink" title="SideOutput旁路输出"></a>SideOutput旁路输出</h1><p>按照给定的数据切分逻辑，将输入数据切分成不同的子集</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">StreamExecutionEnvironment env &#x3D; StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line"></span><br><span class="line">List&lt;Integer&gt; elements &#x3D; Lists.newArrayList();</span><br><span class="line">DataStream&lt;Integer&gt; dataStream &#x3D; env.fromCollection(elements);</span><br><span class="line">final OutputTag&lt;String&gt; sideOutputTag &#x3D; new OutputTag&lt;String&gt;(&quot;side&quot;) &#123;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">SingleOutputStreamOperator&lt;Integer&gt; passThroughtStream &#x3D; dataStream.process(new ProcessFunction&lt;Integer, Integer&gt;() &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void processElement(Integer value, Context ctx, Collector&lt;Integer&gt; out) throws Exception &#123;</span><br><span class="line">        out.collect(value);</span><br><span class="line">        ctx.output(sideOutputTag, &quot;sideout-&quot; + String.valueOf(value));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">passThroughtStream.getSideOutput(sideOutputTag).addSink(sideOutputResultSink1);</span><br><span class="line">passThroughtStream.getSideOutput(sideOutputTag).addSink(sideOutputResultSink2);</span><br></pre></td></tr></table></figure>
+
+<h1 id="Asynchronous-I-O异步操作"><a href="#Asynchronous-I-O异步操作" class="headerlink" title="Asynchronous I/O异步操作"></a>Asynchronous I/O异步操作</h1><p>Stream Enrichment Pattern 对流处理过程的数据进行补充丰富，以提供更多的指标计算维度</p>
+<p>外部信息特点：</p>
+<ul>
+<li>数据量巨大（亿级别）</li>
+<li>通常维护和存储在外部的服务或者DB中</li>
+<li>单条查询有一定的时延（ms/s级别）</li>
+</ul>
+<p>可以通过算子中直接关联数据库的方式对数据进行补充，但是存在性能瓶颈，如果查询缓慢会导致整个算子的执行效率降低，进而导致资源利用率下降，并发的Task都会被block住。</p>
+<p>数据库连接会严重控制和影响整个应用的throughput和latency。</p>
+<p>可以通过异步的方式，并行的将结果取回来并缓存。Flink可以通过异步的方式同数据库进行交互。</p>
+<p>异步交互前提条件是数据库的客户端要支持异步请求。</p>
+<h2 id="AsyncFunction-API调用"><a href="#AsyncFunction-API调用" class="headerlink" title="AsyncFunction API调用"></a>AsyncFunction API调用</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">        StreamExecutionEnvironment env &#x3D; StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">        List&lt;Integer&gt; elements &#x3D; Lists.newArrayList();</span><br><span class="line">        DataStream&lt;Integer&gt; stream &#x3D; env.fromCollection(elements);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;        AsyncDataStream.unorderedWait(stream,</span><br><span class="line">        AsyncDataStream.orderedWait(stream,</span><br><span class="line">                new HBashAsynnFunc(),</span><br><span class="line">                1000, &#x2F;&#x2F;最大等待时间</span><br><span class="line">                TimeUnit.MILLISECONDS, 100);&#x2F;&#x2F;最大request数量，最大异步请求数量</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author richey</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class HBashAsynnFunc implements AsyncFunction&lt;String,String&gt; &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void asyncInvoke(String row, ResultFuture&lt;String&gt; resultFuture) throws Exception &#123;</span><br><span class="line">        HBaseCallback cb &#x3D; new HBaseCallback(result);</span><br><span class="line">        Get get &#x3D; new Get(...)</span><br><span class="line">        hbase.AsyncGet(get,cb);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="自定义SourceFunction"><a href="#自定义SourceFunction" class="headerlink" title="自定义SourceFunction"></a>自定义SourceFunction</h1><p>通过实现SourceFunctin接口来实现对外部数据源的读取，并转换成对于的DataStream数据集</p>
 ]]></content>
       <categories>
         <category>数据处理</category>
@@ -84,6 +211,45 @@
 
 
 
+]]></content>
+      <categories>
+        <category>数据处理</category>
+      </categories>
+      <tags>
+        <tag>Flink</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Flink01-集群运行模式</title>
+    <url>/2021/06/05/Flink01-%E9%9B%86%E7%BE%A4%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<h1 id="Session-Mode"><a href="#Session-Mode" class="headerlink" title="Session Mode"></a>Session Mode</h1><p>JobManager和TaskManager共享</p>
+<h2 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h2><ul>
+<li>资源充分共享，提示资源利用率</li>
+<li>Job在Flink Session集群中管理，运维简单</li>
+</ul>
+<h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><ul>
+<li>资源隔离性相对较差（job资源不相互隔离）</li>
+<li>非Native部署，TM不易扩展(TM数量在启动时已经固定并启动起来了)，Slot计算资源伸缩性较差</li>
+</ul>
+<h1 id="Per-Job-Mode"><a href="#Per-Job-Mode" class="headerlink" title="Per-Job Mode"></a>Per-Job Mode</h1><ul>
+<li>单个Job独享JobManager和TaskManager</li>
+<li>TM中的Slot资源根据Job指定</li>
+</ul>
+<h2 id="优点-1"><a href="#优点-1" class="headerlink" title="优点"></a>优点</h2><ul>
+<li>Job与Job之间的资源充分隔离</li>
+<li>资源根据Job需要进行申请，TM Slots数量可以不同</li>
+</ul>
+<h2 id="缺点-1"><a href="#缺点-1" class="headerlink" title="缺点"></a>缺点</h2><ul>
+<li>资源相对比较浪费，Job Manager需要消耗资源</li>
+<li>Job管理完全交给ClusterManagement，管理复杂</li>
+</ul>
+<h1 id="Application-Mode（1-11版本提出）"><a href="#Application-Mode（1-11版本提出）" class="headerlink" title="Application Mode（1.11版本提出）"></a>Application Mode（1.11版本提出）</h1><h2 id="优点-2"><a href="#优点-2" class="headerlink" title="优点"></a>优点</h2><ul>
+<li>有效的降低宽带和客户端负载</li>
+<li>Application实现资源隔离，Application中实现资源共享</li>
+</ul>
+<h2 id="缺点-2"><a href="#缺点-2" class="headerlink" title="缺点"></a>缺点</h2><ul>
+<li>仅支持Yarn和K8s部署</li>
+</ul>
 ]]></content>
       <categories>
         <category>数据处理</category>
@@ -1038,85 +1204,6 @@
       </tags>
   </entry>
   <entry>
-    <title>mongoDB系列05-mongoDB数据模型设计</title>
-    <url>/2021/03/21/mongoDB%E7%B3%BB%E5%88%9705-mongoDB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/</url>
-    <content><![CDATA[<h1 id="JSON文档模型特点"><a href="#JSON文档模型特点" class="headerlink" title="JSON文档模型特点"></a>JSON文档模型特点</h1><p>在传统关系模型中需要多张表关联的模型，在json文档模型中可以通过一个表（集合）完成</p>
-<p>文档模型设计主要考虑两点：性能和开发易用</p>
-<h1 id="几个概念"><a href="#几个概念" class="headerlink" title="几个概念"></a>几个概念</h1><ul>
-<li>集合：同关系数据库中的表</li>
-<li>字段：同关系数据库中的列</li>
-<li>内嵌数组，引用字段：类似于关系数据库的主外键，关联关系</li>
-</ul>
-<h1 id="1-1关系建模"><a href="#1-1关系建模" class="headerlink" title="1-1关系建模"></a>1-1关系建模</h1><ul>
-<li>一对一关系以内嵌为主,作为子文档形式或者直接在顶级</li>
-<li>如果内嵌后导致文档大小超过16M,则不建议内嵌</li>
-</ul>
-<blockquote>
-<p>mongoDB文档大小不能超过16M</p>
-</blockquote>
-<h1 id="1-N关系建模"><a href="#1-N关系建模" class="headerlink" title="1-N关系建模"></a>1-N关系建模</h1><ul>
-<li>一对多关系同样以内嵌为主</li>
-<li>用数组表示一对多</li>
-<li>同样如果文档大小超过16M或数组长度太大（数万或更多）或数组长度不确定则不使用内嵌</li>
-</ul>
-<h1 id="N-N关系模型"><a href="#N-N关系模型" class="headerlink" title="N-N关系模型"></a>N-N关系模型</h1><ul>
-<li><p>不通过映射表做，同样建议通过内嵌数组表示一对多，通过冗余来实现N-N</p>
-</li>
-<li><p>同样如果文档大小超过16M或数组长度太大（数万或更多）或数组长度不确定则不使用内嵌</p>
-<p>在mongoDB里面有些时候是允许甚至鼓励做冗余的</p>
-<p>在mongoDB建模中，内嵌是一种重要的方式,但是内嵌不是万能的，根据具体情况我也需要建立文档间的引用关系</p>
-</li>
-</ul>
-<h1 id="根据业务需求细化建模"><a href="#根据业务需求细化建模" class="headerlink" title="根据业务需求细化建模"></a>根据业务需求细化建模</h1><p>首先要收集确认需求：</p>
-<ul>
-<li><p>读写比例</p>
-</li>
-<li><p>查询方式，比如查询最近几天，查询参数,以及最频繁的查询方式是什么</p>
-</li>
-<li><p>最频繁的写入方式是什么</p>
-</li>
-<li><p>数据量大小,将低频查询且数据量较大的数据单独集合保存，建立关联关系</p>
-<p>基于这些需求，我们最终决定是使用引用来避免性能瓶颈还是使用冗余来优化访问性能.</p>
-<p>比如内嵌模型通过冗余的方式实现N-N时，加入在数据量大的情况下，我们可能面临大量的修改操作(对冗余的数据进行修改),此时就需要设计为关联的方式,<br>将关联关系独立出一张表来，然后依然通过数组冗余的方式维护关系，只不过此时我们冗余的不是具体的数据，而是冗余表的主键数组</p>
-<p>这种通过冗余+关联的设计，我们可以通过$lookup的方式进行（多表）查询，类似mysql中的join</p>
-</li>
-</ul>
-<p>总结，什么时候应该使用引用的方式查询：</p>
-<ul>
-<li>内嵌文档太大，数MB或则超过16MB</li>
-<li>内嵌文档或者数组元素会频繁修改</li>
-<li>内嵌数组元素会持续增长且没有封顶</li>
-</ul>
-<h1 id="mongoDB引用设计的限制"><a href="#mongoDB引用设计的限制" class="headerlink" title="mongoDB引用设计的限制"></a>mongoDB引用设计的限制</h1><ul>
-<li>引用集合之间无主外键检查</li>
-<li>使用$lookup的方式模仿关联查询</li>
-<li>$lookup只支持left outer join</li>
-<li>$lookup的关联目标(from)不能是分片表</li>
-</ul>
-<h1 id="常用的设计模式"><a href="#常用的设计模式" class="headerlink" title="常用的设计模式"></a>常用的设计模式</h1><h2 id="分桶模式"><a href="#分桶模式" class="headerlink" title="分桶模式"></a>分桶模式</h2><p>批量保存概念，节省索引和公共字段的存储空间。</p>
-<p>通过分桶模式可以大大减少文档数量和索引的占用空间</p>
-<h2 id="列转行"><a href="#列转行" class="headerlink" title="列转行"></a>列转行</h2><p>将多列数据转换成一行数据，将多列的信息放到行内的数组中维护</p>
-<p>这样如果我们本来需要对这些列建分别建索引（可能几十个），现在只需要建一个就够了.此模式解决的是索引过多的问题</p>
-<p>索引太多影响插入效率的问题就解决了</p>
-<p>注意的是只有这些列能抽象成一个对象表示时才可行(否则我们从语义上也无法实现列转行)</p>
-<h2 id="版本管理"><a href="#版本管理" class="headerlink" title="版本管理"></a>版本管理</h2><p>模型灵活了，如何管理文档的不同版本？</p>
-<p>可以增加一个版本字段：”schema_version”</p>
-<p>这样我们可以根据版本进行过滤，同时可以根据版本进行规则设置</p>
-<h2 id="近似计算"><a href="#近似计算" class="headerlink" title="近似计算"></a>近似计算</h2><p>对于请求量大同时准确性要求不高的统计，我们可以采用近似计算的方式：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if random(0,9) &#x3D;&#x3D; 0</span><br><span class="line">  increment by 10</span><br></pre></td></tr></table></figure>
-
-<p>可大量减少写入操作</p>
-<h2 id="预聚合"><a href="#预聚合" class="headerlink" title="预聚合"></a>预聚合</h2><p>增加统计字段，在进行数据修改的同时，修改这些统计字段的值，这样就可以避免聚合查询带来的性能和资源问题。</p>
-<p>这里是利用了mongoDB文档模型的灵活性，增加了聚合字段，而不影响正常业务数据</p>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>mongoDB</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>mongoDB系列04-mongoDB复制集</title>
     <url>/2021/03/21/mongoDB%E7%B3%BB%E5%88%9704-mongoDB%E5%A4%8D%E5%88%B6%E9%9B%86/</url>
     <content><![CDATA[<h1 id="复制集的作用"><a href="#复制集的作用" class="headerlink" title="复制集的作用"></a>复制集的作用</h1><ul>
@@ -1217,6 +1304,85 @@
 
 <p>在从节点查询</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mongo localhost:28018</span><br><span class="line"></span><br><span class="line">rs0:SECONDARY&gt; show dbs</span><br><span class="line">2021-03-21T16:31:28.658+0800 E  QUERY    [js] uncaught exception: Error: listDatabases failed:&#123;</span><br><span class="line">	&quot;operationTime&quot; : Timestamp(1616315486, 1),</span><br><span class="line">	&quot;ok&quot; : 0,</span><br><span class="line">	&quot;errmsg&quot; : &quot;not master and slaveOk&#x3D;false&quot;,</span><br><span class="line">	&quot;code&quot; : 13435,</span><br><span class="line">	&quot;codeName&quot; : &quot;NotPrimaryNoSecondaryOk&quot;,</span><br><span class="line">	&quot;$clusterTime&quot; : &#123;</span><br><span class="line">		&quot;clusterTime&quot; : Timestamp(1616315486, 1),</span><br><span class="line">		&quot;signature&quot; : &#123;</span><br><span class="line">			&quot;hash&quot; : BinData(0,&quot;AAAAAAAAAAAAAAAAAAAAAAAAAAA&#x3D;&quot;),</span><br><span class="line">			&quot;keyId&quot; : NumberLong(0)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125; :</span><br><span class="line">rs0:SECONDARY&gt; </span><br><span class="line">rs0:SECONDARY&gt; rs.slaveOk() # 上面报错，slave没有读权限，执行此命令允许从节点读</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>mongoDB</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>mongoDB系列05-mongoDB数据模型设计</title>
+    <url>/2021/03/21/mongoDB%E7%B3%BB%E5%88%9705-mongoDB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/</url>
+    <content><![CDATA[<h1 id="JSON文档模型特点"><a href="#JSON文档模型特点" class="headerlink" title="JSON文档模型特点"></a>JSON文档模型特点</h1><p>在传统关系模型中需要多张表关联的模型，在json文档模型中可以通过一个表（集合）完成</p>
+<p>文档模型设计主要考虑两点：性能和开发易用</p>
+<h1 id="几个概念"><a href="#几个概念" class="headerlink" title="几个概念"></a>几个概念</h1><ul>
+<li>集合：同关系数据库中的表</li>
+<li>字段：同关系数据库中的列</li>
+<li>内嵌数组，引用字段：类似于关系数据库的主外键，关联关系</li>
+</ul>
+<h1 id="1-1关系建模"><a href="#1-1关系建模" class="headerlink" title="1-1关系建模"></a>1-1关系建模</h1><ul>
+<li>一对一关系以内嵌为主,作为子文档形式或者直接在顶级</li>
+<li>如果内嵌后导致文档大小超过16M,则不建议内嵌</li>
+</ul>
+<blockquote>
+<p>mongoDB文档大小不能超过16M</p>
+</blockquote>
+<h1 id="1-N关系建模"><a href="#1-N关系建模" class="headerlink" title="1-N关系建模"></a>1-N关系建模</h1><ul>
+<li>一对多关系同样以内嵌为主</li>
+<li>用数组表示一对多</li>
+<li>同样如果文档大小超过16M或数组长度太大（数万或更多）或数组长度不确定则不使用内嵌</li>
+</ul>
+<h1 id="N-N关系模型"><a href="#N-N关系模型" class="headerlink" title="N-N关系模型"></a>N-N关系模型</h1><ul>
+<li><p>不通过映射表做，同样建议通过内嵌数组表示一对多，通过冗余来实现N-N</p>
+</li>
+<li><p>同样如果文档大小超过16M或数组长度太大（数万或更多）或数组长度不确定则不使用内嵌</p>
+<p>在mongoDB里面有些时候是允许甚至鼓励做冗余的</p>
+<p>在mongoDB建模中，内嵌是一种重要的方式,但是内嵌不是万能的，根据具体情况我也需要建立文档间的引用关系</p>
+</li>
+</ul>
+<h1 id="根据业务需求细化建模"><a href="#根据业务需求细化建模" class="headerlink" title="根据业务需求细化建模"></a>根据业务需求细化建模</h1><p>首先要收集确认需求：</p>
+<ul>
+<li><p>读写比例</p>
+</li>
+<li><p>查询方式，比如查询最近几天，查询参数,以及最频繁的查询方式是什么</p>
+</li>
+<li><p>最频繁的写入方式是什么</p>
+</li>
+<li><p>数据量大小,将低频查询且数据量较大的数据单独集合保存，建立关联关系</p>
+<p>基于这些需求，我们最终决定是使用引用来避免性能瓶颈还是使用冗余来优化访问性能.</p>
+<p>比如内嵌模型通过冗余的方式实现N-N时，加入在数据量大的情况下，我们可能面临大量的修改操作(对冗余的数据进行修改),此时就需要设计为关联的方式,<br>将关联关系独立出一张表来，然后依然通过数组冗余的方式维护关系，只不过此时我们冗余的不是具体的数据，而是冗余表的主键数组</p>
+<p>这种通过冗余+关联的设计，我们可以通过$lookup的方式进行（多表）查询，类似mysql中的join</p>
+</li>
+</ul>
+<p>总结，什么时候应该使用引用的方式查询：</p>
+<ul>
+<li>内嵌文档太大，数MB或则超过16MB</li>
+<li>内嵌文档或者数组元素会频繁修改</li>
+<li>内嵌数组元素会持续增长且没有封顶</li>
+</ul>
+<h1 id="mongoDB引用设计的限制"><a href="#mongoDB引用设计的限制" class="headerlink" title="mongoDB引用设计的限制"></a>mongoDB引用设计的限制</h1><ul>
+<li>引用集合之间无主外键检查</li>
+<li>使用$lookup的方式模仿关联查询</li>
+<li>$lookup只支持left outer join</li>
+<li>$lookup的关联目标(from)不能是分片表</li>
+</ul>
+<h1 id="常用的设计模式"><a href="#常用的设计模式" class="headerlink" title="常用的设计模式"></a>常用的设计模式</h1><h2 id="分桶模式"><a href="#分桶模式" class="headerlink" title="分桶模式"></a>分桶模式</h2><p>批量保存概念，节省索引和公共字段的存储空间。</p>
+<p>通过分桶模式可以大大减少文档数量和索引的占用空间</p>
+<h2 id="列转行"><a href="#列转行" class="headerlink" title="列转行"></a>列转行</h2><p>将多列数据转换成一行数据，将多列的信息放到行内的数组中维护</p>
+<p>这样如果我们本来需要对这些列建分别建索引（可能几十个），现在只需要建一个就够了.此模式解决的是索引过多的问题</p>
+<p>索引太多影响插入效率的问题就解决了</p>
+<p>注意的是只有这些列能抽象成一个对象表示时才可行(否则我们从语义上也无法实现列转行)</p>
+<h2 id="版本管理"><a href="#版本管理" class="headerlink" title="版本管理"></a>版本管理</h2><p>模型灵活了，如何管理文档的不同版本？</p>
+<p>可以增加一个版本字段：”schema_version”</p>
+<p>这样我们可以根据版本进行过滤，同时可以根据版本进行规则设置</p>
+<h2 id="近似计算"><a href="#近似计算" class="headerlink" title="近似计算"></a>近似计算</h2><p>对于请求量大同时准确性要求不高的统计，我们可以采用近似计算的方式：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if random(0,9) &#x3D;&#x3D; 0</span><br><span class="line">  increment by 10</span><br></pre></td></tr></table></figure>
+
+<p>可大量减少写入操作</p>
+<h2 id="预聚合"><a href="#预聚合" class="headerlink" title="预聚合"></a>预聚合</h2><p>增加统计字段，在进行数据修改的同时，修改这些统计字段的值，这样就可以避免聚合查询带来的性能和资源问题。</p>
+<p>这里是利用了mongoDB文档模型的灵活性，增加了聚合字段，而不影响正常业务数据</p>
 ]]></content>
       <categories>
         <category>DB</category>
@@ -1379,8 +1545,8 @@
       </tags>
   </entry>
   <entry>
-    <title>mongoDB系列01-mongoDB基础</title>
-    <url>/2021/03/06/mongoDB%E7%B3%BB%E5%88%9701-mongoDB%E5%9F%BA%E7%A1%80/</url>
+    <title>MongoDB命令速查</title>
+    <url>/2021/03/06/MongoDB%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/</url>
     <content><![CDATA[<h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><table>
 <thead>
 <tr>
@@ -1455,8 +1621,8 @@
       </tags>
   </entry>
   <entry>
-    <title>MongoDB命令速查</title>
-    <url>/2021/03/06/MongoDB%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/</url>
+    <title>mongoDB系列01-mongoDB基础</title>
+    <url>/2021/03/06/mongoDB%E7%B3%BB%E5%88%9701-mongoDB%E5%9F%BA%E7%A1%80/</url>
     <content><![CDATA[<h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><table>
 <thead>
 <tr>
@@ -1548,23 +1714,6 @@
       </tags>
   </entry>
   <entry>
-    <title>jupyter环境搭建</title>
-    <url>/2021/02/20/jupyter%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</url>
-    <content><![CDATA[<ol>
-<li>安装anaconda</li>
-<li>pycharm中新建项目配置环境变量为conda</li>
-<li>安装必要的包</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip3 install -i https:&#x2F;&#x2F;pypi.doubanio.com&#x2F;simple pandas jupyter xlrd openpyxl pillow matplotlib seaborn</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Phthon</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Kafka重平衡（Rebalance）</title>
     <url>/2021/02/20/Kafka%E9%87%8D%E5%B9%B3%E8%A1%A1%EF%BC%88Rebalance%EF%BC%89/</url>
     <content><![CDATA[<h1 id="什么是Rebalance"><a href="#什么是Rebalance" class="headerlink" title="什么是Rebalance"></a>什么是Rebalance</h1><p>首先要搞清楚，为什么要Rebalance：由于消费者组订阅了topic，因topic partition数和消费者组成员个数不同而存在的分配机制。</p>
@@ -1610,6 +1759,23 @@
       </categories>
       <tags>
         <tag>kafka</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>jupyter环境搭建</title>
+    <url>/2021/02/20/jupyter%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</url>
+    <content><![CDATA[<ol>
+<li>安装anaconda</li>
+<li>pycharm中新建项目配置环境变量为conda</li>
+<li>安装必要的包</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip3 install -i https:&#x2F;&#x2F;pypi.doubanio.com&#x2F;simple pandas jupyter xlrd openpyxl pillow matplotlib seaborn</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Phthon</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
       </tags>
   </entry>
   <entry>
@@ -2437,6 +2603,143 @@ dtype: float64</code></pre><p>实际开发中，我们一般通过读取Excel创
       </tags>
   </entry>
   <entry>
+    <title>vim命令</title>
+    <url>/2019/07/05/vim%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<p>vim本身提供了入门级教程，通过命令vimtutor就可以查看。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vimtutor</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h1 id="命令和对象"><a href="#命令和对象" class="headerlink" title="命令和对象"></a>命令和对象</h1><p>许多文本命令都由一个操作符和一个命令组成，例如删除操作符d，配合动作命令w 组成dw，即删除当前位置至下一个单词起始位置.</p>
+<p>简单的命令列表：</p>
+<ul>
+<li>w 当前位置至下一个单词的开始，不包含第一个字符</li>
+<li>e 当前位置只单词末尾，包含最后一个字符</li>
+<li>$ 当前位置至行末尾</li>
+</ul>
+<h1 id="在动作面前输入数字，可以使命令执行多次"><a href="#在动作面前输入数字，可以使命令执行多次" class="headerlink" title="在动作面前输入数字，可以使命令执行多次"></a>在动作面前输入数字，可以使命令执行多次</h1><ul>
+<li>2w 移动两个单词，至第三个单词的开始处</li>
+<li>3e 光标移动到第三个单词的末尾</li>
+<li>0　光标移动到行首</li>
+</ul>
+<h1 id="删除类"><a href="#删除类" class="headerlink" title="删除类"></a>删除类</h1><ul>
+<li><p>dw 删除光标至当前单词结尾</p>
+</li>
+<li><p>d$ 删除光标至当前行结尾</p>
+</li>
+</ul>
+<h1 id="撤销类"><a href="#撤销类" class="headerlink" title="撤销类"></a>撤销类</h1><ul>
+<li>u 撤销操作</li>
+<li>U 撤销整行操作</li>
+<li>Ctrl + R 撤销反向操作</li>
+</ul>
+<h1 id="查看类"><a href="#查看类" class="headerlink" title="查看类"></a>查看类</h1><ul>
+<li>移动到当前行最后  shift+a</li>
+</ul>
+<ul>
+<li><p>整页翻页 ctrl-f ctrl-b</p>
+<p>  f就是forword b就是backward</p>
+</li>
+<li><p>翻半页 ctrl-d ctlr-u</p>
+<p>  d=down u=up</p>
+</li>
+<li><p>滚一行 ctrl-e ctrl-y</p>
+</li>
+<li><p>zz 让光标所在的行居屏幕中央</p>
+</li>
+<li><p>zt 让光标所杂的行居屏幕最上一行 t=top</p>
+</li>
+<li><p>zb 让光标所杂的行居屏幕最下一行 b=bottom</p>
+</li>
+</ul>
+<h1 id="置入类"><a href="#置入类" class="headerlink" title="置入类"></a>置入类</h1><ul>
+<li>p 输入p将最后一次删除的内容置入光标之后</li>
+</ul>
+<h1 id="更改类"><a href="#更改类" class="headerlink" title="更改类"></a>更改类</h1><ul>
+<li>c [number] motion 同删除命令一样的用法</li>
+<li>ce 要改变文本直到一个单词的末尾，请输入 ce</li>
+<li>cw 要改变文本直到下一个单词的开始，请输入cw </li>
+<li>c$ 改变当前至行尾</li>
+</ul>
+<h1 id="定位及文件状态"><a href="#定位及文件状态" class="headerlink" title="定位及文件状态"></a>定位及文件状态</h1><ul>
+<li>ctrl + g 显示当前编辑文件名，及当前光标位置</li>
+<li>大写G跳到文件最后一行</li>
+<li>gg跳到文件首行</li>
+<li>行号 + 大写G 跳到指定行</li>
+<li>显示行号 :set number</li>
+<li>不显示行号 :set number</li>
+</ul>
+<h1 id="搜索类命令"><a href="#搜索类命令" class="headerlink" title="搜索类命令"></a>搜索类命令</h1><ul>
+<li>输入 / 加上一个字符串可以用以在当前文件中查找该字符串</li>
+<li>下一个n</li>
+<li>上一个N</li>
+<li>如果您想逆向查找字符串，请使用 ? 代替 / 进行</li>
+</ul>
+<h1 id="配对括号的查找"><a href="#配对括号的查找" class="headerlink" title="配对括号的查找"></a>配对括号的查找</h1><ul>
+<li>输入 % 可以查找配对的括号 )、]、}</li>
+</ul>
+<h1 id="替换命令"><a href="#替换命令" class="headerlink" title="替换命令"></a>替换命令</h1><ul>
+<li><p>r 输入r和一个字符替换光标所在位置的字符</p>
+</li>
+<li><p>R 输入R可连续替换多个字符</p>
+</li>
+<li><p>输入 :s/old/new/g 可以替换 old 为 new</p>
+</li>
+<li><p>输入 :s/thee/the &lt;回车&gt; 。请注意该命令只改变光标所在行的第一个匹配串</p>
+</li>
+<li><p>输入 :s/old/new/g 则是替换全行的匹配串，该行中所有的 “old” 都会被改变 </p>
+</li>
+<li><p>输入 :#,#s/old/new/g    #,# 代表的是替换操作的若干行中首尾两行的行号。</p>
+</li>
+<li><p>输入 :%s/old/new/g    替换整个文件中的每个匹配串。</p>
+</li>
+<li><p>输入 :%s/old/new/gc   找到整个文件中的每个匹配串，并且对每个匹配串提示是否进行替换。</p>
+</li>
+</ul>
+<h1 id="vim内执行外部命令"><a href="#vim内执行外部命令" class="headerlink" title="vim内执行外部命令"></a>vim内执行外部命令</h1><ul>
+<li>:!+shell命令即可</li>
+</ul>
+<h1 id="保存文件"><a href="#保存文件" class="headerlink" title="保存文件"></a>保存文件</h1><ul>
+<li>:w FILENAME 将文件以FILENAME为名称保存 </li>
+<li>按v进行可视模式，移动光标选择要保存的内容，再按:w FILENAME 即可把选择的内容保存到名称为FILENAME的文件中</li>
+</ul>
+<h1 id="可视模式"><a href="#可视模式" class="headerlink" title="可视模式"></a>可视模式</h1><ul>
+<li>按v键，进入字符可视模式，移动光标可进行选择</li>
+<li>按V键，进入行可视模式,移动光标可进行选择</li>
+<li>按Ctrl+v键，进入行可视模式,移动光标可进行选择<br>SHIFT+i(I) 输入要插入的内容<br>ESC 按两次，会在每行的选定的区域出现插入的内容</li>
+<li>选择后，可以输入一个操作符对选中的文本进行操作，比如d 删除</li>
+<li>u或U，字母大小写切换</li>
+<li>d删除选中字符，D删除整行</li>
+<li>y复制文本，p粘贴文本</li>
+<li>还可以把 y 当作操作符来使用；例如 yw 可以用来复制一个单词</li>
+</ul>
+<h1 id="提取和合并文件"><a href="#提取和合并文件" class="headerlink" title="提取和合并文件"></a>提取和合并文件</h1><ul>
+<li>:r FILENAME 要向当前文件中插入另外的文件的内容</li>
+</ul>
+<h1 id="打开类命令"><a href="#打开类命令" class="headerlink" title="打开类命令"></a>打开类命令</h1><ul>
+<li>输入 o 将在光标的下方打开新的一行并进入插入模式</li>
+<li>输入 O 将在光标的上方打开新的一行并进入插入模式</li>
+</ul>
+<h1 id="设置类命令的选项"><a href="#设置类命令的选项" class="headerlink" title="设置类命令的选项"></a>设置类命令的选项</h1><ul>
+<li>要查找单词 ignore 可在正常模式下输入 /ignore &lt;回车&gt;, 要重复查找该词，可以重复按 n 键</li>
+<li>然后设置 ic 选项(Ignore Case，忽略大小写)，请输入： :set ic</li>
+<li>要禁用忽略大小写，请输入： :set noic</li>
+<li>设置 hlsearch 和 incsearch 这两个选项，请输入： :set hls is</li>
+<li>要移除匹配项的高亮显示，请输入：  :nohlsearch<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#39;ic&#39; &#39;ignorecase&#39;       查找时忽略字母大小写</span><br><span class="line">&#39;is&#39; &#39;incsearch&#39;        查找短语时显示部分匹配</span><br><span class="line">&#39;hls&#39; &#39;hlsearch&#39;        高亮显示所有的匹配短语</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>工具</category>
+      </categories>
+      <tags>
+        <tag>vim</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>使用多线程提高REST服务性能</title>
     <url>/2019/07/05/%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%8F%90%E9%AB%98REST%E6%9C%8D%E5%8A%A1%E6%80%A7%E8%83%BD/</url>
     <content><![CDATA[<h2 id="异步处理REST服务"><a href="#异步处理REST服务" class="headerlink" title="异步处理REST服务"></a>异步处理REST服务</h2><ul>
@@ -2600,143 +2903,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
       </categories>
       <tags>
         <tag>Spring-Security</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>vim命令</title>
-    <url>/2019/07/05/vim%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<p>vim本身提供了入门级教程，通过命令vimtutor就可以查看。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vimtutor</span><br></pre></td></tr></table></figure>
-
-
-
-
-<h1 id="命令和对象"><a href="#命令和对象" class="headerlink" title="命令和对象"></a>命令和对象</h1><p>许多文本命令都由一个操作符和一个命令组成，例如删除操作符d，配合动作命令w 组成dw，即删除当前位置至下一个单词起始位置.</p>
-<p>简单的命令列表：</p>
-<ul>
-<li>w 当前位置至下一个单词的开始，不包含第一个字符</li>
-<li>e 当前位置只单词末尾，包含最后一个字符</li>
-<li>$ 当前位置至行末尾</li>
-</ul>
-<h1 id="在动作面前输入数字，可以使命令执行多次"><a href="#在动作面前输入数字，可以使命令执行多次" class="headerlink" title="在动作面前输入数字，可以使命令执行多次"></a>在动作面前输入数字，可以使命令执行多次</h1><ul>
-<li>2w 移动两个单词，至第三个单词的开始处</li>
-<li>3e 光标移动到第三个单词的末尾</li>
-<li>0　光标移动到行首</li>
-</ul>
-<h1 id="删除类"><a href="#删除类" class="headerlink" title="删除类"></a>删除类</h1><ul>
-<li><p>dw 删除光标至当前单词结尾</p>
-</li>
-<li><p>d$ 删除光标至当前行结尾</p>
-</li>
-</ul>
-<h1 id="撤销类"><a href="#撤销类" class="headerlink" title="撤销类"></a>撤销类</h1><ul>
-<li>u 撤销操作</li>
-<li>U 撤销整行操作</li>
-<li>Ctrl + R 撤销反向操作</li>
-</ul>
-<h1 id="查看类"><a href="#查看类" class="headerlink" title="查看类"></a>查看类</h1><ul>
-<li>移动到当前行最后  shift+a</li>
-</ul>
-<ul>
-<li><p>整页翻页 ctrl-f ctrl-b</p>
-<p>  f就是forword b就是backward</p>
-</li>
-<li><p>翻半页 ctrl-d ctlr-u</p>
-<p>  d=down u=up</p>
-</li>
-<li><p>滚一行 ctrl-e ctrl-y</p>
-</li>
-<li><p>zz 让光标所在的行居屏幕中央</p>
-</li>
-<li><p>zt 让光标所杂的行居屏幕最上一行 t=top</p>
-</li>
-<li><p>zb 让光标所杂的行居屏幕最下一行 b=bottom</p>
-</li>
-</ul>
-<h1 id="置入类"><a href="#置入类" class="headerlink" title="置入类"></a>置入类</h1><ul>
-<li>p 输入p将最后一次删除的内容置入光标之后</li>
-</ul>
-<h1 id="更改类"><a href="#更改类" class="headerlink" title="更改类"></a>更改类</h1><ul>
-<li>c [number] motion 同删除命令一样的用法</li>
-<li>ce 要改变文本直到一个单词的末尾，请输入 ce</li>
-<li>cw 要改变文本直到下一个单词的开始，请输入cw </li>
-<li>c$ 改变当前至行尾</li>
-</ul>
-<h1 id="定位及文件状态"><a href="#定位及文件状态" class="headerlink" title="定位及文件状态"></a>定位及文件状态</h1><ul>
-<li>ctrl + g 显示当前编辑文件名，及当前光标位置</li>
-<li>大写G跳到文件最后一行</li>
-<li>gg跳到文件首行</li>
-<li>行号 + 大写G 跳到指定行</li>
-<li>显示行号 :set number</li>
-<li>不显示行号 :set number</li>
-</ul>
-<h1 id="搜索类命令"><a href="#搜索类命令" class="headerlink" title="搜索类命令"></a>搜索类命令</h1><ul>
-<li>输入 / 加上一个字符串可以用以在当前文件中查找该字符串</li>
-<li>下一个n</li>
-<li>上一个N</li>
-<li>如果您想逆向查找字符串，请使用 ? 代替 / 进行</li>
-</ul>
-<h1 id="配对括号的查找"><a href="#配对括号的查找" class="headerlink" title="配对括号的查找"></a>配对括号的查找</h1><ul>
-<li>输入 % 可以查找配对的括号 )、]、}</li>
-</ul>
-<h1 id="替换命令"><a href="#替换命令" class="headerlink" title="替换命令"></a>替换命令</h1><ul>
-<li><p>r 输入r和一个字符替换光标所在位置的字符</p>
-</li>
-<li><p>R 输入R可连续替换多个字符</p>
-</li>
-<li><p>输入 :s/old/new/g 可以替换 old 为 new</p>
-</li>
-<li><p>输入 :s/thee/the &lt;回车&gt; 。请注意该命令只改变光标所在行的第一个匹配串</p>
-</li>
-<li><p>输入 :s/old/new/g 则是替换全行的匹配串，该行中所有的 “old” 都会被改变 </p>
-</li>
-<li><p>输入 :#,#s/old/new/g    #,# 代表的是替换操作的若干行中首尾两行的行号。</p>
-</li>
-<li><p>输入 :%s/old/new/g    替换整个文件中的每个匹配串。</p>
-</li>
-<li><p>输入 :%s/old/new/gc   找到整个文件中的每个匹配串，并且对每个匹配串提示是否进行替换。</p>
-</li>
-</ul>
-<h1 id="vim内执行外部命令"><a href="#vim内执行外部命令" class="headerlink" title="vim内执行外部命令"></a>vim内执行外部命令</h1><ul>
-<li>:!+shell命令即可</li>
-</ul>
-<h1 id="保存文件"><a href="#保存文件" class="headerlink" title="保存文件"></a>保存文件</h1><ul>
-<li>:w FILENAME 将文件以FILENAME为名称保存 </li>
-<li>按v进行可视模式，移动光标选择要保存的内容，再按:w FILENAME 即可把选择的内容保存到名称为FILENAME的文件中</li>
-</ul>
-<h1 id="可视模式"><a href="#可视模式" class="headerlink" title="可视模式"></a>可视模式</h1><ul>
-<li>按v键，进入字符可视模式，移动光标可进行选择</li>
-<li>按V键，进入行可视模式,移动光标可进行选择</li>
-<li>按Ctrl+v键，进入行可视模式,移动光标可进行选择<br>SHIFT+i(I) 输入要插入的内容<br>ESC 按两次，会在每行的选定的区域出现插入的内容</li>
-<li>选择后，可以输入一个操作符对选中的文本进行操作，比如d 删除</li>
-<li>u或U，字母大小写切换</li>
-<li>d删除选中字符，D删除整行</li>
-<li>y复制文本，p粘贴文本</li>
-<li>还可以把 y 当作操作符来使用；例如 yw 可以用来复制一个单词</li>
-</ul>
-<h1 id="提取和合并文件"><a href="#提取和合并文件" class="headerlink" title="提取和合并文件"></a>提取和合并文件</h1><ul>
-<li>:r FILENAME 要向当前文件中插入另外的文件的内容</li>
-</ul>
-<h1 id="打开类命令"><a href="#打开类命令" class="headerlink" title="打开类命令"></a>打开类命令</h1><ul>
-<li>输入 o 将在光标的下方打开新的一行并进入插入模式</li>
-<li>输入 O 将在光标的上方打开新的一行并进入插入模式</li>
-</ul>
-<h1 id="设置类命令的选项"><a href="#设置类命令的选项" class="headerlink" title="设置类命令的选项"></a>设置类命令的选项</h1><ul>
-<li>要查找单词 ignore 可在正常模式下输入 /ignore &lt;回车&gt;, 要重复查找该词，可以重复按 n 键</li>
-<li>然后设置 ic 选项(Ignore Case，忽略大小写)，请输入： :set ic</li>
-<li>要禁用忽略大小写，请输入： :set noic</li>
-<li>设置 hlsearch 和 incsearch 这两个选项，请输入： :set hls is</li>
-<li>要移除匹配项的高亮显示，请输入：  :nohlsearch<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#39;ic&#39; &#39;ignorecase&#39;       查找时忽略字母大小写</span><br><span class="line">&#39;is&#39; &#39;incsearch&#39;        查找短语时显示部分匹配</span><br><span class="line">&#39;hls&#39; &#39;hlsearch&#39;        高亮显示所有的匹配短语</span><br></pre></td></tr></table></figure>
-
-
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>工具</category>
-      </categories>
-      <tags>
-        <tag>vim</tag>
       </tags>
   </entry>
   <entry>
@@ -3305,6 +3471,37 @@ public class EvolutionaryExpiredSessionStrategy implements SessionInformationExp
       </tags>
   </entry>
   <entry>
+    <title>策略模式</title>
+    <url>/2019/06/10/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p>
+<h2 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h2><ul>
+<li><p>抽象策略略⻆色<br>  这个是⼀一个抽象的角色，通常情况下使⽤接口或者抽象类去实现。比如我们的Comparator接⼝口。</p>
+</li>
+<li><p>具体策略略⻆色<br>  包装了了具体的算法和⾏行行为。比如实现了Comparator接口的一组实现类。</p>
+</li>
+<li><p>环境⻆角⾊色Context<br>  内部会持有⼀个抽象⻆色的引⽤用，给客户端调⽤策略模式用于封装系列的算法，这些算法通常被封装在一个被称为 Context 类中，<br>客户端程序可以⾃由选择其中一种算法，或让 Context 为客户端选择一个最佳的算法——使⽤策略模式的优势是为了⽀支持算法的自由切换。</p>
+</li>
+</ul>
+<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><ul>
+<li><p>Resource和策略略模式<br>  Resource 接口就是策略模式的典型应用，Resource 接口就代表资源访问策略，但具体采⽤用哪种策略实现，Resource 接口并不理理会。<br>客户端程序只和Resource 接口耦合，并不知道底层采⽤何种资源访问策略，这样应用可以在不同的资源访问策略之间自由切换。</p>
+</li>
+<li><p>Spring 框架的 Context 如何“智能”地选择资源访问策略<br>  Spring提供两个标志性接口：</p>
+<ul>
+<li>ResourceLoader：该接口实现类的实例可以获得⼀个 Resource 实例例。</li>
+<li>ResourceLoaderAware：该接口实现类的实例将获得一个 ResourceLoader 的引用。<br>在 ResourceLoader 接口里有如下方法：Resource getResource(String location)：该接口仅包含这个⽅法，该方法⽤于返回一个 Resource 实例例。</li>
+</ul>
+<p>ApplicationContext 的实现类都实现 ResourceLoader 接⼝，因此 ApplicationContext 可⽤于直接获取 Resource 实例。</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Spring Security（10）－短信登录开发</title>
     <url>/2019/06/10/Spring%20Security%EF%BC%8810%EF%BC%89%EF%BC%8D%E7%9F%AD%E4%BF%A1%E7%99%BB%E5%BD%95%E5%BC%80%E5%8F%91/</url>
     <content><![CDATA[<p>Spring Security默认没有支持基于短信的认证方式，我们先回顾一下Spring Security开发基于表单的认流程：</p>
@@ -3352,37 +3549,6 @@ http.authenticationProvider(smsCodeAuthenticationProvider)
       </tags>
   </entry>
   <entry>
-    <title>策略模式</title>
-    <url>/2019/06/10/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/</url>
-    <content><![CDATA[<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.jpg" alt="适配器模式"></p>
-<h2 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h2><ul>
-<li><p>抽象策略略⻆色<br>  这个是⼀一个抽象的角色，通常情况下使⽤接口或者抽象类去实现。比如我们的Comparator接⼝口。</p>
-</li>
-<li><p>具体策略略⻆色<br>  包装了了具体的算法和⾏行行为。比如实现了Comparator接口的一组实现类。</p>
-</li>
-<li><p>环境⻆角⾊色Context<br>  内部会持有⼀个抽象⻆色的引⽤用，给客户端调⽤策略模式用于封装系列的算法，这些算法通常被封装在一个被称为 Context 类中，<br>客户端程序可以⾃由选择其中一种算法，或让 Context 为客户端选择一个最佳的算法——使⽤策略模式的优势是为了⽀支持算法的自由切换。</p>
-</li>
-</ul>
-<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><ul>
-<li><p>Resource和策略略模式<br>  Resource 接口就是策略模式的典型应用，Resource 接口就代表资源访问策略，但具体采⽤用哪种策略实现，Resource 接口并不理理会。<br>客户端程序只和Resource 接口耦合，并不知道底层采⽤何种资源访问策略，这样应用可以在不同的资源访问策略之间自由切换。</p>
-</li>
-<li><p>Spring 框架的 Context 如何“智能”地选择资源访问策略<br>  Spring提供两个标志性接口：</p>
-<ul>
-<li>ResourceLoader：该接口实现类的实例可以获得⼀个 Resource 实例例。</li>
-<li>ResourceLoaderAware：该接口实现类的实例将获得一个 ResourceLoader 的引用。<br>在 ResourceLoader 接口里有如下方法：Resource getResource(String location)：该接口仅包含这个⽅法，该方法⽤于返回一个 Resource 实例例。</li>
-</ul>
-<p>ApplicationContext 的实现类都实现 ResourceLoader 接⼝，因此 ApplicationContext 可⽤于直接获取 Resource 实例。</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>设计模式</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Spring Security（9）－验证码处理</title>
     <url>/2019/06/09/Spring%20Security%EF%BC%889%EF%BC%89%EF%BC%8D%E9%AA%8C%E8%AF%81%E7%A0%81%E5%A4%84%E7%90%86/</url>
     <content><![CDATA[<p>先看一下短信接口的代码结构图：</p>
@@ -3395,27 +3561,6 @@ http.authenticationProvider(smsCodeAuthenticationProvider)
       </categories>
       <tags>
         <tag>Spring-Security</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>生产故障排查流程</title>
-    <url>/2019/06/08/%E7%94%9F%E4%BA%A7%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h1 id="使用-top-查看系统中消耗cpu比较多的进程PID"><a href="#使用-top-查看系统中消耗cpu比较多的进程PID" class="headerlink" title="使用 top 查看系统中消耗cpu比较多的进程PID"></a>使用 top 查看系统中消耗cpu比较多的进程PID</h1><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">[richey@localhost ~]$ top |grep java</span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   2.7  11.3   5:49.83 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:49.87 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.7  11.3   5:49.92 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:49.96 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:50.00 java                                                                             </span><br><span class="line"> 7439 richey    20   0 7785472 346788  21388 S   0.3   2.1   0:06.05 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:50.04 java</span><br></pre></td></tr></table></figure>
-<h1 id="使用-ps-查看java相关进程的详细信息"><a href="#使用-ps-查看java相关进程的详细信息" class="headerlink" title="使用 ps 查看java相关进程的详细信息"></a>使用 ps 查看java相关进程的详细信息</h1><p>可以看出java进程JVM的详细配置</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[richey@localhost ~]$ ps -ef|grep java|grep 6274</span><br><span class="line"></span><br><span class="line">[richey@localhost ~]$ ps -ef|grep java|grep 6274</span><br><span class="line">richey    6274  6220 39 23:32 ?        00:05:52 /opt/idea-IU-172.4155.36/jre64/bin/java -Xbootclasspath/a:/opt/idea-IU-172.4155.36/lib/boot.jar -classpath /opt/idea-IU-172.4155.36/lib/bootstrap.jar:/opt/idea-IU-172.4155.36/lib/extensions.jar:/opt/idea-IU-172.4155.36/lib/util.jar:/opt/idea-IU-172.4155.36/lib/jdom.jar:/opt/idea-IU-172.4155.36/lib/log4j.jar:/opt/idea-IU-172.4155.36/lib/trove4j.jar:/opt/idea-IU-172.4155.36/lib/jna.jar:/opt/idea-IU-172.4155.36/jre64/lib/tools.jar -Xms2048m -Xmx6144m -XX:ReservedCodeCacheSize=240m -XX:+UseConcMarkSweepGC -XX:SoftRefLRUPolicyMSPerMB=50 -ea -Dsun.io.useCanonCaches=false -Djava.net.preferIPv4Stack=true -XX:+HeapDumpOnOutOfMemoryError -XX:-OmitStackTraceInFastThrow -Dawt.useSystemAAFontSettings=lcd -Dsun.java2d.renderer=sun.java2d.marlin.MarlinRenderingEngine -XX:ErrorFile=/home/richey/java_error_in_IDEA_%p.log -XX:HeapDumpPath=/home/richey/java_error_in_IDEA.hprof -Didea.paths.selector=IntelliJIdea2017.2 -Djb.vmOptionsFile=/opt/idea-IU-172.4155.36/bin/idea64.vmoptions -Didea.jre.check=true com.intellij.idea.Main</span><br></pre></td></tr></table></figure>
-
-<h1 id="使用-top-H-p-PID-来查看当前进程中比较消耗cpu的线程"><a href="#使用-top-H-p-PID-来查看当前进程中比较消耗cpu的线程" class="headerlink" title="使用 top -H -p PID 来查看当前进程中比较消耗cpu的线程"></a>使用 top -H -p PID 来查看当前进程中比较消耗cpu的线程</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">top -H -p 6274</span><br></pre></td></tr></table></figure>
-
-<p>拿到消耗cpu比较高的线程pid,先转换成16进制的</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 将16进制的pid 1077 转换成10进制</span><br><span class="line">rintf &quot;%x\n&quot; 1077</span><br></pre></td></tr></table></figure>
-
-<p>最后使用jstack pid|grep 16进制的线程id，就可以定位到问题代码。</p>
-]]></content>
-      <categories>
-        <category>生产故障</category>
-      </categories>
-      <tags>
-        <tag>问题定位</tag>
       </tags>
   </entry>
   <entry>
@@ -3594,6 +3739,27 @@ http.authenticationProvider(smsCodeAuthenticationProvider)
       </categories>
       <tags>
         <tag>Spring-Security</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>生产故障排查流程</title>
+    <url>/2019/06/08/%E7%94%9F%E4%BA%A7%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="使用-top-查看系统中消耗cpu比较多的进程PID"><a href="#使用-top-查看系统中消耗cpu比较多的进程PID" class="headerlink" title="使用 top 查看系统中消耗cpu比较多的进程PID"></a>使用 top 查看系统中消耗cpu比较多的进程PID</h1><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">[richey@localhost ~]$ top |grep java</span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   2.7  11.3   5:49.83 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:49.87 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.7  11.3   5:49.92 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:49.96 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:50.00 java                                                                             </span><br><span class="line"> 7439 richey    20   0 7785472 346788  21388 S   0.3   2.1   0:06.05 java                                                                             </span><br><span class="line"> 6274 richey    20   0   10.1g   1.7g  76144 S   1.3  11.3   5:50.04 java</span><br></pre></td></tr></table></figure>
+<h1 id="使用-ps-查看java相关进程的详细信息"><a href="#使用-ps-查看java相关进程的详细信息" class="headerlink" title="使用 ps 查看java相关进程的详细信息"></a>使用 ps 查看java相关进程的详细信息</h1><p>可以看出java进程JVM的详细配置</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[richey@localhost ~]$ ps -ef|grep java|grep 6274</span><br><span class="line"></span><br><span class="line">[richey@localhost ~]$ ps -ef|grep java|grep 6274</span><br><span class="line">richey    6274  6220 39 23:32 ?        00:05:52 /opt/idea-IU-172.4155.36/jre64/bin/java -Xbootclasspath/a:/opt/idea-IU-172.4155.36/lib/boot.jar -classpath /opt/idea-IU-172.4155.36/lib/bootstrap.jar:/opt/idea-IU-172.4155.36/lib/extensions.jar:/opt/idea-IU-172.4155.36/lib/util.jar:/opt/idea-IU-172.4155.36/lib/jdom.jar:/opt/idea-IU-172.4155.36/lib/log4j.jar:/opt/idea-IU-172.4155.36/lib/trove4j.jar:/opt/idea-IU-172.4155.36/lib/jna.jar:/opt/idea-IU-172.4155.36/jre64/lib/tools.jar -Xms2048m -Xmx6144m -XX:ReservedCodeCacheSize=240m -XX:+UseConcMarkSweepGC -XX:SoftRefLRUPolicyMSPerMB=50 -ea -Dsun.io.useCanonCaches=false -Djava.net.preferIPv4Stack=true -XX:+HeapDumpOnOutOfMemoryError -XX:-OmitStackTraceInFastThrow -Dawt.useSystemAAFontSettings=lcd -Dsun.java2d.renderer=sun.java2d.marlin.MarlinRenderingEngine -XX:ErrorFile=/home/richey/java_error_in_IDEA_%p.log -XX:HeapDumpPath=/home/richey/java_error_in_IDEA.hprof -Didea.paths.selector=IntelliJIdea2017.2 -Djb.vmOptionsFile=/opt/idea-IU-172.4155.36/bin/idea64.vmoptions -Didea.jre.check=true com.intellij.idea.Main</span><br></pre></td></tr></table></figure>
+
+<h1 id="使用-top-H-p-PID-来查看当前进程中比较消耗cpu的线程"><a href="#使用-top-H-p-PID-来查看当前进程中比较消耗cpu的线程" class="headerlink" title="使用 top -H -p PID 来查看当前进程中比较消耗cpu的线程"></a>使用 top -H -p PID 来查看当前进程中比较消耗cpu的线程</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">top -H -p 6274</span><br></pre></td></tr></table></figure>
+
+<p>拿到消耗cpu比较高的线程pid,先转换成16进制的</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 将16进制的pid 1077 转换成10进制</span><br><span class="line">rintf &quot;%x\n&quot; 1077</span><br></pre></td></tr></table></figure>
+
+<p>最后使用jstack pid|grep 16进制的线程id，就可以定位到问题代码。</p>
+]]></content>
+      <categories>
+        <category>生产故障</category>
+      </categories>
+      <tags>
+        <tag>问题定位</tag>
       </tags>
   </entry>
   <entry>
@@ -3970,6 +4136,47 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
       </tags>
   </entry>
   <entry>
+    <title>Mysql（12）-Mysql事务隔离是如何实现的</title>
+    <url>/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/</url>
+    <content><![CDATA[<h1 id="事务的启动时机。"><a href="#事务的启动时机。" class="headerlink" title="事务的启动时机。"></a>事务的启动时机。</h1><p>begin/start transaction 命令并不是一个事务的起点，在执行到它们之后的第一个操作 InnoDB 表的语句，事务才真正启动。如果你想要马上启动一个事务，可以使用 start transaction with consistent snapshot 这个命令。</p>
+<p>第一种启动方式，一致性视图是在第执行第一个快照读语句时创建的；<br>第二种启动方式，一致性视图是在执行 start transaction with consistent snapshot 时创建的。</p>
+<h1 id="在-MySQL-里，有两个“视图”的概念"><a href="#在-MySQL-里，有两个“视图”的概念" class="headerlink" title="在 MySQL 里，有两个“视图”的概念"></a>在 MySQL 里，有两个“视图”的概念</h1><p>一个是 view。它是一个用查询语句定义的虚拟表，在调用的时候执行查询语句并生成结果。创建视图的语法是 create view … ，而它的查询方法与表一样。</p>
+<p>另一个是 InnoDB 在实现 MVCC 时用到的一致性读视图，即 consistent read view，用于支持 RC（Read Committed，读提交）和 RR（Repeatable Read，可重复读）隔离级别的实现。</p>
+<h1 id="“快照”在-MVCC-里是怎么工作的？"><a href="#“快照”在-MVCC-里是怎么工作的？" class="headerlink" title="“快照”在 MVCC 里是怎么工作的？"></a>“快照”在 MVCC 里是怎么工作的？</h1><p>在可重复读隔离级别下，事务在启动的时候就“拍了个快照”。注意，这个快照是基于整库的。</p>
+<p>InnoDB 里面每个事务有一个唯一的事务 ID，叫作 transaction id。它是在事务开始的时候向 InnoDB 的事务系统申请的，是按申请顺序严格递增的。</p>
+<p>而每行数据也都是有多个版本的。每次事务更新数据的时候，都会生成一个新的数据版本，并且把 transaction id 赋值给这个数据版本的事务 ID，记为 row trx_id。同时，旧的数据版本要保留，并且在新的数据版本中，能够有信息可以直接拿到它。</p>
+<p>也就是说，数据表中的一行记录，其实可能有多个版本 (row)，每个版本有自己的 row trx_id。</p>
+<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg" alt="Mysql数据MVVC"></p>
+<p>中的三个虚线箭头，就是 undo log；而 V1、V2、V3 并不是物理上真实存在的，而是每次需要的时候根据当前版本和 undo log 计算出来的。比如，需要 V2 的时候，就是通过 V4 依次执行 U3、U2 算出来。</p>
+<p>可重复读的定义：一个事务启动的时候，能够看到所有已经提交的事务结果。但是之后，这个事务执行期间，其他事务的更新对它不可见。</p>
+<p>因此，一个事务只需要在启动的时候声明说，“以我启动的时刻为准，如果一个数据版本是在我启动之前生成的，就认；如果是我启动以后才生成的，我就不认，我必须要找到它的上一个版本”。</p>
+<p>一个数据版本，对于一个事务视图来说，除了自己的更新总是可见以外，有三种情况：</p>
+<ol>
+<li>版本未提交，不可见；</li>
+<li>版本已提交，但是是在视图创建后提交的，不可见；</li>
+<li>版本已提交，而且是在视图创建前提交的，可见。</li>
+</ol>
+<p>更新数据都是先读后写的，而这个读，只能读当前的值，称为“当前读”（current read）。</p>
+<p>这里我们提到了一个概念，叫作当前读。其实，除了 update 语句外，select 语句如果加锁，也是当前读。</p>
+<h1 id="事务的可重复读的能力是怎么实现的？"><a href="#事务的可重复读的能力是怎么实现的？" class="headerlink" title="事务的可重复读的能力是怎么实现的？"></a>事务的可重复读的能力是怎么实现的？</h1><p>可重复读的核心就是一致性读（consistent read）；而事务更新数据的时候，只能用当前读。如果当前的记录的行锁被其他事务占用的话，就需要进入锁等待。</p>
+<h1 id="读提交的逻辑和可重复读的区别"><a href="#读提交的逻辑和可重复读的区别" class="headerlink" title="读提交的逻辑和可重复读的区别"></a>读提交的逻辑和可重复读的区别</h1><p>在可重复读隔离级别下，只需要在事务开始的时候创建一致性视图，之后事务里的其他查询都共用这个一致性视图；</p>
+<p>在读提交隔离级别下，每一个语句执行前都会重新算出一个新的视图。</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>InnoDB 的行数据有多个版本，每个数据版本有自己的 row trx_id，每个事务或者语句有自己的一致性视图。普通查询语句是一致性读，一致性读会根据 row trx_id 和一致性视图确定数据版本的可见性。</p>
+<ul>
+<li>对于可重复读，查询只承认在事务启动前就已经提交完成的数据；</li>
+<li>对于读提交，查询只承认在语句启动前就已经提交完成的数据；</li>
+<li>而当前读，总是读取已经提交完成的最新版本。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
+        <tag>事务</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Spring Security（5）－认证流程源码详解</title>
     <url>/2019/06/05/Spring%20Security%EF%BC%885%EF%BC%89%EF%BC%8D%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3/</url>
     <content><![CDATA[<p>概要：</p>
@@ -4135,47 +4342,6 @@ public Object getCurrentUserToo(@AuthenticationPrincipal UserDetails userDetails
       </tags>
   </entry>
   <entry>
-    <title>Mysql（12）-Mysql事务隔离是如何实现的</title>
-    <url>/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/</url>
-    <content><![CDATA[<h1 id="事务的启动时机。"><a href="#事务的启动时机。" class="headerlink" title="事务的启动时机。"></a>事务的启动时机。</h1><p>begin/start transaction 命令并不是一个事务的起点，在执行到它们之后的第一个操作 InnoDB 表的语句，事务才真正启动。如果你想要马上启动一个事务，可以使用 start transaction with consistent snapshot 这个命令。</p>
-<p>第一种启动方式，一致性视图是在第执行第一个快照读语句时创建的；<br>第二种启动方式，一致性视图是在执行 start transaction with consistent snapshot 时创建的。</p>
-<h1 id="在-MySQL-里，有两个“视图”的概念"><a href="#在-MySQL-里，有两个“视图”的概念" class="headerlink" title="在 MySQL 里，有两个“视图”的概念"></a>在 MySQL 里，有两个“视图”的概念</h1><p>一个是 view。它是一个用查询语句定义的虚拟表，在调用的时候执行查询语句并生成结果。创建视图的语法是 create view … ，而它的查询方法与表一样。</p>
-<p>另一个是 InnoDB 在实现 MVCC 时用到的一致性读视图，即 consistent read view，用于支持 RC（Read Committed，读提交）和 RR（Repeatable Read，可重复读）隔离级别的实现。</p>
-<h1 id="“快照”在-MVCC-里是怎么工作的？"><a href="#“快照”在-MVCC-里是怎么工作的？" class="headerlink" title="“快照”在 MVCC 里是怎么工作的？"></a>“快照”在 MVCC 里是怎么工作的？</h1><p>在可重复读隔离级别下，事务在启动的时候就“拍了个快照”。注意，这个快照是基于整库的。</p>
-<p>InnoDB 里面每个事务有一个唯一的事务 ID，叫作 transaction id。它是在事务开始的时候向 InnoDB 的事务系统申请的，是按申请顺序严格递增的。</p>
-<p>而每行数据也都是有多个版本的。每次事务更新数据的时候，都会生成一个新的数据版本，并且把 transaction id 赋值给这个数据版本的事务 ID，记为 row trx_id。同时，旧的数据版本要保留，并且在新的数据版本中，能够有信息可以直接拿到它。</p>
-<p>也就是说，数据表中的一行记录，其实可能有多个版本 (row)，每个版本有自己的 row trx_id。</p>
-<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg" alt="Mysql数据MVVC"></p>
-<p>中的三个虚线箭头，就是 undo log；而 V1、V2、V3 并不是物理上真实存在的，而是每次需要的时候根据当前版本和 undo log 计算出来的。比如，需要 V2 的时候，就是通过 V4 依次执行 U3、U2 算出来。</p>
-<p>可重复读的定义：一个事务启动的时候，能够看到所有已经提交的事务结果。但是之后，这个事务执行期间，其他事务的更新对它不可见。</p>
-<p>因此，一个事务只需要在启动的时候声明说，“以我启动的时刻为准，如果一个数据版本是在我启动之前生成的，就认；如果是我启动以后才生成的，我就不认，我必须要找到它的上一个版本”。</p>
-<p>一个数据版本，对于一个事务视图来说，除了自己的更新总是可见以外，有三种情况：</p>
-<ol>
-<li>版本未提交，不可见；</li>
-<li>版本已提交，但是是在视图创建后提交的，不可见；</li>
-<li>版本已提交，而且是在视图创建前提交的，可见。</li>
-</ol>
-<p>更新数据都是先读后写的，而这个读，只能读当前的值，称为“当前读”（current read）。</p>
-<p>这里我们提到了一个概念，叫作当前读。其实，除了 update 语句外，select 语句如果加锁，也是当前读。</p>
-<h1 id="事务的可重复读的能力是怎么实现的？"><a href="#事务的可重复读的能力是怎么实现的？" class="headerlink" title="事务的可重复读的能力是怎么实现的？"></a>事务的可重复读的能力是怎么实现的？</h1><p>可重复读的核心就是一致性读（consistent read）；而事务更新数据的时候，只能用当前读。如果当前的记录的行锁被其他事务占用的话，就需要进入锁等待。</p>
-<h1 id="读提交的逻辑和可重复读的区别"><a href="#读提交的逻辑和可重复读的区别" class="headerlink" title="读提交的逻辑和可重复读的区别"></a>读提交的逻辑和可重复读的区别</h1><p>在可重复读隔离级别下，只需要在事务开始的时候创建一致性视图，之后事务里的其他查询都共用这个一致性视图；</p>
-<p>在读提交隔离级别下，每一个语句执行前都会重新算出一个新的视图。</p>
-<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>InnoDB 的行数据有多个版本，每个数据版本有自己的 row trx_id，每个事务或者语句有自己的一致性视图。普通查询语句是一致性读，一致性读会根据 row trx_id 和一致性视图确定数据版本的可见性。</p>
-<ul>
-<li>对于可重复读，查询只承认在事务启动前就已经提交完成的数据；</li>
-<li>对于读提交，查询只承认在语句启动前就已经提交完成的数据；</li>
-<li>而当前读，总是读取已经提交完成的最新版本。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-        <tag>事务</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Spring Security（4）－个性化用户认证流程（二）</title>
     <url>/2019/06/04/Spring%20Security%EF%BC%884%EF%BC%89%EF%BC%8D%E4%B8%AA%E6%80%A7%E5%8C%96%E7%94%A8%E6%88%B7%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%EF%BC%88%E4%BA%8C%EF%BC%89/</url>
     <content><![CDATA[<p>概要：</p>
@@ -4290,44 +4456,6 @@ public class EvolutionaryAuthenticationFailureHandler extends SimpleUrlAuthentic
       </categories>
       <tags>
         <tag>Spring-Security</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Mysql（11）-有意思的Mysql问题</title>
-    <url>/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/</url>
-    <content><![CDATA[<ol>
-<li>当备库用–single-transaciton做逻辑备份的时候,如果主库的binlog传来一个DDL语句会怎样？</li>
-</ol>
-<p>备份操作是一个过程，DDL从主库传过来时，备份过程可能处于不同的阶段，所以DDL对备份的影响也不同。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Q1:SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;</span><br><span class="line">Q2:START TRANSACTION  WITH CONSISTENT SNAPSHOT；</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br><span class="line">Q3:SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 1 *&#x2F;</span><br><span class="line">Q4:show create table &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 2 *&#x2F;</span><br><span class="line">Q5:SELECT * FROM &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 3 *&#x2F;</span><br><span class="line">Q6:ROLLBACK TO SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 4 *&#x2F;</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br></pre></td></tr></table></figure>
-<p>在备份开始的时候，为了确保 RR（可重复读）隔离级别，再设置一次 RR 隔离级别 (Q1);</p>
-<p>启动事务，这里用 WITH CONSISTENT SNAPSHOT 确保这个语句执行完就可以得到一个一致性视图（Q2)；</p>
-<p>设置一个保存点，这个很重要（Q3）；</p>
-<p>show create 是为了拿到表结构 (Q4)，然后正式导数据 （Q5），回滚到 SAVEPOINT sp，在这里的作用是释放 t1 的 MDL 锁 （Q6）。当然这部分属于“超纲”，上文正文里面都没提到。</p>
-<p>答案如下：</p>
-<ul>
-<li><p>如果在 Q4 语句执行之前到达，现象：没有影响，备份拿到的是 DDL 后的表结构。</p>
-</li>
-<li><p>如果在“时刻 2”到达，则表结构被改过，Q5 执行的时候，报 Table definition has changed, please retry transaction，现象：mysqldump 终止；</p>
-</li>
-<li><p>如果在“时刻 2”和“时刻 3”之间到达，mysqldump 占着 t1 的 MDL 读锁，binlog 被阻塞，现象：主从延迟，直到 Q6 执行完成。</p>
-</li>
-<li><p>从“时刻 4”开始，mysqldump 释放了 MDL 读锁，现象：没有影响，备份拿到的是 DDL 前的表结构。</p>
-</li>
-</ul>
-<p>总结就是在拿到表结构之前到达，没影响；在拿到表结构之后，备份数据之前到，会报错；在备份后到达，主从延迟</p>
-<ol start="2">
-<li>Mysql选错索引的一个案例分析<br>//todo 待分析</li>
-</ol>
-<p>在生产上遇见了一个非常经典的Mysql选错索引的问题，简述如下：有一张日志表，id是自增主键，假设还有一个字段是code，code字段也有索引；</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CREATE TABLE IF NOT EXISTS &#96;log_test&#96;(</span><br><span class="line">  &#96;id&#96; INT  AUTO_INCREMENT,</span><br><span class="line">  &#96;key&#96; VARCHAR(100) NOT NULL,</span><br><span class="line">  PRIMARY KEY (&#96;id&#96;),</span><br><span class="line">  index idx_key(&#96;key&#96;)</span><br><span class="line">)ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_unicode_ci;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">delimiter ;;</span><br><span class="line">create procedure idata()</span><br><span class="line">begin</span><br><span class="line">  declare i int;</span><br><span class="line">  set i&#x3D;1;</span><br><span class="line">  while(i&lt;&#x3D;100000)do</span><br><span class="line">    insert into log_test values(i, i);</span><br><span class="line">    set i&#x3D;i+1;</span><br><span class="line">  end while;</span><br><span class="line">end;;</span><br><span class="line">delimiter ;</span><br><span class="line">call idata();</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-        <tag>面试</tag>
       </tags>
   </entry>
   <entry>
@@ -4491,6 +4619,44 @@ evolutionary.security.brower.loginInType=REDIRECT</code></pre>]]></content>
       </categories>
       <tags>
         <tag>Spring-Security</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mysql（11）-有意思的Mysql问题</title>
+    <url>/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<ol>
+<li>当备库用–single-transaciton做逻辑备份的时候,如果主库的binlog传来一个DDL语句会怎样？</li>
+</ol>
+<p>备份操作是一个过程，DDL从主库传过来时，备份过程可能处于不同的阶段，所以DDL对备份的影响也不同。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Q1:SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;</span><br><span class="line">Q2:START TRANSACTION  WITH CONSISTENT SNAPSHOT；</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br><span class="line">Q3:SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 1 *&#x2F;</span><br><span class="line">Q4:show create table &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 2 *&#x2F;</span><br><span class="line">Q5:SELECT * FROM &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 3 *&#x2F;</span><br><span class="line">Q6:ROLLBACK TO SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 4 *&#x2F;</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br></pre></td></tr></table></figure>
+<p>在备份开始的时候，为了确保 RR（可重复读）隔离级别，再设置一次 RR 隔离级别 (Q1);</p>
+<p>启动事务，这里用 WITH CONSISTENT SNAPSHOT 确保这个语句执行完就可以得到一个一致性视图（Q2)；</p>
+<p>设置一个保存点，这个很重要（Q3）；</p>
+<p>show create 是为了拿到表结构 (Q4)，然后正式导数据 （Q5），回滚到 SAVEPOINT sp，在这里的作用是释放 t1 的 MDL 锁 （Q6）。当然这部分属于“超纲”，上文正文里面都没提到。</p>
+<p>答案如下：</p>
+<ul>
+<li><p>如果在 Q4 语句执行之前到达，现象：没有影响，备份拿到的是 DDL 后的表结构。</p>
+</li>
+<li><p>如果在“时刻 2”到达，则表结构被改过，Q5 执行的时候，报 Table definition has changed, please retry transaction，现象：mysqldump 终止；</p>
+</li>
+<li><p>如果在“时刻 2”和“时刻 3”之间到达，mysqldump 占着 t1 的 MDL 读锁，binlog 被阻塞，现象：主从延迟，直到 Q6 执行完成。</p>
+</li>
+<li><p>从“时刻 4”开始，mysqldump 释放了 MDL 读锁，现象：没有影响，备份拿到的是 DDL 前的表结构。</p>
+</li>
+</ul>
+<p>总结就是在拿到表结构之前到达，没影响；在拿到表结构之后，备份数据之前到，会报错；在备份后到达，主从延迟</p>
+<ol start="2">
+<li>Mysql选错索引的一个案例分析<br>//todo 待分析</li>
+</ol>
+<p>在生产上遇见了一个非常经典的Mysql选错索引的问题，简述如下：有一张日志表，id是自增主键，假设还有一个字段是code，code字段也有索引；</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CREATE TABLE IF NOT EXISTS &#96;log_test&#96;(</span><br><span class="line">  &#96;id&#96; INT  AUTO_INCREMENT,</span><br><span class="line">  &#96;key&#96; VARCHAR(100) NOT NULL,</span><br><span class="line">  PRIMARY KEY (&#96;id&#96;),</span><br><span class="line">  index idx_key(&#96;key&#96;)</span><br><span class="line">)ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_unicode_ci;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">delimiter ;;</span><br><span class="line">create procedure idata()</span><br><span class="line">begin</span><br><span class="line">  declare i int;</span><br><span class="line">  set i&#x3D;1;</span><br><span class="line">  while(i&lt;&#x3D;100000)do</span><br><span class="line">    insert into log_test values(i, i);</span><br><span class="line">    set i&#x3D;i+1;</span><br><span class="line">  end while;</span><br><span class="line">end;;</span><br><span class="line">delimiter ;</span><br><span class="line">call idata();</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
+        <tag>面试</tag>
       </tags>
   </entry>
   <entry>
@@ -5533,6 +5699,149 @@ public class SpringBootDemoApplication {
       </tags>
   </entry>
   <entry>
+    <title>Mysql（8）-搞定Mysql字符集及校对规则</title>
+    <url>/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/</url>
+    <content><![CDATA[<h1 id="MySQL的字符集（Character-Set"><a href="#MySQL的字符集（Character-Set" class="headerlink" title="MySQL的字符集（Character Set)"></a>MySQL的字符集（Character Set)</h1><p>关于字符集，之前转载了一篇文章讲的非常好——<a href="">关于字符编码，你所需要知道的（ASCII,Unicode,Utf-8,GB2312…）</a></p>
+<p>常见字符集：</p>
+<ul>
+<li>ASCII字符集：基于罗马字母表的一套字符集，它采用1个字节的低7位表示字符，高位始终为0。</li>
+<li>LATIN1字符集：相对于ASCII字符集做了扩展，仍然使用一个字节表示字符，但启用了高位，扩展了字符集的表示范围。</li>
+<li>GBK字符集：支持中文，字符有一字节编码和两字节编码方式。</li>
+<li>UTF8字符集：Unicode字符集的一种，是计算机科学领域里的一项业界标准，支持了所有国家的文字字符，utf8采用1-4个字节表示字符。</li>
+</ul>
+<h1 id="MySQL与字符集"><a href="#MySQL与字符集" class="headerlink" title="MySQL与字符集"></a>MySQL与字符集</h1><p>查看NySQL系统变量：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| Variable_name            | Value                      |</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| character_set_client     | utf8                       |</span><br><span class="line">| character_set_connection | utf8                       |</span><br><span class="line">| character_set_database   | latin1                     |</span><br><span class="line">| character_set_filesystem | binary                     |</span><br><span class="line">| character_set_results    | utf8                       |</span><br><span class="line">| character_set_server     | latin1                     |</span><br><span class="line">| character_set_system     | utf8                       |</span><br><span class="line">| character_sets_dir       | &#x2F;usr&#x2F;share&#x2F;mysql&#x2F;charsets&#x2F; |</span><br><span class="line">+--------------------------+----------------------------+</span><br></pre></td></tr></table></figure>
+<p>正确使用字符集</p>
+<table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>变量作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>character_set_client</td>
+<td>客户端来源数据使用的字符集</td>
+</tr>
+<tr>
+<td>character_set_connection</td>
+<td>连接层字符集</td>
+</tr>
+<tr>
+<td>character_set_database</td>
+<td>当前选中数据库的默认字符集</td>
+</tr>
+<tr>
+<td>character_set_results</td>
+<td>查询结果字符集</td>
+</tr>
+<tr>
+<td>character_set_server</td>
+<td>默认的内部操作字符集</td>
+</tr>
+<tr>
+<td>character_set_system</td>
+<td>数据元数据（字段名等）字符集</td>
+</tr>
+</tbody></table>
+<p>这些字符集参数的作用说明：</p>
+<ol>
+<li>设置库、表、列字符集<ul>
+<li>建库时，若未明确指定字符集，则采用character_set_server指定的字符集。</li>
+<li>建表时，若未明确指定字符集，则采用当前库所采用的字符集。</li>
+<li>新增时，修改表字段时，若未明确指定字符集，则采用当前表所采用的字符集。</li>
+</ul>
+</li>
+<li>更新查询涉及的字符集变量<ul>
+<li>更新流程字符集转换过程：character_set_client–&gt;character_set_connection–&gt;表字符集。</li>
+<li>查询流程字符集转换过程：表字符集–&gt;character_set_result</li>
+</ul>
+</li>
+<li>character_set_database<ul>
+<li>当前默认数据库的字符集，比如执行use xxx后，当前数据库变为xxx，若xxx的字符集为utf8，那么此变量值就变为utf8(供系统设置，无需人工设置)。</li>
+</ul>
+</li>
+</ol>
+<h1 id="MySQL客户端与字符集"><a href="#MySQL客户端与字符集" class="headerlink" title="MySQL客户端与字符集"></a>MySQL客户端与字符集</h1><p>1.对于输入来说：</p>
+<p>客户端使用的字符集必须通过character_set_client、character_set_connection体现出来：</p>
+<ul>
+<li>在客户端对数据进行编码（Linux：utf8、windows：gbk）</li>
+<li>MySQL接到SQL语句后(比如insert)，发现有字符，询问客户端通过什么方式对字符编码：客户端通过character_set_client参数告知MySQL客户端的编码方式(所以此参数需要正确反映客户端对应的编码)</li>
+<li>当MySQL发现客户端的client所传输的字符集与自己的connection不一样时，会将client的字符集转换为connection的字符集</li>
+<li>MySQL将转换后的编码存储到MySQL表的列上，在存储的时候再判断编码是否与内部存储字符集（按照优先级判断字符集类型）上的编码一致，如果不一致需要再次转换</li>
+</ul>
+<p>2.对于查询来说：</p>
+<p>客户端使用的字符集必须通过character_set_results来体现，服务器询问客户端字符集，通过character_set_results将结果转换为与客户端相同的字符集传递给客户端。(character_set_results默认等于character_set_client)</p>
+<h1 id="字符集常见处理操作"><a href="#字符集常见处理操作" class="headerlink" title="字符集常见处理操作"></a>字符集常见处理操作</h1><p>查看字符集编码设置</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br></pre></td></tr></table></figure>
+
+<p>运行时设置字符集编码</p>
+<p>运行时修改（重启后会失效，如果想要重启后保持不变，需要写进配置文件里）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; set names &#39;utf8&#39;;</span><br><span class="line"></span><br><span class="line">相当于同时：</span><br><span class="line"></span><br><span class="line">set character_set_client &#x3D; utf8;</span><br><span class="line">set character_set_results &#x3D; utf8;</span><br><span class="line">set character_set_connection &#x3D; utf8;</span><br></pre></td></tr></table></figure>
+<p>修改数据库字符集</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; alter database database_name character set xxx;</span><br></pre></td></tr></table></figure>
+<p>只修改库的字符集，影响后续创建的表的默认定义；对于已创建的表的字符集不受影响。（一般在数据库实现字符集即可，表和列都默认采用数据库的字符集）</p>
+<p>修改表的字符集</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-- 只修改表的字符集，影响后续该表新增列的默认定义，已有列的字符集不受影响。</span><br><span class="line">mysql&gt; alter table table_name character set xxx；</span><br><span class="line"></span><br><span class="line">-- 同时修改表字符集和已有列字符集，并将已有数据进行字符集编码转换。</span><br><span class="line">mysql&gt; alter table table_name convert to character set xxx;</span><br></pre></td></tr></table></figure>
+<p>修改列的字符集</p>
+<p>格式：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ALTER TABLE table_name MODIFY</span><br><span class="line">column_name &#123;CHAR | VARCHAR | TEXT&#125; (column_length)</span><br><span class="line">    [CHARACTER SET charset_name]</span><br><span class="line">    [COLLATE collation_name]</span><br><span class="line">mysql&gt; alter table table_name modify col_name varchar(col_length) character set xxx;</span><br></pre></td></tr></table></figure>
+<p>启动服务时指定字符集</p>
+<p>可以在MySQL服务启动时，指定server字符集、字符序。如不指定，默认的字符序分别为latin1、latin1_swedish_ci</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1 \</span><br><span class="line">       --collation-server&#x3D;latin1_swedish_ci</span><br></pre></td></tr></table></figure>
+<p>单独指定server字符集，此时，server字符序为latin1的默认字符序latin1_swedish_ci。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1</span><br></pre></td></tr></table></figure>
+<p>配置文件指定字符集</p>
+<p>除了在命令行参数里指定，也可以在配置文件里指定，如下所示。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysql]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">collation-server &#x3D; utf8_unicode_ci</span><br><span class="line">init-connect&#x3D;&#39;SET NAMES utf8&#39;</span><br><span class="line">character-set-server &#x3D; utf8</span><br></pre></td></tr></table></figure>
+<p>字符集的正确实践<br>MySQL软件工具本身是没有字符集的，主要是因为工具所在的OS的字符集（Windows：gbk、Linux：utf8），所以字符集的正确实践非常重要：</p>
+<ol>
+<li>对于insert来说，character_set_client、character_set_connection相同，而且正确反映客户端使用的字符集</li>
+<li>对于select来说，character_set_results正确反映客户端字符集</li>
+<li>数据库字符集取决于我们要存储的字符类型</li>
+<li>字符集转换最多发生一次，这就要求character_set_client、character_set_connection相同</li>
+<li>所有的字符集转换都发生在数据库端</li>
+</ol>
+<p>综述：</p>
+<ol>
+<li>建立数据库的时候注意字符集（gbk、utf8）；</li>
+<li>连接数据库以后，无论是执行dml还是select，只要涉及到varchar、char列，就需要设置正确的字符集参数。</li>
+</ol>
+<h1 id="MySQL的校对规则"><a href="#MySQL的校对规则" class="headerlink" title="MySQL的校对规则"></a>MySQL的校对规则</h1><p>字符集是一套符号和对应的编号</p>
+<ol start="4">
+<li><p>查看数据库支持的所有字符集(charset)：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show character set;</span><br></pre></td></tr></table></figure>
+<p>校对规则(collation)是在字符集内用于字符比较和排序的一套规则，比如有的规则区分大小写，有的则无视。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; create table t1(id int,name varchar(20)); -- t1建表没有指定校对规则</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    1 | A    |</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
+<p>查看数据库支持的校对规则</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show collation;</span><br></pre></td></tr></table></figure>
+<p>查看当前字符集和校对规则设置</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; mysql&gt; show variables like &#39;collation_%&#39;;</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| Variable_name        | Value             |</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| collation_connection | utf8_general_ci   |</span><br><span class="line">| collation_database   | utf8_general_ci   |</span><br><span class="line">| collation_server     | latin1_swedish_ci |</span><br><span class="line">+----------------------+-------------------+</span><br></pre></td></tr></table></figure>
+<p>校对规则特征：</p>
+</li>
+<li><p>两个不同的字符集不能有相同的校对规则；</p>
+</li>
+<li><p>每个字符集有一个默认校对规则；</p>
+</li>
+<li><p>存在校对规则命名约定：以其相关的字符集名开始，中间包括一个语言名，并且以_ci（大小写不敏感）、_cs（大小写敏感）或_bin（二元）结束。<br>注意：</p>
+</li>
+</ol>
+<p>系统使用utf8字符集，若使用utf8_bin校对规则执行SQL查询时区分大小写，使用utf8_general_ci不区分大小写(默认的utf8字符集对应的校对规则是utf8_general_ci)。</p>
+<p>示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; create table t2(id int,name varchar(20)) character set&#x3D;utf8 collate&#x3D;utf8_bin;</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line"></span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
+<p>相关连接</p>
+<p><a href="https://www.cnblogs.com/chyingp/p/mysql-character-set-collation.html" target="_blank" rel="noopener">再见乱码：5分钟读懂MySQL字符集设置</a></p>
+<p><a href="https://www.cnblogs.com/geaozhang/p/6724393.html" target="_blank" rel="noopener">MySQL字符集及校对规则的理解</a></p>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
+        <tag>编码</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Redis02-命令速查</title>
     <url>/2019/04/06/Redis02-%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/</url>
     <content><![CDATA[<h1 id="过期时间"><a href="#过期时间" class="headerlink" title="过期时间"></a>过期时间</h1><pre><code>127.0.0.1:6379&gt; SET expirecode foo
@@ -5707,149 +6016,6 @@ hgetall(key)：返回名称为key的hash中所有的键（field）及其对应�
       </categories>
       <tags>
         <tag>redis</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Mysql（8）-搞定Mysql字符集及校对规则</title>
-    <url>/2019/04/06/Mysql%EF%BC%888%EF%BC%89-%E6%90%9E%E5%AE%9AMysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%8F%8A%E6%A0%A1%E5%AF%B9%E8%A7%84%E5%88%99/</url>
-    <content><![CDATA[<h1 id="MySQL的字符集（Character-Set"><a href="#MySQL的字符集（Character-Set" class="headerlink" title="MySQL的字符集（Character Set)"></a>MySQL的字符集（Character Set)</h1><p>关于字符集，之前转载了一篇文章讲的非常好——<a href="">关于字符编码，你所需要知道的（ASCII,Unicode,Utf-8,GB2312…）</a></p>
-<p>常见字符集：</p>
-<ul>
-<li>ASCII字符集：基于罗马字母表的一套字符集，它采用1个字节的低7位表示字符，高位始终为0。</li>
-<li>LATIN1字符集：相对于ASCII字符集做了扩展，仍然使用一个字节表示字符，但启用了高位，扩展了字符集的表示范围。</li>
-<li>GBK字符集：支持中文，字符有一字节编码和两字节编码方式。</li>
-<li>UTF8字符集：Unicode字符集的一种，是计算机科学领域里的一项业界标准，支持了所有国家的文字字符，utf8采用1-4个字节表示字符。</li>
-</ul>
-<h1 id="MySQL与字符集"><a href="#MySQL与字符集" class="headerlink" title="MySQL与字符集"></a>MySQL与字符集</h1><p>查看NySQL系统变量：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| Variable_name            | Value                      |</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| character_set_client     | utf8                       |</span><br><span class="line">| character_set_connection | utf8                       |</span><br><span class="line">| character_set_database   | latin1                     |</span><br><span class="line">| character_set_filesystem | binary                     |</span><br><span class="line">| character_set_results    | utf8                       |</span><br><span class="line">| character_set_server     | latin1                     |</span><br><span class="line">| character_set_system     | utf8                       |</span><br><span class="line">| character_sets_dir       | &#x2F;usr&#x2F;share&#x2F;mysql&#x2F;charsets&#x2F; |</span><br><span class="line">+--------------------------+----------------------------+</span><br></pre></td></tr></table></figure>
-<p>正确使用字符集</p>
-<table>
-<thead>
-<tr>
-<th>参数名</th>
-<th>变量作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>character_set_client</td>
-<td>客户端来源数据使用的字符集</td>
-</tr>
-<tr>
-<td>character_set_connection</td>
-<td>连接层字符集</td>
-</tr>
-<tr>
-<td>character_set_database</td>
-<td>当前选中数据库的默认字符集</td>
-</tr>
-<tr>
-<td>character_set_results</td>
-<td>查询结果字符集</td>
-</tr>
-<tr>
-<td>character_set_server</td>
-<td>默认的内部操作字符集</td>
-</tr>
-<tr>
-<td>character_set_system</td>
-<td>数据元数据（字段名等）字符集</td>
-</tr>
-</tbody></table>
-<p>这些字符集参数的作用说明：</p>
-<ol>
-<li>设置库、表、列字符集<ul>
-<li>建库时，若未明确指定字符集，则采用character_set_server指定的字符集。</li>
-<li>建表时，若未明确指定字符集，则采用当前库所采用的字符集。</li>
-<li>新增时，修改表字段时，若未明确指定字符集，则采用当前表所采用的字符集。</li>
-</ul>
-</li>
-<li>更新查询涉及的字符集变量<ul>
-<li>更新流程字符集转换过程：character_set_client–&gt;character_set_connection–&gt;表字符集。</li>
-<li>查询流程字符集转换过程：表字符集–&gt;character_set_result</li>
-</ul>
-</li>
-<li>character_set_database<ul>
-<li>当前默认数据库的字符集，比如执行use xxx后，当前数据库变为xxx，若xxx的字符集为utf8，那么此变量值就变为utf8(供系统设置，无需人工设置)。</li>
-</ul>
-</li>
-</ol>
-<h1 id="MySQL客户端与字符集"><a href="#MySQL客户端与字符集" class="headerlink" title="MySQL客户端与字符集"></a>MySQL客户端与字符集</h1><p>1.对于输入来说：</p>
-<p>客户端使用的字符集必须通过character_set_client、character_set_connection体现出来：</p>
-<ul>
-<li>在客户端对数据进行编码（Linux：utf8、windows：gbk）</li>
-<li>MySQL接到SQL语句后(比如insert)，发现有字符，询问客户端通过什么方式对字符编码：客户端通过character_set_client参数告知MySQL客户端的编码方式(所以此参数需要正确反映客户端对应的编码)</li>
-<li>当MySQL发现客户端的client所传输的字符集与自己的connection不一样时，会将client的字符集转换为connection的字符集</li>
-<li>MySQL将转换后的编码存储到MySQL表的列上，在存储的时候再判断编码是否与内部存储字符集（按照优先级判断字符集类型）上的编码一致，如果不一致需要再次转换</li>
-</ul>
-<p>2.对于查询来说：</p>
-<p>客户端使用的字符集必须通过character_set_results来体现，服务器询问客户端字符集，通过character_set_results将结果转换为与客户端相同的字符集传递给客户端。(character_set_results默认等于character_set_client)</p>
-<h1 id="字符集常见处理操作"><a href="#字符集常见处理操作" class="headerlink" title="字符集常见处理操作"></a>字符集常见处理操作</h1><p>查看字符集编码设置</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%character%&#39;;</span><br></pre></td></tr></table></figure>
-
-<p>运行时设置字符集编码</p>
-<p>运行时修改（重启后会失效，如果想要重启后保持不变，需要写进配置文件里）</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; set names &#39;utf8&#39;;</span><br><span class="line"></span><br><span class="line">相当于同时：</span><br><span class="line"></span><br><span class="line">set character_set_client &#x3D; utf8;</span><br><span class="line">set character_set_results &#x3D; utf8;</span><br><span class="line">set character_set_connection &#x3D; utf8;</span><br></pre></td></tr></table></figure>
-<p>修改数据库字符集</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; alter database database_name character set xxx;</span><br></pre></td></tr></table></figure>
-<p>只修改库的字符集，影响后续创建的表的默认定义；对于已创建的表的字符集不受影响。（一般在数据库实现字符集即可，表和列都默认采用数据库的字符集）</p>
-<p>修改表的字符集</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-- 只修改表的字符集，影响后续该表新增列的默认定义，已有列的字符集不受影响。</span><br><span class="line">mysql&gt; alter table table_name character set xxx；</span><br><span class="line"></span><br><span class="line">-- 同时修改表字符集和已有列字符集，并将已有数据进行字符集编码转换。</span><br><span class="line">mysql&gt; alter table table_name convert to character set xxx;</span><br></pre></td></tr></table></figure>
-<p>修改列的字符集</p>
-<p>格式：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ALTER TABLE table_name MODIFY</span><br><span class="line">column_name &#123;CHAR | VARCHAR | TEXT&#125; (column_length)</span><br><span class="line">    [CHARACTER SET charset_name]</span><br><span class="line">    [COLLATE collation_name]</span><br><span class="line">mysql&gt; alter table table_name modify col_name varchar(col_length) character set xxx;</span><br></pre></td></tr></table></figure>
-<p>启动服务时指定字符集</p>
-<p>可以在MySQL服务启动时，指定server字符集、字符序。如不指定，默认的字符序分别为latin1、latin1_swedish_ci</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1 \</span><br><span class="line">       --collation-server&#x3D;latin1_swedish_ci</span><br></pre></td></tr></table></figure>
-<p>单独指定server字符集，此时，server字符序为latin1的默认字符序latin1_swedish_ci。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqld --character-set-server&#x3D;latin1</span><br></pre></td></tr></table></figure>
-<p>配置文件指定字符集</p>
-<p>除了在命令行参数里指定，也可以在配置文件里指定，如下所示。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysql]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">collation-server &#x3D; utf8_unicode_ci</span><br><span class="line">init-connect&#x3D;&#39;SET NAMES utf8&#39;</span><br><span class="line">character-set-server &#x3D; utf8</span><br></pre></td></tr></table></figure>
-<p>字符集的正确实践<br>MySQL软件工具本身是没有字符集的，主要是因为工具所在的OS的字符集（Windows：gbk、Linux：utf8），所以字符集的正确实践非常重要：</p>
-<ol>
-<li>对于insert来说，character_set_client、character_set_connection相同，而且正确反映客户端使用的字符集</li>
-<li>对于select来说，character_set_results正确反映客户端字符集</li>
-<li>数据库字符集取决于我们要存储的字符类型</li>
-<li>字符集转换最多发生一次，这就要求character_set_client、character_set_connection相同</li>
-<li>所有的字符集转换都发生在数据库端</li>
-</ol>
-<p>综述：</p>
-<ol>
-<li>建立数据库的时候注意字符集（gbk、utf8）；</li>
-<li>连接数据库以后，无论是执行dml还是select，只要涉及到varchar、char列，就需要设置正确的字符集参数。</li>
-</ol>
-<h1 id="MySQL的校对规则"><a href="#MySQL的校对规则" class="headerlink" title="MySQL的校对规则"></a>MySQL的校对规则</h1><p>字符集是一套符号和对应的编号</p>
-<ol start="4">
-<li><p>查看数据库支持的所有字符集(charset)：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show character set;</span><br></pre></td></tr></table></figure>
-<p>校对规则(collation)是在字符集内用于字符比较和排序的一套规则，比如有的规则区分大小写，有的则无视。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; create table t1(id int,name varchar(20)); -- t1建表没有指定校对规则</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    1 | A    |</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
-<p>查看数据库支持的校对规则</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show collation;</span><br></pre></td></tr></table></figure>
-<p>查看当前字符集和校对规则设置</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; mysql&gt; show variables like &#39;collation_%&#39;;</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| Variable_name        | Value             |</span><br><span class="line">+----------------------+-------------------+</span><br><span class="line">| collation_connection | utf8_general_ci   |</span><br><span class="line">| collation_database   | utf8_general_ci   |</span><br><span class="line">| collation_server     | latin1_swedish_ci |</span><br><span class="line">+----------------------+-------------------+</span><br></pre></td></tr></table></figure>
-<p>校对规则特征：</p>
-</li>
-<li><p>两个不同的字符集不能有相同的校对规则；</p>
-</li>
-<li><p>每个字符集有一个默认校对规则；</p>
-</li>
-<li><p>存在校对规则命名约定：以其相关的字符集名开始，中间包括一个语言名，并且以_ci（大小写不敏感）、_cs（大小写敏感）或_bin（二元）结束。<br>注意：</p>
-</li>
-</ol>
-<p>系统使用utf8字符集，若使用utf8_bin校对规则执行SQL查询时区分大小写，使用utf8_general_ci不区分大小写(默认的utf8字符集对应的校对规则是utf8_general_ci)。</p>
-<p>示例：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; create table t2(id int,name varchar(20)) character set&#x3D;utf8 collate&#x3D;utf8_bin;</span><br><span class="line">mysql&gt; insert into t1 values (1,&#39;A&#39;),(2,&#39;a&#39;);</span><br><span class="line">mysql&gt; select * from t1 where name &#x3D; &#39;a&#39;;</span><br><span class="line"></span><br><span class="line">+------+------+</span><br><span class="line">| id   | name |</span><br><span class="line">+------+------+</span><br><span class="line">|    2 | a    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
-<p>相关连接</p>
-<p><a href="https://www.cnblogs.com/chyingp/p/mysql-character-set-collation.html" target="_blank" rel="noopener">再见乱码：5分钟读懂MySQL字符集设置</a></p>
-<p><a href="https://www.cnblogs.com/geaozhang/p/6724393.html" target="_blank" rel="noopener">MySQL字符集及校对规则的理解</a></p>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-        <tag>编码</tag>
       </tags>
   </entry>
   <entry>
@@ -6163,6 +6329,28 @@ OK
       </tags>
   </entry>
   <entry>
+    <title>Mysql（5）-数据库索引（必知必会）</title>
+    <url>/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/</url>
+    <content><![CDATA[<h2 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h2><p>二级索引已经“覆盖了”我们的查询需求，不需要再回表查整行记录，我们称为覆盖索引。</p>
+<p>覆盖索引可以减少树的搜索次数，显著提升查询性能，所以使用覆盖索引是一个常用的性能优化手段。</p>
+<h2 id="最左前缀原则"><a href="#最左前缀原则" class="headerlink" title="最左前缀原则"></a>最左前缀原则</h2><p>索引项是按照索引定义里面出现的字段顺序排序的。正因为如此根据最左前缀，我们找到第一条数据位置，然后遍历到最后一条匹配到最左前缀的就可以了（因为按照顺序相同最左前缀的都排在一块）。</p>
+<p>不只是索引的全部定义，只要满足最左前缀，就可以利用索引来加速检索。这个最左前缀可以是联合索引的最左 N 个字段，也可以是字符串索引的最左 M 个字符。</p>
+<h3 id="在建立联合索引的时候，如何安排索引内的字段顺序。"><a href="#在建立联合索引的时候，如何安排索引内的字段顺序。" class="headerlink" title="在建立联合索引的时候，如何安排索引内的字段顺序。"></a>在建立联合索引的时候，如何安排索引内的字段顺序。</h3><p>第一原则是，如果通过调整顺序，可以少维护一个索引，那么这个顺序往往就是需要优先考虑采用的。提高索引的复用能力，比如根据最左前缀原则，当已经有了 (a,b)这个联合索引后，一般就不需要单独在 a 上建立索引了。</p>
+<p>第二原则，考虑的是空间。</p>
+<p>如果a，b要建联合索引，且单查a或b的时候都要走索引，那么就要再a或b上再加一个索引，此时就要考虑空间。比如a字段b字段更占空间那就建一个（a，b）的联合索引和一个b的索引。</p>
+<h2 id="索引下推"><a href="#索引下推" class="headerlink" title="索引下推"></a>索引下推</h2><p>MySQL 5.6引入的索引下推优化（index condition pushdown)，可以在索引遍历过程中，对索引中包含的字段先做判断，直接过滤掉不满足条件的记录，减少回表次数。</p>
+<h2 id="重建索引"><a href="#重建索引" class="headerlink" title="重建索引"></a>重建索引</h2><p>索引可能因为删除，或者页分裂等原因，导致数据页有空洞，重建索引的过程会创建一个新的索引，把数据按顺序插入，这样页面的利用率最高，也就是索引更紧凑、更省空间。</p>
+<h3 id="重建二级索引索引"><a href="#重建二级索引索引" class="headerlink" title="重建二级索引索引"></a>重建二级索引索引</h3><p>alter table T drop index k;<br>alter table T add index(k);</p>
+<h3 id="重建主键索引："><a href="#重建主键索引：" class="headerlink" title="重建主键索引："></a>重建主键索引：</h3><p>alter table T engine=InnoDB</p>
+]]></content>
+      <categories>
+        <category>DB</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Mysql（6）-数据库索引（数据结构）</title>
     <url>/2019/03/28/Mysql%EF%BC%886%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%89/</url>
     <content><![CDATA[<h2 id="索引的作用"><a href="#索引的作用" class="headerlink" title="索引的作用"></a>索引的作用</h2><p>索引是为了提高数据库的查询效率。</p>
@@ -6205,28 +6393,6 @@ OK
 <li>该索引是唯一索引</li>
 </ol>
 <p>就是典型的 KV 场景。由于没有其他索引，所以也就不用考虑其他索引的叶子节点大小的问题。</p>
-]]></content>
-      <categories>
-        <category>DB</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Mysql（5）-数据库索引（必知必会）</title>
-    <url>/2019/03/28/Mysql%EF%BC%885%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95%EF%BC%88%E5%BF%85%E7%9F%A5%E5%BF%85%E4%BC%9A%EF%BC%89/</url>
-    <content><![CDATA[<h2 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h2><p>二级索引已经“覆盖了”我们的查询需求，不需要再回表查整行记录，我们称为覆盖索引。</p>
-<p>覆盖索引可以减少树的搜索次数，显著提升查询性能，所以使用覆盖索引是一个常用的性能优化手段。</p>
-<h2 id="最左前缀原则"><a href="#最左前缀原则" class="headerlink" title="最左前缀原则"></a>最左前缀原则</h2><p>索引项是按照索引定义里面出现的字段顺序排序的。正因为如此根据最左前缀，我们找到第一条数据位置，然后遍历到最后一条匹配到最左前缀的就可以了（因为按照顺序相同最左前缀的都排在一块）。</p>
-<p>不只是索引的全部定义，只要满足最左前缀，就可以利用索引来加速检索。这个最左前缀可以是联合索引的最左 N 个字段，也可以是字符串索引的最左 M 个字符。</p>
-<h3 id="在建立联合索引的时候，如何安排索引内的字段顺序。"><a href="#在建立联合索引的时候，如何安排索引内的字段顺序。" class="headerlink" title="在建立联合索引的时候，如何安排索引内的字段顺序。"></a>在建立联合索引的时候，如何安排索引内的字段顺序。</h3><p>第一原则是，如果通过调整顺序，可以少维护一个索引，那么这个顺序往往就是需要优先考虑采用的。提高索引的复用能力，比如根据最左前缀原则，当已经有了 (a,b)这个联合索引后，一般就不需要单独在 a 上建立索引了。</p>
-<p>第二原则，考虑的是空间。</p>
-<p>如果a，b要建联合索引，且单查a或b的时候都要走索引，那么就要再a或b上再加一个索引，此时就要考虑空间。比如a字段b字段更占空间那就建一个（a，b）的联合索引和一个b的索引。</p>
-<h2 id="索引下推"><a href="#索引下推" class="headerlink" title="索引下推"></a>索引下推</h2><p>MySQL 5.6引入的索引下推优化（index condition pushdown)，可以在索引遍历过程中，对索引中包含的字段先做判断，直接过滤掉不满足条件的记录，减少回表次数。</p>
-<h2 id="重建索引"><a href="#重建索引" class="headerlink" title="重建索引"></a>重建索引</h2><p>索引可能因为删除，或者页分裂等原因，导致数据页有空洞，重建索引的过程会创建一个新的索引，把数据按顺序插入，这样页面的利用率最高，也就是索引更紧凑、更省空间。</p>
-<h3 id="重建二级索引索引"><a href="#重建二级索引索引" class="headerlink" title="重建二级索引索引"></a>重建二级索引索引</h3><p>alter table T drop index k;<br>alter table T add index(k);</p>
-<h3 id="重建主键索引："><a href="#重建主键索引：" class="headerlink" title="重建主键索引："></a>重建主键索引：</h3><p>alter table T engine=InnoDB</p>
 ]]></content>
       <categories>
         <category>DB</category>
@@ -7191,6 +7357,27 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
       </tags>
   </entry>
   <entry>
+    <title>hexo命令</title>
+    <url>/2019/03/08/hexo%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<ul>
+<li><p>hexo g 生成静态文件</p>
+</li>
+<li><p>hexo s 启动本地服务</p>
+</li>
+<li><p>hexo clean 清除缓存文件(db.json)和已生成的静态文件(public)</p>
+</li>
+<li><p>hexo g -d 生成文件并部署到github</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>其它</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Java Stream</title>
     <url>/2019/03/08/Java%20Stream/</url>
     <content><![CDATA[<h1 id="1、Java-Stream-API-入门"><a href="#1、Java-Stream-API-入门" class="headerlink" title="1、Java Stream API 入门"></a>1、Java Stream API 入门</h1><h2 id="Java8引入函数式编程"><a href="#Java8引入函数式编程" class="headerlink" title="Java8引入函数式编程"></a>Java8引入函数式编程</h2><ul>
@@ -7431,27 +7618,6 @@ jstack:http://www.hollischuang.com/archives/110</code></pre><h4 id="29、查看�
       </categories>
       <tags>
         <tag>lambda</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>hexo命令</title>
-    <url>/2019/03/08/hexo%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<ul>
-<li><p>hexo g 生成静态文件</p>
-</li>
-<li><p>hexo s 启动本地服务</p>
-</li>
-<li><p>hexo clean 清除缓存文件(db.json)和已生成的静态文件(public)</p>
-</li>
-<li><p>hexo g -d 生成文件并部署到github</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>其它</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>

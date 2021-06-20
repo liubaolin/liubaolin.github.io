@@ -288,7 +288,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2021/06/05/Flink01-%E9%9B%86%E7%BE%A4%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2021/06/12/Flink03-Flink%E6%B5%81%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Richey Liu">
@@ -307,7 +307,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2021/06/05/Flink01-%E9%9B%86%E7%BE%A4%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F/" itemprop="url">Flink01-集群运行模式</a></h1>
+                <a class="post-title-link" href="/2021/06/12/Flink03-Flink%E6%B5%81%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80/" itemprop="url">Flink03-Flink流处理基础</a></h1>
         
 
         <div class="post-meta">
@@ -319,8 +319,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-06-05T00:00:00+08:00">
-                2021-06-05
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-06-12T00:00:00+08:00">
+                2021-06-12
               </time>
             
 
@@ -360,8 +360,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2021/06/05/Flink01-%E9%9B%86%E7%BE%A4%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2021/06/05/Flink01-%E9%9B%86%E7%BE%A4%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F/" itemprop="commentCount"></span>
+                <a href="/2021/06/12/Flink03-Flink%E6%B5%81%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2021/06/12/Flink03-Flink%E6%B5%81%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -369,7 +369,7 @@
 
           
           
-             <span id="/2021/06/05/Flink01-%E9%9B%86%E7%BE%A4%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F/" class="leancloud_visitors" data-flag-title="Flink01-集群运行模式">
+             <span id="/2021/06/12/Flink03-Flink%E6%B5%81%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80/" class="leancloud_visitors" data-flag-title="Flink03-Flink流处理基础">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -402,18 +402,13 @@
       
         
           
-          Session ModeJobManager和TaskManager共享
-优点
-资源充分共享，提示资源利用率
-Job在Flink Session集群中管理，运维简单
-
-缺点
-资源隔离性相对较差（job资源不相互隔离）
-非Native部署，TM不易扩展(TM数量在启动时已经固定并启动起来了)，Slot
+          时间事件时间（event time）事件发生的顺序，这个顺序是不会变的，计算结果是可复现的
+处理时间（processing time）基于Flink部署的本地机器时间,每次可能不一样，不提供确定性的保障
+123456789StreamExecutionEnvironment env &#x3D; S
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2021/06/05/Flink01-%E9%9B%86%E7%BE%A4%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+            <a class="btn" href="/2021/06/12/Flink03-Flink%E6%B5%81%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -587,6 +582,182 @@ Kubernetes集群具有授权认证，且获取KubeConfig配置，通过该KubeCo
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2021/06/05/Flink02-Flink-On-Kubernetes-Native%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2021/06/05/Flink01-%E9%9B%86%E7%BE%A4%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/06/05/Flink01-%E9%9B%86%E7%BE%A4%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F/" itemprop="url">Flink01-集群运行模式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-06-05T00:00:00+08:00">
+                2021-06-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86/" itemprop="url" rel="index">
+                    <span itemprop="name">数据处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2021/06/05/Flink01-%E9%9B%86%E7%BE%A4%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2021/06/05/Flink01-%E9%9B%86%E7%BE%A4%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2021/06/05/Flink01-%E9%9B%86%E7%BE%A4%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F/" class="leancloud_visitors" data-flag-title="Flink01-集群运行模式">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          Session ModeJobManager和TaskManager共享
+优点
+资源充分共享，提示资源利用率
+Job在Flink Session集群中管理，运维简单
+
+缺点
+资源隔离性相对较差（job资源不相互隔离）
+非Native部署，TM不易扩展(TM数量在启动时已经固定并启动起来了)，Slot
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/06/05/Flink01-%E9%9B%86%E7%BE%A4%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1688,183 +1859,6 @@ Lin
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2021/03/21/mongoDB%E7%B3%BB%E5%88%9705-mongoDB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/03/21/mongoDB%E7%B3%BB%E5%88%9705-mongoDB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/" itemprop="url">mongoDB系列05-mongoDB数据模型设计</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-21T00:00:00+08:00">
-                2021-03-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/DB/" itemprop="url" rel="index">
-                    <span itemprop="name">DB</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2021/03/21/mongoDB%E7%B3%BB%E5%88%9705-mongoDB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2021/03/21/mongoDB%E7%B3%BB%E5%88%9705-mongoDB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2021/03/21/mongoDB%E7%B3%BB%E5%88%9705-mongoDB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/" class="leancloud_visitors" data-flag-title="mongoDB系列05-mongoDB数据模型设计">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          JSON文档模型特点在传统关系模型中需要多张表关联的模型，在json文档模型中可以通过一个表（集合）完成
-文档模型设计主要考虑两点：性能和开发易用
-几个概念
-集合：同关系数据库中的表
-字段：同关系数据库中的列
-内嵌数组，引用字段：类似于关系数据库的主外键，关联关系
-
-1-1关系建模
-一对一关系以内嵌
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2021/03/21/mongoDB%E7%B3%BB%E5%88%9705-mongoDB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2021/03/21/mongoDB%E7%B3%BB%E5%88%9704-mongoDB%E5%A4%8D%E5%88%B6%E9%9B%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2033,7 +2027,7 @@ Lin
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/2/">&lt;i class&#x3D;&quot;fa fa-angle-right&quot;&gt;&lt;&#x2F;i&gt;</a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" href="/page/2/">&lt;i class&#x3D;&quot;fa fa-angle-right&quot;&gt;&lt;&#x2F;i&gt;</a>
   </nav>
 
 
@@ -2083,7 +2077,7 @@ Lin
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">130</span>
+                  <span class="site-state-item-count">131</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
