@@ -288,6 +288,175 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/04/4%E3%80%81React-%E7%90%86%E8%A7%A3Virtual%20DOM%E5%8F%8Akey%E5%B1%9E%E6%80%A7%E7%9A%84%E4%BD%9C%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/01/04/4%E3%80%81React-%E7%90%86%E8%A7%A3Virtual%20DOM%E5%8F%8Akey%E5%B1%9E%E6%80%A7%E7%9A%84%E4%BD%9C%E7%94%A8/" itemprop="url">4、React-理解Virtual DOM及key属性的作用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-04T00:00:00+08:00">
+                2019-01-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/01/04/4%E3%80%81React-%E7%90%86%E8%A7%A3Virtual%20DOM%E5%8F%8Akey%E5%B1%9E%E6%80%A7%E7%9A%84%E4%BD%9C%E7%94%A8/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/04/4%E3%80%81React-%E7%90%86%E8%A7%A3Virtual%20DOM%E5%8F%8Akey%E5%B1%9E%E6%80%A7%E7%9A%84%E4%BD%9C%E7%94%A8/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/01/04/4%E3%80%81React-%E7%90%86%E8%A7%A3Virtual%20DOM%E5%8F%8Akey%E5%B1%9E%E6%80%A7%E7%9A%84%E4%BD%9C%E7%94%A8/" class="leancloud_visitors" data-flag-title="4、React-理解Virtual DOM及key属性的作用">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>JSX的运行基础:Virtual DOM</p>
+<p>React组件在内部维护了一套虚拟DOM的状态,这套虚拟DOM的状态最终会映射到真实DOM的节点上,当虚拟DOM发生变化的时候,内部需要计算虚拟DOM的区别来产生一个diff,并不会刷新所有的真实DOM,只会更新diff的部份.</p>
+<h1 id="虚拟DOM是如何工作的"><a href="#虚拟DOM是如何工作的" class="headerlink" title="虚拟DOM是如何工作的"></a>虚拟DOM是如何工作的</h1><p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/%E8%99%9A%E6%8B%9FDOM%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84.png" alt="image"></p>
+<h1 id="虚拟DOM的两个假设"><a href="#虚拟DOM的两个假设" class="headerlink" title="虚拟DOM的两个假设"></a>虚拟DOM的两个假设</h1><ol>
+<li>组件的DOM结构是相对稳定的</li>
+<li>类型相同的兄节点可以被唯一标识</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/03/3%E3%80%81React%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%85%B6%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -402,26 +571,80 @@
       
         
           
-          理解React组件
-React组件一般不提供方法，而是提供某种状态机
-React组件可以理解为一个纯函数（接收的参数是什么，则输出的结果是确定的）
-单向数据绑定，数据变动同通过事件告诉外部
+            <h1 id="理解React组件"><a href="#理解React组件" class="headerlink" title="理解React组件"></a>理解React组件</h1><ol>
+<li>React组件一般不提供方法，而是提供某种状态机</li>
+<li>React组件可以理解为一个纯函数（接收的参数是什么，则输出的结果是确定的）</li>
+<li>单向数据绑定，数据变动同通过事件告诉外部</li>
+</ol>
+<h2 id="一个简单的React组件"><a href="#一个简单的React组件" class="headerlink" title="一个简单的React组件"></a>一个简单的React组件</h2><ol>
+<li><p>创建静态UI</p>
+</li>
+<li><p>考虑组件的状态组成</p>
+<p> 来自外部或者在内部维护</p>
+</li>
+<li><p>考虑组件的交互方式</p>
+</li>
+</ol>
+<h2 id="受控组件VS非受控组件"><a href="#受控组件VS非受控组件" class="headerlink" title="受控组件VS非受控组件"></a>受控组件VS非受控组件</h2><p>主用应用与form表单中</p>
+<ol>
+<li><p>受控组件</p>
+<p> 表单元素状态由使用者维护，必须指定value和onChange，<br> 即value的值是来自于外部的属性，而不是用户的输入。</p>
+</li>
+<li><p>非受控组件</p>
+<p> 表单元素状态DOM自身维护；</p>
+</li>
+</ol>
+<h2 id="创建React组件的几个原则"><a href="#创建React组件的几个原则" class="headerlink" title="创建React组件的几个原则"></a>创建React组件的几个原则</h2><ol>
+<li><p>单一职责原则</p>
+<ul>
+<li>每个组件只做一件事；</li>
+<li>如果组件变得负责，那么因该拆分成小组件</li>
+</ul>
+</li>
+<li><p>数据状态管理:DRY原则</p>
+<ul>
+<li>能计算得到的状态就不要单独存储</li>
+<li>组件尽量无状态，所需数据通过props获取</li>
+</ul>
+</li>
+</ol>
+<h1 id="React组件生命周期"><a href="#React组件生命周期" class="headerlink" title="React组件生命周期"></a>React组件生命周期</h1><p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/react-lifecycle-methods.png" alt="image"></p>
+<h1 id="constructor-NaN"><a href="#constructor-NaN" class="headerlink" title="constructor"></a>constructor</h1><ol>
+<li>用于初始化内部状态,很少使用</li>
+<li>唯一可以直接修改state的地方</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">this.state.xxx &#x3D; &#39;abc&#39;;</span><br></pre></td></tr></table></figure>
 
-一个简单的React组件
-创建静态UI
+<h1 id="getDerivedStateFromProps"><a href="#getDerivedStateFromProps" class="headerlink" title="getDerivedStateFromProps"></a>getDerivedStateFromProps</h1><ol>
+<li>当state需要从props初始化时使用</li>
+<li>尽量不要使用:维护两者状态一致性会增加复杂度</li>
+<li>每次render都会调用</li>
+<li>典型场景:表单控件获取默认值</li>
+</ol>
+<h1 id="componentDidMount"><a href="#componentDidMount" class="headerlink" title="componentDidMount"></a>componentDidMount</h1><ol>
+<li>UI渲染完成后调用</li>
+<li>值执行一次</li>
+<li>典型场景:获取外部资源</li>
+</ol>
+<h1 id="componentWillUnmount"><a href="#componentWillUnmount" class="headerlink" title="componentWillUnmount"></a>componentWillUnmount</h1><ol>
+<li>组件移除时调用</li>
+<li>典型场景:资源释放</li>
+</ol>
+<h1 id="getSnapshotBeforeUpdate"><a href="#getSnapshotBeforeUpdate" class="headerlink" title="getSnapshotBeforeUpdate"></a>getSnapshotBeforeUpdate</h1><ol>
+<li>在页面render之前调用,state已更新</li>
+<li>典型场景:获取render之前的DOM状态</li>
+</ol>
+<h1 id="componentDisUpdate"><a href="#componentDisUpdate" class="headerlink" title="componentDisUpdate"></a>componentDisUpdate</h1><ol>
+<li>每次UI更新时被调用</li>
+<li>典型场景:页面需要根据props变化重新获取数据</li>
+</ol>
+<h1 id="shouldComponentUpdate"><a href="#shouldComponentUpdate" class="headerlink" title="shouldComponentUpdate"></a>shouldComponentUpdate</h1><ol>
+<li>决定Virtual DOM是否要重绘</li>
+<li>一般可以有PureComponent自动实现</li>
+<li>典型场景:性能优化</li>
+</ol>
 
-考虑组件的状态组成
- 来自外部或者在内部维护
-
-考虑组件的交互方式
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/01/03/3%E3%80%81React%E7%BB%84%E4%BB%B6%E5%8F%8A%E5%85%B6%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+          
         
       
     </div>
@@ -582,21 +805,41 @@ React组件可以理解为一个纯函数（接收的参数是什么，则输出
       
         
           
-          JSX不是模板语言,只是一种语法糖,其实就是在JavaScript代码中直接写HTML的标记.
-本质:动态创建组件的语法糖.
-在JSX中使用表达式表达式是会返回值的一个javaScript语法
+            <h1 id="JSX"><a href="#JSX" class="headerlink" title="JSX"></a>JSX</h1><p>不是模板语言,只是一种语法糖,其实就是在JavaScript代码中直接写HTML的标记.</p>
+<p>本质:动态创建组件的语法糖.</p>
+<h1 id="在JSX中使用表达式"><a href="#在JSX中使用表达式" class="headerlink" title="在JSX中使用表达式"></a>在JSX中使用表达式</h1><p>表达式是会返回值的一个javaScript语法</p>
+<ol>
+<li>JSX本身也是表达式</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const element &#x3D; &lt;h1&gt;Hello,world!&lt;&#x2F;h1&gt;;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>在属性中使用表达式</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;MyComponent foo&#x3D;&#123;1+2+3+4&#125;&#x2F;&gt;</span><br></pre></td></tr></table></figure>
 
-JSX本身也是表达式
+<ol start="3">
+<li>延展属性</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">const props &#x3D; &#123;firstName:&#39;Ben&#39;,lastName:&#39;Hector&#39;&#125;;</span><br><span class="line">const greeting &#x3D; &lt;Greeting &#123;...props&#125; &#x2F;&gt;</span><br></pre></td></tr></table></figure>
 
-1const element &#x3D; &lt;h1&gt;Hello,wo
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/01/02/2%E3%80%81React-JSX/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+<ol start="4">
+<li>表达式作为资源素</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const element &#x3D; &lt;li&gt;&#123;props.message&#125;&lt;&#x2F;li&gt;;</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="JSX优点"><a href="#JSX优点" class="headerlink" title="JSX优点"></a>JSX优点</h1><ol>
+<li>声明式创建界面的直观</li>
+<li>代码动态创建页面的灵活</li>
+<li>无需学习新的模板语言</li>
+</ol>
+<h1 id="约定"><a href="#约定" class="headerlink" title="约定"></a>约定</h1><ol>
+<li>React认为小写的tag是原生的DOM节点,如div</li>
+<li>大写字母开头的为自定义组件</li>
+<li>JSX标记可以直接使用属性语法,如&lt;menu.item /&gt;</li>
+</ol>
+
+          
         
       
     </div>
@@ -757,22 +1000,21 @@ JSX本身也是表达式
       
         
           
-          相关技术栈
-Redux 用来做状态管理
-REACT/ROUTER 路由管理
-BABEL 最新JavaScript特性翻译成浏览器兼容的旧的JavaScript语法
-webpack 打包
-ESLint　语法检查
+            <h2 id="相关技术栈"><a href="#相关技术栈" class="headerlink" title="相关技术栈"></a>相关技术栈</h2><ul>
+<li>Redux 用来做状态管理</li>
+<li>REACT/ROUTER 路由管理</li>
+<li>BABEL 最新JavaScript特性翻译成浏览器兼容的旧的JavaScript语法</li>
+<li>webpack 打包</li>
+<li>ESLint　语法检查</li>
+</ul>
+<h2 id="Create-React-App"><a href="#Create-React-App" class="headerlink" title="Create React App"></a>Create React App</h2><p>fackbook 推出的命令行工具，可以快速生成一个React Application项目</p>
+<p>整合了Babel/Webpack Config/Testing/ESLint…</p>
+<p>入门级的命令行工具，采取最简策略，只引入了必要的包</p>
+<h2 id="Rekit"><a href="#Rekit" class="headerlink" title="Rekit"></a>Rekit</h2><p>整合了Babel/Webpack Config/Testing/ESLint　＋　Redux/React Router/Less(Scss)/Feature oriented Architecture/Dedicated IDE</p>
+<h2 id="Codesandbox"><a href="#Codesandbox" class="headerlink" title="Codesandbox"></a>Codesandbox</h2><p>在线开发平台Codesandbox.io.</p>
+<p>开发者可以不用关心项目配置的细节，打包，部署，build．．．</p>
 
-Create React Appfackbook 推出的命令行工具，可以快速生成一个Re
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/01/01/1%E3%80%81React%E8%84%9A%E6%89%8B%E6%9E%B6/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+          
         
       
     </div>
@@ -933,24 +1175,31 @@ Create React Appfackbook 推出的命令行工具，可以快速生成一个Re
       
         
           
-          远程连接
-remmina
-sudo dnf install remmina
-
-浏览器
-chrome
-
-Fedora安装Chrom
-cd /etc/yum.repos.d/    
+            <h1 id="远程连接"><a href="#远程连接" class="headerlink" title="远程连接"></a>远程连接</h1><ul>
+<li><p>remmina</p>
+<pre><code>sudo dnf install remmina</code></pre></li>
+</ul>
+<h1 id="浏览器"><a href="#浏览器" class="headerlink" title="浏览器"></a>浏览器</h1><ul>
+<li><p>chrome</p>
+<ul>
+<li><p>Fedora安装Chrom</p>
+<pre><code>cd /etc/yum.repos.d/    
 wget  http://repo.fdzh.org/chrome/google-chrome-mirrors.repo
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/08/10/%E6%88%91%E7%9A%84Linux%E5%B8%B8%E7%94%A8%E8%BD%AF%E4%BB%B6/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+dnf install -y google-chrome-stable</code></pre></li>
+</ul>
+</li>
+</ul>
+<h1 id="shadowsocket-服务"><a href="#shadowsocket-服务" class="headerlink" title="shadowsocket 服务"></a>shadowsocket 服务</h1><h1 id="FZUG源"><a href="#FZUG源" class="headerlink" title="FZUG源"></a>FZUG源</h1><p>  <a href="https://github.com/FZUG/repo/wiki/%E6%B7%BB%E5%8A%A0-FZUG-%E6%BA%90" target="_blank" rel="noopener">安装 FZUG 源</a></p>
+<h1 id="UML工具"><a href="#UML工具" class="headerlink" title="UML工具"></a>UML工具</h1><p>  <a href="http://www.umlet.com/" target="_blank" rel="noopener">Umlet</a></p>
+<p>  <a href="http://staruml.io/" target="_blank" rel="noopener">Staruml</a></p>
+<h1 id="正则表达式工具"><a href="#正则表达式工具" class="headerlink" title="正则表达式工具"></a>正则表达式工具</h1><p>  <a href="http://www.regexbuddy.com/" target="_blank" rel="noopener">regexbuddy</a></p>
+<h1 id="端口管理"><a href="#端口管理" class="headerlink" title="端口管理"></a>端口管理</h1><pre><code>nmap</code></pre><h1 id="截图"><a href="#截图" class="headerlink" title="截图"></a>截图</h1><pre><code>flameshot
+
+添加到快捷键命令: flameshot gui</code></pre><h1 id="代码片段"><a href="#代码片段" class="headerlink" title="代码片段"></a>代码片段</h1><pre><code>Cacher</code></pre><h1 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h1><p>DBeaver</p>
+<h1 id="Atom插件"><a href="#Atom插件" class="headerlink" title="Atom插件"></a>Atom插件</h1><pre><code>列编辑插件
+
+sublime-style-column-selection</code></pre>
+          
         
       
     </div>
@@ -1111,17 +1360,10 @@ wget  http://repo.fdzh.org/chrome/google-chrome-mirrors.repo
       
         
           
-          转自https://www.ibm.com/developerworks/cn/linux/1407_liuming_init1/index.html
-该系列共有3部份内容第 1 部分: sysvinit第 2 部分: UpStart第 3 部分: Systemd
+            <p>转自<a href="https://www.ibm.com/developerworks/cn/linux/1407_liuming_init1/index.html" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/linux/1407_liuming_init1/index.html</a></p>
+<p>该系列共有3部份内容<br>第 1 部分: sysvinit<br>第 2 部分: UpStart<br>第 3 部分: Systemd</p>
 
           
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2015/09/03/%E6%B5%85%E6%9E%90Linux%E5%88%9D%E5%A7%8B%E5%8C%96init%E7%B3%BB%E7%BB%9F/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
         
       
     </div>
@@ -1282,16 +1524,15 @@ wget  http://repo.fdzh.org/chrome/google-chrome-mirrors.repo
       
         
           
-          驱动log4j是一个日志系统。
-slf4j是一个日志系统的封装，对外提供统一的API使用slf4j需要下载： slf4j-api-x.x.x.jar（它提供对外一致的API接口，其本身不提供日志实现）。 假设我们选择log4j作为我们的日志实现，需要下载： log4j-x.x.x.jar 如果想把s
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2015/06/26/java%E6%97%A5%E5%BF%97%EF%BC%882%EF%BC%89-%E6%97%A5%E5%BF%97%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%BC%8F/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+            <h1 id="驱动"><a href="#驱动" class="headerlink" title="驱动"></a>驱动</h1><p>log4j是一个日志系统。</p>
+<p>slf4j是一个日志系统的封装，对外提供统一的API使用slf4j需要下载： slf4j-api-x.x.x.jar（它提供对外一致的API接口，其本身不提供日志实现）。 假设我们选择log4j作为我们的日志实现，需要下载： log4j-x.x.x.jar 如果想把slf4j绑定log4j，则需要下载slf4j对log4j的相应驱动： slf4j-log4j12-x.x.x.jar （这样就可以使用slf4j提供的API，用log4j实现打日志了）。 所谓驱动，就是实现了slf4j的一些接口，用你喜欢的日志系统打日志。 slf4j还支持好多日志系统，并提供了相应的“驱动”包 例如：</p>
+<p>slf4j-jdk14-x.x.x.jar是为java.util.logging提供的驱动</p>
+<p>slf4j-simple-x.x.x.jar直接绑定System.err</p>
+<p>lf4j-jcl-x.x.x.jar是为commons-logging提供的驱动</p>
+<p>logback-classic-x.x.x.jar是为logback提供的驱动</p>
+<h1 id="桥接"><a href="#桥接" class="headerlink" title="桥接"></a>桥接</h1><p>如果你引入了一个第三方jar包或者你之前的工程（本身就是使用的第三方jar包）使用了commons-logging打日志。还有一些组建可能直接调用了 java.util.logging，你想换成slf4j，你不需要更改代码，你需要使用桥接,你可以引入jcl-over-slf4j.jar，同时去掉commons-logging.jar包，这样之前打的日志会自动切换到你的slf4j中来了。 同样还有log4j-over-slf4j.jar and jul-to-slf4j.jar等用于使用其它日志系统的应用自动切换到slf4j统一打日志。</p>
+
+          
         
       
     </div>
@@ -1452,18 +1693,22 @@ slf4j是一个日志系统的封装，对外提供统一的API使用slf4j需要�
       
         
           
-          组合模式slf4j+log4j组合使用模式slf4j-api-1.5.11.jar –提供对外一致的API接口
-slf4j-log4j12-1.5.11.jar –slf4j对应log4j相应的“驱动”（把slf4j绑定log4j）
-log4j-1.2.15.jar
-log4j.properties
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2015/06/25/java%E6%97%A5%E5%BF%97%EF%BC%883%EF%BC%89-sl4j%E9%A9%B1%E5%8A%A8%E5%92%8C%E6%A1%A5%E6%8E%A5/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+            <h1 id="组合模式"><a href="#组合模式" class="headerlink" title="组合模式"></a>组合模式</h1><h2 id="slf4j-log4j组合使用模式"><a href="#slf4j-log4j组合使用模式" class="headerlink" title="slf4j+log4j组合使用模式"></a>slf4j+log4j组合使用模式</h2><p>slf4j-api-1.5.11.jar –提供对外一致的API接口</p>
+<p>slf4j-log4j12-1.5.11.jar –slf4j对应log4j相应的“驱动”（把slf4j绑定log4j）</p>
+<p>log4j-1.2.15.jar</p>
+<p>log4j.properties(也可以是 log4j.xml)</p>
+<h2 id="JCL-Log4J组合使用模式（即commons-logging-log4j）"><a href="#JCL-Log4J组合使用模式（即commons-logging-log4j）" class="headerlink" title="JCL+Log4J组合使用模式（即commons-logging+log4j）"></a>JCL+Log4J组合使用模式（即commons-logging+log4j）</h2><p>commons-logging-1.1.jar</p>
+<p>log4j-1.2.15.jar</p>
+<p>log4j.properties</p>
+<h1 id="不同的获取logger的方式"><a href="#不同的获取logger的方式" class="headerlink" title="不同的获取logger的方式"></a>不同的获取logger的方式</h1><h2 id="log4j"><a href="#log4j" class="headerlink" title="log4j"></a>log4j</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.log4j.Logger;</span><br><span class="line"></span><br><span class="line">Logger logger= Logger.getLogger(xx<span class="class">.<span class="keyword">class</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="slf4j-log4j："><a href="#slf4j-log4j：" class="headerlink" title="slf4j+log4j："></a>slf4j+log4j：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.slf4j.Logger;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"></span><br><span class="line">Logger logger = LoggerFactory.getLogger(xx<span class="class">.<span class="keyword">class</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="jcl-log4j"><a href="#jcl-log4j" class="headerlink" title="jcl+log4j"></a>jcl+log4j</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.commons.logging.Log;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.logging.LogFactory;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Log log = LogFactory.getLog(xx<span class="class">.<span class="keyword">class</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>总的来说，slf4j与commons-logging只是一个日志门面，实际还是要依赖真正的日志库log4j，虽然slf4j和commons-loggins自带了日志库，但是毕竟log4j才是最强大的。</p>
+
+          
         
       
     </div>
@@ -1624,15 +1869,44 @@ log4j.properties
       
         
           
-          common-loggingcommon-logging是apache提供的一个通用的日志接口。用户可以自由选择第三方的日志组件作为具体实现，像log4j，或者jdk自带的logging，common-logging会通过动态查找的机制，在程序运行时自动找出真正使用的日志库。当然，common-lo
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2015/06/21/java%E6%97%A5%E5%BF%97%EF%BC%881%EF%BC%89-%E7%BB%84%E4%BB%B6%E8%AF%A6%E8%A7%A3/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+            <h1 id="common-logging"><a href="#common-logging" class="headerlink" title="common-logging"></a>common-logging</h1><p>common-logging是apache提供的一个通用的日志接口。用户可以自由选择第三方的日志组件作为具体实现，像log4j，或者jdk自带的logging，common-logging会通过动态查找的机制，在程序运行时自动找出真正使用的日志库。当然，common-logging内部有一个Simple logger的简单实现，但是功能很弱。所以使用common-logging，通常都是配合着log4j来使用。</p>
+<p>使用它的好处就是，代码依赖是common-logging而非log4j， 避免了和具体的日志方案直接耦合，在有必要时，可以更改日志实现的第三方库。</p>
+<p>使用common-logging的常见代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.commons.logging.LogFactory;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> Log logger = LogFactory.getLog(<span class="keyword">this</span>.getClass());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>动态查找原理：Log 是一个接口声明。LogFactory 的内部会去装载具体的日志系统，并获得实现该Log 接口的实现类。LogFactory 内部装载日志系统的流程如下：</p>
+<ul>
+<li>首先，寻找org.apache.commons.logging.LogFactory 属性配置。</li>
+<li>否则，利用JDK1.3 开始提供的service 发现机制，会扫描classpah 下的META-INF/services/org.apache.commons.logging.LogFactory文件，若找到则装载里面的配置，使用里面的配置。</li>
+<li>否则，从Classpath 里寻找commons-logging.properties ，找到则根据里面的配置加载。</li>
+<li>否则，使用默认的配置：如果能找到Log4j 则默认使用log4j 实现，如果没有则使用JDK14Logger 实现，再没有则使用commons-logging 内部提供的SimpleLog 实现。</li>
+</ul>
+<p>从上述加载流程来看，只要引入了log4j 并在classpath 配置了log4j.xml/log4j.properties，则commons-logging 就会使log4j 使用正常，而代码里不需要依赖任何log4j 的代码。</p>
+<h1 id="slf4j"><a href="#slf4j" class="headerlink" title="slf4j"></a>slf4j</h1><p>slf4j全称为Simple Logging Facade for JAVA，java简单日志门面。类似于Apache Common-Logging，是对不同日志框架提供的一个门面封装，可以在部署的时候不修改任何配置即可接入一种日志实现方案。</p>
+<p>但是，他在编译时静态绑定真正的Log库。使用SLF4J时，如果你需要使用某一种日志实现，那么你必须选择正确的SLF4J的jar包的集合（各种桥接包）。</p>
+<p>使用slf4j的常见代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.slf4j.Logger; <span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> Log logger = LogFactory.getLog(<span class="keyword">this</span>.getClass());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>slf4j静态绑定原理：SLF4J 会在编译时会绑定import org.slf4j.impl.StaticLoggerBinder; 该类里面实现对具体日志方案的绑定接入。</p>
+<p>任何一种基于slf4j 的实现都要有一个这个类。如：org.slf4j.slf4j-log4j12-1.5.6: 提供对 log4j 的一种适配实现。</p>
+<p>注意：如果有任意两个实现slf4j 的包同时出现，那么就可能出现问题。</p>
+<h1 id="slf4j与commons-logging比较"><a href="#slf4j与commons-logging比较" class="headerlink" title="slf4j与commons-logging比较"></a>slf4j与commons-logging比较</h1><p>common-logging通过动态查找的机制，在程序运行时自动找出真正使用的日志库。由于它使用了ClassLoader寻找和载入底层的日志库， 导致了象OSGI这样的框架无法正常工作，因为OSGI的不同的插件使用自己的ClassLoader。 OSGI的这种机制保证了插件互相独立，然而却使Apache Common-Logging无法工作。</p>
+<p>slf4j在编译时静态绑定真正的Log库,因此可以在OSGI中使用。另外，SLF4J 支持参数化的log字符串，避免了之前为了减少字符串拼接的性能损耗而不得不写的if(logger.isDebugEnable())，</p>
+<p>现在你可以直接写：logger.debug(“current user is: {}”, user)。拼装消息被推迟到了它能够确定是不是要显示这条消息的时候，但是获取参数的代价并没有幸免。</p>
+<h1 id="Log4j"><a href="#Log4j" class="headerlink" title="Log4j"></a>Log4j</h1><p>Apache的一个开放源代码项目，通过使用Log4j，我们可以控制日志信息输送的目的地是控制台、文件、GUI组件、甚至是套接口服务 器、NT的事件记录器、UNIX Syslog守护进程等；</p>
+<p>用户也可以控制每一条日志的输出格式；</p>
+<p>通过定义每一条日志信息的级别，用户能够更加细致地控制日志的生成过程。</p>
+<p>这些可以通过一个配置文件来灵活地进行配置，而不需要修改程序代码。</p>
+<h1 id="LogBack"><a href="#LogBack" class="headerlink" title="LogBack"></a>LogBack</h1><p>Logback是由log4j创始人设计的又一个开源日记组件。logback当前分成三个模块：logback-core,logback- classic和logback-access。logback-core是其它两个模块的基础模块。logback-classic是log4j的一个 改良版本。此外logback-classic完整实现SLF4J API使你可以很方便地更换成其它日记系统如log4j或JDK14 Logging。logback-access访问模块与Servlet容器集成提供通过Http来访问日记的功能。</p>
+<h1 id="Log4j-与-LogBack-比较"><a href="#Log4j-与-LogBack-比较" class="headerlink" title="Log4j 与 LogBack 比较"></a>Log4j 与 LogBack 比较</h1><p>LogBack作为一个通用可靠、快速灵活的日志框架，将作为Log4j的替代和SLF4J组成新的日志系统的完整实现。LOGBack声称具有极佳的性能，“ 某些关键操作，比如判定是否记录一条日志语句的操作，其性能得到了显著的提高。这个操作在LogBack中需要3纳秒，而在Log4J中则需要30纳秒。 LogBack创建记录器（logger）的速度也更快：13微秒，而在Log4J中需要23微秒。更重要的是，它获取已存在的记录器只需94纳秒，而 Log4J需要2234纳秒，时间减少到了1/23。跟JUL相比的性能提高也是显著的”。 另外，LOGBack的所有文档是全面免费提供的，不象Log4J那样只提供部分免费文档而需要用户去购买付费文档。</p>
+<h1 id="slf4j与其他各种日志组件的桥接"><a href="#slf4j与其他各种日志组件的桥接" class="headerlink" title="slf4j与其他各种日志组件的桥接"></a>slf4j与其他各种日志组件的桥接</h1><p>应用代码中使用slf4j接口，接入具体实现的方法。</p>
+<p>应用代码中使用别的日志接口，转成slf4j的方法。</p>
+<h1 id="日志组件相关历史"><a href="#日志组件相关历史" class="headerlink" title="日志组件相关历史"></a>日志组件相关历史</h1><p>Java 界里有许多实现日志功能的工具，最早得到广泛使用的是 log4j，许多应用程序的日志部分都交给了 log4j，不过作为组件开发者，他们希望自己的组件不要紧紧依赖某一个工具，毕竟在同一个时候还有很多其他很多日志工具，假如一个应用程序用到了两个组件，恰好两个组件使用不同的日志工具，那么应用程序就会有两份日志输出了。</p>
+<p>为了解决这个问题，Apache Commons Logging （之前叫 Jakarta Commons Logging，JCL）粉墨登场，JCL 只提供 log 接口，具体的实现则在运行时动态寻找。这样一来组件开发者只需要针对 JCL 接口开发，而调用组件的应用程序则可以在运行时搭配自己喜好的日志实践工具。</p>
+<p>所以即使到现在你仍会看到很多程序应用 JCL + log4j 这种搭配，不过当程序规模越来越庞大时，JCL的动态绑定并不是总能成功，具体原因大家可以 Google 一下，这里就不再赘述了。解决方法之一就是在程序部署时静态绑定指定的日志工具，这就是 SLF4J 产生的原因。</p>
+<p>跟 JCL 一样，SLF4J 也是只提供 log 接口，具体的实现是在打包应用程序时所放入的绑定器（名字为 slf4j-XXX-version.jar）来决定，XXX 可以是 log4j12, jdk14, jcl, nop 等，他们实现了跟具体日志工具（比如 log4j）的绑定及代理工作。举个例子：如果一个程序希望用 log4j 日志工具，那么程序只需针对 slf4j-api 接口编程，然后在打包时再放入 slf4j-log4j12-version.jar 和 log4j.jar 就可以了。</p>
+<p>现在还有一个问题，假如你正在开发应用程序所调用的组件当中已经使用了 JCL 的，还有一些组建可能直接调用了 java.util.logging，这时你需要一个桥接器（名字为 XXX-over-slf4j.jar）把他们的日志输出重定向到 SLF4J，所谓的桥接器就是一个假的日志实现工具，比如当你把 jcl-over-slf4j.jar 放到 CLASS_PATH 时，即使某个组件原本是通过 JCL 输出日志的，现在却会被 jcl-over-slf4j “骗到”SLF4J 里，然后 SLF4J 又会根据绑定器把日志交给具体的日志实现工具。</p>
+
+          
         
       
     </div>
@@ -1793,187 +2067,39 @@ log4j.properties
       
         
           
-          什么是Servlet生命周期？Servlet容器如何去创建Servlet对象，如何初始化，如何调用Sevlet对象的方法去处理请求以及如何销毁Servlet的整个过程。
-实例化
-什么是实例化容器调用Servlet的构造器，创建一个Servlet对象。
-什么时候实例化情况1：容器在收到请求后才创建Se
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2014/03/06/SERVLET02-Servlet%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
+            <h1 id="什么是Servlet生命周期？"><a href="#什么是Servlet生命周期？" class="headerlink" title="什么是Servlet生命周期？"></a>什么是Servlet生命周期？</h1><p>Servlet容器如何去创建Servlet对象，如何初始化，如何调用Sevlet对象的方法去处理请求以及如何销毁Servlet的整个过程。</p>
+<h2 id="实例化"><a href="#实例化" class="headerlink" title="实例化"></a>实例化</h2><ul>
+<li>什么是实例化<br>容器调用Servlet的构造器，创建一个Servlet对象。</li>
+<li>什么时候实例化<br>情况1：容器在收到请求后才创建Servlet对象；</li>
+</ul>
+<p>情况2：容器在启动的时候就创建Servlet对象；</p>
+<p>web应用描述文件web.xml中配置Servlet的加载方式</p>
+<p>它的值必须是一个整数，表示servlet应该被载入的顺序;<br>当值为0或者大于0时，表示容器在应用启动时就加载并初始化这个servlet;<br>当值小于0或者没有指定时，则表示容器在该servlet被选择时才会去加载;<br>正数的值越小，该servlet的优先级越高，应用启动时就越先加载;<br>当值相同时，容器就会自己选择顺序来加载。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">load-on-startup</span>&gt;</span>1<span class="tag">&lt;/<span class="name">load-on-startup</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>注意：Servlet在默认情况下，对每个Servlet，只会创建一个实例。</p>
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>什么是初始化？</p>
+<p>容器在创建好Servlet对象后会立即调用对象的init()方法；</p>
+<p>GenericServlet提供的init方法已经提供了init方法，一般情况下，我们不再需要写init方法了。 GenericServlet提供的init方法是这样实现的： 将容器提供的ServletConfig对象赋值给本地的ServletConfig，并且提供了getServletConfig方法用来获得ServletConfig对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> ServletConfig config;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> ServletConfig <span class="title">getServletConfig</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">　   <span class="keyword">return</span> <span class="keyword">this</span>.config;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(ServletConfig config)</span>　</span></span><br><span class="line"><span class="function"><span class="keyword">throws</span> ServletException</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">     <span class="keyword">this</span>.config = config;</span><br><span class="line">    init();　　</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//这里提供了init方法，方便我们在Servlet中重写，实现自己的初始化方法</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span></span></span><br><span class="line"><span class="function">     <span class="keyword">throws</span> ServletException</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Servlet的初始化参数</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">servlet</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>MyServlet<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">servlet-class</span>&gt;</span>com.richey88.servlet.MyServlet<span class="tag">&lt;/<span class="name">servlet-class</span>&gt;</span></span><br><span class="line"></span><br><span class="line">      <span class="comment">&lt;!-- 配置一些初始化参数,一个Servlet可以配置多个初始化参数</span></span><br><span class="line"><span class="comment">          init-param 是Servlet范围内的参数，只能在servlet中的init()方法中获得</span></span><br><span class="line"><span class="comment">          获取方式：String value = this.getInitParameter("key");</span></span><br><span class="line"><span class="comment">      --&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">init-param</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>message<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>welcome to myservlet<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">servlet</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="就绪"><a href="#就绪" class="headerlink" title="就绪"></a>就绪</h2><p>什么是就绪？</p>
+<p>Servlet容器在收到请求后会调用servlet的service方法来处理请求。</p>
+<p>HttpServlet中的service()方法是如何实现的？ 依据请求方式(get/post)分别调用doGet/doPost方法。 可以override Httpservlet提供的doGet和doPost方法，也可以直接override HttpServlet提供的service方法。</p>
+<h2 id="销毁"><a href="#销毁" class="headerlink" title="销毁"></a>销毁</h2><p>什么是销毁？</p>
+<p>Servlet容器根据自身的算法，会在不需要Servlet对象的时候调用该对象的destroy()方法，删除该对象。</p>
+<p>GenericServlet已经实现了destroy（）方法。</p>
+<p>该方法只会执行一次</p>
+<h1 id="Servlet生命周期相关的接口与类"><a href="#Servlet生命周期相关的接口与类" class="headerlink" title="Servlet生命周期相关的接口与类"></a>Servlet生命周期相关的接口与类</h1><h2 id="Servlet接口"><a href="#Servlet接口" class="headerlink" title="Servlet接口"></a>Servlet接口</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">init（ServletConfig config）</span><br><span class="line">service（ServletRequest request，ServletResponse response）</span><br></pre></td></tr></table></figure>
 
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2014/03/04/SERVLET01-Servlet%E6%A6%82%E8%BF%B0%E5%8F%8A%E7%BC%96%E5%86%99/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2014/03/04/SERVLET01-Servlet%E6%A6%82%E8%BF%B0%E5%8F%8A%E7%BC%96%E5%86%99/" itemprop="url">SERVLET01-Servlet概述及编写</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2014-03-04T00:00:00+08:00">
-                2014-03-04
-              </time>
-            
-
-            
-
-            
-          </span>
+<h2 id="GenericServlet抽象类"><a href="#GenericServlet抽象类" class="headerlink" title="GenericServlet抽象类"></a>GenericServlet抽象类</h2><p>实现了Servlet接口中的部分方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">init()</span><br><span class="line">destroy()</span><br><span class="line">getServletContext（）</span><br></pre></td></tr></table></figure>
+<h2 id="HttpServlet抽象类"><a href="#HttpServlet抽象类" class="headerlink" title="HttpServlet抽象类"></a>HttpServlet抽象类</h2><p>继承了 GenericServlet抽象类</p>
+<p>ServletRequest接口是HttpServletRequest接口的父接口。</p>
+<p>ServletResponse接口是HttpServletResponse接口的父接口。 destroy()</p>
+<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/servlet01.png" alt="Servlet 生命周期时序图"></p>
 
           
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java-web/" itemprop="url" rel="index">
-                    <span itemprop="name">java-web</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2014/03/04/SERVLET01-Servlet%E6%A6%82%E8%BF%B0%E5%8F%8A%E7%BC%96%E5%86%99/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2014/03/04/SERVLET01-Servlet%E6%A6%82%E8%BF%B0%E5%8F%8A%E7%BC%96%E5%86%99/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2014/03/04/SERVLET01-Servlet%E6%A6%82%E8%BF%B0%E5%8F%8A%E7%BC%96%E5%86%99/" class="leancloud_visitors" data-flag-title="SERVLET01-Servlet概述及编写">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          Servlet是什么？Servlet是sun公司制定的一种用来扩展web服务器功能的组件规范。 1）扩展web服务器功能 早期的web服务器，比如（apache web server、iis）只能够处理静态资源的属性（也就是说，需要事先将html文件写好放在web服务器指定的文件夹下面 ），不能够处
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2014/03/04/SERVLET01-Servlet%E6%A6%82%E8%BF%B0%E5%8F%8A%E7%BC%96%E5%86%99/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
         
       
     </div>
@@ -2061,7 +2187,7 @@ log4j.properties
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">131</span>
+                  <span class="site-state-item-count">132</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2072,7 +2198,7 @@ log4j.properties
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-count">25</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2083,7 +2209,7 @@ log4j.properties
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-count">43</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

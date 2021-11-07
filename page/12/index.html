@@ -288,6 +288,222 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/14/14%E3%80%81React%EF%BC%9AReact%20Router/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/01/14/14%E3%80%81React%EF%BC%9AReact%20Router/" itemprop="url">14、React：React Router</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-14T00:00:00+08:00">
+                2019-01-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/01/14/14%E3%80%81React%EF%BC%9AReact%20Router/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/14/14%E3%80%81React%EF%BC%9AReact%20Router/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/01/14/14%E3%80%81React%EF%BC%9AReact%20Router/" class="leancloud_visitors" data-flag-title="14、React：React Router">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="为什么需要陆游"><a href="#为什么需要陆游" class="headerlink" title="为什么需要陆游"></a>为什么需要陆游</h1><ol>
+<li>单页应用需要进行页面切换</li>
+<li>通过URL可以定位到页面</li>
+<li>更有语义的组织资源</li>
+</ol>
+<h1 id="路由实现的基本架构"><a href="#路由实现的基本架构" class="headerlink" title="路由实现的基本架构"></a>路由实现的基本架构</h1><p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/react-router.png" alt="image"></p>
+<h1 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h1><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">"react"</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;</span><br><span class="line">    <span class="comment">//BrowserRouter as Router,</span></span><br><span class="line">    HashRouter <span class="keyword">as</span> Router,</span><br><span class="line">    Route,</span><br><span class="line">    Link,</span><br><span class="line">    NavLink,</span><br><span class="line">    Prompt,</span><br><span class="line">    Redirect,</span><br><span class="line">    Switch</span><br><span class="line">&#125; <span class="keyword">from</span> <span class="string">"react-router-dom"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123;MemoryRouter&#125; <span class="keyword">from</span> <span class="string">"react-router"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"./RouterSample.css"</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> ReactPage = <span class="function"><span class="params">()</span> =&gt;</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>ReactPage<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"><span class="keyword">const</span> AngularPage = <span class="function"><span class="params">()</span> =&gt;</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>AngularPage<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"><span class="keyword">const</span> VuePage = <span class="function"><span class="params">()</span> =&gt;</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>VuePage<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"><span class="keyword">const</span> NavLinkPage = <span class="function"><span class="params">()</span> =&gt;</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>NavLinkPage<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"><span class="keyword">const</span> LoginPage = <span class="function"><span class="params">()</span> =&gt;</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>LoginPage<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"><span class="keyword">const</span> HomePage = <span class="function"><span class="params">()</span> =&gt;</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>HomePage<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"><span class="keyword">const</span> SwitchPage1 = <span class="function"><span class="params">()</span> =&gt;</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>SwitchPage1<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"><span class="keyword">const</span> SwitchPage2 = <span class="function"><span class="params">()</span> =&gt;</span> <span class="xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>SwitchPage2<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">RouterSample</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">PureComponent</span> </span>&#123;</span><br><span class="line">    render() &#123;</span><br><span class="line">        <span class="keyword">let</span> formIsHalfFielledOut = <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">let</span> loggedIn = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> (</span><br><span class="line">            &lt;Router&gt;</span><br><span class="line">                &lt;div&gt;</span><br><span class="line">                    &lt;ul id=<span class="string">"menu"</span>&gt;</span><br><span class="line">                        &lt;li&gt;</span><br><span class="line">                            &lt;Link to=<span class="string">"/LoginPage"</span>&gt;LoginPage&lt;<span class="regexp">/Link&gt;</span></span><br><span class="line"><span class="regexp">                        &lt;/</span>li&gt;</span><br><span class="line">                        &lt;li&gt;</span><br><span class="line">                            &lt;Link to=<span class="string">"/ReactPage"</span>&gt;ReactPage&lt;<span class="regexp">/Link&gt;</span></span><br><span class="line"><span class="regexp">                        &lt;/</span>li&gt;</span><br><span class="line">                        &lt;li&gt;</span><br><span class="line">                            &lt;Link to=<span class="string">"/AngularPage"</span>&gt;AngularPage&lt;<span class="regexp">/Link&gt;</span></span><br><span class="line"><span class="regexp">                        &lt;/</span>li&gt;</span><br><span class="line">                        &lt;li&gt;</span><br><span class="line">                            &lt;Link to=<span class="string">"/VuePage"</span>&gt;VuePage&lt;<span class="regexp">/Link&gt;</span></span><br><span class="line"><span class="regexp">                        &lt;/</span>li&gt;</span><br><span class="line">                        &lt;li&gt;</span><br><span class="line">                            &lt;NavLink to=<span class="string">"/NavLinkPage"</span> activeClassName=<span class="string">"selected"</span>&gt;NavLinkPage&lt;<span class="regexp">/NavLink&gt;</span></span><br><span class="line"><span class="regexp">                        &lt;/</span>li&gt;</span><br><span class="line">                        &lt;li&gt;</span><br><span class="line">                            &lt;Link to=<span class="string">"/LoginPage"</span> &gt;LoginPage&lt;<span class="regexp">/Link&gt;</span></span><br><span class="line"><span class="regexp">                        &lt;/</span>li&gt;</span><br><span class="line">                        &lt;li&gt;</span><br><span class="line">                            &lt;Link to=<span class="string">"/SwitchPage"</span> &gt;SwitchPage&lt;<span class="regexp">/Link&gt;</span></span><br><span class="line"><span class="regexp">                        &lt;/</span>li&gt;</span><br><span class="line">                    &lt;<span class="regexp">/ul&gt;</span></span><br><span class="line"><span class="regexp">                    &#123;/</span>*<span class="xml"><span class="tag">&lt;<span class="name">Prompt</span> <span class="attr">to</span>=<span class="string">"/PromptPage"</span> <span class="attr">when</span>=<span class="string">&#123;formIsHalfFielledOut&#125;</span> <span class="attr">message</span>=<span class="string">"确定要离开吗？"</span> /&gt;</span></span>*<span class="regexp">/&#125;</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">                    &lt;div id="page-container"&gt;</span></span><br><span class="line"><span class="regexp">                        &lt;Route path="/</span>ReactPage<span class="string">" component=&#123;ReactPage&#125;/&gt;</span></span><br><span class="line"><span class="string">                        &lt;Route path="</span>/AngularPage<span class="string">" component=&#123;AngularPage&#125;/&gt;</span></span><br><span class="line"><span class="string">                        &lt;Route path="</span>/VuePage<span class="string">" component=&#123;VuePage&#125;/&gt;</span></span><br><span class="line"><span class="string">                        &lt;Route path="</span>/NavLinkPage<span class="string">" component=&#123;NavLinkPage&#125;/&gt;</span></span><br><span class="line"><span class="string">                        &lt;Route exact path="</span>/LoginPage<span class="string">" render=&#123;() =&gt; (</span></span><br><span class="line"><span class="string">                            loggedIn</span></span><br><span class="line"><span class="string">                                ? (&lt;Redirect to="</span>/ReactPage<span class="string">"/&gt;)</span></span><br><span class="line"><span class="string">                                :(&lt;HomePage/&gt;)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">                        )&#125;/&gt;</span></span><br><span class="line"><span class="string">                       &lt;Switch&gt;</span></span><br><span class="line"><span class="string">                           &lt;Route path="</span>/SwitchPage<span class="string">" component=&#123;SwitchPage1&#125;/&gt;</span></span><br><span class="line"><span class="string">                           &lt;Route path="</span>/SwitchPage<span class="string">" component=&#123;SwitchPage2&#125;/&gt;</span></span><br><span class="line"><span class="string">                       &lt;/Switch&gt;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">                    &lt;/div&gt;</span></span><br><span class="line"><span class="string">                &lt;/div&gt;</span></span><br><span class="line"><span class="string">            &lt;/Router&gt;</span></span><br><span class="line"><span class="string">        );</span></span><br><span class="line"><span class="string">    &#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="React-Router的特性"><a href="#React-Router的特性" class="headerlink" title="React Router的特性"></a>React Router的特性</h1><ol>
+<li>声明式路由定义</li>
+</ol>
+<p>可以在页面的任何地方写路由</p>
+<ol start="2">
+<li>动态路由</li>
+</ol>
+<h1 id="三种路由实现方式"><a href="#三种路由实现方式" class="headerlink" title="三种路由实现方式"></a>三种路由实现方式</h1><ol>
+<li>URL路径</li>
+</ol>
+<p>BrowserRouter</p>
+<ol start="2">
+<li>hash路由</li>
+</ol>
+<p>HashRouter，针对低版本浏览器，url变了页面不刷新的情况<br>3. 内存路由</p>
+<p>MemoryRouter，<br>路由并不会反映到url上，通常做服务器端渲染的时候会有用。</p>
+<h1 id="基于路由配置进行资源组织"><a href="#基于路由配置进行资源组织" class="headerlink" title="基于路由配置进行资源组织"></a>基于路由配置进行资源组织</h1><ol>
+<li>实现业务逻辑的松耦合</li>
+<li>易于扩展，重构和维护</li>
+<li>路由层面实现Lazy Load</li>
+</ol>
+<h1 id="React-Router-API"><a href="#React-Router-API" class="headerlink" title="React Router API"></a>React Router API</h1><ol>
+<li><Link>:普通链接，不会触发浏览器刷新</li>
+<li><p><NavLink>:类似Link但是会添加当前选中状态，增加一个css样式</p>
+</li>
+<li><p><Prompt>:满足条件时提示用户是否离开当前页面</p>
+</li>
+<li><p><Redirect>:重定向当前页面，例如登录判断</p>
+</li>
+<li><p><Route>:路由配的额核心标记，路径匹配时显示对应组件</p>
+<p> exact属性：精确匹配<br> Route不是排他的，及可以用时有多个相同path的Route，都会生效</p>
+</li>
+<li><p><Switch>:只显示第一个匹配的路由</p>
+</li>
+</ol>
+<h1 id="通过URL传递参数"><a href="#通过URL传递参数" class="headerlink" title="通过URL传递参数"></a>通过URL传递参数</h1><ol>
+<li>如何通过URL传递参数：&lt;Route path=”/topic:id” …/&gt;</li>
+<li>如何获取参数: this.props.match.params</li>
+<li><a href="https://github.com/pillarjs/path-to-regexp" target="_blank" rel="noopener">https://github.com/pillarjs/path-to-regexp</a> 通过正则表达式的方式做模糊正则匹配</li>
+</ol>
+<h1 id="何时需要URL参数"><a href="#何时需要URL参数" class="headerlink" title="何时需要URL参数"></a>何时需要URL参数</h1><p>页面状态尽量通过URL参数来定义</p>
+<p>React Router中url变化，组件也会刷新</p>
+<h1 id="嵌套路由"><a href="#嵌套路由" class="headerlink" title="嵌套路由"></a>嵌套路由</h1><ol>
+<li>每个React组件都可以是路由容器</li>
+<li>React Router声明式语法可以方便的定义嵌套路由</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/13/13%E3%80%81React%EF%BC%9ARedux%E2%80%94%E2%80%94%E7%90%86%E8%A7%A3%E4%B8%8D%E5%8F%AF%E5%8F%98%E6%95%B0%E6%8D%AE%EF%BC%88immutable%20data%EF%BC%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -402,20 +618,21 @@
       
         
           
-          Redux中的不可变数据Redux的store每一个结点都是不可变数据，修改它必须通过复制一份的方式进行，不能直接修改。
-是Redux的运行基础。
-为什么需要不可变数据
-性能优化，不需要遍历数据，只需要比较引用就可以确定当前的store有没有变，从而决定是否更新组件；
-易于调试和跟踪；
-易于推测，比
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/01/13/13%E3%80%81React%EF%BC%9ARedux%E2%80%94%E2%80%94%E7%90%86%E8%A7%A3%E4%B8%8D%E5%8F%AF%E5%8F%98%E6%95%B0%E6%8D%AE%EF%BC%88immutable%20data%EF%BC%89/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+            <h1 id="Redux中的不可变数据"><a href="#Redux中的不可变数据" class="headerlink" title="Redux中的不可变数据"></a>Redux中的不可变数据</h1><p>Redux的store每一个结点都是不可变数据，修改它必须通过复制一份的方式进行，不能直接修改。</p>
+<p>是Redux的运行基础。</p>
+<h1 id="为什么需要不可变数据"><a href="#为什么需要不可变数据" class="headerlink" title="为什么需要不可变数据"></a>为什么需要不可变数据</h1><ol>
+<li>性能优化，不需要遍历数据，只需要比较引用就可以确定当前的store有没有变，从而决定是否更新组件；</li>
+<li>易于调试和跟踪；</li>
+<li>易于推测，比较action前后store的值</li>
+</ol>
+<h1 id="如何操作不可变数据"><a href="#如何操作不可变数据" class="headerlink" title="如何操作不可变数据"></a>如何操作不可变数据</h1><ol>
+<li>原生写法：{…},Object.assign</li>
+<li>immutability-helper</li>
+<li>immer 性能稍弱</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> update <span class="keyword">from</span> <span class="string">'immutability-helper'</span>;</span><br><span class="line"><span class="keyword">import</span> produce <span class="keyword">from</span> <span class="string">'immer'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//如果操作不可变数据</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> state = &#123;<span class="attr">filter</span>: <span class="string">'completed'</span>, <span class="attr">todos</span>: [<span class="string">'Learn React'</span>]&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//原生写法</span></span><br><span class="line"><span class="comment">//通过延展属性</span></span><br><span class="line"><span class="keyword">const</span> newState = &#123;...state, <span class="attr">todos</span>: [...state.todos, <span class="string">'Learn Redux'</span>]&#125;</span><br><span class="line"><span class="comment">//Es6写法  性能最高的写法</span></span><br><span class="line"><span class="keyword">const</span> newState2 = <span class="built_in">Object</span>.assign(&#123;&#125;, state, &#123;<span class="attr">todos</span>: [...state.todos, <span class="string">'Learn Redux'</span>]&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//复杂场景，比如对象层级比较深</span></span><br><span class="line"><span class="keyword">const</span> newState3 = update(state, &#123;<span class="attr">todos</span>: &#123;<span class="attr">$push</span>: [<span class="string">'Learn Redux'</span>]&#125;&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//immer 需要为每个属性做代理，性能稍差，适用与简单场景，属性较多或层级较深时慎用</span></span><br><span class="line"><span class="keyword">const</span> newState4 = produce(state, draftState =&gt; &#123;</span><br><span class="line">    draftState.todos.push(<span class="string">'Learn Redux'</span>);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+          
         
       
     </div>
@@ -576,20 +793,22 @@
       
         
           
-          “标准”形式Redux Action的问题
-所有Action放一个文件，会无限扩展
-Action、Reducer分开放，实现业务逻辑时需要来回切换
-不能直观的看到系统中有哪些ACtion
+            <h1 id="“标准”形式Redux-Action的问题"><a href="#“标准”形式Redux-Action的问题" class="headerlink" title="“标准”形式Redux Action的问题"></a>“标准”形式Redux Action的问题</h1><ol>
+<li>所有Action放一个文件，会无限扩展</li>
+<li>Action、Reducer分开放，实现业务逻辑时需要来回切换</li>
+<li>不能直观的看到系统中有哪些ACtion</li>
+</ol>
+<p>例如：<a href="https://github.com/reduxjs/redux/tree/master/examples/todomvc/src/actions" target="_blank" rel="noopener">https://github.com/reduxjs/redux/tree/master/examples/todomvc/src/actions</a></p>
+<h1 id="新的方式"><a href="#新的方式" class="headerlink" title="新的方式"></a>新的方式</h1><p>单个action和reducer放在同一个文件</p>
+<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/action-reducer-file.png" alt="image"></p>
+<ol>
+<li>易于开发：不用在action和reducer文件件来回切换</li>
+<li>易于维护：每个action文件都很小，容易理解</li>
+<li>易于测试：每个业务逻辑只需要对应一个测试文件</li>
+<li>易于理解：没见名就是action名字，文件列表就是action列表</li>
+</ol>
 
-例如：https://github.com/reduxjs/redux/tree/master/example
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/01/12/12%E3%80%81React%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A8Redux%E4%B8%AD%E7%BB%84%E7%BB%87Action%E5%92%8CReducer/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+          
         
       
     </div>
@@ -750,23 +969,21 @@ Action、Reducer分开放，实现业务逻辑时需要来回切换
       
         
           
-          Redux异步Action异步action不是特殊action，而是多个同步action的组合使用
+            <h1 id="Redux异步Action"><a href="#Redux异步Action" class="headerlink" title="Redux异步Action"></a>Redux异步Action</h1><p>异步action不是特殊action，而是多个同步action的组合使用</p>
+<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/redux%E5%BC%82%E6%AD%A5%E8%AF%B7%E6%B1%82.png" alt="image"></p>
+<h1 id="Redux中间件（Middleware）"><a href="#Redux中间件（Middleware）" class="headerlink" title="Redux中间件（Middleware）"></a>Redux中间件（Middleware）</h1><p>中间件在dispatcher中截获action做特殊处理</p>
+<ol>
+<li>截获action</li>
+<li>发出action</li>
+</ol>
+<h1 id="中间件应用场景"><a href="#中间件应用场景" class="headerlink" title="中间件应用场景"></a>中间件应用场景</h1><p>日志：</p>
+<p>通过日志中间件打印所有action，方便调试</p>
+<h1 id="Redux异步Action-Demo"><a href="#Redux异步Action-Demo" class="headerlink" title="Redux异步Action Demo"></a>Redux异步Action Demo</h1><h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ol>
+<li>异步action不是特殊的action，而是多个同步action的组合使用</li>
+<li>中间件在dispatcher中截获action做特殊处理</li>
+</ol>
 
-Redux中间件（Middleware）中间件在dispatcher中截获action做特殊处理
-
-截获action
-发出action
-
-中间件应用场景日志：
-通过日志中间件打印所有action，方
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/01/11/11%E3%80%81React%EF%BC%9ARedux%E2%80%94%E2%80%94%E7%90%86%E8%A7%A3%E5%BC%82%E6%AD%A5Action%E3%80%81Redux%E4%B8%AD%E9%97%B4%E4%BB%B6/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+          
         
       
     </div>
@@ -927,19 +1144,14 @@ Redux中间件（Middleware）中间件在dispatcher中截获action做特殊处�
       
         
           
-          组件和Store的关系
-通过connect组件连接Component和Store,redux提供了react-redux包，里面提供了connect组件。
-1import &#123;connect&#125; from &#39;react-redux&#39;;
+            <h1 id="组件和Store的关系"><a href="#组件和Store的关系" class="headerlink" title="组件和Store的关系"></a>组件和Store的关系</h1><p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/react-component-store.png" alt="image"></p>
+<p>通过connect组件连接Component和Store,redux提供了react-redux包，里面提供了connect组件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import &#123;connect&#125; from &#39;react-redux&#39;;</span><br></pre></td></tr></table></figure>
 
-connect组件的工作原理：
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/01/10/10%E3%80%81React%EF%BC%9A%E5%9C%A8React%E4%B8%AD%E4%BD%BF%E7%94%A8Redux/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+<h2 id="connect组件的工作原理：高阶组件"><a href="#connect组件的工作原理：高阶组件" class="headerlink" title="connect组件的工作原理：高阶组件"></a>connect组件的工作原理：高阶组件</h2><p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/react-connect-hoc.png" alt="react-connect-hoc"></p>
+<p><a href="https://github.com/liubaolin/evolutionary/blob/master/JS/react-cli-demo/src/Redux/Counter.js" target="_blank" rel="noopener">代码示例</a></p>
+
+          
         
       
     </div>
@@ -1100,23 +1312,35 @@ connect组件的工作原理：
       
         
           
-          Store负责管理所有的全局状态
-产生一个Store
-1const store = createStore(reducer);
+            <h1 id="Store"><a href="#Store" class="headerlink" title="Store"></a>Store</h1><p>负责管理所有的全局状态</p>
+<p>产生一个Store</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> store = createStore(reducer);</span><br></pre></td></tr></table></figure>
 
-store有３个方法：
-123getState(); 获得数据dispatch(action);subscribe(listener);　监听store的变化
+<p>store有３个方法：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">getState(); 获得数据</span><br><span class="line">dispatch(action);</span><br><span class="line">subscribe(listener);　监听store的变化</span><br></pre></td></tr></table></figure>
 
+<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/store.png" alt="store结构"></p>
+<h1 id="Action"><a href="#Action" class="headerlink" title="Action"></a>Action</h1><p>一个action其实是描述了一个行为的数据结构．</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">｛</span><br><span class="line">    type:ADD_TODO，</span><br><span class="line">    text:<span class="string">'Build my first Redux app '</span></span><br><span class="line">｝</span><br></pre></td></tr></table></figure>
 
-Act
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/01/09/9%E3%80%81React%EF%BC%9A%E7%90%86%E8%A7%A3Store%E3%80%81Action%E3%80%81Reducer/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+<h1 id="Reducer"><a href="#Reducer" class="headerlink" title="Reducer"></a>Reducer</h1><p>reducer是一个函数，接受两个参数，第一个是state，第二个是action.</p>
+<p>state是指指卡的状态，如果没有可以初始化为initialState,</p>
+<p>所有的reducer会接收到所有的action，即一个action通过dispatch出去，所有系统中定义的reduce都能接收到，通过action.type来判断是否要执行．</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">todoApp</span>(<span class="params">state = initialState,action</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">switch</span> (action.type) &#123;</span><br><span class="line">    <span class="keyword">case</span> ADD_TODO:</span><br><span class="line">      <span class="keyword">return</span> <span class="built_in">Object</span>.assign(&#123;&#125;,state,&#123;</span><br><span class="line">        todos:[</span><br><span class="line">          ...state.todos,</span><br><span class="line">          &#123;</span><br><span class="line">            text:action.text,</span><br><span class="line">            completed:<span class="literal">false</span></span><br><span class="line">          &#125;</span><br><span class="line">        ]</span><br><span class="line">      &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/redux-data-flow.png" alt="redux-data-flow"></p>
+<h1 id="工具函数"><a href="#工具函数" class="headerlink" title="工具函数"></a>工具函数</h1><ul>
+<li><p>combineReducers</p>
+<p>  将多个Reducer封装在一起，返回一个新的Reducer</p>
+</li>
+<li><p>bindActionCreators</p>
+<p>  帮我我们封装dispatch事件</p>
+</li>
+</ul>
+<h1 id="在JavaScript中使用Redux"><a href="#在JavaScript中使用Redux" class="headerlink" title="在JavaScript中使用Redux"></a>在JavaScript中使用Redux</h1><p>Redux可以单独的在js中使用，如下：</p>
+<p><a href="https://github.com/liubaolin/evolutionary/blob/master/JS/react-cli-demo/src/Redux/PureRedux.js" target="_blank" rel="noopener">Redux使用demo</a></p>
+
+          
         
       
     </div>
@@ -1277,18 +1501,19 @@ Act
       
         
           
-          Redux是一个js的状态管理框架，Redux中提供了’react-redux’组件：
-1import &#123;connect&#125; from &#39;react-redux&#39;;
+            <p>Redux是一个js的状态管理框架，Redux中提供了’react-redux’组件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import &#123;connect&#125; from &#39;react-redux&#39;;</span><br></pre></td></tr></table></figure>
 
-Redux核心概念Redux全局只有唯一的一个Store，这个Store负责提供整个应用程序所有的
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/01/08/8%E3%80%81React%EF%BC%9ARedux%E7%AE%80%E4%BB%8B/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+<h1 id="Redux核心概念"><a href="#Redux核心概念" class="headerlink" title="Redux核心概念"></a>Redux核心概念</h1><p>Redux全局只有唯一的一个Store，这个Store负责提供整个应用程序所有的状态；</p>
+<p>Redux数据是一个tree的结构；</p>
+<p>Redux让组件通信更加容易；</p>
+<p>  <img src="http://blog-pic-1254088127.picsh.myqcloud.com/redux-communication.png" alt="Redux组件通信"></p>
+<h1 id="Redux特性"><a href="#Redux特性" class="headerlink" title="Redux特性"></a>Redux特性</h1><h2 id="Single-Source-of-Truth"><a href="#Single-Source-of-Truth" class="headerlink" title="Single Source of Truth"></a>Single Source of Truth</h2><p>  传统MVC和视图和数据模型<br>  <img src="http://blog-pic-1254088127.picsh.myqcloud.com/mvc-view-module.png" alt="mvc-view-module"></p>
+<p>  Redux视图数据模型<br>  <img src="http://blog-pic-1254088127.picsh.myqcloud.com/redux-view-module.png" alt="redux-view-module"></p>
+<h2 id="可预测性"><a href="#可预测性" class="headerlink" title="可预测性"></a>可预测性</h2><p>产生新的状态肯定是由一个action触发的：state + action = new state</p>
+<h2 id="纯函数更新Store"><a href="#纯函数更新Store" class="headerlink" title="纯函数更新Store"></a>纯函数更新Store</h2><p>纯函数的输出结果完全取决于输入参数，函数的内部不依赖任何的外部数据和外部资源。</p>
+
+          
         
       
     </div>
@@ -1449,28 +1674,25 @@ Redux核心概念Redux全局只有唯一的一个Store，这个Store负责提供
       
         
           
-          为什么需要打包？
-编译ES6语法特性，编译JSX
-整合资源，例如图片，Less/Sass
-优化代码体积
+            <h1 id="为什么需要打包？"><a href="#为什么需要打包？" class="headerlink" title="为什么需要打包？"></a>为什么需要打包？</h1><ol>
+<li>编译ES6语法特性，编译JSX</li>
+<li>整合资源，例如图片，Less/Sass</li>
+<li>优化代码体积</li>
+</ol>
+<h1 id="使用Webpack进行打包"><a href="#使用Webpack进行打包" class="headerlink" title="使用Webpack进行打包"></a>使用Webpack进行打包</h1><h1 id="打包注意事项"><a href="#打包注意事项" class="headerlink" title="打包注意事项"></a>打包注意事项</h1><ol>
+<li>设置nodejs环境为production</li>
+</ol>
+<ol start="2">
+<li>禁用开发时的专用代码，如logger</li>
+</ol>
+<ol start="3">
+<li><p>设置应用根路径</p>
+<p>修改package.json配置文件的”homepage”:””</p>
+</li>
+</ol>
+<h1 id="create-reacat-app-打包命令"><a href="#create-reacat-app-打包命令" class="headerlink" title="create-reacat-app 打包命令"></a>create-reacat-app 打包命令</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm run build</span><br></pre></td></tr></table></figure>
 
-使用Webpack进行打包打包注意事项
-设置nodejs环境为production
-
-
-禁用开发时的专用代码，如logger
-
-
-设置应用根路径
-修改package.json配置文件的”home
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/01/07/7%E3%80%81React%20%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+          
         
       
     </div>
@@ -1631,18 +1853,11 @@ Redux核心概念Redux全局只有唯一的一个Store，这个Store负责提供
       
         
           
-          React 16.3新特性:Context API要解决的还是组件间通讯的问题，有些全局的状态，很多组件都会去使用，但是如果所有的属性都是一层层的传递下来，非常麻烦。
-
-代码片段
+            <h1 id="React-16-3新特性-Context-API"><a href="#React-16-3新特性-Context-API" class="headerlink" title="React 16.3新特性:Context API"></a>React 16.3新特性:Context API</h1><p>要解决的还是组件间通讯的问题，有些全局的状态，很多组件都会去使用，但是如果所有的属性都是一层层的传递下来，非常麻烦。</p>
+<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/react-context-api.png" alt="image"></p>
+<p><a href="https://github.com/liubaolin/evolutionary/blob/master/JS/react-cli-demo/src/LocaleSample/LocaleSample.js" target="_blank" rel="noopener">代码片段</a></p>
 
           
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/01/06/6%E3%80%81React-%E6%96%B0%E7%9A%84Contet%20API%E5%8F%8A%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
         
       
     </div>
@@ -1803,194 +2018,26 @@ Redux核心概念Redux全局只有唯一的一个Store，这个Store负责提供
       
         
           
-          组件复用的另外两种形式:
+            <p>组件复用的另外两种形式:</p>
+<ol>
+<li>高阶组件（HOC）</li>
+<li>函数作为子组件</li>
+</ol>
+<h1 id="高阶组件"><a href="#高阶组件" class="headerlink" title="高阶组件"></a>高阶组件</h1><p>高阶组件实际是对已有组件的一个封装,来返回一个新的组件.新的组件会包含一些应用逻辑,这些新的逻辑会产生新的状态,这些状态会传给新的组件.</p>
+<p>高阶组件一般不会有额外的UI展现,只是为它封装的组件提供额外的功能或者数据.</p>
+<p>高阶组件可以自己去获取外部资源.</p>
+<ul>
+<li>创建一个高阶组件</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const EnhancedComponent &#x3D; highterOrderComponent(WrappedComponent);</span><br></pre></td></tr></table></figure>
 
-高阶组件（HOC）
-函数作为子组件
-
-高阶组件高阶组件实际是对已有组件的一个封装,来返回一个新的组件.新的组件会包含一些应用逻辑,这些新的逻辑会产生新的状态,这些状态会传给新的组件.
-高阶组件一般不会有额外的UI展现,只是为它封装的组件提供额外的功能或者数据.
-高阶组件可
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/01/05/5%E3%80%81React%E9%AB%98%E9%98%B6%E7%BB%84%E4%BB%B6(HOC)%E5%92%8C%E5%87%BD%E6%95%B0%E4%BD%9C%E4%B8%BA%E5%AD%90%E7%BB%84%E4%BB%B6/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/01/04/4%E3%80%81React-%E7%90%86%E8%A7%A3Virtual%20DOM%E5%8F%8Akey%E5%B1%9E%E6%80%A7%E7%9A%84%E4%BD%9C%E7%94%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/04/4%E3%80%81React-%E7%90%86%E8%A7%A3Virtual%20DOM%E5%8F%8Akey%E5%B1%9E%E6%80%A7%E7%9A%84%E4%BD%9C%E7%94%A8/" itemprop="url">4、React-理解Virtual DOM及key属性的作用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-04T00:00:00+08:00">
-                2019-01-04
-              </time>
-            
-
-            
-
-            
-          </span>
+<pre><code>高阶组件可以接受一个组件参数,并返回一个新的组件.</code></pre><h1 id="函数作为子组件"><a href="#函数作为子组件" class="headerlink" title="函数作为子组件"></a>函数作为子组件</h1><p>snippet:<br><a href="https://github.com/liubaolin/evolutionary/blob/master/JS/react-cli-demo/src/TabSelector/AdvanceTabSelector.js" target="_blank" rel="noopener">函数作为子组件</a></p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><ol>
+<li>高阶组件和函数子组件都是设计模式</li>
+<li>可以实现更多场景的组件复用</li>
+</ol>
 
           
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
-                    <span itemprop="name">前端</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/01/04/4%E3%80%81React-%E7%90%86%E8%A7%A3Virtual%20DOM%E5%8F%8Akey%E5%B1%9E%E6%80%A7%E7%9A%84%E4%BD%9C%E7%94%A8/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/01/04/4%E3%80%81React-%E7%90%86%E8%A7%A3Virtual%20DOM%E5%8F%8Akey%E5%B1%9E%E6%80%A7%E7%9A%84%E4%BD%9C%E7%94%A8/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/01/04/4%E3%80%81React-%E7%90%86%E8%A7%A3Virtual%20DOM%E5%8F%8Akey%E5%B1%9E%E6%80%A7%E7%9A%84%E4%BD%9C%E7%94%A8/" class="leancloud_visitors" data-flag-title="4、React-理解Virtual DOM及key属性的作用">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          JSX的运行基础:Virtual DOM
-React组件在内部维护了一套虚拟DOM的状态,这套虚拟DOM的状态最终会映射到真实DOM的节点上,当虚拟DOM发生变化的时候,内部需要计算虚拟DOM的区别来产生一个diff,并不会刷新所有的真实DOM,只会更新diff的部份.
-虚拟DOM是如何工作的
-虚拟
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/01/04/4%E3%80%81React-%E7%90%86%E8%A7%A3Virtual%20DOM%E5%8F%8Akey%E5%B1%9E%E6%80%A7%E7%9A%84%E4%BD%9C%E7%94%A8/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
         
       
     </div>
@@ -2078,7 +2125,7 @@ React组件在内部维护了一套虚拟DOM的状态,这套虚拟DOM的状态�
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">131</span>
+                  <span class="site-state-item-count">132</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2089,7 +2136,7 @@ React组件在内部维护了一套虚拟DOM的状态,这套虚拟DOM的状态�
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-count">25</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2100,7 +2147,7 @@ React组件在内部维护了一套虚拟DOM的状态,这套虚拟DOM的状态�
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-count">43</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
