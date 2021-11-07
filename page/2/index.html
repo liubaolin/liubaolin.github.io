@@ -183,9 +183,9 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
+          <a href="/%20" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
             首页
           </a>
@@ -193,9 +193,9 @@
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/tags" rel="section">
+          <a href="/tags/%20" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
             
             标签
           </a>
@@ -203,9 +203,9 @@
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/categories" rel="section">
+          <a href="/categories/%20" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-list"></i> <br />
             
             分类
           </a>
@@ -213,9 +213,9 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/archives" rel="section">
+          <a href="/archives/%20" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-history"></i> <br />
             
             归档
           </a>
@@ -402,76 +402,23 @@
       
         
           
-            <h1 id="JSON文档模型特点"><a href="#JSON文档模型特点" class="headerlink" title="JSON文档模型特点"></a>JSON文档模型特点</h1><p>在传统关系模型中需要多张表关联的模型，在json文档模型中可以通过一个表（集合）完成</p>
-<p>文档模型设计主要考虑两点：性能和开发易用</p>
-<h1 id="几个概念"><a href="#几个概念" class="headerlink" title="几个概念"></a>几个概念</h1><ul>
-<li>集合：同关系数据库中的表</li>
-<li>字段：同关系数据库中的列</li>
-<li>内嵌数组，引用字段：类似于关系数据库的主外键，关联关系</li>
-</ul>
-<h1 id="1-1关系建模"><a href="#1-1关系建模" class="headerlink" title="1-1关系建模"></a>1-1关系建模</h1><ul>
-<li>一对一关系以内嵌为主,作为子文档形式或者直接在顶级</li>
-<li>如果内嵌后导致文档大小超过16M,则不建议内嵌</li>
-</ul>
-<blockquote>
-<p>mongoDB文档大小不能超过16M</p>
-</blockquote>
-<h1 id="1-N关系建模"><a href="#1-N关系建模" class="headerlink" title="1-N关系建模"></a>1-N关系建模</h1><ul>
-<li>一对多关系同样以内嵌为主</li>
-<li>用数组表示一对多</li>
-<li>同样如果文档大小超过16M或数组长度太大（数万或更多）或数组长度不确定则不使用内嵌</li>
-</ul>
-<h1 id="N-N关系模型"><a href="#N-N关系模型" class="headerlink" title="N-N关系模型"></a>N-N关系模型</h1><ul>
-<li><p>不通过映射表做，同样建议通过内嵌数组表示一对多，通过冗余来实现N-N</p>
-</li>
-<li><p>同样如果文档大小超过16M或数组长度太大（数万或更多）或数组长度不确定则不使用内嵌</p>
-<p>在mongoDB里面有些时候是允许甚至鼓励做冗余的</p>
-<p>在mongoDB建模中，内嵌是一种重要的方式,但是内嵌不是万能的，根据具体情况我也需要建立文档间的引用关系</p>
-</li>
-</ul>
-<h1 id="根据业务需求细化建模"><a href="#根据业务需求细化建模" class="headerlink" title="根据业务需求细化建模"></a>根据业务需求细化建模</h1><p>首先要收集确认需求：</p>
-<ul>
-<li><p>读写比例</p>
-</li>
-<li><p>查询方式，比如查询最近几天，查询参数,以及最频繁的查询方式是什么</p>
-</li>
-<li><p>最频繁的写入方式是什么</p>
-</li>
-<li><p>数据量大小,将低频查询且数据量较大的数据单独集合保存，建立关联关系</p>
-<p>基于这些需求，我们最终决定是使用引用来避免性能瓶颈还是使用冗余来优化访问性能.</p>
-<p>比如内嵌模型通过冗余的方式实现N-N时，加入在数据量大的情况下，我们可能面临大量的修改操作(对冗余的数据进行修改),此时就需要设计为关联的方式,<br>将关联关系独立出一张表来，然后依然通过数组冗余的方式维护关系，只不过此时我们冗余的不是具体的数据，而是冗余表的主键数组</p>
-<p>这种通过冗余+关联的设计，我们可以通过$lookup的方式进行（多表）查询，类似mysql中的join</p>
-</li>
-</ul>
-<p>总结，什么时候应该使用引用的方式查询：</p>
-<ul>
-<li>内嵌文档太大，数MB或则超过16MB</li>
-<li>内嵌文档或者数组元素会频繁修改</li>
-<li>内嵌数组元素会持续增长且没有封顶</li>
-</ul>
-<h1 id="mongoDB引用设计的限制"><a href="#mongoDB引用设计的限制" class="headerlink" title="mongoDB引用设计的限制"></a>mongoDB引用设计的限制</h1><ul>
-<li>引用集合之间无主外键检查</li>
-<li>使用$lookup的方式模仿关联查询</li>
-<li>$lookup只支持left outer join</li>
-<li>$lookup的关联目标(from)不能是分片表</li>
-</ul>
-<h1 id="常用的设计模式"><a href="#常用的设计模式" class="headerlink" title="常用的设计模式"></a>常用的设计模式</h1><h2 id="分桶模式"><a href="#分桶模式" class="headerlink" title="分桶模式"></a>分桶模式</h2><p>批量保存概念，节省索引和公共字段的存储空间。</p>
-<p>通过分桶模式可以大大减少文档数量和索引的占用空间</p>
-<h2 id="列转行"><a href="#列转行" class="headerlink" title="列转行"></a>列转行</h2><p>将多列数据转换成一行数据，将多列的信息放到行内的数组中维护</p>
-<p>这样如果我们本来需要对这些列建分别建索引（可能几十个），现在只需要建一个就够了.此模式解决的是索引过多的问题</p>
-<p>索引太多影响插入效率的问题就解决了</p>
-<p>注意的是只有这些列能抽象成一个对象表示时才可行(否则我们从语义上也无法实现列转行)</p>
-<h2 id="版本管理"><a href="#版本管理" class="headerlink" title="版本管理"></a>版本管理</h2><p>模型灵活了，如何管理文档的不同版本？</p>
-<p>可以增加一个版本字段：”schema_version”</p>
-<p>这样我们可以根据版本进行过滤，同时可以根据版本进行规则设置</p>
-<h2 id="近似计算"><a href="#近似计算" class="headerlink" title="近似计算"></a>近似计算</h2><p>对于请求量大同时准确性要求不高的统计，我们可以采用近似计算的方式：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">if random(0,9) &#x3D;&#x3D; 0</span><br><span class="line">  increment by 10</span><br></pre></td></tr></table></figure>
+          JSON文档模型特点在传统关系模型中需要多张表关联的模型，在json文档模型中可以通过一个表（集合）完成
+文档模型设计主要考虑两点：性能和开发易用
+几个概念
+集合：同关系数据库中的表
+字段：同关系数据库中的列
+内嵌数组，引用字段：类似于关系数据库的主外键，关联关系
 
-<p>可大量减少写入操作</p>
-<h2 id="预聚合"><a href="#预聚合" class="headerlink" title="预聚合"></a>预聚合</h2><p>增加统计字段，在进行数据修改的同时，修改这些统计字段的值，这样就可以避免聚合查询带来的性能和资源问题。</p>
-<p>这里是利用了mongoDB文档模型的灵活性，增加了聚合字段，而不影响正常业务数据</p>
-
-          
+1-1关系建模
+一对一关系以内嵌
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/03/21/mongoDB%E7%B3%BB%E5%88%9705-mongoDB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -632,106 +579,23 @@
       
         
           
-            <h1 id="复制集的作用"><a href="#复制集的作用" class="headerlink" title="复制集的作用"></a>复制集的作用</h1><ul>
-<li>高可用：复制集主要是为了实现服务的高可用,mongoDB原生支持高可用.</li>
-<li>数据分发：将数据从一个区域分发到另一个区域，减少另一个区域的读延迟</li>
-<li>读写分离：降低节点压力</li>
-<li>异地容灾：数据中心故障时迅速切换到异地</li>
-</ul>
-<h1 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h1><ul>
-<li>数据写入时,后台有进程会将数据迅速复制到另一个节点上</li>
-<li>在接收写入的节点发生故障时，自动选举出一个新的代替节点</li>
-</ul>
-<h1 id="复制集结构"><a href="#复制集结构" class="headerlink" title="复制集结构"></a>复制集结构</h1><p>一般由3个以上（奇数个）具有投票权的节点组成，其中有：</p>
-<ul>
-<li>一个主节点(PRIMARY），接收写入操作和选举时投票；</li>
-<li>两个或多个从节点（SECONDARY）,复制主节点的数据和选举时投票</li>
-</ul>
-<h1 id="数据如何复制"><a href="#数据如何复制" class="headerlink" title="数据如何复制"></a>数据如何复制</h1><ul>
-<li>当一个修改操作（增删改）到达主节点时，它对数据的操作将被记录下来（经过一些必要的转换），这些记录称为aplog.</li>
-<li>从节点通过在主节点上打开一个tailable游标不断获取新进入主节点的aplog，并在自己的数据库上回放，以此保持跟主节点上的数据一致.</li>
-</ul>
-<h1 id="选举机制"><a href="#选举机制" class="headerlink" title="选举机制"></a>选举机制</h1><ul>
-<li>具有投票权的节点之间两两之间互相发送心跳</li>
-<li>当5次心跳未收到时认为该节点失联，如果失联的是主节点，则从节点会发起选举，选出新的主节点，如果是从节点失联，则不会产生新的选举</li>
-<li>选举基于RAFT一致性算法实现，选举成功的必要条件是大多数投票节点存活</li>
-<li>复制集中最多可以有50个节点，但有投票权的节点最多有7个</li>
-</ul>
-<h1 id="影响选举的因素"><a href="#影响选举的因素" class="headerlink" title="影响选举的因素"></a>影响选举的因素</h1><ul>
-<li>整个集群必须有大多数投票节点粗活</li>
-<li>被选举的主节点必须<ul>
-<li>包括自己在内，能够与多数节点建立连接</li>
-<li>有较新的aplog</li>
-<li>具有较高的优先级（如果有配置）</li>
-</ul>
-</li>
-</ul>
-<h1 id="复制集部署选项"><a href="#复制集部署选项" class="headerlink" title="复制集部署选项"></a>复制集部署选项</h1><ul>
-<li>是否具有投票权（v参数）,默认是有的</li>
-<li>优先级（priority参数），优先级越高的节点越优先成为主节点，优先级为0的节点无法成为主节点</li>
-<li>隐藏（hidden参数），复制数据，但对应用不可见。隐藏节点可以具有投票权，但是优先级必须为0,隐藏数据主要用于备份，不希望被应用使用.</li>
-<li>延迟（slveDely参数），复制n s之前的数据，保持于主节点的时间差.这个参数主要用于数据恢复，比如设置延迟一个小时，则数据可以恢复到一个小时之前。</li>
-</ul>
-<h1 id="复制集注意事项"><a href="#复制集注意事项" class="headerlink" title="复制集注意事项"></a>复制集注意事项</h1><ul>
-<li>正常复制集节点都有可能成为主节点，所以它们的地位应该是一样的</li>
-<li>为了保证节点不会同时宕机，各节点应该相互独立</li>
-<li>复制集各节点的软件版本必须一致，避免出现未知的问题</li>
-<li>增加节点不会增加系统的写性能,只能对读操作进行分流。要降低写操作的压力，需考虑分片部署的方式。</li>
-</ul>
-<h1 id="搭建mongoDB复制集"><a href="#搭建mongoDB复制集" class="headerlink" title="搭建mongoDB复制集"></a>搭建mongoDB复制集</h1><p>搭建一主两从的3节点复制集需要几步：</p>
-<ul>
-<li>启动3个mongoDB实例</li>
-<li>将3个mongoDB实例搭建成一个复制集</li>
-<li>对复制集参数进行一些常规调整</li>
-</ul>
-<h2 id="准备工作："><a href="#准备工作：" class="headerlink" title="准备工作："></a>准备工作：</h2><ul>
-<li><p>安装最新的mongoDB版本，并配置好环境变量<a href="https://10000hours.top/2021/03/06/mongoDB%E7%B3%BB%E5%88%9702-mongoDB%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/">安装mongoDB</a></p>
-</li>
-<li><p>确保有10G以上的硬盘空间</p>
-</li>
-</ul>
-<h2 id="创建数据目录"><a href="#创建数据目录" class="headerlink" title="创建数据目录"></a>创建数据目录</h2><p>mongoDB启动的时候将使用一个数据目录存放所有的数据文件。我们先为3个复制集分别创建各自的数据目录</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p &#x2F;data&#x2F;db&#123;1,2,3&#125;</span><br></pre></td></tr></table></figure>
+          复制集的作用
+高可用：复制集主要是为了实现服务的高可用,mongoDB原生支持高可用.
+数据分发：将数据从一个区域分发到另一个区域，减少另一个区域的读延迟
+读写分离：降低节点压力
+异地容灾：数据中心故障时迅速切换到异地
 
-<h2 id="准备配置文件"><a href="#准备配置文件" class="headerlink" title="准备配置文件"></a>准备配置文件</h2><p>在生成环境，不同的复制集实例应该运行在不同的服务器上。这里我们为了实验，需要在一台机器上运行3个mongoDB实例进程，因此需要对它们各自配置：</p>
-<ul>
-<li>不同的端口，28017、28018、28019</li>
-<li>不同的数据目录 /data/db1 、/data/db2、/data/db3</li>
-<li>不同的日志文件 /data/db1/mongod.log、/data/db1/mongod.log、/data/db1/mongod.log</li>
-</ul>
-<p>配置文件demo（/data/db1/mongod.conf)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">systemLog:</span><br><span class="line">   destination: file</span><br><span class="line">   path: &quot;&#x2F;data&#x2F;db1&#x2F;mongod.log&quot;</span><br><span class="line">   logAppend: true</span><br><span class="line">storage:</span><br><span class="line">   dbPath: &#x2F;data&#x2F;db1</span><br><span class="line">   journal:</span><br><span class="line">      enabled: true</span><br><span class="line">processManagement:</span><br><span class="line">   fork: true # 作为后端进程独立运行</span><br><span class="line">net:</span><br><span class="line">   bindIp: 0.0.0.0 # 监听所有ip，默认只监听127.0.0.1,也就是只有本地可以访问</span><br><span class="line">   port: 28017</span><br><span class="line">replication:</span><br><span class="line">   replSetName: rs0 #复制集名称，没有此配置说明是单节点</span><br></pre></td></tr></table></figure>
-
-<h2 id="准备好配置文件后，启动3个mongoDB实例"><a href="#准备好配置文件后，启动3个mongoDB实例" class="headerlink" title="准备好配置文件后，启动3个mongoDB实例"></a>准备好配置文件后，启动3个mongoDB实例</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mongod -f &#x2F;data&#x2F;db1&#x2F;mongod.conf </span><br><span class="line">mongod -f &#x2F;data&#x2F;db2&#x2F;mongod.conf </span><br><span class="line">mongod -f &#x2F;data&#x2F;db3&#x2F;mongod.conf </span><br><span class="line"></span><br><span class="line">#demo</span><br><span class="line">richey@localhost db1]$ mongod -f &#x2F;data&#x2F;db3&#x2F;mongod.conf </span><br><span class="line">about to fork child process, waiting until server is ready for connections.</span><br><span class="line">forked process: 20340</span><br><span class="line">child process started successfully, parent exiting</span><br></pre></td></tr></table></figure>
-<p>确认进程正在运行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[richey@localhost db1]$ ps -ef|grep mongod</span><br><span class="line">richey   20033     1  0 15:36 ?        00:00:02 mongod -f &#x2F;data&#x2F;db1&#x2F;mongod.conf</span><br><span class="line">richey   20231     1  0 15:40 ?        00:00:01 mongod -f &#x2F;data&#x2F;db2&#x2F;mongod.conf</span><br><span class="line">richey   20340     1  0 15:43 ?        00:00:01 mongod -f &#x2F;data&#x2F;db3&#x2F;mongod.conf</span><br><span class="line">richey   20470 17013  0 15:46 pts&#x2F;4    00:00:00 grep --color&#x3D;auto mongod</span><br></pre></td></tr></table></figure>
-<p>停止mongo服务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[richey@localhost ~]$ mongod --shutdown -f &#x2F;data&#x2F;db1&#x2F;mongod.conf </span><br><span class="line">killing process with pid: 20033</span><br><span class="line">[richey@localhost ~]$ mongod --shutdown -f &#x2F;data&#x2F;db2&#x2F;mongod.conf </span><br><span class="line">killing process with pid: 20231</span><br><span class="line">[richey@localhost ~]$ mongod --shutdown -f &#x2F;data&#x2F;db3&#x2F;mongod.conf </span><br><span class="line">killing process with pid: 20340</span><br></pre></td></tr></table></figure>
-
-<h1 id="配置复制集"><a href="#配置复制集" class="headerlink" title="配置复制集"></a>配置复制集</h1><p>我们已经启动了3个mongoDB实例，但目前为止它们是相互独立，互不相干的，我们需要对其进行配置，使其变成一个复制集.</p>
-<h2 id="方法1"><a href="#方法1" class="headerlink" title="方法1"></a>方法1</h2><p>此方法hostname需要能被解析</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[richey@localhost ~]$ cat &#x2F;etc&#x2F;hosts</span><br><span class="line"></span><br><span class="line">127.0.0.1 10000hours</span><br></pre></td></tr></table></figure>
-
-<p>rs.initiate()</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">mongo localhost:28017</span><br><span class="line"></span><br><span class="line">&gt; rs.initiate()  # 初始化复制集</span><br><span class="line">&#123;</span><br><span class="line">	&quot;info2&quot; : &quot;no configuration specified. Using a default configuration for the set&quot;,</span><br><span class="line">	&quot;me&quot; : &quot;localhost.localdomain:28017&quot;,</span><br><span class="line">	&quot;ok&quot; : 1,</span><br><span class="line">	&quot;$clusterTime&quot; : &#123;</span><br><span class="line">		&quot;clusterTime&quot; : Timestamp(1616314186, 1),</span><br><span class="line">		&quot;signature&quot; : &#123;</span><br><span class="line">			&quot;hash&quot; : BinData(0,&quot;AAAAAAAAAAAAAAAAAAAAAAAAAAA&#x3D;&quot;),</span><br><span class="line">			&quot;keyId&quot; : NumberLong(0)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;,</span><br><span class="line">	&quot;operationTime&quot; : Timestamp(1616314186, 1)</span><br><span class="line">&#125;</span><br><span class="line">rs0:SECONDARY&gt; # 执行完rs.initiate() 变成从节点 </span><br><span class="line">rs0:PRIMARY&gt; # 再回车，变成主节点</span><br></pre></td></tr></table></figure>
-
-<p>rs.add(“10000hours:28018”)</p>
-<p>rs.add(“10000hours:28018”)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">rs0:PRIMARY&gt; rs.add(&quot;10000hours:28018&quot;)</span><br><span class="line">&#123;</span><br><span class="line">	&quot;ok&quot; : 1,</span><br><span class="line">	&quot;$clusterTime&quot; : &#123;</span><br><span class="line">		&quot;clusterTime&quot; : Timestamp(1616314337, 1),</span><br><span class="line">		&quot;signature&quot; : &#123;</span><br><span class="line">			&quot;hash&quot; : BinData(0,&quot;AAAAAAAAAAAAAAAAAAAAAAAAAAA&#x3D;&quot;),</span><br><span class="line">			&quot;keyId&quot; : NumberLong(0)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;,</span><br><span class="line">	&quot;operationTime&quot; : Timestamp(1616314337, 1)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">rs0:PRIMARY&gt; rs.add(&quot;10000hours:28019&quot;)</span><br><span class="line">&#123;</span><br><span class="line">	&quot;ok&quot; : 1,</span><br><span class="line">	&quot;$clusterTime&quot; : &#123;</span><br><span class="line">		&quot;clusterTime&quot; : Timestamp(1616314304, 1),</span><br><span class="line">		&quot;signature&quot; : &#123;</span><br><span class="line">			&quot;hash&quot; : BinData(0,&quot;AAAAAAAAAAAAAAAAAAAAAAAAAAA&#x3D;&quot;),</span><br><span class="line">			&quot;keyId&quot; : NumberLong(0)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;,</span><br><span class="line">	&quot;operationTime&quot; : Timestamp(1616314304, 1)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>查看状态rs.status()</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br></pre></td><td class="code"><pre><span class="line">rs0:PRIMARY&gt; rs.status()</span><br><span class="line">&#123;</span><br><span class="line">	&quot;set&quot; : &quot;rs0&quot;,</span><br><span class="line">	&quot;date&quot; : ISODate(&quot;2021-03-21T08:21:57.896Z&quot;),</span><br><span class="line">	&quot;myState&quot; : 1,</span><br><span class="line">	&quot;term&quot; : NumberLong(1),</span><br><span class="line">	&quot;syncingTo&quot; : &quot;&quot;,</span><br><span class="line">	&quot;syncSourceHost&quot; : &quot;&quot;,</span><br><span class="line">	&quot;syncSourceId&quot; : -1,</span><br><span class="line">	&quot;heartbeatIntervalMillis&quot; : NumberLong(2000),</span><br><span class="line">	&quot;majorityVoteCount&quot; : 2,</span><br><span class="line">	&quot;writeMajorityCount&quot; : 2,</span><br><span class="line">	&quot;optimes&quot; : &#123;</span><br><span class="line">		&quot;lastCommittedOpTime&quot; : &#123;</span><br><span class="line">			&quot;ts&quot; : Timestamp(1616314916, 1),</span><br><span class="line">			&quot;t&quot; : NumberLong(1)</span><br><span class="line">		&#125;,</span><br><span class="line">		&quot;lastCommittedWallTime&quot; : ISODate(&quot;2021-03-21T08:21:56.560Z&quot;),</span><br><span class="line">		&quot;readConcernMajorityOpTime&quot; : &#123;</span><br><span class="line">			&quot;ts&quot; : Timestamp(1616314916, 1),</span><br><span class="line">			&quot;t&quot; : NumberLong(1)</span><br><span class="line">		&#125;,</span><br><span class="line">		&quot;readConcernMajorityWallTime&quot; : ISODate(&quot;2021-03-21T08:21:56.560Z&quot;),</span><br><span class="line">		&quot;appliedOpTime&quot; : &#123;</span><br><span class="line">			&quot;ts&quot; : Timestamp(1616314916, 1),</span><br><span class="line">			&quot;t&quot; : NumberLong(1)</span><br><span class="line">		&#125;,</span><br><span class="line">		&quot;durableOpTime&quot; : &#123;</span><br><span class="line">			&quot;ts&quot; : Timestamp(1616314916, 1),</span><br><span class="line">			&quot;t&quot; : NumberLong(1)</span><br><span class="line">		&#125;,</span><br><span class="line">		&quot;lastAppliedWallTime&quot; : ISODate(&quot;2021-03-21T08:21:56.560Z&quot;),</span><br><span class="line">		&quot;lastDurableWallTime&quot; : ISODate(&quot;2021-03-21T08:21:56.560Z&quot;)</span><br><span class="line">	&#125;,</span><br><span class="line">	&quot;lastStableRecoveryTimestamp&quot; : Timestamp(1616314906, 1),</span><br><span class="line">	&quot;lastStableCheckpointTimestamp&quot; : Timestamp(1616314906, 1),</span><br><span class="line">	&quot;electionCandidateMetrics&quot; : &#123;</span><br><span class="line">		&quot;lastElectionReason&quot; : &quot;electionTimeout&quot;,</span><br><span class="line">		&quot;lastElectionDate&quot; : ISODate(&quot;2021-03-21T08:09:46.529Z&quot;),</span><br><span class="line">		&quot;electionTerm&quot; : NumberLong(1),</span><br><span class="line">		&quot;lastCommittedOpTimeAtElection&quot; : &#123;</span><br><span class="line">			&quot;ts&quot; : Timestamp(0, 0),</span><br><span class="line">			&quot;t&quot; : NumberLong(-1)</span><br><span class="line">		&#125;,</span><br><span class="line">		&quot;lastSeenOpTimeAtElection&quot; : &#123;</span><br><span class="line">			&quot;ts&quot; : Timestamp(1616314186, 1),</span><br><span class="line">			&quot;t&quot; : NumberLong(-1)</span><br><span class="line">		&#125;,</span><br><span class="line">		&quot;numVotesNeeded&quot; : 1,</span><br><span class="line">		&quot;priorityAtElection&quot; : 1,</span><br><span class="line">		&quot;electionTimeoutMillis&quot; : NumberLong(10000),</span><br><span class="line">		&quot;newTermStartDate&quot; : ISODate(&quot;2021-03-21T08:09:46.546Z&quot;),</span><br><span class="line">		&quot;wMajorityWriteAvailabilityDate&quot; : ISODate(&quot;2021-03-21T08:09:46.552Z&quot;)</span><br><span class="line">	&#125;,</span><br><span class="line">	&quot;members&quot; : [</span><br><span class="line">		&#123;</span><br><span class="line">			&quot;_id&quot; : 0,</span><br><span class="line">			&quot;name&quot; : &quot;localhost.localdomain:28017&quot;,</span><br><span class="line">			&quot;health&quot; : 1,</span><br><span class="line">			&quot;state&quot; : 1,</span><br><span class="line">			&quot;stateStr&quot; : &quot;PRIMARY&quot;,</span><br><span class="line">			&quot;uptime&quot; : 783,</span><br><span class="line">			&quot;optime&quot; : &#123;</span><br><span class="line">				&quot;ts&quot; : Timestamp(1616314916, 1),</span><br><span class="line">				&quot;t&quot; : NumberLong(1)</span><br><span class="line">			&#125;,</span><br><span class="line">			&quot;optimeDate&quot; : ISODate(&quot;2021-03-21T08:21:56Z&quot;),</span><br><span class="line">			&quot;syncingTo&quot; : &quot;&quot;,</span><br><span class="line">			&quot;syncSourceHost&quot; : &quot;&quot;,</span><br><span class="line">			&quot;syncSourceId&quot; : -1,</span><br><span class="line">			&quot;infoMessage&quot; : &quot;&quot;,</span><br><span class="line">			&quot;electionTime&quot; : Timestamp(1616314186, 2),</span><br><span class="line">			&quot;electionDate&quot; : ISODate(&quot;2021-03-21T08:09:46Z&quot;),</span><br><span class="line">			&quot;configVersion&quot; : 3,</span><br><span class="line">			&quot;self&quot; : true,</span><br><span class="line">			&quot;lastHeartbeatMessage&quot; : &quot;&quot;</span><br><span class="line">		&#125;,</span><br><span class="line">		&#123;</span><br><span class="line">			&quot;_id&quot; : 1,</span><br><span class="line">			&quot;name&quot; : &quot;10000hours:28019&quot;,</span><br><span class="line">			&quot;health&quot; : 1,</span><br><span class="line">			&quot;state&quot; : 2,</span><br><span class="line">			&quot;stateStr&quot; : &quot;SECONDARY&quot;,</span><br><span class="line">			&quot;uptime&quot; : 613,</span><br><span class="line">			&quot;optime&quot; : &#123;</span><br><span class="line">				&quot;ts&quot; : Timestamp(1616314916, 1),</span><br><span class="line">				&quot;t&quot; : NumberLong(1)</span><br><span class="line">			&#125;,</span><br><span class="line">			&quot;optimeDurable&quot; : &#123;</span><br><span class="line">				&quot;ts&quot; : Timestamp(1616314916, 1),</span><br><span class="line">				&quot;t&quot; : NumberLong(1)</span><br><span class="line">			&#125;,</span><br><span class="line">			&quot;optimeDate&quot; : ISODate(&quot;2021-03-21T08:21:56Z&quot;),</span><br><span class="line">			&quot;optimeDurableDate&quot; : ISODate(&quot;2021-03-21T08:21:56Z&quot;),</span><br><span class="line">			&quot;lastHeartbeat&quot; : ISODate(&quot;2021-03-21T08:21:57.867Z&quot;),</span><br><span class="line">			&quot;lastHeartbeatRecv&quot; : ISODate(&quot;2021-03-21T08:21:57.871Z&quot;),</span><br><span class="line">			&quot;pingMs&quot; : NumberLong(0),</span><br><span class="line">			&quot;lastHeartbeatMessage&quot; : &quot;&quot;,</span><br><span class="line">			&quot;syncingTo&quot; : &quot;localhost.localdomain:28017&quot;,</span><br><span class="line">			&quot;syncSourceHost&quot; : &quot;localhost.localdomain:28017&quot;,</span><br><span class="line">			&quot;syncSourceId&quot; : 0,</span><br><span class="line">			&quot;infoMessage&quot; : &quot;&quot;,</span><br><span class="line">			&quot;configVersion&quot; : 3</span><br><span class="line">		&#125;,</span><br><span class="line">		&#123;</span><br><span class="line">			&quot;_id&quot; : 2,</span><br><span class="line">			&quot;name&quot; : &quot;10000hours:28018&quot;,</span><br><span class="line">			&quot;health&quot; : 1,</span><br><span class="line">			&quot;state&quot; : 2,</span><br><span class="line">			&quot;stateStr&quot; : &quot;SECONDARY&quot;,</span><br><span class="line">			&quot;uptime&quot; : 580,</span><br><span class="line">			&quot;optime&quot; : &#123;</span><br><span class="line">				&quot;ts&quot; : Timestamp(1616314916, 1),</span><br><span class="line">				&quot;t&quot; : NumberLong(1)</span><br><span class="line">			&#125;,</span><br><span class="line">			&quot;optimeDurable&quot; : &#123;</span><br><span class="line">				&quot;ts&quot; : Timestamp(1616314916, 1),</span><br><span class="line">				&quot;t&quot; : NumberLong(1)</span><br><span class="line">			&#125;,</span><br><span class="line">			&quot;optimeDate&quot; : ISODate(&quot;2021-03-21T08:21:56Z&quot;),</span><br><span class="line">			&quot;optimeDurableDate&quot; : ISODate(&quot;2021-03-21T08:21:56Z&quot;),</span><br><span class="line">			&quot;lastHeartbeat&quot; : ISODate(&quot;2021-03-21T08:21:57.867Z&quot;),</span><br><span class="line">			&quot;lastHeartbeatRecv&quot; : ISODate(&quot;2021-03-21T08:21:57.565Z&quot;),</span><br><span class="line">			&quot;pingMs&quot; : NumberLong(0),</span><br><span class="line">			&quot;lastHeartbeatMessage&quot; : &quot;&quot;,</span><br><span class="line">			&quot;syncingTo&quot; : &quot;10000hours:28019&quot;,</span><br><span class="line">			&quot;syncSourceHost&quot; : &quot;10000hours:28019&quot;,</span><br><span class="line">			&quot;syncSourceId&quot; : 1,</span><br><span class="line">			&quot;infoMessage&quot; : &quot;&quot;,</span><br><span class="line">			&quot;configVersion&quot; : 3</span><br><span class="line">		&#125;</span><br><span class="line">	],</span><br><span class="line">	&quot;ok&quot; : 1,</span><br><span class="line">	&quot;$clusterTime&quot; : &#123;</span><br><span class="line">		&quot;clusterTime&quot; : Timestamp(1616314916, 1),</span><br><span class="line">		&quot;signature&quot; : &#123;</span><br><span class="line">			&quot;hash&quot; : BinData(0,&quot;AAAAAAAAAAAAAAAAAAAAAAAAAAA&#x3D;&quot;),</span><br><span class="line">			&quot;keyId&quot; : NumberLong(0)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;,</span><br><span class="line">	&quot;operationTime&quot; : Timestamp(1616314916, 1)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="方法2"><a href="#方法2" class="headerlink" title="方法2"></a>方法2</h2><p>直接使用rs.initiate(),传入配置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">rs.initiate(&#123;</span><br><span class="line">        _id:&quot;rs0&quot;,</span><br><span class="line">        members:[</span><br><span class="line">        &#123;_id:0,</span><br><span class="line">        host:&quot;localhost:28017&quot;&#125;,</span><br><span class="line">        &#123;_id:1,</span><br><span class="line">        host:&quot;localhost:28018&quot;&#125;,</span><br><span class="line">        &#123;_id:2,</span><br><span class="line">        host:&quot;localhost:28019&quot;&#125;</span><br><span class="line">        ]</span><br><span class="line">        &#125;)</span><br></pre></td></tr></table></figure>
-
-<h1 id="验证复制集"><a href="#验证复制集" class="headerlink" title="验证复制集"></a>验证复制集</h1><p>在主节点插入数据</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mongo localhost:28017</span><br><span class="line">db.test.insert(&#123;name:&quot;richey&quot;&#125;)</span><br></pre></td></tr></table></figure>
-
-<p>在从节点查询</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">mongo localhost:28018</span><br><span class="line"></span><br><span class="line">rs0:SECONDARY&gt; show dbs</span><br><span class="line">2021-03-21T16:31:28.658+0800 E  QUERY    [js] uncaught exception: Error: listDatabases failed:&#123;</span><br><span class="line">	&quot;operationTime&quot; : Timestamp(1616315486, 1),</span><br><span class="line">	&quot;ok&quot; : 0,</span><br><span class="line">	&quot;errmsg&quot; : &quot;not master and slaveOk&#x3D;false&quot;,</span><br><span class="line">	&quot;code&quot; : 13435,</span><br><span class="line">	&quot;codeName&quot; : &quot;NotPrimaryNoSecondaryOk&quot;,</span><br><span class="line">	&quot;$clusterTime&quot; : &#123;</span><br><span class="line">		&quot;clusterTime&quot; : Timestamp(1616315486, 1),</span><br><span class="line">		&quot;signature&quot; : &#123;</span><br><span class="line">			&quot;hash&quot; : BinData(0,&quot;AAAAAAAAAAAAAAAAAAAAAAAAAAA&#x3D;&quot;),</span><br><span class="line">			&quot;keyId&quot; : NumberLong(0)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125; :</span><br><span class="line">rs0:SECONDARY&gt; </span><br><span class="line">rs0:SECONDARY&gt; rs.slaveOk() # 上面报错，slave没有读权限，执行此命令允许从节点读</span><br></pre></td></tr></table></figure>
-
-          
+实现原理
+数据写入时,后台有进程会将数据迅速复制到另一个节点上
+在接收写入的节
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/03/21/mongoDB%E7%B3%BB%E5%88%9704-mongoDB%E5%A4%8D%E5%88%B6%E9%9B%86/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -892,24 +756,16 @@
       
         
           
-            <p>本地测试mongodb，大量创建Collection的时候报错open: Too many open files.这个问题主要指的是进程企图打开一个文件，或者叫句柄，但是现在进程打开的句柄已经达到了上限，已经无法打开新句柄了。</p>
-<h1 id="Linux句柄介绍"><a href="#Linux句柄介绍" class="headerlink" title="Linux句柄介绍"></a>Linux句柄介绍</h1><p>Linux中所有的事物或资源都是以文件的形式存在，比如消息、共享内存、连接等，句柄可以理解为指向这些文件的指针。</p>
-<h1 id="ulimit"><a href="#ulimit" class="headerlink" title="ulimit"></a>ulimit</h1><p>对于这些句柄，Linux是有数量限制的，单个进程默认可以打开的句柄数上限，可以用以下命令来查看：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[richey@localhost ~]$ ulimit -a</span><br><span class="line">core file size          (blocks, -c) unlimited</span><br><span class="line">data seg size           (kbytes, -d) unlimited</span><br><span class="line">scheduling priority             (-e) 0</span><br><span class="line">file size               (blocks, -f) unlimited</span><br><span class="line">pending signals                 (-i) 62939</span><br><span class="line">max locked memory       (kbytes, -l) 16384</span><br><span class="line">max memory size         (kbytes, -m) unlimited</span><br><span class="line">open files                      (-n) 2000</span><br><span class="line">pipe size            (512 bytes, -p) 8</span><br><span class="line">POSIX message queues     (bytes, -q) 819200</span><br><span class="line">real-time priority              (-r) 0</span><br><span class="line">stack size              (kbytes, -s) 8192</span><br><span class="line">cpu time               (seconds, -t) unlimited</span><br><span class="line">max user processes              (-u) 62939</span><br><span class="line">virtual memory          (kbytes, -v) unlimited</span><br><span class="line">file locks                      (-x) unlimited</span><br></pre></td></tr></table></figure>
-<p>其中的open files一项就是默认的句柄数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">ulimit: ulimit [-SHabcdefiklmnpqrstuvxPT] [限制]</span><br><span class="line">    修改 shell 资源限制。</span><br><span class="line">    </span><br><span class="line">    在允许此类控制的系统上，提供对于 shell 及其创建的进程所可用的</span><br><span class="line">    资源的控制。</span><br><span class="line">    </span><br><span class="line">    选项：</span><br><span class="line">      -S	使用软 (&#96;soft&#39;) 资源限制</span><br><span class="line">      -H	使用硬 (&#96;hard&#39;) 资源限制</span><br><span class="line">      -a	所有当前限制都被报告</span><br><span class="line">      -b	套接字缓存尺寸</span><br><span class="line">      -c	创建的核文件的最大尺寸</span><br><span class="line">      -d	一个进程的数据区的最大尺寸</span><br><span class="line">      -e	最高的调度优先级 (&#96;nice&#39;)</span><br><span class="line">      -f	有 shell 及其子进程可以写的最大文件尺寸</span><br><span class="line">      -i	最多的可以挂起的信号数</span><br><span class="line">      -k	分配给此进程的最大 kqueue 数量</span><br><span class="line">      -l	一个进程可以锁定的最大内存尺寸</span><br><span class="line">      -m	最大的内存进驻尺寸</span><br><span class="line">      -n	最多的打开的文件描述符个数</span><br><span class="line">      -p	管道缓冲区尺寸</span><br><span class="line">      -q	POSIX 信息队列的最大字节数</span><br><span class="line">      -r	实时调度的最大优先级</span><br><span class="line">      -s	最大栈尺寸</span><br><span class="line">      -t	最大的CPU时间，以秒为单位</span><br><span class="line">      -u	最大用户进程数</span><br><span class="line">      -v	虚拟内存尺寸</span><br><span class="line">      -x	最大的文件锁数量</span><br><span class="line">      -P	最大伪终端数量</span><br><span class="line">      -T	最大线程数量</span><br><span class="line">    </span><br><span class="line">    并非所有选项在所有系统上可用。</span><br><span class="line">    </span><br><span class="line">    如果提供了 LIMIT 变量，则它为指定资源的新的值；特别的 LIMIT 值为</span><br><span class="line">    &#96;soft&#39;、&#96;hard&#39;和&#96;unlimited&#39;，分别表示当前的软限制，硬限制和无限制。</span><br><span class="line">    否则打印指定资源的当前限制值，不带选项则假定为 -f</span><br><span class="line">    </span><br><span class="line">    取值都是 1024 字节为单位，除了 -t 以秒为单位，-p 以 512 字节递增，</span><br><span class="line">    -u 为无范围的进程数量。</span><br></pre></td></tr></table></figure>
-<p>设置某个进程的句柄上限</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ulimit –a PID</span><br></pre></td></tr></table></figure>
-
-<h1 id="ulimit配置文件"><a href="#ulimit配置文件" class="headerlink" title="ulimit配置文件"></a>ulimit配置文件</h1><p>使用ulimit方式修改句柄设置，在系统重启后会失效，可以通过修改配置文件的方式进行永久设置</p>
-<p>配置文件地址：/etc/security/limits.conf</p>
-<p>格式：<br>domain：可以是用户或者用户组 <em>代表所有<br>type：可以有三个值，soft 、 hard和-,其中hard的设置是实际的默认值，也就是上限，而soft的配置只是用来警告的，如果超过了soft的值，会有warn，而第三种用短横线– 的配置，则是hard和soft同时配置的方式。<br>item：表示要限定的资源 可以有很多候选值，如 stack（最大堆栈大小），cpu（占用cpu的时间），nofile（最大打开文件数） 等等<br>例：</em> hard nofile 100 该行配置语句限定了任意用户所能创建的最大文件数是 100。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">* soft nofile 196605</span><br><span class="line">* hard nofile 196605</span><br></pre></td></tr></table></figure>
-
-<p>修改后重启或重新ssh连接服务器，使用命令ulimit -a即可看到效果</p>
-<h1 id="查询某个进程占用的句柄"><a href="#查询某个进程占用的句柄" class="headerlink" title="查询某个进程占用的句柄"></a>查询某个进程占用的句柄</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lsof |grep pid</span><br></pre></td></tr></table></figure>
-
-          
+          本地测试mongodb，大量创建Collection的时候报错open: Too many open files.这个问题主要指的是进程企图打开一个文件，或者叫句柄，但是现在进程打开的句柄已经达到了上限，已经无法打开新句柄了。
+Linux句柄介绍Linux中所有的事物或资源都是以文件的形式存在，比如
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/03/21/ulimit%E8%AF%A6%E8%A7%A3/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1070,9 +926,15 @@
       
         
           
-            <h1 id="基本"><a href="#基本" class="headerlink" title="基本"></a>基本</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&gt; show dbs</span><br><span class="line">admin   0.000GB</span><br><span class="line">config  0.000GB</span><br><span class="line">local   0.000GB</span><br><span class="line">mock    0.047GB</span><br><span class="line">salary  0.000GB</span><br><span class="line">test    0.000GB</span><br><span class="line">&gt; use salary</span><br><span class="line">switched to db salary</span><br><span class="line">&gt; show collections</span><br><span class="line">payslip</span><br><span class="line">&gt; db</span><br><span class="line">salary</span><br></pre></td></tr></table></figure>
-
-          
+          基本12345678910111213&gt; show dbsadmin   0.000GBconfig  0.000GBlocal   0.000GBmock    0.047GBsalary  0.000GBtest    0.000GB&gt; use salaryswitched to d
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/03/20/mongoDB%E7%B3%BB%E5%88%9700-MongoDB%E6%95%B0%E6%8D%AE%E5%BA%93%E9%80%89%E5%9E%8B/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1233,55 +1095,15 @@
       
         
           
-            <h1 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&gt; show dbs</span><br><span class="line">admin   0.000GB</span><br><span class="line">config  0.000GB</span><br><span class="line">local   0.000GB</span><br><span class="line">mock    0.047GB</span><br><span class="line">salary  0.000GB</span><br><span class="line">test    0.000GB</span><br><span class="line">&gt; use salary</span><br><span class="line">switched to db salary</span><br><span class="line">&gt; show collections</span><br><span class="line">payslip</span><br><span class="line">&gt; db</span><br><span class="line">salary</span><br></pre></td></tr></table></figure>
-
-<h1 id="聚合框架说明"><a href="#聚合框架说明" class="headerlink" title="聚合框架说明"></a>聚合框架说明</h1><p>MongoDB聚合框架（Aggregation Framework）是一个计算框架</p>
-<p>可以作用在一个或几个集合上，对集合的数据进行一系列运算，将这些数据转化为期望的形式</p>
-<p>MongoDB聚合框架相当于SQL查询中的:GROUPBY/LEFT OUTER JOIN /AS 等</p>
-<p>MongoDB聚合中的管道（Pipline）和步骤（Stage）, 整个聚合运算的过程称为管道（Pipline），它是由多个步骤组成的,每个管道:</p>
-<ul>
-<li><p>接收一系列文档（数据）</p>
-</li>
-<li><p>每个步骤对这些文档进行一系列的运算</p>
-</li>
-<li><p>结果文档输出给下一个步骤</p>
-</li>
-</ul>
-<h1 id="聚合运算的基本格式"><a href="#聚合运算的基本格式" class="headerlink" title="聚合运算的基本格式"></a>聚合运算的基本格式</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义pipeline（由一系列的步骤组成）</span></span><br><span class="line">pipeline = [$stage1,$stage2,...$stageN]</span><br><span class="line"></span><br><span class="line">db.&lt;集合&gt;.aggregate(pipeline,&#123;options&#125;)</span><br></pre></td></tr></table></figure>
-
-<h1 id="常见步骤类型"><a href="#常见步骤类型" class="headerlink" title="常见步骤类型"></a>常见步骤类型</h1><ul>
-<li><p>$match </p>
-<p>过滤用，相当于sql中的where</p>
-</li>
-<li><p>$project </p>
-<p>投影, 相当于sql中的as</p>
-</li>
-<li><p>$sort</p>
-<p>排序， 相当于sql中的order by</p>
-</li>
-<li><p>$group </p>
-<p>分组， 相当于sql中的group by</p>
-</li>
-<li><p>$skip/$limit</p>
-<p>结果限制， 相当于sql中的skip/limit</p>
-</li>
-<li><p>$lookup </p>
-<p>左外连接， 相当于sql中的left outer join </p>
-</li>
-</ul>
-<p><img src="https://blog-pic-1254088127.picsh.myqcloud.com/mongo-aggregate-02.png" alt="常见步骤"></p>
-<h1 id="常见步骤中的运算符"><a href="#常见步骤中的运算符" class="headerlink" title="常见步骤中的运算符"></a>常见步骤中的运算符</h1><p><img src="https://blog-pic-1254088127.picsh.myqcloud.com/mongo-aggregate-01.png" alt="group中常见运算符"></p>
-<h1 id="聚合的使用场景"><a href="#聚合的使用场景" class="headerlink" title="聚合的使用场景"></a>聚合的使用场景</h1><ul>
-<li><p>OLTP</p>
-<p>计算</p>
-</li>
-<li><p>OLAP</p>
-<p>分析总额、均值、数据分布等等</p>
-</li>
-</ul>
-<h1 id="聚合查询"><a href="#聚合查询" class="headerlink" title="聚合查询"></a>聚合查询</h1><p>可以使用compass工具方便的生成聚合逻辑<br>//todo </p>
-
-          
+          基本操作12345678910111213&gt; show dbsadmin   0.000GBconfig  0.000GBlocal   0.000GBmock    0.047GBsalary  0.000GBtest    0.000GB&gt; use salaryswitched to
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/03/07/mongoDB%E7%B3%BB%E5%88%9703-mongoDB%E8%81%9A%E5%90%88%E6%93%8D%E4%BD%9C/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1442,56 +1264,17 @@
       
         
           
-            <h1 id="intert插入操作"><a href="#intert插入操作" class="headerlink" title="intert插入操作"></a>intert插入操作</h1><p>db.&lt;集合&gt;.insertOne(&lt;JSON对象&gt;)<br>db.&lt;集合&gt;.insertMany([&lt;JSON 1&gt;,…<JSON n>])</p>
-<p>demo:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&gt; db.staff.insertOne(&#123;name:&quot;Richey&quot;&#125;)</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedId&quot; : ObjectId(&quot;60434c93b562b8d1012436aa&quot;)</span><br><span class="line">&#125;</span><br><span class="line">&gt; db.staff.insertMany([&#123;name:&quot;Kelly&quot;&#125;,&#123;name:&quot;Darwin&quot;&#125;,&#123;name:&quot;Freeman&quot;&#125;])</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedIds&quot; : [</span><br><span class="line">		ObjectId(&quot;60434cffb562b8d1012436ab&quot;),</span><br><span class="line">		ObjectId(&quot;60434cffb562b8d1012436ac&quot;),</span><br><span class="line">		ObjectId(&quot;60434cffb562b8d1012436ad&quot;)</span><br><span class="line">	]</span><br><span class="line">&#125;</span><br><span class="line">&gt; db.staff.find()</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434c93b562b8d1012436aa&quot;), &quot;name&quot; : &quot;Richey&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ab&quot;), &quot;name&quot; : &quot;Kelly&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ac&quot;), &quot;name&quot; : &quot;Darwin&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ad&quot;), &quot;name&quot; : &quot;Freeman&quot; &#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="find查找数据"><a href="#find查找数据" class="headerlink" title="find查找数据"></a>find查找数据</h1><p>查询所有数据</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.&lt;集合&gt;.find()</span><br></pre></td></tr></table></figure>
-<h2 id="条件查询"><a href="#条件查询" class="headerlink" title="条件查询"></a>条件查询</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">&gt; db.staff.insertMany([&#123;name:&quot;Jobs&quot;,age:18&#125;,&#123;name:&quot;Lili&quot;,gender:&quot;Female&quot;&#125;])</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedIds&quot; : [</span><br><span class="line">		ObjectId(&quot;60434f08b562b8d1012436ae&quot;),</span><br><span class="line">		ObjectId(&quot;60434f08b562b8d1012436af&quot;)</span><br><span class="line">	]</span><br><span class="line">&#125;</span><br><span class="line">#单条件查询</span><br><span class="line"></span><br><span class="line">&gt; db.staff.find(&#123;&quot;age&quot;:18&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436ae&quot;), &quot;name&quot; : &quot;Jobs&quot;, &quot;age&quot; : 18 &#125;</span><br><span class="line">#多条件and查询</span><br><span class="line">&gt; db.staff.find(&#123;&quot;name&quot;:&quot;Jobs&quot;,&quot;age&quot;:18&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436ae&quot;), &quot;name&quot; : &quot;Jobs&quot;, &quot;age&quot; : 18 &#125;</span><br><span class="line">&gt; db.staff.find(&#123;$and:[&#123;&quot;name&quot;:&quot;Jobs&quot;&#125;,&#123;&quot;age&quot;:18&#125;]&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436ae&quot;), &quot;name&quot; : &quot;Jobs&quot;, &quot;age&quot; : 18 &#125;</span><br><span class="line">#多条件or查询</span><br><span class="line">&gt; db.staff.find(&#123;$or:[&#123;&quot;age&quot;:18&#125;,&#123;&quot;gender&quot;:&quot;Female&quot;&#125;]&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436ae&quot;), &quot;name&quot; : &quot;Jobs&quot;, &quot;age&quot; : 18 &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436af&quot;), &quot;name&quot; : &quot;Lili&quot;, &quot;gender&quot; : &quot;Female&quot; &#125;</span><br><span class="line">#按正则表达式查询</span><br><span class="line"></span><br><span class="line">&gt; db.staff.find(&#123;&quot;name&quot;:&#x2F;^\b&#x2F;&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434c93b562b8d1012436aa&quot;), &quot;name&quot; : &quot;Richey&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ab&quot;), &quot;name&quot; : &quot;Kelly&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ac&quot;), &quot;name&quot; : &quot;Darwin&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ad&quot;), &quot;name&quot; : &quot;Freeman&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436ae&quot;), &quot;name&quot; : &quot;Jobs&quot;, &quot;age&quot; : 18 &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436af&quot;), &quot;name&quot; : &quot;Lili&quot;, &quot;gender&quot; : &quot;Female&quot; &#125;</span><br></pre></td></tr></table></figure>
-<h2 id="find搜索子文档"><a href="#find搜索子文档" class="headerlink" title="find搜索子文档"></a>find搜索子文档</h2><p>find支持使用”field.sub_field”形式查询子文档</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">db.staff.insertOne(&#123;&quot;name&quot;:&quot;ZSan&quot;,&quot;age&quot;:28,&quot;addr&quot;:&#123;&quot;city&quot;:&quot;ShangHai&quot;,&quot;street&quot;:&quot;华夏西路188号&quot;&#125;&#125;)</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedId&quot; : ObjectId(&quot;60435997b562b8d1012436b0&quot;)</span><br><span class="line">&#125;</span><br><span class="line">&gt; db.staff.find(&#123;&quot;addr.city&quot;:&quot;ShangHai&quot;&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435997b562b8d1012436b0&quot;), &quot;name&quot; : &quot;ZSan&quot;, &quot;age&quot; : 28, &quot;addr&quot; : &#123; &quot;city&quot; : &quot;ShangHai&quot;, &quot;street&quot; : &quot;华夏西路188号&quot; &#125; &#125;</span><br><span class="line"># 下面这种写法是错误的，子文档的查询应该用上面的写法</span><br><span class="line">&gt; db.staff.find(&#123;&quot;addr&quot;:&#123;&quot;city&quot;:&quot;ShangHai&quot;&#125;&#125;)</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
-
-<h2 id="find搜索数组"><a href="#find搜索数组" class="headerlink" title="find搜索数组"></a>find搜索数组</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&gt; db.staff.insertOne(&#123;&quot;name&quot;:&quot;LSi&quot;,&quot;food&quot;:[&quot;egg&quot;,&quot;bread&quot;,&quot;milk&quot;]&#125;)</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedId&quot; : ObjectId(&quot;60435bbbb562b8d1012436b1&quot;)</span><br><span class="line">&#125;</span><br><span class="line">&gt; db.staff.find(&#123;&quot;food&quot;:&quot;egg&quot;&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435bbbb562b8d1012436b1&quot;), &quot;name&quot; : &quot;LSi&quot;, &quot;food&quot; : [ &quot;egg&quot;, &quot;bread&quot;, &quot;milk&quot; ] &#125;</span><br><span class="line">&gt; db.staff.find(&#123;$or:[&#123;&quot;food&quot;:&quot;egg&quot;&#125;,&#123;&quot;food&quot;:&quot;milk&quot;&#125;]&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435bbbb562b8d1012436b1&quot;), &quot;name&quot; : &quot;LSi&quot;, &quot;food&quot; : [ &quot;egg&quot;, &quot;bread&quot;, &quot;milk&quot; ] &#125;</span><br></pre></td></tr></table></figure>
-<p>数组中搜索子对象的多个字段时，用$elemMatch表示必须是同一个子对象满足多个条件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&gt; db.staff.insertOne(&#123;&quot;name&quot;:&quot;WWu&quot;,&quot;favorite_books&quot;:[&#123;&quot;title&quot;:&quot;The Old Man and the Sea&quot;,&quot;author&quot;:&quot;Hemingway&quot;&#125;,&#123;&quot;title&quot;:&quot;围城&quot;,&quot;author&quot;:&quot;钱锺书&quot;&#125;]&#125;)</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedId&quot; : ObjectId(&quot;60435df1b562b8d1012436b2&quot;)</span><br><span class="line">&#125;</span><br><span class="line">&gt; db.staff.find(&#123;&quot;favorite_books.title&quot;:&quot;The Old Man and the Sea&quot;,&quot;favorite_books.author&quot;:&quot;钱锺书&quot;&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435df1b562b8d1012436b2&quot;), &quot;name&quot; : &quot;WWu&quot;, &quot;favorite_books&quot; : [ &#123; &quot;title&quot; : &quot;The Old Man and the Sea&quot;, &quot;author&quot; : &quot;Hemingway&quot; &#125;, &#123; &quot;title&quot; : &quot;围城&quot;, &quot;author&quot; : &quot;钱锺书&quot; &#125; ] &#125;</span><br><span class="line">&gt; db.staff.find(&#123;&quot;favorite_books&quot;:&#123;$elemMatch:&#123;&quot;title&quot;:&quot;The Old Man and the Sea&quot;,&quot;author&quot;:&quot;钱锺书&quot;&#125;&#125;&#125;)</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
-
-<h2 id="控制find返回的字段-投影projection"><a href="#控制find返回的字段-投影projection" class="headerlink" title="控制find返回的字段(投影projection)"></a>控制find返回的字段(投影projection)</h2><p>find可以指定只返回指定的字段</p>
-<p>_id字段必须明确指定不返回，否则默认返回</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&gt; db.staff.find(&#123;$or:[&#123;&quot;food&quot;:&quot;egg&quot;&#125;,&#123;&quot;food&quot;:&quot;milk&quot;&#125;]&#125;,&#123;&quot;_id&quot;:0,&quot;name&quot;:1,&quot;food&quot;:1&#125;)</span><br><span class="line">&#123; &quot;name&quot; : &quot;LSi&quot;, &quot;food&quot; : [ &quot;egg&quot;, &quot;bread&quot;, &quot;milk&quot; ] &#125;</span><br><span class="line"></span><br><span class="line">&gt; db.staff.find(&#123;&#125;,&#123;&quot;_id&quot;:0,&quot;name&quot;:1,&quot;food&quot;:1&#125;)</span><br><span class="line">&#123; &quot;name&quot; : &quot;Richey&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;Kelly&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;Darwin&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;Freeman&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;Jobs&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;Lili&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;ZSan&quot; &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;LSi&quot;, &quot;food&quot; : [ &quot;egg&quot;, &quot;bread&quot;, &quot;milk&quot; ] &#125;</span><br><span class="line">&#123; &quot;name&quot; : &quot;WWu&quot; &#125;</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
-
-<h1 id="使用remove删除文档"><a href="#使用remove删除文档" class="headerlink" title="使用remove删除文档"></a>使用remove删除文档</h1><p>remove 命令必须配合查询条件使用，否则mongo会报错，需要要删除全部可以使用空条件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&gt; db.staff.find()</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434c93b562b8d1012436aa&quot;), &quot;name&quot; : &quot;Richey&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ab&quot;), &quot;name&quot; : &quot;Kelly&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ac&quot;), &quot;name&quot; : &quot;Darwin&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ad&quot;), &quot;name&quot; : &quot;Freeman&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436ae&quot;), &quot;name&quot; : &quot;Jobs&quot;, &quot;age&quot; : 18 &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436af&quot;), &quot;name&quot; : &quot;Lili&quot;, &quot;gender&quot; : &quot;Female&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435997b562b8d1012436b0&quot;), &quot;name&quot; : &quot;ZSan&quot;, &quot;age&quot; : 28, &quot;addr&quot; : &#123; &quot;city&quot; : &quot;ShangHai&quot;, &quot;street&quot; : &quot;华夏西路188号&quot; &#125; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435bbbb562b8d1012436b1&quot;), &quot;name&quot; : &quot;LSi&quot;, &quot;food&quot; : [ &quot;egg&quot;, &quot;bread&quot;, &quot;milk&quot; ] &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435df1b562b8d1012436b2&quot;), &quot;name&quot; : &quot;WWu&quot;, &quot;favorite_books&quot; : [ &#123; &quot;title&quot; : &quot;The Old Man and the Sea&quot;, &quot;author&quot; : &quot;Hemingway&quot; &#125;, &#123; &quot;title&quot; : &quot;围城&quot;, &quot;author&quot; : &quot;钱锺书&quot; &#125; ] &#125;</span><br><span class="line">&gt; db.staff.remove(&#123;&quot;name&quot;:&quot;Jobs&quot;&#125;)</span><br><span class="line">WriteResult(&#123; &quot;nRemoved&quot; : 1 &#125;)</span><br><span class="line">&gt; db.staff.find()</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434c93b562b8d1012436aa&quot;), &quot;name&quot; : &quot;Richey&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ab&quot;), &quot;name&quot; : &quot;Kelly&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ac&quot;), &quot;name&quot; : &quot;Darwin&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434cffb562b8d1012436ad&quot;), &quot;name&quot; : &quot;Freeman&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60434f08b562b8d1012436af&quot;), &quot;name&quot; : &quot;Lili&quot;, &quot;gender&quot; : &quot;Female&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435997b562b8d1012436b0&quot;), &quot;name&quot; : &quot;ZSan&quot;, &quot;age&quot; : 28, &quot;addr&quot; : &#123; &quot;city&quot; : &quot;ShangHai&quot;, &quot;street&quot; : &quot;华夏西路188号&quot; &#125; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435bbbb562b8d1012436b1&quot;), &quot;name&quot; : &quot;LSi&quot;, &quot;food&quot; : [ &quot;egg&quot;, &quot;bread&quot;, &quot;milk&quot; ] &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60435df1b562b8d1012436b2&quot;), &quot;name&quot; : &quot;WWu&quot;, &quot;favorite_books&quot; : [ &#123; &quot;title&quot; : &quot;The Old Man and the Sea&quot;, &quot;author&quot; : &quot;Hemingway&quot; &#125;, &#123; &quot;title&quot; : &quot;围城&quot;, &quot;author&quot; : &quot;钱锺书&quot; &#125; ] &#125;</span><br><span class="line">&gt; db.staff.remove(&#123;&#125;)</span><br><span class="line">WriteResult(&#123; &quot;nRemoved&quot; : 8 &#125;)</span><br><span class="line">&gt; db.staff.find()</span><br></pre></td></tr></table></figure>
-
-<h1 id="使用update更新文档"><a href="#使用update更新文档" class="headerlink" title="使用update更新文档"></a>使用update更新文档</h1><p>db.&lt;集合&gt;.updat(&lt;查询条件&gt;,&lt;更新字段&gt;)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&gt; db.staff.insertMany([&#123;&quot;name&quot;:&quot;Richey&quot;,&quot;age&quot;:18&#125;,&#123;&quot;name&quot;:&quot;Kelly&quot;,&quot;age&quot;:20&#125;])</span><br><span class="line">&#123;</span><br><span class="line">	&quot;acknowledged&quot; : true,</span><br><span class="line">	&quot;insertedIds&quot; : [</span><br><span class="line">		ObjectId(&quot;60439f09b562b8d1012436b3&quot;),</span><br><span class="line">		ObjectId(&quot;60439f09b562b8d1012436b4&quot;)</span><br><span class="line">	]</span><br><span class="line">&#125;</span><br><span class="line">&gt; db.staff.updateOne(&#123;&quot;name&quot;:&quot;Richey&quot;&#125;,&#123;$set:&#123;&quot;age&quot;:24&#125;&#125;)</span><br><span class="line">WriteResult(&#123; &quot;nMatched&quot; : 1, &quot;nUpserted&quot; : 0, &quot;nModified&quot; : 1 &#125;)</span><br><span class="line">&gt; db.staff.find(&#123;&quot;name&quot;:&quot;Richey&quot;&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;60439f09b562b8d1012436b3&quot;), &quot;name&quot; : &quot;Richey&quot;, &quot;age&quot; : 24 &#125;</span><br></pre></td></tr></table></figure>
-
-<p>使用updateOne无论条件匹配多少条，都只会更新第一条</p>
-<p>使用updateMany表示条件匹配多少条就更新多少条</p>
-<p>使用updateOne/updateMany发方法要求更新条件部份（第二个参数）必须具有以下之一，否则报错：</p>
-<ul>
-<li>$set/$unset</li>
-<li>$push/$pushAll/$pop</li>
-<li>$pull/$pullAll</li>
-<li>$addToSet</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$push :增加一个对象到数据底部</span><br><span class="line">$pushAll： 增加多个对象到数组底部</span><br><span class="line">$pop： 从数组底部删除一个对象</span><br><span class="line">$pull： 如果匹配指定的值，则从数组中删除相应的对象</span><br><span class="line">$pullAll： 如果匹配任意的值，则从数组中三处相应的对象</span><br><span class="line">$addToSet： 如果不存在则增加一个值到数组</span><br></pre></td></tr></table></figure>
-
-<h1 id="使用drop删除集合"><a href="#使用drop删除集合" class="headerlink" title="使用drop删除集合"></a>使用drop删除集合</h1><p>db.&lt;集合&gt;.drop()</p>
-<p>集合中的全部文档都会被删除</p>
-<p>集合相关的索引也会被删除</p>
-<p>一定要谨慎使用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt; use test</span><br><span class="line">switched to db test</span><br><span class="line">&gt; show collections</span><br><span class="line">staff</span><br><span class="line">&gt; db.staff.drop()</span><br><span class="line">true</span><br><span class="line">&gt; show collections</span><br></pre></td></tr></table></figure>
-
-<h1 id="使用dropDatabase删除数据库"><a href="#使用dropDatabase删除数据库" class="headerlink" title="使用dropDatabase删除数据库"></a>使用dropDatabase删除数据库</h1><p>db.dropDatabase()</p>
-<p>数据库相应的文件也会被删除，磁盘空间将被释放</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&gt; show dbs</span><br><span class="line">admin   0.000GB</span><br><span class="line">config  0.000GB</span><br><span class="line">local   0.000GB</span><br><span class="line">mock    0.047GB</span><br><span class="line">test    0.000GB</span><br><span class="line">&gt; use test</span><br><span class="line">switched to db test</span><br><span class="line">&gt; db.dropDatabase()</span><br><span class="line">&#123; &quot;dropped&quot; : &quot;test&quot;, &quot;ok&quot; : 1 &#125;</span><br><span class="line">&gt; show dbs</span><br><span class="line">admin   0.000GB</span><br><span class="line">config  0.000GB</span><br><span class="line">local   0.000GB</span><br><span class="line">mock    0.047GB</span><br><span class="line">&gt; show collections</span><br></pre></td></tr></table></figure>
-
-
-<h1 id="SQL和MQL查询逻辑对照"><a href="#SQL和MQL查询逻辑对照" class="headerlink" title="SQL和MQL查询逻辑对照"></a>SQL和MQL查询逻辑对照</h1><p><a href="https://docs.mongodb.com/manual/reference/sql-comparison/" target="_blank" rel="noopener">官方文档</a></p>
-<p><img src="https://blog-pic-1254088127.picsh.myqcloud.com/sql-mapping-mql.png" alt="SQL-MAPPING-MQL"></p>
-
-          
+          intert插入操作db.&lt;集合&gt;.insertOne(&lt;JSON对象&gt;)db.&lt;集合&gt;.insertMany([&lt;JSON 1&gt;,…])
+demo:
+12345678910111213141516171819&gt; db.staff.insertO
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/03/06/mongoDB%E7%B3%BB%E5%88%9702-mongoDB%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1652,73 +1435,47 @@
       
         
           
-            <h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><table>
-<thead>
-<tr>
-<th>SQL术语/概念</th>
-<th align="center">MongoDB术语/概念</th>
-<th align="right">解释/说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>database</td>
-<td align="center">database</td>
-<td align="right">数据库</td>
-</tr>
-<tr>
-<td>table</td>
-<td align="center">collection</td>
-<td align="right">数据库表/集合</td>
-</tr>
-<tr>
-<td>row</td>
-<td align="center">document</td>
-<td align="right">数据记录行/文档</td>
-</tr>
-<tr>
-<td>column</td>
-<td align="center">field</td>
-<td align="right">数据字段/域</td>
-</tr>
-<tr>
-<td>index</td>
-<td align="center">index</td>
-<td align="right">索引</td>
-</tr>
-<tr>
-<td>table joins</td>
-<td align="center"></td>
-<td align="right">表连接,MongoDB不支持</td>
-</tr>
-<tr>
-<td>primary key</td>
-<td align="center">primary key</td>
-<td align="right">主键,MongoDB自动将_id字段设置为主键</td>
-</tr>
-</tbody></table>
-<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>版本选择：</p>
-<ul>
-<li>企业版</li>
-<li>社区版 所有环境免费使用</li>
-<li>TGZ server mongos tools 和 shell</li>
-</ul>
-<p><a href="https://www.mongodb.com/try/download/community" target="_blank" rel="noopener">下载地址:https://www.mongodb.com/try/download/community</a></p>
-<p>选择好版本后可以生成下载连接,以命令行操作为例：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 创建目录,mongod 默认会使用/data/db目录进行数据存储</span></span><br><span class="line">sudo mkdir -p /data /data/db</span><br><span class="line"></span><br><span class="line">cd /data</span><br><span class="line"><span class="meta">#</span><span class="bash"> 下载安装mongodb</span></span><br><span class="line">curl -O sudo curl -O https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel80-4.2.13-rc1.tgz </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 解压缩</span></span><br><span class="line"></span><br><span class="line">(base) [richey@localhost data]$ sudo tar -xvf mongodb-linux-x86_64-rhel80-4.2.13-rc1.tgz </span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/THIRD-PARTY-NOTICES.gotools</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/README</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/THIRD-PARTY-NOTICES</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/MPL-2</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/LICENSE-Community.txt</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongodump</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongorestore</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongoexport</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongoimport</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongostat</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongotop</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/bsondump</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongofiles</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongoreplay</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongod</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongos</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongo</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/install_compass</span><br><span class="line">(base) [richey@localhost data]$ ls</span><br><span class="line">db  mongodb-linux-x86_64-rhel80-4.2.13-rc1  mongodb-linux-x86_64-rhel80-4.2.13-rc1.tgz</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 配置环境变量</span></span><br><span class="line">export PATH=$PATH:/data/mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin</span><br><span class="line"><span class="meta">#</span><span class="bash"> 永久配置</span></span><br><span class="line">sudo vim /etc/profile</span><br><span class="line">在文件最后添加：</span><br><span class="line">export PATH=$PATH:/data/mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin</span><br><span class="line">使配置立马剩下</span><br><span class="line">source /etc/profile</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 此时mongodb就配置好了,可以输入mongod启动服务</span></span><br></pre></td></tr></table></figure>
-
-<h1 id="直接使用mongodb云服务"><a href="#直接使用mongodb云服务" class="headerlink" title="直接使用mongodb云服务"></a>直接使用mongodb云服务</h1><p>也可以在mongodb官网直接注册，可以创建一个免费的mongodb云存储服务</p>
-<p>创建好后可以配置连接方式，创建用户名密码<br><img src="https://blog-pic-1254088127.picsh.myqcloud.com/Clusters-Atlas-MongoDB-Atlas.png" alt="配置mongodb 云服务"></p>
-<p>选择连接方式<br>![配置mongodb 云服务](<a href="https://blog-pic-1254088127.picsh.myqcloud.com/Clusters-Atlas-MongoDB-Atlas" target="_blank" rel="noopener">https://blog-pic-1254088127.picsh.myqcloud.com/Clusters-Atlas-MongoDB-Atlas</a> -2.png)</p>
-<p>我们已经在本地安装了mongodb，可以选择在shell中连接，复制上面的地址在本地执行，输入密码即可连接</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">MongoDB Enterprise atlas-zh2gha-shard-0:PRIMARY&gt; show dbs</span><br><span class="line">2021-03-06T16:11:21.925+0800 I  CONNPOOL [ReplicaSetMonitor-TaskExecutor] Connecting to cluster0-shard-00-02.leoli.mongodb.net:27017</span><br><span class="line">admin  0.000GB</span><br><span class="line">local  1.253GB</span><br></pre></td></tr></table></figure>
+          基本概念
 
 
-<h1 id="安装图形化管理工具Compass"><a href="#安装图形化管理工具Compass" class="headerlink" title="安装图形化管理工具Compass"></a>安装图形化管理工具Compass</h1><p>去官网下载合适的包,安装即可</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">(base) [richey@localhost opt]$ sudo rpm -ivh mongodb-compass-1.26.0.x86_64.rpm </span><br><span class="line">警告：mongodb-compass-1.26.0.x86_64.rpm: 头V3 RSA&#x2F;SHA1 Signature, 密钥 ID ea312927: NOKEY</span><br><span class="line">Verifying...                          ################################# [100%]</span><br><span class="line">准备中...                          ################################# [100%]</span><br><span class="line">正在升级&#x2F;安装...</span><br><span class="line">   1:mongodb-compass-1.26.0-1.el7     ################################# [100%]</span><br></pre></td></tr></table></figure>
+SQL术语/概念
+MongoDB术语/概念
+解释/说明
 
 
 
-          
+database
+database
+数据库
+
+
+table
+collection
+数据库表/集合
+
+
+row
+document
+数据记录行/文档
+
+
+column
+field
+数据字段/域
+
+
+index
+index
+索引
+
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/03/06/MongoDB%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1879,73 +1636,47 @@
       
         
           
-            <h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><table>
-<thead>
-<tr>
-<th>SQL术语/概念</th>
-<th align="center">MongoDB术语/概念</th>
-<th align="right">解释/说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>database</td>
-<td align="center">database</td>
-<td align="right">数据库</td>
-</tr>
-<tr>
-<td>table</td>
-<td align="center">collection</td>
-<td align="right">数据库表/集合</td>
-</tr>
-<tr>
-<td>row</td>
-<td align="center">document</td>
-<td align="right">数据记录行/文档</td>
-</tr>
-<tr>
-<td>column</td>
-<td align="center">field</td>
-<td align="right">数据字段/域</td>
-</tr>
-<tr>
-<td>index</td>
-<td align="center">index</td>
-<td align="right">索引</td>
-</tr>
-<tr>
-<td>table joins</td>
-<td align="center"></td>
-<td align="right">表连接,MongoDB不支持</td>
-</tr>
-<tr>
-<td>primary key</td>
-<td align="center">primary key</td>
-<td align="right">主键,MongoDB自动将_id字段设置为主键</td>
-</tr>
-</tbody></table>
-<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>版本选择：</p>
-<ul>
-<li>企业版</li>
-<li>社区版 所有环境免费使用</li>
-<li>TGZ server mongos tools 和 shell</li>
-</ul>
-<p><a href="https://www.mongodb.com/try/download/community" target="_blank" rel="noopener">下载地址:https://www.mongodb.com/try/download/community</a></p>
-<p>选择好版本后可以生成下载连接,以命令行操作为例：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 创建目录,mongod 默认会使用/data/db目录进行数据存储</span></span><br><span class="line">sudo mkdir -p /data /data/db</span><br><span class="line"></span><br><span class="line">cd /data</span><br><span class="line"><span class="meta">#</span><span class="bash"> 下载安装mongodb</span></span><br><span class="line">curl -O sudo curl -O https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel80-4.2.13-rc1.tgz </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 解压缩</span></span><br><span class="line"></span><br><span class="line">(base) [richey@localhost data]$ sudo tar -xvf mongodb-linux-x86_64-rhel80-4.2.13-rc1.tgz </span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/THIRD-PARTY-NOTICES.gotools</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/README</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/THIRD-PARTY-NOTICES</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/MPL-2</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/LICENSE-Community.txt</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongodump</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongorestore</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongoexport</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongoimport</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongostat</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongotop</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/bsondump</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongofiles</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongoreplay</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongod</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongos</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/mongo</span><br><span class="line">mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin/install_compass</span><br><span class="line">(base) [richey@localhost data]$ ls</span><br><span class="line">db  mongodb-linux-x86_64-rhel80-4.2.13-rc1  mongodb-linux-x86_64-rhel80-4.2.13-rc1.tgz</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 配置环境变量</span></span><br><span class="line">export PATH=$PATH:/data/mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin</span><br><span class="line"><span class="meta">#</span><span class="bash"> 永久配置</span></span><br><span class="line">sudo vim /etc/profile</span><br><span class="line">在文件最后添加：</span><br><span class="line">export PATH=$PATH:/data/mongodb-linux-x86_64-rhel80-4.2.13-rc1/bin</span><br><span class="line">使配置立马剩下</span><br><span class="line">source /etc/profile</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 此时mongodb就配置好了,可以输入mongod启动服务</span></span><br></pre></td></tr></table></figure>
-
-<h1 id="直接使用mongodb云服务"><a href="#直接使用mongodb云服务" class="headerlink" title="直接使用mongodb云服务"></a>直接使用mongodb云服务</h1><p>也可以在mongodb官网直接注册，可以创建一个免费的mongodb云存储服务</p>
-<p>创建好后可以配置连接方式，创建用户名密码<br><img src="https://blog-pic-1254088127.picsh.myqcloud.com/Clusters-Atlas-MongoDB-Atlas.png" alt="配置mongodb 云服务"></p>
-<p>选择连接方式<br>![配置mongodb 云服务](<a href="https://blog-pic-1254088127.picsh.myqcloud.com/Clusters-Atlas-MongoDB-Atlas" target="_blank" rel="noopener">https://blog-pic-1254088127.picsh.myqcloud.com/Clusters-Atlas-MongoDB-Atlas</a> -2.png)</p>
-<p>我们已经在本地安装了mongodb，可以选择在shell中连接，复制上面的地址在本地执行，输入密码即可连接</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">MongoDB Enterprise atlas-zh2gha-shard-0:PRIMARY&gt; show dbs</span><br><span class="line">2021-03-06T16:11:21.925+0800 I  CONNPOOL [ReplicaSetMonitor-TaskExecutor] Connecting to cluster0-shard-00-02.leoli.mongodb.net:27017</span><br><span class="line">admin  0.000GB</span><br><span class="line">local  1.253GB</span><br></pre></td></tr></table></figure>
+          基本概念
 
 
-<h1 id="安装图形化管理工具Compass"><a href="#安装图形化管理工具Compass" class="headerlink" title="安装图形化管理工具Compass"></a>安装图形化管理工具Compass</h1><p>去官网下载合适的包,安装即可</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">(base) [richey@localhost opt]$ sudo rpm -ivh mongodb-compass-1.26.0.x86_64.rpm </span><br><span class="line">警告：mongodb-compass-1.26.0.x86_64.rpm: 头V3 RSA&#x2F;SHA1 Signature, 密钥 ID ea312927: NOKEY</span><br><span class="line">Verifying...                          ################################# [100%]</span><br><span class="line">准备中...                          ################################# [100%]</span><br><span class="line">正在升级&#x2F;安装...</span><br><span class="line">   1:mongodb-compass-1.26.0-1.el7     ################################# [100%]</span><br></pre></td></tr></table></figure>
+SQL术语/概念
+MongoDB术语/概念
+解释/说明
 
 
 
-          
+database
+database
+数据库
+
+
+table
+collection
+数据库表/集合
+
+
+row
+document
+数据记录行/文档
+
+
+column
+field
+数据字段/域
+
+
+index
+index
+索引
+
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/03/06/mongoDB%E7%B3%BB%E5%88%9701-mongoDB%E5%9F%BA%E7%A1%80/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2106,14 +1837,16 @@
       
         
           
-            <h1 id="安装Python-MongoDB驱动"><a href="#安装Python-MongoDB驱动" class="headerlink" title="安装Python MongoDB驱动"></a>安装Python MongoDB驱动</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">pip install pymongo</span><br><span class="line">``` </span><br><span class="line"><span class="comment"># 检查驱动安装</span></span><br><span class="line"></span><br><span class="line">```python</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> pymongo</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>pymongo.version</span><br><span class="line"><span class="string">'3.11.3'</span></span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
-<h1 id="创建连接"><a href="#创建连接" class="headerlink" title="创建连接"></a>创建连接</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> pymongo <span class="keyword">import</span> MongoClient</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>uri = <span class="string">"mongodb://127.0.0.1:27017"</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>client = MongoClient(uri)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(client)</span><br><span class="line">MongoClient(host=[<span class="string">'127.0.0.1:27017'</span>], document_class=dict, tz_aware=<span class="literal">False</span>, connect=<span class="literal">True</span>)</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
-<h1 id="操作数据库和集合"><a href="#操作数据库和集合" class="headerlink" title="操作数据库和集合"></a>操作数据库和集合</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>db = client[<span class="string">"salary"</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>payslip_collection = db[<span class="string">"payslip"</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>new_payslip = &#123;<span class="string">"basesalary"</span>:<span class="number">2800</span>,<span class="string">"bonus"</span>:<span class="number">8000</span>,<span class="string">"performances"</span>:<span class="number">1600</span>&#125;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>result = payslip_collection.insert_one(new_payslip)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(result)</span><br><span class="line">&lt;pymongo.results.InsertOneResult object at <span class="number">0x7fd8ee8cdf00</span>&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt; show dbs</span><br><span class="line">admin   <span class="number">0.000</span>GB</span><br><span class="line">config  <span class="number">0.000</span>GB</span><br><span class="line">local   <span class="number">0.000</span>GB</span><br><span class="line">mock    <span class="number">0.047</span>GB</span><br><span class="line">salary  <span class="number">0.000</span>GB</span><br><span class="line">test    <span class="number">0.000</span>GB</span><br><span class="line">&gt; use salary</span><br><span class="line">switched to db salary</span><br><span class="line">&gt; show collections</span><br><span class="line">payslip</span><br><span class="line">&gt; db.payslip.find()</span><br><span class="line">&#123; <span class="string">"_id"</span> : ObjectId(<span class="string">"6044a74ca6868ddcfa42c426"</span>), <span class="string">"basesalary"</span> : <span class="number">2800</span>, <span class="string">"bonus"</span> : <span class="number">8000</span>, <span class="string">"performances"</span> : <span class="number">1600</span> &#125;</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
-
-<h1 id="更新操作"><a href="#更新操作" class="headerlink" title="更新操作"></a>更新操作</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>result = payslip_collection.update_one(&#123;<span class="string">"basesalary"</span>:<span class="number">2800</span>&#125;,&#123;<span class="string">"$set"</span>:&#123;<span class="string">"positionsalary"</span>:<span class="number">3000</span>&#125;&#125;)</span><br><span class="line"></span><br><span class="line">&gt; db.payslip.find()</span><br><span class="line">&#123; <span class="string">"_id"</span> : ObjectId(<span class="string">"6044a74ca6868ddcfa42c426"</span>), <span class="string">"basesalary"</span> : <span class="number">2800</span>, <span class="string">"bonus"</span> : <span class="number">8000</span>, <span class="string">"performances"</span> : <span class="number">1600</span>, <span class="string">"positionsalary"</span> : <span class="number">3000</span> &#125;</span><br><span class="line">&gt; </span><br><span class="line"></span><br><span class="line"><span class="comment"># 这里不需要修改数据库表结构</span></span><br></pre></td></tr></table></figure>
-
-
-          
+          安装Python MongoDB驱动123456789pip install pymongo``` # 检查驱动安装```python&gt;&gt;&gt; import pymongo&gt;&gt;&gt; pymongo.version'3.11.3'&gt;&gt;&gt;
+创建连接123
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/03/01/python-%E6%93%8D%E4%BD%9Cmongodb/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2274,45 +2007,17 @@
       
         
           
-            <h1 id="什么是Rebalance"><a href="#什么是Rebalance" class="headerlink" title="什么是Rebalance"></a>什么是Rebalance</h1><p>首先要搞清楚，为什么要Rebalance：由于消费者组订阅了topic，因topic partition数和消费者组成员个数不同而存在的分配机制。</p>
-<p>Rebalance是让Consumer Group下所有的Consumer重新分配Topic的每个分区的过程。</p>
-<p>Rebalance过程所有的consumer都会参与，在协调者组件（Coordinator）的帮助下，完成主题分区的分配。</p>
-<p>整个Rebalance过程，所有Consumer都不能消费，而且这个过程比较慢。</p>
-<h1 id="什么时候会Rebalance"><a href="#什么时候会Rebalance" class="headerlink" title="什么时候会Rebalance"></a>什么时候会Rebalance</h1><p>有三种情况会触发Rebalance：</p>
-<ol>
-<li><p>有新的Consumer加入Consumer Group</p>
-</li>
-<li><p>Consumer Group订阅的主题数量发生变化</p>
-</li>
-<li><p>Consumer Group订阅的主题的数量发生变化</p>
-</li>
-</ol>
-<p>Rebalance时Consumer Group内所有的consumer都会参与。</p>
-<h1 id="如何避免Rebalance"><a href="#如何避免Rebalance" class="headerlink" title="如何避免Rebalance"></a>如何避免Rebalance</h1><p>上面说了有三种情况会发生Rebalance，只要这三种情况的任一情况发生，都必然会产生Rebalance。这三种情况有些是计划内的，比如增加一个Consumer，调整分区数，添加或减少<br>某个主题的订阅。</p>
-<p>我们只能尽量避免那些必不要的Rebalance，比如某些情况Consumer被Coordinator错误的认为已停止，从而被提出Consumer Group。</p>
-<ul>
-<li><p>Coordinator什么情况会认为Consumer已停止？</p>
-<p>Consumer会定时往Coordinator发送心跳，证明它还活着。如果Consumer不能及时的发送这个心跳请求，就会被Coordinator认为已经死了，从而将其从Group中移除，然后进行Rebalance。<br>Consumer端的参数session.timeout.ms决定了Consumer存活性的时间间隔，默认10s，即Coordinator如果10s内没有收到Consuner的心跳请求，即认为Consumer死亡。</p>
-<p>Consumer参数heartbeat.interval.ms 控制的是Consumer端发送心跳请求的间隔。这个值越小心跳频次发送的越高，占用带宽越多，但是可以更快的知道是否需要Rebalance，<br>因为Coordinator通知各个Consumer机型Rabalance的方式就是将 REBALANCE_NEEDED 标志封装进心跳请求的响应体中。</p>
-<p>Consumer参数 max.poll.interval.ms 限定了Consumer端两次调用poll方法的最大时间间隔，默认5分钟。即如果在5分钟内无法完成poll方法返回的消息，则Consumer会主动发起离开组的请求，Coorditator也会开始新一轮的Rabalance.也可以修改max.poll.records参数，减少一次poll拉取的消息数，从而减少消费时间。</p>
-<p>Consumer参数说明：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">session.timeout.ms 决定了 Consumer 存活性的时间间隔</span><br><span class="line">heartbeat.interval.ms 控制的是Consumer端发送心跳请求的间隔</span><br><span class="line">max.poll.interval.ms 限定了Consumer端两次调用poll方法的最大时间间隔（即是处理一次poll方法返回消息的最大允许时间）</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Consumer未及时发送心跳导致的Rebalance</p>
-<p>上面我们说了Consumer发送的心跳频次的参数和Coordinator认为Consumer死亡时间的参数。所以为了避免Coordinator错误的判断Consumer死亡的发生，我们要在较短的时间内，较多的发送请求。推荐参数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 在Coordinator认为Consumer死亡之前（6s内），发送三次心跳请求</span><br><span class="line">session.timeout.ms &#x3D; 6s</span><br><span class="line">heartbeat.interval.ms &#x3D; 2s</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Consumer消费时间过长导致的Rebalance</p>
-<p>上面说了max.poll.interval.ms时间内Consumer没有消费完上次poll拉取的消息，则Consumber会主动请求离开组，然后Coordinator进行Rebalance。<br>所以需要了解业务处理时间，合理的设置max.poll.interval.ms</p>
-</li>
-</ul>
-<ul>
-<li><p>频繁Full GC引起的Rebalance</p>
-<p>Full GC导致的长时间停顿，导致业务没有在正常时间内处理完，触发max.poll.interval.ms超时时间，产生Rebalance。</p>
-</li>
-</ul>
-
-          
+          什么是Rebalance首先要搞清楚，为什么要Rebalance：由于消费者组订阅了topic，因topic partition数和消费者组成员个数不同而存在的分配机制。
+Rebalance是让Consumer Group下所有的Consumer重新分配Topic的每个分区的过程。
+Rebalanc
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/02/20/Kafka%E9%87%8D%E5%B9%B3%E8%A1%A1%EF%BC%88Rebalance%EF%BC%89/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2398,7 +2103,7 @@
             
               <div class="site-state-item site-state-posts">
               
-                <a href="/archives">
+                <a href="/archives/%20%7C%7C%20history">
               
                   <span class="site-state-item-count">132</span>
                   <span class="site-state-item-name">日志</span>

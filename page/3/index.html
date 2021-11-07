@@ -183,9 +183,9 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
+          <a href="/%20" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
             首页
           </a>
@@ -193,9 +193,9 @@
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/tags" rel="section">
+          <a href="/tags/%20" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
             
             标签
           </a>
@@ -203,9 +203,9 @@
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/categories" rel="section">
+          <a href="/categories/%20" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-list"></i> <br />
             
             分类
           </a>
@@ -213,9 +213,9 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/archives" rel="section">
+          <a href="/archives/%20" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-history"></i> <br />
             
             归档
           </a>
@@ -402,14 +402,20 @@
       
         
           
-            <ol>
-<li>安装anaconda</li>
-<li>pycharm中新建项目配置环境变量为conda</li>
-<li>安装必要的包</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo pip3 install -i https:&#x2F;&#x2F;pypi.doubanio.com&#x2F;simple pandas jupyter xlrd openpyxl pillow matplotlib seaborn</span><br></pre></td></tr></table></figure>
-
           
+安装anaconda
+pycharm中新建项目配置环境变量为conda
+安装必要的包
+
+1sudo pip3 install -i https:&#x2F;&#x2F;pypi.doubanio.com&#x2F;simple pandas jupyter xlrd openpyxl pillow
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/02/20/jupyter%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -570,250 +576,20 @@
       
         
           
-            <h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p><a href="https://pandas.pydata.org/docs/index.html" target="_blank" rel="noopener">pandas官网</a><br>pandas 是用来做数据分析的一个工具库，为Python编程语言提供高性能、易用的数据结构和数据分析工具</p>
-<p>也可以简单的认为pandans是Python中的excel表</p>
-<h1 id="对比列表-numpy-pandas"><a href="#对比列表-numpy-pandas" class="headerlink" title="对比列表/numpy/pandas"></a>对比列表/numpy/pandas</h1><ul>
-<li><p>列表里的元素可以是python中的任意对象，使用方便，但是存在性能问题</p>
-</li>
-<li><p>numpy 是一个多维的数组结构，区别于列表，numpy只能保存同一类型的数据，通常为数值型，numpy大大提高了对于数据类型的计算效率</p>
-</li>
-<li><p>pandas 构建在numpy之上，继承了numpy的高效，同时又更易于使用</p>
-<p><img src="https://blog-pic-1254088127.picsh.myqcloud.com/python-list-nunpy-pandas.png" alt="list-numpy-pandas"></p>
-</li>
-</ul>
-<p>易用性示例：</p>
-<p>  <img src="https://blog-pic-1254088127.picsh.myqcloud.com/pandas02.png" alt="pandas"></p>
-<h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><p>pandas 没有3维及以上数据结构</p>
-<ol>
-<li><p>Seris</p>
-<p>一维数据</p>
-</li>
-<li><p>DataFrame</p>
-<p>二维数据,DataFrame中的每一列都是Seris</p>
-<p>read_excel</p>
-<p>to_excel</p>
-<p>append() 上下拼接多个表格</p>
-<p>join（） 左右拼接两个表格</p>
-<p>concat() 通过设置axis参数，上下或左右拼接多个表格</p>
-<p>merge() 相当于excel中的vlookup，通过同一列相同的元素把两个表格合并在一起</p>
-<p>pivot_table 相当于excel中的透视操作</p>
-<p>rolling() 固定窗口滚动操作</p>
-<p>expanding() 扩展窗口操作</p>
-</li>
-</ol>
-<h1 id="创建Series"><a href="#创建Series" class="headerlink" title="创建Series"></a>创建Series</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">s = pd.Series([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>])</span><br><span class="line">s</span><br></pre></td></tr></table></figure>
-
-<pre><code>0    1
-1    2
-2    3
-dtype: int64</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">s = pd.Series([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>],</span><br><span class="line">              index=list(<span class="string">'abc'</span>),</span><br><span class="line">              dtype=<span class="string">'int64'</span>,</span><br><span class="line">              name=<span class="string">'num'</span>)</span><br><span class="line">s</span><br></pre></td></tr></table></figure>
-<pre><code>a    1
-b    2
-c    3
-Name: num, dtype: int64</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">d = &#123;<span class="string">'a'</span>:<span class="number">1</span>,<span class="string">'b'</span>:<span class="number">2</span>,<span class="string">'c'</span>:<span class="number">3</span>&#125;</span><br><span class="line">s = pd.Series(d)</span><br><span class="line">s</span><br></pre></td></tr></table></figure>
-<pre><code>a    1
-b    2
-c    3
-dtype: int64</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">s = pd.Series(<span class="number">3.0</span>,index=[<span class="string">'a'</span>,<span class="string">'b'</span>,<span class="string">'c'</span>])</span><br><span class="line">s</span><br></pre></td></tr></table></figure>
-
-<pre><code>a    3.0
-b    3.0
-c    3.0
-dtype: float64</code></pre><p>实际开发中，我们一般通过读取Excel创建</p>
-<h1 id="创建DataFrame"><a href="#创建DataFrame" class="headerlink" title="创建DataFrame"></a>创建DataFrame</h1><ul>
-<li>通过二维list-like创建</li>
-<li>通过字典创建</li>
-<li>通过读取Excel表</li>
-</ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span>  pandas <span class="keyword">as</span> pd</span><br></pre></td></tr></table></figure>
+          介绍pandas官网pandas 是用来做数据分析的一个工具库，为Python编程语言提供高性能、易用的数据结构和数据分析工具
+也可以简单的认为pandans是Python中的excel表
+对比列表/numpy/pandas
+列表里的元素可以是python中的任意对象，使用方便，但是存在性能问题
 
 
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">list_2d = [[<span class="number">1</span>,<span class="number">2</span>],</span><br><span class="line">           [<span class="number">3</span>,<span class="number">4</span>]]</span><br></pre></td></tr></table></figure>
-
-
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">df = pd.DataFrame(list_2d)</span><br><span class="line">df</span><br></pre></td></tr></table></figure>
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-<pre><code>.dataframe tbody tr th {
-    vertical-align: top;
-}
-
-.dataframe thead th {
-    text-align: right;
-}</code></pre><p></style></p>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>0</th>
-      <th>1</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>1</td>
-      <td>2</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>3</td>
-      <td>4</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-
-
-
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">df = pd.DataFrame(list_2d,</span><br><span class="line">                  columns=[<span class="string">'A'</span>,<span class="string">'B'</span>],</span><br><span class="line">                  index=[<span class="string">'x'</span>,<span class="string">'y'</span>])</span><br></pre></td></tr></table></figure>
-
-
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">d = &#123;<span class="string">'A'</span>:[<span class="number">1</span>,<span class="number">3</span>],<span class="string">'B'</span>:[<span class="number">2</span>,<span class="number">4</span>]&#125;</span><br><span class="line">df = pd.DataFrame(d,index=[<span class="string">'x'</span>,<span class="string">'y'</span>])</span><br><span class="line">df</span><br></pre></td></tr></table></figure>
-
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-<pre><code>.dataframe tbody tr th {
-    vertical-align: top;
-}
-
-.dataframe thead th {
-    text-align: right;
-}</code></pre><p></style></p>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>A</th>
-      <th>B</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>x</th>
-      <td>1</td>
-      <td>2</td>
-    </tr>
-    <tr>
-      <th>y</th>
-      <td>3</td>
-      <td>4</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-
-
-
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">df = pd.read_excel(<span class="string">'staffSalary.xlsx'</span>)</span><br><span class="line">df</span><br></pre></td></tr></table></figure>
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-<pre><code>.dataframe tbody tr th {
-    vertical-align: top;
-}
-
-.dataframe thead th {
-    text-align: right;
-}</code></pre><p></style></p>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>姓名</th>
-      <th>部门</th>
-      <th>工号</th>
-      <th>纳税人身份</th>
-      <th>员工状态</th>
-      <th>入职日期</th>
-      <th>基本工资</th>
-      <th>岗位工资</th>
-      <th>合同类型改</th>
-      <th>员工类型</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>张三</td>
-      <td>销售部</td>
-      <td>GH00030</td>
-      <td>居民</td>
-      <td>在职</td>
-      <td>2019-01-03</td>
-      <td>10035</td>
-      <td>2000</td>
-      <td>劳动合同</td>
-      <td>全职</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>李四</td>
-      <td>销售部</td>
-      <td>GH00031</td>
-      <td>居民</td>
-      <td>在职</td>
-      <td>2019-05-08</td>
-      <td>10036</td>
-      <td>2000</td>
-      <td>劳动合同</td>
-      <td>全职</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>王五</td>
-      <td>销售部</td>
-      <td>GH00032</td>
-      <td>居民</td>
-      <td>在职</td>
-      <td>2019-01-01</td>
-      <td>10000</td>
-      <td>5000</td>
-      <td>劳动合同</td>
-      <td>全职</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>赵六</td>
-      <td>销售部</td>
-      <td>GH00033</td>
-      <td>居民</td>
-      <td>在职</td>
-      <td>2019-01-01</td>
-      <td>10000</td>
-      <td>5000</td>
-      <td>劳动合同</td>
-      <td>全职</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-
-
-          
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/02/19/Python%E5%BA%93-Pandas%E8%AF%B4%E6%98%8E/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -974,118 +750,21 @@ dtype: float64</code></pre><p>实际开发中，我们一般通过读取Excel创
       
         
           
-            <h1 id="数据类型和数据结构"><a href="#数据类型和数据结构" class="headerlink" title="数据类型和数据结构"></a>数据类型和数据结构</h1><h2 id="基础数据类型"><a href="#基础数据类型" class="headerlink" title="基础数据类型"></a>基础数据类型</h2><ol>
-<li>整数 int 123</li>
-<li>浮点数 float 1.234</li>
-<li>字符串 str “Python”</li>
-<li>布尔值 bool True False</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; type(123)</span><br><span class="line">&lt;class &#39;int&#39;&gt;</span><br><span class="line">&gt;&gt;&gt; type(&quot;Phthon&quot;)</span><br><span class="line">&lt;class &#39;str&#39;&gt;</span><br><span class="line">&gt;&gt;&gt; type(1.234)</span><br><span class="line">&lt;class &#39;float&#39;&gt;</span><br><span class="line">&gt;&gt;&gt; type(True)</span><br><span class="line">&lt;class &#39;bool&#39;&gt;</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
+          数据类型和数据结构基础数据类型
+整数 int 123
+浮点数 float 1.234
+字符串 str “Python”
+布尔值 bool True False
 
-<p>类型转换</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>int(<span class="string">'123'</span>)</span><br><span class="line"><span class="number">123</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>str(<span class="number">123</span>)</span><br><span class="line"><span class="string">'123'</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>bool(<span class="number">123</span>)</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>bool(<span class="number">0</span>)</span><br><span class="line"><span class="literal">False</span></span><br></pre></td></tr></table></figure>
-
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 计算薪资</span><br><span class="line"># 工作天数</span><br><span class="line">workday &#x3D; 21.75;</span><br><span class="line"># 日薪</span><br><span class="line">dailyPay &#x3D; 288;</span><br><span class="line"># 奖金</span><br><span class="line">bonus &#x3D; 566;</span><br><span class="line">total &#x3D; workday * dailyPay + bonus;</span><br><span class="line">print(total);</span><br></pre></td></tr></table></figure>
-
-<h2 id="序列"><a href="#序列" class="headerlink" title="序列"></a>序列</h2><p>序列有两个特性</p>
-<ol>
-<li>成员是有序的</li>
-<li>可以通过下标访问一个或几个成员</li>
-</ol>
-<ul>
-<li>字符串、列表、元组都属于序列</li>
-</ul>
-<ol>
-<li>字符串 “春夏秋冬”</li>
-<li>列表 [1,”春”,2,”秋”]</li>
-<li>元组 (“春”,”夏”,”秋”,”冬”)  元组中存放不可变更的内容,没有增加删除等功能</li>
-</ol>
-<ul>
-<li>序列基本操作</li>
-</ul>
-<ol>
-<li>[not] in 成员关系</li>
-<li><ul>
-<li>连接 </li>
-</ul>
-</li>
-<li><ul>
-<li>重复</li>
-</ul>
-</li>
-<li>: 切片 </li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"># 数据结构相关</span><br><span class="line"># 四季</span><br><span class="line">seasons &#x3D; [&quot;春&quot;, &quot;夏&quot;, &quot;秋&quot;, &quot;冬&quot;];</span><br><span class="line"></span><br><span class="line"># ---------------------切片操作</span><br><span class="line"># 第一季</span><br><span class="line">print(seasons[0])</span><br><span class="line"># 第一季和第三季</span><br><span class="line">print(seasons[0:2])</span><br><span class="line"># 倒数第一季</span><br><span class="line">print(seasons[-1])</span><br><span class="line"></span><br><span class="line"># ---------------------连接操作</span><br><span class="line">print(seasons + seasons)</span><br><span class="line">print(seasons + [1,2,3])</span><br><span class="line"></span><br><span class="line"># ---------------------重复操作</span><br><span class="line">print(seasons * 2)</span><br><span class="line"># ---------------------关系操作</span><br><span class="line">print(&quot;春&quot; in seasons)</span><br><span class="line">print(&quot;春&quot; not in seasons)</span><br><span class="line"></span><br><span class="line"># 结果</span><br><span class="line">春</span><br><span class="line">[&#39;春&#39;, &#39;夏&#39;]</span><br><span class="line">冬</span><br><span class="line">[&#39;春&#39;, &#39;夏&#39;, &#39;秋&#39;, &#39;冬&#39;, &#39;春&#39;, &#39;夏&#39;, &#39;秋&#39;, &#39;冬&#39;]</span><br><span class="line">[&#39;春&#39;, &#39;夏&#39;, &#39;秋&#39;, &#39;冬&#39;, 1, 2, 3]</span><br><span class="line">[&#39;春&#39;, &#39;夏&#39;, &#39;秋&#39;, &#39;冬&#39;, &#39;春&#39;, &#39;夏&#39;, &#39;秋&#39;, &#39;冬&#39;]</span><br><span class="line">True</span><br><span class="line">False</span><br></pre></td></tr></table></figure>
-<p>元组demo 计算某一天属于哪个季节</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"># 计算某一天属于哪个季节</span><br><span class="line"></span><br><span class="line"># 计算某一天属于哪个季节</span><br><span class="line"></span><br><span class="line">seasons &#x3D; (&quot;春&quot;,&quot;夏&quot;,&quot;秋&quot;,&quot;冬&quot;)</span><br><span class="line"></span><br><span class="line"># 季节的第一天</span><br><span class="line">seasonsFirstDays &#x3D; ((1,1),(4,1),(7,1),(10,1))</span><br><span class="line"></span><br><span class="line">(month,day) &#x3D; (2,11)</span><br><span class="line">#(month,day) &#x3D; list(map(int,input(&quot;请输入月和日，用空格隔开&quot;).split()))</span><br><span class="line">print((month,day))</span><br><span class="line">filterSeasonFirstDay &#x3D; filter(lambda x : x &lt;&#x3D; (month,day),seasonsFirstDays)</span><br><span class="line">filterSeasonFirstDayLen  &#x3D; len(list(filterSeasonFirstDay))</span><br><span class="line">seasonIndex &#x3D; filterSeasonFirstDayLen % 4 -1</span><br><span class="line">print(seasonIndex)</span><br><span class="line">print(seasons[seasonIndex])</span><br><span class="line"></span><br><span class="line">[(1, 1)]</span><br><span class="line">-1</span><br><span class="line">冬</span><br></pre></td></tr></table></figure>
-
-<p>列表demo </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 列表的操作，区别于元组，列表可以添加和删除</span><br><span class="line"></span><br><span class="line">bonusItem &#x3D; [&quot;全勤奖&quot;,&quot;绩效奖&quot;]</span><br><span class="line"></span><br><span class="line">bonusItem.append(&quot;项目奖&quot;)</span><br><span class="line">print(bonusItem)</span><br><span class="line">bonusItem.remove(&quot;绩效奖&quot;)</span><br><span class="line">print(bonusItem)</span><br><span class="line"></span><br><span class="line">[&#39;全勤奖&#39;, &#39;绩效奖&#39;, &#39;项目奖&#39;]</span><br><span class="line">[&#39;全勤奖&#39;, &#39;项目奖&#39;]</span><br></pre></td></tr></table></figure>
-<h2 id="字典-key-value"><a href="#字典-key-value" class="headerlink" title="字典(key-value)"></a>字典(key-value)</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;basesalary&quot;:&quot;4000&quot;,&quot;bonux&quot;:&quot;1888&quot;&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"># 字典类型的使用</span><br><span class="line"></span><br><span class="line">dic1 &#x3D; &#123;&#125;</span><br><span class="line">print(type(dic1))</span><br><span class="line"></span><br><span class="line">dic2 &#x3D; &#123;&#39;basesalary&#39;:4000,&#39;bonus&#39;:1888&#125;</span><br><span class="line">dic2[&#39;postwage&#39;] &#x3D; 800</span><br><span class="line">print(dic2)</span><br><span class="line"></span><br><span class="line">&lt;class &#39;dict&#39;&gt;</span><br><span class="line">&#123;&#39;basesalary&#39;: 4000, &#39;bonus&#39;: 1888, &#39;postwage&#39;: 800&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 计算1到10所有偶数的平方</span><br><span class="line">list1 &#x3D; []</span><br><span class="line">for i in range(1,11):</span><br><span class="line">    if(i % 2 &#x3D;&#x3D; 0):</span><br><span class="line">        list1.append(i * i)</span><br><span class="line"></span><br><span class="line">print(list1)</span><br><span class="line"></span><br><span class="line"># 列表推导式语法</span><br><span class="line">list2 &#x3D; [i * i for i in range(1,11) if i % 2 &#x3D;&#x3D; 0]</span><br><span class="line">print(list2)</span><br><span class="line"></span><br><span class="line">upNumber &#x3D; (&quot;壹&quot;,&quot;贰&quot;,&quot;叁&quot;,&quot;肆&quot;,&quot;伍&quot;,&quot;陆&quot;,&quot;柒&quot;,&quot;捌&quot;,&quot;玖&quot;,&quot;拾&quot;)</span><br><span class="line">dic1 &#x3D; &#123;&#125;</span><br><span class="line">for i in upNumber:</span><br><span class="line">    dic1[i] &#x3D; 0;</span><br><span class="line">print(dic1)</span><br><span class="line"># 字典推导式语法</span><br><span class="line">dic2 &#x3D; &#123;i:0 for i in upNumber&#125;</span><br><span class="line">print(dic2)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[4, 16, 36, 64, 100]</span><br><span class="line">[4, 16, 36, 64, 100]</span><br><span class="line">&#123;&#39;壹&#39;: 0, &#39;贰&#39;: 0, &#39;叁&#39;: 0, &#39;肆&#39;: 0, &#39;伍&#39;: 0, &#39;陆&#39;: 0, &#39;柒&#39;: 0, &#39;捌&#39;: 0, &#39;玖&#39;: 0, &#39;拾&#39;: 0&#125;</span><br><span class="line">&#123;&#39;壹&#39;: 0, &#39;贰&#39;: 0, &#39;叁&#39;: 0, &#39;肆&#39;: 0, &#39;伍&#39;: 0, &#39;陆&#39;: 0, &#39;柒&#39;: 0, &#39;捌&#39;: 0, &#39;玖&#39;: 0, &#39;拾&#39;: 0&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h1><h2 id="if"><a href="#if" class="headerlink" title="if"></a>if</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">if 表达式:</span><br><span class="line">   代码块</span><br><span class="line">elif 表达式:</span><br><span class="line">   代码块</span><br><span class="line">else :</span><br><span class="line">  代码块</span><br></pre></td></tr></table></figure>
-<h2 id="for"><a href="#for" class="headerlink" title="for"></a>for</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">for 迭代变量 in 可迭代对象:</span><br><span class="line">    代码块</span><br></pre></td></tr></table></figure>
-<h2 id="while"><a href="#while" class="headerlink" title="while"></a>while</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">while 表达式:</span><br><span class="line">      代码块</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">upNumber &#x3D; (&quot;壹&quot;,&quot;贰&quot;,&quot;叁&quot;,&quot;肆&quot;,&quot;伍&quot;,&quot;陆&quot;,&quot;柒&quot;,&quot;捌&quot;,&quot;玖&quot;,&quot;拾&quot;)</span><br><span class="line">for num in range(10):</span><br><span class="line">    print(&quot;%s 的大写方式是:%s&quot; %(num,upNumber[(num - 1) % 10]))</span><br><span class="line"></span><br><span class="line">for idx in upNumber:</span><br><span class="line">    print(idx)</span><br></pre></td></tr></table></figure>
-
-<h1 id="文件操作"><a href="#文件操作" class="headerlink" title="文件操作"></a>文件操作</h1><p>基本操作</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"># 文件操作</span><br><span class="line"></span><br><span class="line"># w是覆盖写入模式</span><br><span class="line">salaryfieldFile &#x3D; open(&#39;salaryfield.txt&#39;,&#39;w&#39;)</span><br><span class="line">salaryfieldFile.write(&quot;基本工资&quot;)</span><br><span class="line">salaryfieldFile.close()</span><br><span class="line"></span><br><span class="line">fieldRead &#x3D; open(&#39;salaryfield.txt&#39;)</span><br><span class="line">print(fieldRead.read())</span><br><span class="line">fieldRead.close()</span><br><span class="line"></span><br><span class="line"># 追加写入模式 a</span><br><span class="line"></span><br><span class="line">fieldAppend &#x3D; open(&#39;salaryfield.txt&#39;,&#39;a&#39;)</span><br><span class="line">fieldAppend.write(&#39;岗位工资&#39;)</span><br><span class="line">fieldAppend.close()</span><br></pre></td></tr></table></figure>
-
-<p>指针操作</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"># 文件指针操作</span><br><span class="line"></span><br><span class="line">file &#x3D; open(&quot;salaryfield.txt&quot;)</span><br><span class="line">print(&quot;当前文件指针位置%s：&quot;%file.tell())</span><br><span class="line">print(&quot;我们读取了一个字符：%s&quot;%file.read(1))</span><br><span class="line">print(&quot;当前文件指针位置%s：&quot;%file.tell())</span><br><span class="line">file.seek(0)</span><br><span class="line">print(&quot;进行指针移动操作&quot;)</span><br><span class="line">print(&quot;当前文件指针位置%s：&quot;%file.tell())</span><br><span class="line"># seek 函数第一个参数是偏移量，第二个参数是相对位置：0表示从文件开头 1表示从当前位置 2表示从文件结尾</span><br><span class="line">file.seek(5,0)</span><br><span class="line">file.close()</span><br><span class="line"></span><br><span class="line">当前文件指针位置0：</span><br><span class="line">我们读取了一个字符：基</span><br><span class="line">当前文件指针位置3：</span><br><span class="line">进行指针移动操作</span><br><span class="line">当前文件指针位置0：</span><br></pre></td></tr></table></figure>
-<h1 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h1><p>异常处理语法</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">try:</span><br><span class="line">  代码块</span><br><span class="line">except Exception[,reason]</span><br><span class="line">  异常处理</span><br><span class="line">final:</span><br><span class="line">  最终执行代码</span><br></pre></td></tr></table></figure>
-
-<p>异常处理demo</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"># 异常处理</span><br><span class="line">try:</span><br><span class="line"> i &#x3D; j</span><br><span class="line">except NameError:</span><br><span class="line">    print(&#39;变量未定义异常&#39;)</span><br><span class="line"></span><br><span class="line">try:</span><br><span class="line"> 1&#x2F;0</span><br><span class="line">except ZeroDivisionError:</span><br><span class="line">    print(&#39;除数不能为0&#39;)</span><br><span class="line"></span><br><span class="line"># 捕获多个异常</span><br><span class="line">try:</span><br><span class="line"> 1&#x2F;0</span><br><span class="line">except (NameError,ZeroDivisionError):</span><br><span class="line">    print(&#39;程序出现了异常&#39;)</span><br><span class="line"></span><br><span class="line"># 打印异常信息</span><br><span class="line">try:</span><br><span class="line"> 1&#x2F;0</span><br><span class="line">except ZeroDivisionError as e:</span><br><span class="line">    print(&#39;除数不能为0,%s&#39;%e)</span><br><span class="line"></span><br><span class="line"># 通用异常捕获</span><br><span class="line">try:</span><br><span class="line"> 1&#x2F;0</span><br><span class="line">except Exception as e:</span><br><span class="line">    print(&#39;程序异常,%s&#39;%e)</span><br><span class="line"></span><br><span class="line"># 自定义异常信息</span><br><span class="line">try:</span><br><span class="line"> raise NameError(&quot;这个一个自定义的异常信息&quot;)</span><br><span class="line">except Exception as e:</span><br><span class="line">    print(&#39;程序异常,%s&#39;%e)</span><br><span class="line"></span><br><span class="line"># final执行操作</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">try:</span><br><span class="line">  file &#x3D; open(&quot;salaryfield.txt&quot;)</span><br><span class="line">except Exception as e:</span><br><span class="line">    print(&#39;文件操作异常%s&#39;%e)</span><br><span class="line">finally:</span><br><span class="line">    file.close()</span><br><span class="line">    print(&quot;文件关闭&quot;)</span><br></pre></td></tr></table></figure>
-
-<h1 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h1><h2 id="函数定义"><a href="#函数定义" class="headerlink" title="函数定义"></a>函数定义</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">def functionName(param1,param2,*other,**keywords):</span><br><span class="line">    代码</span><br><span class="line">    return 需要返回的内容</span><br><span class="line"></span><br><span class="line">参数分为3种</span><br><span class="line"></span><br><span class="line">param1,param2属属于必填的普通参数</span><br><span class="line">*other 是可变长参数，可以是0个或者一个</span><br><span class="line">**keywords 是关键字参数，可以通过调用的时候指定参数</span><br></pre></td></tr></table></figure>
-<h2 id="函数变量作用域"><a href="#函数变量作用域" class="headerlink" title="函数变量作用域"></a>函数变量作用域</h2><p>默认函数内定义的变量，作用域只能在函数内</p>
-<p>global关键字可以改变函数作用域为全局</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">## 函数作用域</span><br><span class="line"></span><br><span class="line">var &#x3D; 123</span><br><span class="line">def func1():</span><br><span class="line">    var &#x3D; 456</span><br><span class="line">    print(var)</span><br><span class="line"></span><br><span class="line">func1()</span><br><span class="line">print(var)</span><br><span class="line"></span><br><span class="line">global var2</span><br><span class="line">var2 &#x3D; 123</span><br><span class="line">def func2():</span><br><span class="line">    var2 &#x3D; 456</span><br><span class="line">    print(var2)</span><br><span class="line"></span><br><span class="line">func2()</span><br><span class="line">print(var2)</span><br><span class="line"></span><br><span class="line">var3 &#x3D; 123</span><br><span class="line">def func3():</span><br><span class="line">    global var3;</span><br><span class="line">    var3 &#x3D; 456</span><br><span class="line">    print(var3)</span><br><span class="line"></span><br><span class="line">func3()</span><br><span class="line">print(var3)</span><br><span class="line"></span><br><span class="line">456</span><br><span class="line">123</span><br><span class="line">456</span><br><span class="line">123</span><br><span class="line">456</span><br><span class="line">456</span><br></pre></td></tr></table></figure>
-
-<h2 id="函数迭代器和生成器"><a href="#函数迭代器和生成器" class="headerlink" title="函数迭代器和生成器"></a>函数迭代器和生成器</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"># 生成器（通过yield实现迭代器功能）</span><br><span class="line">def floatRange(start,stop,step):</span><br><span class="line">    x &#x3D; start</span><br><span class="line">    while x &lt; stop:</span><br><span class="line">        yield x #迭代x</span><br><span class="line">        x +&#x3D; step</span><br><span class="line"></span><br><span class="line">for i in floatRange(10,20,0.5):</span><br><span class="line">    print(i)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">10</span><br><span class="line">10.5</span><br><span class="line">11.0</span><br><span class="line">11.5</span><br><span class="line">12.0</span><br><span class="line">12.5</span><br><span class="line">13.0</span><br><span class="line">13.5</span><br><span class="line">14.0</span><br><span class="line">14.5</span><br><span class="line">15.0</span><br><span class="line">15.5</span><br><span class="line">16.0</span><br><span class="line">16.5</span><br><span class="line">17.0</span><br><span class="line">17.5</span><br><span class="line">18.0</span><br><span class="line">18.5</span><br><span class="line">19.0</span><br><span class="line">19.5</span><br></pre></td></tr></table></figure>
-
-<h2 id="lambda表达式"><a href="#lambda表达式" class="headerlink" title="lambda表达式"></a>lambda表达式</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># lambda表达式</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; def add(x,y):</span><br><span class="line">...     return x+y</span><br><span class="line">... </span><br><span class="line">&gt;&gt;&gt; add(3,5)</span><br><span class="line">8</span><br><span class="line">&gt;&gt;&gt; lambda x,y:x+y</span><br><span class="line">&lt;function &lt;lambda&gt; at 0x7f0b8d3fcb00&gt;</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
-
-<h2 id="内建函数"><a href="#内建函数" class="headerlink" title="内建函数"></a>内建函数</h2><p>filter、map、reduce、zip</p>
-<p>help 函数名可以产看帮助文档</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"># filter函数 过滤</span><br><span class="line"></span><br><span class="line">&gt;&gt; list2 &#x3D; [1,2,3,4,5,6,7]</span><br><span class="line">&gt;&gt;&gt; print(list(filter(lambda x:x&lt;4,list2)))</span><br><span class="line">[1, 2, 3]</span><br><span class="line"></span><br><span class="line"># map函数 对内容依次处理</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; a &#x3D; [1,2,3,4,5,6,7]</span><br><span class="line">&gt;&gt;&gt; print(list(map(lambda x:x+1,a)))</span><br><span class="line">[2, 3, 4, 5, 6, 7, 8]</span><br><span class="line">&gt;&gt;&gt; b &#x3D; [1,2,3,4,5,6,7]</span><br><span class="line">&gt;&gt;&gt; print(list(map(lambda x,y:x+y,a,b)))</span><br><span class="line">[2, 4, 6, 8, 10, 12, 14]</span><br><span class="line"></span><br><span class="line"># reduce函数 </span><br><span class="line">[2, 4, 6, 8, 10, 12, 14]</span><br><span class="line">&gt;&gt;&gt; from functools import reduce</span><br><span class="line">&gt;&gt;&gt; reduce(lambda x,y:x+y,[1,2,3],1)</span><br><span class="line">7</span><br><span class="line">等价于 ((1+1)+2)+3</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># zip函数 常用于合并累加等</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; zip((1,2,3),(4,5,6))</span><br><span class="line">&lt;zip object at 0x7f0b8d3e3c30&gt;</span><br><span class="line">&gt;&gt;&gt; for i in zip((1,2,3),(4,5,6)):</span><br><span class="line">...    print(i)</span><br><span class="line">...</span><br><span class="line">(1, 4)</span><br><span class="line">(2, 5)</span><br><span class="line">(3, 6)</span><br><span class="line"></span><br><span class="line">#通过zip实现字段key-value对调</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; dicta &#x3D; &#123;&quot;a&quot;:&quot;aa&quot;,&quot;b&quot;:&quot;bb&quot;&#125;</span><br><span class="line">&gt;&gt;&gt; zip(dicta.values(),dicta.keys())</span><br><span class="line">&lt;zip object at 0x7f0b8d302780&gt;</span><br><span class="line">&gt;&gt;&gt; print(dict(zip(dicta.values(),dicta.keys())))</span><br><span class="line">&#123;&#39;aa&#39;: &#39;a&#39;, &#39;bb&#39;: &#39;b&#39;&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h2><p>外部函数变量被内部函数引用，这种形式称之为闭包</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"># 闭包</span><br><span class="line"></span><br><span class="line"># 计数器</span><br><span class="line">def counter(FIRST&#x3D;0):</span><br><span class="line">    cnt &#x3D; [FIRST]</span><br><span class="line">    def addOne():</span><br><span class="line">        cnt[0] +&#x3D; 1</span><br><span class="line">        return cnt[0]</span><br><span class="line">    return addOne</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">num1 &#x3D; counter()</span><br><span class="line">num5 &#x3D; counter(5)</span><br><span class="line"></span><br><span class="line">print(num1())</span><br><span class="line">print(num1())</span><br><span class="line">print(num1())</span><br><span class="line">print(num5())</span><br><span class="line">print(num5())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td></tr></table></figure>
-
-<h2 id="装饰器"><a href="#装饰器" class="headerlink" title="装饰器"></a>装饰器</h2><p>装饰器用来装饰函数，通过闭包实现。有点java aop的意思</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"># 装饰器的使用</span><br><span class="line"></span><br><span class="line"># 通过闭包实现的装饰器</span><br><span class="line">def wash(func):</span><br><span class="line">    def wrapper(food):</span><br><span class="line">        print(&quot;吃饭前先洗手...&quot;)</span><br><span class="line">        print(&quot;函数调用名%s&quot;%func.__name__)</span><br><span class="line">        func(food)</span><br><span class="line">        print(&quot;吃完饭要漱口...&quot;)</span><br><span class="line"></span><br><span class="line">    return wrapper</span><br><span class="line"></span><br><span class="line">def newWash(args):</span><br><span class="line">    def wash(func):</span><br><span class="line">        def wrapper(food):</span><br><span class="line">            print(&quot;%s前先洗手...&quot;%args)</span><br><span class="line">            func(food)</span><br><span class="line">            print(&quot;吃完%s要漱口...&quot;%args)</span><br><span class="line"></span><br><span class="line">        return wrapper</span><br><span class="line">    return wash;</span><br><span class="line"></span><br><span class="line">def eat():</span><br><span class="line">    print(&quot;开始吃饭&quot;)</span><br><span class="line"></span><br><span class="line"># 没使用装饰器前</span><br><span class="line">print(&quot;吃饭前先洗手...&quot;)</span><br><span class="line">eat()</span><br><span class="line">print(&quot;吃完饭要漱口...&quot;)</span><br><span class="line"></span><br><span class="line">@wash</span><br><span class="line">def eat2(food):</span><br><span class="line">    print(&quot;开始吃%s&quot;%food)</span><br><span class="line"></span><br><span class="line">eat2(&quot;面包&quot;)</span><br><span class="line"></span><br><span class="line">@newWash(&quot;早饭&quot;)</span><br><span class="line">def eat3(food):</span><br><span class="line">    print(&quot;开始吃%s&quot;%food)</span><br><span class="line"></span><br><span class="line">eat3(&quot;烤肉&quot;)</span><br><span class="line"></span><br><span class="line">吃饭前先洗手...</span><br><span class="line">开始吃饭</span><br><span class="line">吃完饭要漱口...</span><br><span class="line">吃饭前先洗手...</span><br><span class="line">开始吃面包</span><br><span class="line">吃完饭要漱口...</span><br><span class="line">早饭前先洗手...</span><br><span class="line">开始吃烤肉</span><br><span class="line">吃完早饭要漱口...</span><br></pre></td></tr></table></figure>
-
-<h2 id="上下文管理器with"><a href="#上下文管理器with" class="headerlink" title="上下文管理器with"></a>上下文管理器with</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># 上下文管理器 with</span><br><span class="line"></span><br><span class="line">try:</span><br><span class="line">    file &#x3D; open(&quot;salaryfield.txt&quot;)</span><br><span class="line">    for line in file.readlines():</span><br><span class="line">        print(line)</span><br><span class="line">except Exception as e:</span><br><span class="line">    print(e)</span><br><span class="line">finally:</span><br><span class="line">    file.close()</span><br><span class="line"></span><br><span class="line"># 可使用with代替上面的写法,不需要自己管理资源</span><br><span class="line"></span><br><span class="line">with open(&quot;salaryfield.txt&quot;) as file:</span><br><span class="line">        for line in file.readlines():</span><br></pre></td></tr></table></figure>
-
-<h1 id="编码规范包"><a href="#编码规范包" class="headerlink" title="编码规范包"></a>编码规范包</h1><p>python提供了一个编码规范的工具包，可以自行安装</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo pip3 install autopep8</span><br></pre></td></tr></table></figure>
-<p>安装完后可以配置pycharm添加到其扩展工具里，就可以在代码中右键使用了。配置方式这里就不写了。</p>
-<h1 id="面向对象编程"><a href="#面向对象编程" class="headerlink" title="面向对象编程"></a>面向对象编程</h1><p>class 关键字可以定义一个类,python中定义的类同样可以实现继承、封装、多态的特性</p>
-<h2 id="类的使用示例"><a href="#类的使用示例" class="headerlink" title="类的使用示例"></a>类的使用示例</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"># 迭代类</span><br><span class="line"></span><br><span class="line">class ProjectIteration():  # 定义一个类</span><br><span class="line">    def __init__(self, name, code):</span><br><span class="line">        self.__name &#x3D; name  # 迭代名称 __开头表示私有属性，不可修改</span><br><span class="line">        self.code &#x3D; code  # 迭代编号</span><br><span class="line"></span><br><span class="line">    def printInfo(self):  # 定义一个方法</span><br><span class="line">        print(&#39;迭代名称：[%s] 迭代编号:[%s]&#39; % (self.__name, self.code))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class Bug():</span><br><span class="line">    &#39;定义bug类&#39;</span><br><span class="line">    pass  # pass 暂不实现</span><br><span class="line"></span><br><span class="line">currentPj &#x3D; ProjectIteration(&quot;智能薪酬&quot;, &quot;znxc001&quot;)  # 类的实例化</span><br><span class="line">currentPj.printInfo()</span><br><span class="line"></span><br><span class="line"># 类的继承</span><br><span class="line"># 父类</span><br><span class="line">class Animal():</span><br><span class="line">    def __init__(self,name,age&#x3D;0):</span><br><span class="line">        self.name &#x3D; name</span><br><span class="line">        self.age &#x3D; age</span><br><span class="line">    def run(self):</span><br><span class="line">        print(&quot;跑了一段距离&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 继承父类</span><br><span class="line">class Cat(Animal):</span><br><span class="line">    def __init__(self,name,age):</span><br><span class="line">        # self.name &#x3D; name</span><br><span class="line">        # self.age &#x3D; age</span><br><span class="line">        super().__init__(name,age)</span><br><span class="line">    def run(self):</span><br><span class="line">        print(&quot;小猫跑了一会&quot;) # 可以覆盖父类的方法</span><br><span class="line"></span><br><span class="line">tom &#x3D; Cat(&quot;tom&quot;,18)</span><br><span class="line">tom.run();</span><br><span class="line"></span><br><span class="line">print(&#39;tom 的类型是%s&#39;%type(tom))</span><br><span class="line">print(isinstance(tom,Animal))  # tom 是否是Animal的子类</span><br></pre></td></tr></table></figure>
-
-<h2 id="自定义类支持with语法"><a href="#自定义类支持with语法" class="headerlink" title="自定义类支持with语法"></a>自定义类支持with语法</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">class TestWith():</span><br><span class="line">    def __enter__(self):</span><br><span class="line">        print(&#39;初始化...&#39;)</span><br><span class="line"></span><br><span class="line">    def __exit__(self, exc_type, exc_val, exc_tb):</span><br><span class="line">        if exc_tb &#x3D;&#x3D; None:</span><br><span class="line">            print(&#39;没有异常&#39;)</span><br><span class="line">        else:</span><br><span class="line">            print(&#39;产生异常%s&#39; % exc_val)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">with TestWith():</span><br><span class="line">    print(&#39;Test is running&#39;)</span><br><span class="line">    raise NameError(&quot;test&quot;)</span><br><span class="line"></span><br><span class="line">输出信息</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;&#x2F;home&#x2F;richey&#x2F;PycharmProjects&#x2F;pythonProject&#x2F;tutorial&#x2F;18TestWith.py&quot;, line 14, in &lt;module&gt;</span><br><span class="line">    raise NameError(&quot;test&quot;)</span><br><span class="line">NameError: test</span><br><span class="line">初始化...</span><br><span class="line">Test is running</span><br><span class="line">产生异常test</span><br></pre></td></tr></table></figure>
-
-<h1 id="多线程编程"><a href="#多线程编程" class="headerlink" title="多线程编程"></a>多线程编程</h1><p>暂无</p>
-<h1 id="标准库"><a href="#标准库" class="headerlink" title="标准库"></a>标准库</h1><p>python的一大优势就是各种库特别丰富</p>
-<p>python官方提供的库称之为标准库,官方网站：<a href="https://docs.python.org/3/library/index.html" target="_blank" rel="noopener">https://docs.python.org/3/library/index.html</a></p>
-<p>python标准库提供类丰富的内容，比如基础的文本操作、日期处理、网络、开发工具和调试工具等等</p>
-<h2 id="正则库re"><a href="#正则库re" class="headerlink" title="正则库re"></a>正则库re</h2><p><a href="https://docs.python.org/3/library/re.html" target="_blank" rel="noopener">https://docs.python.org/3/library/re.html</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import  re</span><br></pre></td></tr></table></figure>
-
-<h2 id="日期与时间函数"><a href="#日期与时间函数" class="headerlink" title="日期与时间函数"></a>日期与时间函数</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">import time</span><br><span class="line">import datetime</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">print(time.time())</span><br><span class="line">print(time.localtime())</span><br><span class="line">print(time.strftime(&#39;%Y-%m-%d %H-%M-%S&#39;))</span><br><span class="line"></span><br><span class="line"># 1612010800.1010308</span><br><span class="line"># time.struct_time(tm_year&#x3D;2021, tm_mon&#x3D;1, tm_mday&#x3D;30, tm_hour&#x3D;20, tm_min&#x3D;46, tm_sec&#x3D;40, tm_wday&#x3D;5, tm_yday&#x3D;30, tm_isdst&#x3D;0)</span><br><span class="line"># 2021-01-30 20-46-40</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">print(datetime.datetime.now())</span><br><span class="line">newTime &#x3D; datetime.timedelta(minutes&#x3D;10) # 10分钟的偏移</span><br><span class="line">print(datetime.datetime.now() + newTime) # 10分钟后的时间</span><br><span class="line"></span><br><span class="line"># 2021-01-30 20:50:50.395245</span><br><span class="line"># 2021-01-30 21:00:50.395273</span><br><span class="line"></span><br><span class="line">newDay &#x3D; datetime.datetime(2021,1,30)</span><br><span class="line">print(newDay)</span><br><span class="line">datInterval &#x3D; datetime.timedelta(days&#x3D;10)</span><br><span class="line">print(newDay + datInterval)</span><br><span class="line"></span><br><span class="line"># 2021-01-30 00:00:00</span><br><span class="line"># 2021-02-09 00:00:00</span><br></pre></td></tr></table></figure>
-
-<h2 id="数学相关"><a href="#数学相关" class="headerlink" title="数学相关"></a>数学相关</h2><h2 id="文本及目录操作"><a href="#文本及目录操作" class="headerlink" title="文本及目录操作"></a>文本及目录操作</h2><p><a href="https://docs.python.org/3/library/os.path.html" target="_blank" rel="noopener">https://docs.python.org/3/library/os.path.html</a></p>
-<p><a href="https://docs.python.org/3/library/pathlib.html" target="_blank" rel="noopener">https://docs.python.org/3/library/pathlib.html</a></p>
-<p>几个简单的demo，详细操作查询文档</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">import os</span><br><span class="line"></span><br><span class="line">import os</span><br><span class="line"></span><br><span class="line">print(os.path.abspath(&quot;.&quot;)) # 根据当前路径获取绝对路径</span><br><span class="line">print(os.path.abspath(&quot;..&quot;))</span><br><span class="line">print(os.path.exists(&quot;&#x2F;home&quot;))</span><br><span class="line">print(os.path.isfile(&quot;&#x2F;home&quot;))</span><br><span class="line">os.path.join(&quot;&#x2F;home&#x2F;richey&#x2F;&quot;,&quot;&#x2F;Download&#x2F;&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">from pathlib import Path</span><br><span class="line"></span><br><span class="line"># &gt;&gt;&gt; p &#x3D; Path(&#39;.&#39;)</span><br><span class="line"># &gt;&gt;&gt; [x for x in p.iterdir() if x.is_dir()]</span><br><span class="line"># [PosixPath(&#39;.hg&#39;), PosixPath(&#39;docs&#39;), PosixPath(&#39;dist&#39;),</span><br><span class="line">#  PosixPath(&#39;__pycache__&#39;), PosixPath(&#39;build&#39;)]</span><br></pre></td></tr></table></figure>
-
-          
+123456789&gt;&gt;&gt; type(123)&lt;class &#39;int&#39;&gt;&gt;&gt;&gt
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/01/30/python%E5%9F%BA%E7%A1%80/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1246,28 +925,19 @@ dtype: float64</code></pre><p>实际开发中，我们一般通过读取Excel创
       
         
           
-            <h1 id="CAP定理"><a href="#CAP定理" class="headerlink" title="CAP定理"></a>CAP定理</h1><p><a href="https://en.wikipedia.org/wiki/CAP_theorem" target="_blank" rel="noopener">CAP定理</a></p>
-<p><img src="http://assets.processon.com/chart_image/5c755040e4b0f9fba693aa8f.png" alt="cap定理"></p>
-<p>分布式系统早已成为主流开发架构模式，当今中大型系统开发绕不开分布式.</p>
-<p>相对于单点系统，分布式简单理解就是由多个节点一起组成的系统，由单点变成多点。节点之间的状态如何同步，成为了分布式系统首先要面对的问题，这也是分布式系统最大的难点。</p>
-<p>CAP定理就是这方面的基本定理，自然而然的也是最基础最关键的理论。</p>
-<blockquote>
-<p>CAP原则又称CAP定理，指的是在一个分布式系统中，一致性（Consistency）、可用性（Availability）、分区容错性（Partition tolerance）。CAP 原则指的是，这三个要素最多只能同时实现两点，不可能三者兼顾。 ——百度百科</p>
-</blockquote>
-<ul>
-<li>一致性（C）：在分布式系统中的所有数据备份，在同一时刻是否同样的值。（要做到一致性，节点间的通讯必须是正常的,且在节点没有同步好数据之前，需要锁定写操作和读操作。但是这不符合可用性）</li>
-<li>可用性（A）：每次请求都能获得一个(非错误)响应，但不保证返回的是最新写入的数据。</li>
-<li>分区容忍性（P）：尽管任意数量的消息被节点间的网络丢失（或延迟），系统仍继续运行。</li>
-</ul>
-<p>CAP原则的精髓就是要么AP，要么CP，要么AC，但是不存在CAP。要注意的是，CAP里的一致性与数据库ACID中的一致性，是截然不同的。</p>
-<ul>
-<li>CA (consistency + availability)，这样的系统关注一致性和可用性，它需要非常严格的全体一致的协议，比如“两阶段提交”（2PC）。</li>
-<li>CP (consistency + partition tolerance)，这样的系统关注一致性和分区容忍性。它关注的是系统里大多数人的一致性协议，比如：Paxos 算法（Quorum 类的算法）。</li>
-<li>AP (availability + partition tolerance)，这样的系统关心可用性和分区容忍性。</li>
-</ul>
-<h1 id="参考连接"><a href="#参考连接" class="headerlink" title="参考连接"></a>参考连接</h1><p><a href="http://www.ruanyifeng.com/blog/2018/07/cap.html" target="_blank" rel="noopener">CAP 定理的含义</a></p>
+          CAP定理CAP定理
 
-          
+分布式系统早已成为主流开发架构模式，当今中大型系统开发绕不开分布式.
+相对于单点系统，分布式简单理解就是由多个节点一起组成的系统，由单点变成多点。节点之间的状态如何同步，成为了分布式系统首先要面对的问题，这也是分布式系统最大的难点。
+CAP定理就是这方面的基本定理，自然而然的
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/01/01/CAP%E5%8E%9F%E7%90%86/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1428,36 +1098,19 @@ dtype: float64</code></pre><p>实际开发中，我们一般通过读取Excel创
       
         
           
-            <h1 id="producer端配置"><a href="#producer端配置" class="headerlink" title="producer端配置"></a>producer端配置</h1><h2 id="使用带有回调通知的-send-方法"><a href="#使用带有回调通知的-send-方法" class="headerlink" title="使用带有回调通知的 send 方法"></a>使用带有回调通知的 send 方法</h2><p>不要使用 producer.send(msg)，而要使用 producer.send(msg, callback)。</p>
-<blockquote>
-<p>设置 acks = all。设置成 all，表明所有副本 Broker 都要接收到消息，该消息才算是“已提交”。</p>
-</blockquote>
-<p> “所有副本”指的是ISR中的所有副本。ISR 中的副本都是与 Leader 同步的副本，相反，不在 ISR 中的追随者副本就被认为是与 Leader 不同步的。ISR列表里跟Leader保持同步的那些Follower都要把消息同步过去，才能认为这条消息是写入成功了。Leader副本天然在ISR中。</p>
-<p> Producer端认为消息已经成功提交的条件是：ISR中所有副本都已经保存了该消息，但producer并没有指定ISR中需要几个副本。这就是min.insync.replicas参数的作用。</p>
-<p> 只有acks=-1(同all)时，min.insync.replicas参宿才有意义。</p>
-<blockquote>
-<p>设置 retries 为一个较大的值。</p>
-</blockquote>
-<p>对应前面提到的 Producer 自动重试。当出现网络的瞬时抖动时，消息发送可能会失败，此时配置了 retries &gt; 0 的 Producer 能够自动重试消息发送，避免消息丢失。</p>
-<h1 id="broker端参数"><a href="#broker端参数" class="headerlink" title="broker端参数"></a>broker端参数</h1><blockquote>
-<p>设置 unclean.leader.election.enable = false。</p>
-</blockquote>
-<p>如果一个 Broker 落后原先的 Leader 太多，那么它一旦成为新的 Leader，必然会造成消息的丢失。故一般都要将该参数设置成 false，即不允许这种情况的发生。</p>
-<blockquote>
-<p>设置 replication.factor &gt;= 3。</p>
-</blockquote>
-<p>最好将消息多保存几份，毕竟目前防止消息丢失的主要机制就是冗余。</p>
-<blockquote>
-<p>设置 min.insync.replicas &gt; 1。</p>
-</blockquote>
-<p>控制的是消息至少要被写入到多少个副本才算是“已提交”。设置成大于 1 可以提升消息持久性。在实际环境中不要使用默认值 1。<br>只有当acks=all时该参数才有意义</p>
-<p>确保 replication.factor &gt; min.insync.replicas。如果两者相等，那么只要有一个副本挂机，整个分区就无法正常工作了。我们不仅要改善消息的持久性，防止数据丢失，还要在不降低可用性的基础上完成。推荐设置成 replication.factor = min.insync.replicas + 1。</p>
-<h1 id="Cosumer端参数"><a href="#Cosumer端参数" class="headerlink" title="Cosumer端参数"></a>Cosumer端参数</h1><blockquote>
-<p>enable.auto.commit，最好把它设置成 false</p>
-</blockquote>
-<p>采用手动提交位移的方式。这对于单 Consumer 多线程处理的场景而言是至关重要的。</p>
+          producer端配置使用带有回调通知的 send 方法不要使用 producer.send(msg)，而要使用 producer.send(msg, callback)。
 
-          
+设置 acks = all。设置成 all，表明所有副本 Broker 都要接收到消息，该消息才算是“已提交”。
+
+ “所有
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/12/13/Kafka%E9%AB%98%E5%8F%AF%E7%94%A8%E9%85%8D%E7%BD%AE/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1618,42 +1271,16 @@ dtype: float64</code></pre><p>实际开发中，我们一般通过读取Excel创
       
         
           
-            <h1 id="kafka-consumer-groups-sh"><a href="#kafka-consumer-groups-sh" class="headerlink" title="kafka-consumer-groups.sh"></a>kafka-consumer-groups.sh</h1><h2 id="查询kafka消息是否被消费"><a href="#查询kafka消息是否被消费" class="headerlink" title="查询kafka消息是否被消费"></a>查询kafka消息是否被消费</h2><p>要知道某条消息是否被消息,首先得知道是查被哪个消费组在消费; 比如 项目配置的kafka的group.id是 my-consumer-group ;<br>那么我们去看看 这个消费者组的消费情况</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin&#x2F;kafka-consumer-groups.sh --bootstrap-server xxx1:9092,xxx2:9092,xxx3:9092 --describe --group my-consumer-group</span><br></pre></td></tr></table></figure>
-
-<p>这样查询出来的结果就是 staff-consumer-group消费组消费了哪些Topic; 如果想过滤某个TOPIC;可以加上|grep TOPIC名称 过滤一下；</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin&#x2F;kafka-consumer-groups.sh --bootstrap-server xxx1:9092,xxx2:9092,xxx3:9092 --describe --group staff-consumer-group |grep TOPIC名称</span><br></pre></td></tr></table></figure>
-
-<h2 id="–members-此选项提供使用者组中所有活动成员的列表"><a href="#–members-此选项提供使用者组中所有活动成员的列表" class="headerlink" title="–members   此选项提供使用者组中所有活动成员的列表"></a>–members   此选项提供使用者组中所有活动成员的列表</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin&#x2F;kafka-consumer-groups.sh --bootstrap-server xxx1:9092,xxx2:9092,xxx3:9092 --describe --group my-consumer-group  --members</span><br></pre></td></tr></table></figure>
-
-<h2 id="–verbose-还展示分配给每个成员的分区"><a href="#–verbose-还展示分配给每个成员的分区" class="headerlink" title="–verbose  还展示分配给每个成员的分区"></a>–verbose  还展示分配给每个成员的分区</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin&#x2F;kafka-consumer-groups.sh --bootstrap-server xxx1:9092,xxx2:9092,xxx3:9092 --describe --group my-consumer-group  --members   --verbose</span><br></pre></td></tr></table></figure>
-
-<h2 id="–state-提供有用的组级别信息"><a href="#–state-提供有用的组级别信息" class="headerlink" title="–state  提供有用的组级别信息"></a>–state  提供有用的组级别信息</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin&#x2F;kafka-consumer-groups.sh --bootstrap-server xxx1:9092,xxx2:9092,xxx3:9092 --describe --group my-consumer-group  --state</span><br></pre></td></tr></table></figure>
-
-<h2 id="–delete-手动删除一个或多个消费者组"><a href="#–delete-手动删除一个或多个消费者组" class="headerlink" title="–delete   手动删除一个或多个消费者组"></a>–delete   手动删除一个或多个消费者组</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin&#x2F;kafka-consumer-groups.sh --bootstrap-server xxx1:9092,xxx2:9092,xxx3:9092  --delete  --group my-consumer-group1  --group my-consumer-group2</span><br></pre></td></tr></table></figure>
-
-<h2 id="–reset-offsets-重置消费者组的offset"><a href="#–reset-offsets-重置消费者组的offset" class="headerlink" title="–reset-offsets  重置消费者组的offset"></a>–reset-offsets  重置消费者组的offset</h2><blockquote>
-<p>如果使用是老的高级消费者并在zookeeper存储消费者组的元数据（即。offsets.storage=zookeeper），则通过–zookeeper，而不是bootstrap-server</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin&#x2F;kafka-consumer-groups.sh --zookeeper localhost:2181 --list</span><br></pre></td></tr></table></figure>
-
-
-<h1 id="kafka-topics-sh"><a href="#kafka-topics-sh" class="headerlink" title="kafka-topics.sh"></a>kafka-topics.sh</h1><p>使用kafka-topics.sh工具 可以执行主题的大部分操作（配置变更部份被移动至kafka-config.sh工具中）</p>
-<h2 id="创建主题"><a href="#创建主题" class="headerlink" title="创建主题"></a>创建主题</h2><p>在集群中创建一个主题需要3个必填参数：主题名字、复制系数、分区数量</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kafka-topics.sh --zookeeper &lt;zookeeper connect&gt; --create --topic &lt;string&gt; --replication-factor &lt;integer&gt; --partitions &lt;integer&gt; --if-not-exists</span><br></pre></td></tr></table></figure>
-
-<h2 id="增加分区"><a href="#增加分区" class="headerlink" title="增加分区"></a>增加分区</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kafka-topics.sh --zookeeper &lt;zookeeper connect&gt; --alter --topic &lt;string&gt; --partitions &lt;integer&gt;</span><br></pre></td></tr></table></figure>
-<h2 id="减少分区数量"><a href="#减少分区数量" class="headerlink" title="减少分区数量"></a>减少分区数量</h2><p>无法减少分区数量。因为如果删除了分区，分区里的数据也会一并被删除。也无法将这些分区的数据分配给其它分区。<br>如果一定要减少分区数量，就只能删除整个主题，然后重新创建。</p>
-<h2 id="删除主题"><a href="#删除主题" class="headerlink" title="删除主题"></a>删除主题</h2><ul>
-<li>broker的delete.topic.enable参数必须被设置成true,否则删除主题的请求会被忽略。</li>
-<li>删除主题会丢失主题里的所有数据，这是一个不可逆的操作。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kafka-topics.sh --zookeeper  &lt;zookeeper connect&gt; --delete --topic &lt;string&gt;</span><br></pre></td></tr></table></figure>
-<h2 id="列出集群里的所有主题"><a href="#列出集群里的所有主题" class="headerlink" title="列出集群里的所有主题"></a>列出集群里的所有主题</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kafka-topics.sh --zookeeper   &lt;zookeeper connect&gt; --list</span><br></pre></td></tr></table></figure>
-<h2 id="列出主题的详细信息"><a href="#列出主题的详细信息" class="headerlink" title="列出主题的详细信息"></a>列出主题的详细信息</h2><p>薪资包含主题分区数量、主题的覆盖配置、以及每个分区的副本清单</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kafka-topics.sh --zookeeper   &lt;zookeeper connect&gt; --describe </span><br><span class="line"># 加上--topic就可以列出指定主题的详细信息</span><br></pre></td></tr></table></figure>
-
-          
+          kafka-consumer-groups.sh查询kafka消息是否被消费要知道某条消息是否被消息,首先得知道是查被哪个消费组在消费; 比如 项目配置的kafka的group.id是 my-consumer-group ;那么我们去看看 这个消费者组的消费情况
+1bin&#x2F;kafka-co
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/11/17/Kafka%E5%B8%B8%E7%94%A8%E6%A0%A1%E6%9C%AC/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1814,20 +1441,26 @@ dtype: float64</code></pre><p>实际开发中，我们一般通过读取Excel创
       
         
           
-            <h1 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h1><p>通过脚本简化人机交互过程，比如登录远程服务器。</p>
-<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p>使用expect + 其内部命令 spawn 可以实现类似的自动化需求。</p>
-<ul>
-<li>安装expect</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo dnf install expect</span><br></pre></td></tr></table></figure>
+          需求通过脚本简化人机交互过程，比如登录远程服务器。
+解决方案使用expect + 其内部命令 spawn 可以实现类似的自动化需求。
 
-<ul>
-<li>案例1</li>
-</ul>
-<p>登录到远程服务器，并暂时获取root权限（sudo su）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#!&#x2F;usr&#x2F;bin&#x2F;expect</span><br><span class="line">set timeout 30</span><br><span class="line">spawn ssh ubuntu@192.168.1.131</span><br><span class="line">expect &quot;*password:&quot;</span><br><span class="line">send &quot;123456\r&quot;</span><br><span class="line">expect &quot;$*&quot;</span><br><span class="line">send &quot;sudo su\r&quot;</span><br><span class="line">expect &quot;*password*&quot;</span><br><span class="line">send &quot;123456\r&quot;</span><br><span class="line">expect &quot;*#&quot;</span><br><span class="line">interact</span><br></pre></td></tr></table></figure>
+安装expect
 
-          
+1sudo dnf install expect
+
+
+案例1
+
+登录到远程服务器，并暂时获取root权限（sudo su）
+1234567891
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/10/31/Linux%20expect%20spawn%E7%94%A8%E6%B3%95/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1988,11 +1621,17 @@ dtype: float64</code></pre><p>实际开发中，我们一般通过读取Excel创
       
         
           
-            <h1 id="OpenSSH"><a href="#OpenSSH" class="headerlink" title="OpenSSH"></a>OpenSSH</h1><p>OpenSSH是SSH(Secure SHell)协议的免费开源实现。SSH协议族可以用来进行远程控制。</p>
-<p>OpenSSH服务默认端口是22，默认配置路径是/etc/ssh/sshd_config</p>
-<h1 id="安装OpenSSH"><a href="#安装OpenSSH" class="headerlink" title="安装OpenSSH"></a>安装OpenSSH</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo dnf install ssh</span><br><span class="line">或</span><br><span class="line">apt-get install ssh</span><br></pre></td></tr></table></figure>
-
-          
+          OpenSSHOpenSSH是SSH(Secure SHell)协议的免费开源实现。SSH协议族可以用来进行远程控制。
+OpenSSH服务默认端口是22，默认配置路径是/etc/ssh/sshd_config
+安装OpenSSH123sudo dnf install ssh或apt-get inst
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/08/31/Linux%E5%BC%80%E5%90%AFssh%E7%AB%AF%E5%8F%A3%E6%9C%8D%E5%8A%A1%EF%BC%8822%EF%BC%89/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2153,8 +1792,15 @@ dtype: float64</code></pre><p>实际开发中，我们一般通过读取Excel创
       
         
           
-            
           
+          
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/08/21/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2315,40 +1961,17 @@ dtype: float64</code></pre><p>实际开发中，我们一般通过读取Excel创
       
         
           
-            <p>最近在线上碰到了一个诡异的问题，线上有个业务模块突然查询不出数据。问题反馈的时候是上午，前一天晚上进行了上线操作，基本可以判断跟上线有关系。</p>
-<h1 id="问题定位"><a href="#问题定位" class="headerlink" title="问题定位"></a>问题定位</h1><p>先看日志，没有任何报错，接口都能正常返回。并且此处没有降级机制，arthas跟踪到数据库查询确实没有返回。</p>
-<p>拿到具体的生产查询sql，直接在生产数据库查询，没有结果。但是同样的sql放到beta可以查询出结果。</p>
-<p>这里基本可以定位到是sql查询的问题了。</p>
-<p>先分析了下sql，简单的单表查询，where里有四个查询条件，其中一个字段引起了注意，如下：</p>
-<p>select * from table_staff where companyId = ‘demo-companyId’ and isDelete = ‘0’;</p>
-<p>isDelte在业务中是一个boolean类型，对应数据库中用的是位数据类型：bit(1)，首先尝试将查询条件isDelete=’0’改为isDelete=0或者isDelete=false，<br>可以在生产数据库查出结果。</p>
-<p>进一步比对生产和beta环境该表的DDL，发现isDelete字段的数据类型是一致的，但是生产比beta数据库多了一个索引 idx_companId_isDelete(companyId和isDelete的一个联合索引，而且不是唯一索引)，<br>基本确认索引问题导致。</p>
-<p>此时运维确认这个索引是前天晚上上线，为了提高跑批效率手动在生产加上去的，删掉idx_companId_isDelete索引后问题解决。</p>
-<h1 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h1><p>首先肯定是走了索引，导致数据查询不出来</p>
-<p>数据库中isDelete数据类型是bit(1),查询该类型的知识点：</p>
-<blockquote>
-<p>MySQL有少数几种存储类型使用紧凑的位存储数据。所有这些位类型，不管底层存储格式和处理方式如何，从技术上来说都是字符串类型。<br>MySQL把bit类型当作字符串类型，而不是数字类型。当检索BIT(1)的值时，结果是一个包含二进制0或者1值的字符串，而不是ASCII码的“0”或者“1”。<br>–《高性能MySQL》 P123 4.1.5-位数据类型</p>
-</blockquote>
-<p>MySQL把bit类型当作字符串类型，所以上例中当我们加了一个字符串索引，并且查询条件也使用的字符串查询时（isDelete=’0’），命中索引。而当我们把引号去掉或者使用false时（isDelete=0或isDelete=false）索引失效，进行了全表扫描。</p>
-<p>问题在于，正常字符串索引即便是查询中使用了数字，也无非就是索引失效走全表扫描，不会查不出数据，这里明显是bit(1)数据类型的问题。</p>
-<h1 id="场景还原"><a href="#场景还原" class="headerlink" title="场景还原"></a>场景还原</h1><p>在uat库加了跟生产同样的索引，还原了数据查询不出来的场景。</p>
-<p>Explain 看了下命中索引是的执行计划，Extra中看到这样的描述</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Impossible WHERE noticed after reading const tables</span><br></pre></td></tr></table></figure>
-
-<p>走了常量表，查询mysql Manual，发现了对这段描述的解释：</p>
-<p>![Mysql-extra-impossible](<a href="http://blog-pic-1254088127.picsh.myqcloud.com/mysql-impossible-const.png）" target="_blank" rel="noopener">http://blog-pic-1254088127.picsh.myqcloud.com/mysql-impossible-const.png）</a></p>
-<p>但是，上例中的查询并不符合这段解释中的要求</p>
-<p>![Mysql索引常量](<a href="http://blog-pic-1254088127.picsh.myqcloud.com/mysql-index-const.png）" target="_blank" rel="noopener">http://blog-pic-1254088127.picsh.myqcloud.com/mysql-index-const.png）</a></p>
-<h1 id="实践和结论"><a href="#实践和结论" class="headerlink" title="实践和结论"></a>实践和结论</h1><p>MySQL官方文档及其它资料中找不到合理的解释，这里给个实践结论。</p>
-<p>对bit类型的字段的查询：</p>
-<ul>
-<li>不使用索引<br>查询bit的参数值是无论是数值还是字符，mysql都会进行类型转化,将字符转换为数值，并比较数值对应的ascii码</li>
-<li>使用索引<br>检索BIT(1)列的值, 索引存的结果是一个字符串且内容是二进制位0或1, 而不是ASCII值”0″或”1″. 这就导致了为什么我们使用ASCII值”0”没有查询出结果。</li>
-</ul>
-<p>简言之：bit类型索引里存的是二进制类型的值（位类型bit），我们查询参数给的是ASCII码值</p>
-<p>结论：<br>1、定义为text和image和bit数据类型的列不应该增加索引<br>2、加完索引一定要explain看一下<br>3、使用unsigned tinyint代替bit(1) 来表示是否<br>   @Column(columnDefinition= “TINYINT”,length = 1)    暂未验证</p>
-
-          
+          最近在线上碰到了一个诡异的问题，线上有个业务模块突然查询不出数据。问题反馈的时候是上午，前一天晚上进行了上线操作，基本可以判断跟上线有关系。
+问题定位先看日志，没有任何报错，接口都能正常返回。并且此处没有降级机制，arthas跟踪到数据库查询确实没有返回。
+拿到具体的生产查询sql，直接在生产数据库
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/06/07/Mysql%EF%BC%8814%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2434,7 +2057,7 @@ dtype: float64</code></pre><p>实际开发中，我们一般通过读取Excel创
             
               <div class="site-state-item site-state-posts">
               
-                <a href="/archives">
+                <a href="/archives/%20%7C%7C%20history">
               
                   <span class="site-state-item-count">132</span>
                   <span class="site-state-item-name">日志</span>

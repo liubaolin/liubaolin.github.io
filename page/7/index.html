@@ -183,9 +183,9 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
+          <a href="/%20" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
             首页
           </a>
@@ -193,9 +193,9 @@
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/tags" rel="section">
+          <a href="/tags/%20" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
             
             标签
           </a>
@@ -203,9 +203,9 @@
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/categories" rel="section">
+          <a href="/categories/%20" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-list"></i> <br />
             
             分类
           </a>
@@ -213,9 +213,9 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/archives" rel="section">
+          <a href="/archives/%20" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-history"></i> <br />
             
             归档
           </a>
@@ -402,37 +402,16 @@
       
         
           
-            <h1 id="事务的启动时机。"><a href="#事务的启动时机。" class="headerlink" title="事务的启动时机。"></a>事务的启动时机。</h1><p>begin/start transaction 命令并不是一个事务的起点，在执行到它们之后的第一个操作 InnoDB 表的语句，事务才真正启动。如果你想要马上启动一个事务，可以使用 start transaction with consistent snapshot 这个命令。</p>
-<p>第一种启动方式，一致性视图是在第执行第一个快照读语句时创建的；<br>第二种启动方式，一致性视图是在执行 start transaction with consistent snapshot 时创建的。</p>
-<h1 id="在-MySQL-里，有两个“视图”的概念"><a href="#在-MySQL-里，有两个“视图”的概念" class="headerlink" title="在 MySQL 里，有两个“视图”的概念"></a>在 MySQL 里，有两个“视图”的概念</h1><p>一个是 view。它是一个用查询语句定义的虚拟表，在调用的时候执行查询语句并生成结果。创建视图的语法是 create view … ，而它的查询方法与表一样。</p>
-<p>另一个是 InnoDB 在实现 MVCC 时用到的一致性读视图，即 consistent read view，用于支持 RC（Read Committed，读提交）和 RR（Repeatable Read，可重复读）隔离级别的实现。</p>
-<h1 id="“快照”在-MVCC-里是怎么工作的？"><a href="#“快照”在-MVCC-里是怎么工作的？" class="headerlink" title="“快照”在 MVCC 里是怎么工作的？"></a>“快照”在 MVCC 里是怎么工作的？</h1><p>在可重复读隔离级别下，事务在启动的时候就“拍了个快照”。注意，这个快照是基于整库的。</p>
-<p>InnoDB 里面每个事务有一个唯一的事务 ID，叫作 transaction id。它是在事务开始的时候向 InnoDB 的事务系统申请的，是按申请顺序严格递增的。</p>
-<p>而每行数据也都是有多个版本的。每次事务更新数据的时候，都会生成一个新的数据版本，并且把 transaction id 赋值给这个数据版本的事务 ID，记为 row trx_id。同时，旧的数据版本要保留，并且在新的数据版本中，能够有信息可以直接拿到它。</p>
-<p>也就是说，数据表中的一行记录，其实可能有多个版本 (row)，每个版本有自己的 row trx_id。</p>
-<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/mysql%E6%95%B0%E6%8D%AEMVVC.jpg" alt="Mysql数据MVVC"></p>
-<p>中的三个虚线箭头，就是 undo log；而 V1、V2、V3 并不是物理上真实存在的，而是每次需要的时候根据当前版本和 undo log 计算出来的。比如，需要 V2 的时候，就是通过 V4 依次执行 U3、U2 算出来。</p>
-<p>可重复读的定义：一个事务启动的时候，能够看到所有已经提交的事务结果。但是之后，这个事务执行期间，其他事务的更新对它不可见。</p>
-<p>因此，一个事务只需要在启动的时候声明说，“以我启动的时刻为准，如果一个数据版本是在我启动之前生成的，就认；如果是我启动以后才生成的，我就不认，我必须要找到它的上一个版本”。</p>
-<p>一个数据版本，对于一个事务视图来说，除了自己的更新总是可见以外，有三种情况：</p>
-<ol>
-<li>版本未提交，不可见；</li>
-<li>版本已提交，但是是在视图创建后提交的，不可见；</li>
-<li>版本已提交，而且是在视图创建前提交的，可见。</li>
-</ol>
-<p>更新数据都是先读后写的，而这个读，只能读当前的值，称为“当前读”（current read）。</p>
-<p>这里我们提到了一个概念，叫作当前读。其实，除了 update 语句外，select 语句如果加锁，也是当前读。</p>
-<h1 id="事务的可重复读的能力是怎么实现的？"><a href="#事务的可重复读的能力是怎么实现的？" class="headerlink" title="事务的可重复读的能力是怎么实现的？"></a>事务的可重复读的能力是怎么实现的？</h1><p>可重复读的核心就是一致性读（consistent read）；而事务更新数据的时候，只能用当前读。如果当前的记录的行锁被其他事务占用的话，就需要进入锁等待。</p>
-<h1 id="读提交的逻辑和可重复读的区别"><a href="#读提交的逻辑和可重复读的区别" class="headerlink" title="读提交的逻辑和可重复读的区别"></a>读提交的逻辑和可重复读的区别</h1><p>在可重复读隔离级别下，只需要在事务开始的时候创建一致性视图，之后事务里的其他查询都共用这个一致性视图；</p>
-<p>在读提交隔离级别下，每一个语句执行前都会重新算出一个新的视图。</p>
-<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>InnoDB 的行数据有多个版本，每个数据版本有自己的 row trx_id，每个事务或者语句有自己的一致性视图。普通查询语句是一致性读，一致性读会根据 row trx_id 和一致性视图确定数据版本的可见性。</p>
-<ul>
-<li>对于可重复读，查询只承认在事务启动前就已经提交完成的数据；</li>
-<li>对于读提交，查询只承认在语句启动前就已经提交完成的数据；</li>
-<li>而当前读，总是读取已经提交完成的最新版本。</li>
-</ul>
-
-          
+          事务的启动时机。begin/start transaction 命令并不是一个事务的起点，在执行到它们之后的第一个操作 InnoDB 表的语句，事务才真正启动。如果你想要马上启动一个事务，可以使用 start transaction with consistent snapshot 这个命令。
+第一
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/06/05/Mysql%EF%BC%8812%EF%BC%89-Mysql%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -593,114 +572,22 @@
       
         
           
-            <p>概要：</p>
-<ul>
-<li>自定义登录页面</li>
-<li>自定义登录成功处理</li>
-<li>自定义登录失败处理</li>
-</ul>
-<p>上一篇我们讲了自定义登录页面，本篇我们来看一下自定义登录成功和失败的处理。</p>
-<h2 id="自定义登录成功处理"><a href="#自定义登录成功处理" class="headerlink" title="自定义登录成功处理"></a>自定义登录成功处理</h2><p>默认情况下Spring Security登录成功后会跳到之前引发登录的请求。但是目前前端很多情况下是SPA模式的，登录本身可能不是一个表单提交的同步方式，而是一个ajax请求，我们希望返回的是json格式的登录用户信息而不是跳转。</p>
-<p>那么我们就需要自定义成功处理逻辑，在Spring security中我们只需要实现AuthenticationSuccessHandler接口就可以了。该接口只有一个方法：</p>
-<pre><code>onAuthenticationSuccess(HttpServletRequest request,
-                        HttpServletResponse response,
-                        Authentication authentication)</code></pre><p>其中参数Authentication也是Spring security的一个核心接口，用来封装我们的认证信息，包括发起的认证请求里的一些信息，比如请求ip、session以及认证通过后认证通过后userDetail中的用户信息也是包装在Authentication中的。</p>
-<pre><code>@Component(&quot;evolutionaryAuthenticationHandler&quot;)
-public class EvolutionaryAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+          概要：
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+自定义登录页面
+自定义登录成功处理
+自定义登录失败处理
 
-    /**
-     * spring MVC 启动的时候会为我们注册一个objectMapper
-     */
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private SecurityProperties securityProperties;
-
-    /**
-     * 登录成功会调用该方法
-     * @param request
-     * @param response
-     * @param authentication
-     * @throws IOException
-     * @throws ServletException
-     */
-    @Override
-    public void onAuthenticationSuccess(HttpServletRequest request,
-                                        HttpServletResponse response,
-                                        Authentication authentication) throws IOException, ServletException {
-        logger.info(&quot;登录成功！&quot;);
-        if (LoginInType.JSON.equals(securityProperties.getBrower().getLoginInType())) {
-            response.setContentType(&quot;application/json;charset=UTF-8&quot;);
-            response.getWriter().write(objectMapper.writeValueAsString(authentication));
-        }else{
-            super.onAuthenticationSuccess(request, response, authentication);
-        }
-
-    }
-}</code></pre><p>然后我们需要配置一下，登录成功的处理方式。</p>
-<pre><code>@Configuration
-public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
-
-    @Autowired
-    private SecurityProperties securityProperties;
-
-    @Autowired
-    private EvolutionaryAuthenticationSuccessHandler evolutionaryAuthenticationHandler;
-
-    @Autowired
-    private EvolutionaryAuthenticationFailureHandler evolutionaryAuthenticationFailureHandler;
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.formLogin()  //表单登录
-                .loginPage(&quot;/authentication/require&quot;) //如果需要身份认证则跳转到这里
-                .loginProcessingUrl(&quot;/authentication/form&quot;)
-                .successHandler(evolutionaryAuthenticationHandler)
-                .failureHandler(evolutionaryAuthenticationFailureHandler)
-                .and()
-                .authorizeRequests()
-                .antMatchers(&quot;/authentication/require&quot;, securityProperties.getBrower().getLoginPage())
-                .permitAll()
-                .anyRequest()
-                .authenticated()
-                .and().csrf().disable();
-
-    }
-}</code></pre><h2 id="自定义登录失败处理"><a href="#自定义登录失败处理" class="headerlink" title="自定义登录失败处理"></a>自定义登录失败处理</h2><p>登录失败后的处理逻辑是一样的，实现AuthenticationFailureHandler接口进行相应的处理。</p>
-<pre><code>@Component
-public class EvolutionaryAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
-
-    private Logger logger = LoggerFactory.getLogger(getClass());
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private SecurityProperties securityProperties;
-
-    @Override
-    public void onAuthenticationFailure(HttpServletRequest request,
-                                        HttpServletResponse response,
-                                        AuthenticationException exception) throws IOException, ServletException {
-        logger.info(&quot;登录失败！&quot;);
-        if (LoginInType.JSON.equals(securityProperties.getBrower().getLoginInType())) {
-            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setContentType(&quot;application/json;charset=UTF-8&quot;);
-            response.getWriter().write(objectMapper.writeValueAsString(exception));
-        } else {
-            super.onAuthenticationFailure(request, response, exception);
-        }
-
-    }
-}</code></pre>
-          
+上一篇我们讲了自定义登录页面，本篇我们来看一下自定义登录成功和失败的处理。
+自定义登录成功处理默认情况下Spring Security登录成功后会跳到之前引发登录的请求。但是目前前端很多情况下是SPA模式的，登录本身可能不是一个表单
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/06/04/Spring%20Security%EF%BC%884%EF%BC%89%EF%BC%8D%E4%B8%AA%E6%80%A7%E5%8C%96%E7%94%A8%E6%88%B7%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%EF%BC%88%E4%BA%8C%EF%BC%89/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -861,34 +748,19 @@ public class EvolutionaryAuthenticationFailureHandler extends SimpleUrlAuthentic
       
         
           
-            <ol>
-<li>当备库用–single-transaciton做逻辑备份的时候,如果主库的binlog传来一个DDL语句会怎样？</li>
-</ol>
-<p>备份操作是一个过程，DDL从主库传过来时，备份过程可能处于不同的阶段，所以DDL对备份的影响也不同。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Q1:SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;</span><br><span class="line">Q2:START TRANSACTION  WITH CONSISTENT SNAPSHOT；</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br><span class="line">Q3:SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 1 *&#x2F;</span><br><span class="line">Q4:show create table &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 2 *&#x2F;</span><br><span class="line">Q5:SELECT * FROM &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 3 *&#x2F;</span><br><span class="line">Q6:ROLLBACK TO SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 4 *&#x2F;</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br></pre></td></tr></table></figure>
-<p>在备份开始的时候，为了确保 RR（可重复读）隔离级别，再设置一次 RR 隔离级别 (Q1);</p>
-<p>启动事务，这里用 WITH CONSISTENT SNAPSHOT 确保这个语句执行完就可以得到一个一致性视图（Q2)；</p>
-<p>设置一个保存点，这个很重要（Q3）；</p>
-<p>show create 是为了拿到表结构 (Q4)，然后正式导数据 （Q5），回滚到 SAVEPOINT sp，在这里的作用是释放 t1 的 MDL 锁 （Q6）。当然这部分属于“超纲”，上文正文里面都没提到。</p>
-<p>答案如下：</p>
-<ul>
-<li><p>如果在 Q4 语句执行之前到达，现象：没有影响，备份拿到的是 DDL 后的表结构。</p>
-</li>
-<li><p>如果在“时刻 2”到达，则表结构被改过，Q5 执行的时候，报 Table definition has changed, please retry transaction，现象：mysqldump 终止；</p>
-</li>
-<li><p>如果在“时刻 2”和“时刻 3”之间到达，mysqldump 占着 t1 的 MDL 读锁，binlog 被阻塞，现象：主从延迟，直到 Q6 执行完成。</p>
-</li>
-<li><p>从“时刻 4”开始，mysqldump 释放了 MDL 读锁，现象：没有影响，备份拿到的是 DDL 前的表结构。</p>
-</li>
-</ul>
-<p>总结就是在拿到表结构之前到达，没影响；在拿到表结构之后，备份数据之前到，会报错；在备份后到达，主从延迟</p>
-<ol start="2">
-<li>Mysql选错索引的一个案例分析<br>//todo 待分析</li>
-</ol>
-<p>在生产上遇见了一个非常经典的Mysql选错索引的问题，简述如下：有一张日志表，id是自增主键，假设还有一个字段是code，code字段也有索引；</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE IF NOT EXISTS &#96;log_test&#96;(</span><br><span class="line">  &#96;id&#96; INT  AUTO_INCREMENT,</span><br><span class="line">  &#96;key&#96; VARCHAR(100) NOT NULL,</span><br><span class="line">  PRIMARY KEY (&#96;id&#96;),</span><br><span class="line">  index idx_key(&#96;key&#96;)</span><br><span class="line">)ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_unicode_ci;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">delimiter ;;</span><br><span class="line">create procedure idata()</span><br><span class="line">begin</span><br><span class="line">  declare i int;</span><br><span class="line">  set i&#x3D;1;</span><br><span class="line">  while(i&lt;&#x3D;100000)do</span><br><span class="line">    insert into log_test values(i, i);</span><br><span class="line">    set i&#x3D;i+1;</span><br><span class="line">  end while;</span><br><span class="line">end;;</span><br><span class="line">delimiter ;</span><br><span class="line">call idata();</span><br></pre></td></tr></table></figure>
-
           
+当备库用–single-transaciton做逻辑备份的时候,如果主库的binlog传来一个DDL语句会怎样？
+
+备份操作是一个过程，DDL从主库传过来时，备份过程可能处于不同的阶段，所以DDL对备份的影响也不同。
+123456789101112Q1:SET SESSION TRANSACTIO
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1049,160 +921,26 @@ public class EvolutionaryAuthenticationFailureHandler extends SimpleUrlAuthentic
       
         
           
-            <p>概要：</p>
-<ul>
-<li>自定义登录页面</li>
-<li>登录成功处理</li>
-<li>登录失败处理</li>
-</ul>
-<h2 id="自定义登录页面"><a href="#自定义登录页面" class="headerlink" title="自定义登录页面"></a>自定义登录页面</h2><pre><code>@Configuration
+          概要：
+
+自定义登录页面
+登录成功处理
+登录失败处理
+
+自定义登录页面@Configuration
 public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        //        http.httpBasic();  http Basic的认证方式
-        http.formLogin()  //表单登录
-                .loginPage(&quot;/evolutionary-loginIn.html&quot;) //指定登录页面所在的url
-                .loginProcessingUrl(&quot;/authentication/form&quot;) //登录请求的url
-                .and()
-                .authorizeRequests()
-                .antMatchers(&quot;/evolutionary-loginIn.html&quot;, securityProperties.getBrower().getLoginPage())
-                .permitAll()
-                .anyRequest()
-                .authenticated()
-                .and().csrf().disable();
-
-    }
-}</code></pre><p>evolutionary-loginIn.html页面：</p>
-<pre><code>&lt;!DOCTYPE html&gt;
-&lt;html lang=&quot;en&quot;&gt;
-&lt;head&gt;
-    &lt;meta charset=&quot;UTF-8&quot;&gt;
-    &lt;title&gt;登录&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-&lt;h2&gt;标准登录页面&lt;/h2&gt;
-&lt;h3&gt;表单登录&lt;/h3&gt;
-&lt;form action=&quot;/authentication/form&quot; method=&quot;post&quot;&gt;
-    &lt;table&gt;
-        &lt;tr&gt;
-            &lt;td&gt;用户名：&lt;/td&gt;
-            &lt;td&gt;&lt;input type=&quot;text&quot; name=&quot;username&quot;/&gt;&lt;/td&gt;
-        &lt;/tr&gt;
-        &lt;tr&gt;
-            &lt;td&gt;密码：&lt;/td&gt;
-            &lt;td&gt;&lt;input type=&quot;password&quot; name=&quot;password&quot;&gt;&lt;/td&gt;
-        &lt;/tr&gt;
-        &lt;tr&gt;
-            &lt;td colspan=&quot;2&quot;&gt;
-                &lt;button type=&quot;submit&quot;&gt;登录&lt;/button&gt;
-            &lt;/td&gt;
-        &lt;/tr&gt;
-    &lt;/table&gt;
-&lt;/form&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre><h3 id="优化处理"><a href="#优化处理" class="headerlink" title="优化处理"></a>优化处理</h3><ul>
-<li><p>目前我们的请求如果没有权限会直接跳转登录页面，但是我们希望如果是restFul请求返回的是json数据，如果是html结尾的请求可以跳转到登录页。</p>
-</li>
-<li><p>让开发者自定义用户登录页面，如果没有找到用户自定义的页面再用我们提供的登录页面。</p>
-</li>
-</ul>
-<p><img src="http://ogiythg18.bkt.clouddn.com/%E5%A4%84%E7%90%86%E4%B8%8D%E5%90%8C%E7%B1%BB%E5%9E%8B%E7%9A%84%E8%AF%B7%E6%B1%82.jpg" alt="image"></p>
-<p>之前当需要认证时，Spring Security会根据我们的配置跳转到登录页面：</p>
-<pre><code>http.formLogin()
-    .loginPage(&quot;/evolutionary-loginIn.html&quot;)//跳转到登录页面</code></pre><p>现在我们要自定义一个Controller，并修改配置当需要认证的时候跳转到该Controller上。</p>
-<p>修改配置：</p>
-<pre><code>@Override
-protected void configure(HttpSecurity http) throws Exception {
-    http.formLogin()  //表单登录
-            //.loginPage(&quot;/evolutionary-loginIn.html&quot;)
-            .loginPage(&quot;/authentication/require&quot;) //如果需要身份认证则跳转到这里
-            .and()
-            .authorizeRequests()
-            .antMatchers(&quot;/authentication/require&quot;,securityProperties.getBrower().getLoginPage())//不校验我们配置的登录页面
-            .permitAll()
-            .anyRequest()
-            .authenticated()
-            .and().csrf().disable();
-
-}</code></pre><p>提供自定义Controller：</p>
-<pre><code>@RestController
-public class BrowerSecurityController {
-
-    private Logger logger = LoggerFactory.getLogger(getClass());
-
-    private RequestCache requestCache = new HttpSessionRequestCache();
-
-    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
-
-    @Autowired
-    private SecurityProperties securityProperties;
-
-    @RequestMapping(&quot;/authentication/require&quot;)
-    @ResponseStatus(code = HttpStatus.UNAUTHORIZED)
-    public SimpleResult requireAuthentication(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        SavedRequest savedRequest = requestCache.getRequest(request, response);
-        if (savedRequest != null) {
-            String targetUrl =  savedRequest.getRedirectUrl();
-            logger.info(&quot;引发跳转的请求是：&quot; + targetUrl);
-            if (StringUtils.endsWithIgnoreCase(targetUrl, &quot;.html&quot;)) {
-                redirectStrategy.sendRedirect(request, response, securityProperties.getBrower().getLoginPage());
-            }
-        }
-        return new SimpleResult(&quot;访问的服务需要登录页面，请引导用户到登录页&quot;);
-    }
-
-}</code></pre><p>做完上面的操作，我们就可以针对不同的请求类型作出不同的响应了。你可能注意了，上面我们用了securityProperties.getBrower().getLoginPage()。这就是我们为方便配置不同的登录页面提供的配置类。</p>
-<pre><code>@Configuration
-@EnableConfigurationProperties(SecurityProperties.class)
-public class SecurityCoreConfig {
-
-
-}
-
-@ConfigurationProperties(prefix = &quot;evolutionary.security&quot;)
-public class SecurityProperties {
-
-    private BrowerProperties brower = new BrowerProperties();
-
-    public BrowerProperties getBrower() {
-        return brower;
-    }
-
-    public void setBrower(BrowerProperties brower) {
-        this.brower = brower;
-    }
-}
-
-
-public class BrowerProperties {
-
-    private String loginPage = &quot;/evolutionary-loginIn.html&quot;;//默认跳转
-
-    private LoginInType loginInType = LoginInType.JSON;
-
-    public String getLoginPage() {
-        return loginPage;
-    }
-
-    public void setLoginPage(String loginPage) {
-        this.loginPage = loginPage;
-    }
-
-    public LoginInType getLoginInType() {
-        return loginInType;
-    }
-
-    public void setLoginInType(LoginInType loginInType) {
-        this.loginInType = loginInType;
-    }
-}
-
-
-evolutionary.security.brower.loginPage = /demo-signIn.html
-evolutionary.security.brower.loginInType=REDIRECT</code></pre>
-          
+    protec
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/06/03/Spring%20Security%EF%BC%883%EF%BC%89%EF%BC%8D%E4%B8%AA%E6%80%A7%E5%8C%96%E7%94%A8%E6%88%B7%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%EF%BC%88%E4%B8%80%EF%BC%89/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1363,110 +1101,19 @@ evolutionary.security.brower.loginInType=REDIRECT</code></pre>
       
         
           
-            <p>在上一篇基本原理中，我们引入了Spring security依赖包，并定义了认证方式为表单认证。但是认证的用户名和密码都用的是默认的，本文我们将继续讲用户自定义认证逻辑，主要包括下面几点：</p>
-<ul>
-<li>处理用户信息获取逻辑（比如从数据库读取用户信息）</li>
-<li>处理用户校验逻辑（获取用户信息后如何验证）</li>
-<li>处理密码加解密</li>
-</ul>
-<h2 id="处理用户信息获取逻辑"><a href="#处理用户信息获取逻辑" class="headerlink" title="处理用户信息获取逻辑"></a>处理用户信息获取逻辑</h2><p>UserDetailsService就是用来处理用户信息获取逻辑的接口，我们通过实现该接口在loadUserByUsername方法的实现中获取用户信息，并将其传递给Spring Security。如下我们假设密码“123456”就是我们从数据库获取到的信息。</p>
-<pre><code>@Component
-public class MyUserDetailService implements UserDetailsService {
+          在上一篇基本原理中，我们引入了Spring security依赖包，并定义了认证方式为表单认证。但是认证的用户名和密码都用的是默认的，本文我们将继续讲用户自定义认证逻辑，主要包括下面几点：
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        logger.info(&quot;登录用户名：&quot; + username);
-
-        return new User(username, &quot;123456&quot;, AuthorityUtils.commaSeparatedStringToAuthorityList(&quot;admin&quot;));
-
-    }
-}</code></pre><p>现在就可以用任意用户名和密码：“123456”登录系统了。</p>
-<h2 id="处理用户校验逻辑"><a href="#处理用户校验逻辑" class="headerlink" title="处理用户校验逻辑"></a>处理用户校验逻辑</h2><p>获取到用户信息后，就需要进行信息校验，用户校验逻辑的处理可大致分为两部分，一部分是密码是否匹配，另一部分就是其它信息的校验。从Spring Security的校验返回结果UserDetail中我们可以看到都有哪些信息是可以校验的。</p>
-<pre><code>public interface UserDetails extends Serializable {
-
-
-    Collection&lt;? extends GrantedAuthority&gt; getAuthorities();
-
-    String getPassword();
-
-    String getUsername();
-
-    boolean isAccountNonExpired();
-
-    boolean isAccountNonLocked();
-
-    boolean isCredentialsNonExpired();
-
-    boolean isEnabled();
-}</code></pre><p>UserDetail是Spring提供的用户信息的接口，我们可以自定义用户类并实现该接口，或者使用Spring Security提供的User类（已经实现了UserDetail接口）。</p>
-<p>可以看到该接口需要提供权限、用户名、密码、帐号是否过期、帐号是否被锁定、密码是否过期、帐号是否被删除。这些信息都需要我们根据业务逻辑自己提供，并通过标准的接口UserDetail提供给Spring Security就可以了。</p>
-<pre><code>@Component
-public class MyUserDetailService implements UserDetailsService {
-
-    private Logger logger = LoggerFactory.getLogger(getClass());
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        logger.info(&quot;登录用户名：&quot; + username);
-        String password = &quot;123456&quot;
-        logger.info(&quot;数据库密码是:&quot; + password);
-        return new User(username,
-                password ,
-                true,
-                true,
-                true,
-                true,
-                AuthorityUtils.commaSeparatedStringToAuthorityList(&quot;admi)
-        );
-    }
-}</code></pre><h2 id="处理密码加解密"><a href="#处理密码加解密" class="headerlink" title="处理密码加解密"></a>处理密码加解密</h2><p>通常我们的密码是不会以明文的方式存到数据库里的，Spring Security提供了org.springframework.security.crypto.password.PasswordEncoder接口来处理密码的加密和匹配操作。</p>
-<pre><code>public interface PasswordEncoder {
-    //加密
-    String encode(CharSequence rawPassword);
-    //匹配
-    boolean matches(CharSequence rawPassword, String encodedPassword);
-}</code></pre><p>我们可以自己实现passwordEncoder来提供我们自己的加解密算法。这里我们配置一个Spring Security提供的passwordEncoder实现类。</p>
-<pre><code>@Configuration
-public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-
-}</code></pre><p>配置了passwordEncoder后我们再登录spring Securiyt就会加密我们的登录密码跟（从数据库）获取到的密码进行校验。</p>
-<pre><code>@Component
-public class MyUserDetailService implements UserDetailsService {
-
-    private Logger logger = LoggerFactory.getLogger(getClass());
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        logger.info(&quot;登录用户名：&quot; + username);
-        //这里模拟数据库读出来的密码
-        String password = passwordEncoder.encode(&quot;123456&quot;);
-        logger.info(&quot;数据库密码是:&quot; + password);
-        return new User(username,
-                password ,
-                true,
-                true,
-                true,
-                true,
-                AuthorityUtils.commaSeparatedStringToAuthorityList(&quot;admin&quot;)
-        );
-    }
-}</code></pre><p>值得注意的一点是通过passwordEncoder加密生成的密码每次都是不一样的，因为在生成的时候它会随机生成盐并混到要加密的串里去。</p>
-
-          
+处理用户信息获取逻辑（比如从数据库读取用户信息）
+处理用户校验逻辑（获取用户信息后如何验证）
+处理密码加解密
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/06/02/Spring%20Security%EF%BC%882%EF%BC%89%EF%BC%8D%E8%87%AA%E5%AE%9A%E4%B9%89%E7%94%A8%E6%88%B7%E8%AE%A4%E8%AF%81%E9%80%BB%E8%BE%91/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1627,44 +1274,18 @@ public class MyUserDetailService implements UserDetailsService {
       
         
           
-            <h2 id="快速入门"><a href="#快速入门" class="headerlink" title="快速入门"></a>快速入门</h2><p>引入Spring-security包</p>
-<pre><code>&lt;dependency&gt;
+          快速入门引入Spring-security包
+&lt;dependency&gt;
     &lt;groupId&gt;top.evolutionary.security&lt;/groupId&gt;
-    &lt;artifactId&gt;evolutionary-security-core&lt;/artifactId&gt;
-    &lt;version&gt;${evolutionary.security.version}&lt;/version&gt;
-&lt;/dependency&gt;</code></pre><p>在Spring-boot中如果classPath下有spring security的jar包，那么Spring boot 会自动的做一些默认的配置，默认是开启的，我们可以修改配置文件来关掉。</p>
-<pre><code>#security.basic.enabled=false</code></pre><p>引入Spring security包后，如果我们什么也不做，这时通过浏览器访问服务时，会弹出http Basic的认证框让我们进行身份验证。用户名是默认的”user”,密码会在Spring boot服务启动的时候在控制台打印出来”Using default security password:…..“。所以当我们什么也不做的时候Spring security会把所有的后台服务都保护起来。</p>
-<h3 id="覆盖Spring-security默认认证方式"><a href="#覆盖Spring-security默认认证方式" class="headerlink" title="覆盖Spring security默认认证方式"></a>覆盖Spring security默认认证方式</h3><pre><code>/**
- * @author richey
- */
-
-@Configuration
-public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
-
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-
-        //http.httpBasic();  http Basic的认证方式
-        //使用表单认证，所有请求都需要身份认证后才能访问
-        http.formLogin()
-                .and()
-                .authorizeRequests()
-                .anyRequest()
-                .authenticated();
-
-    }
-}</code></pre><h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><p><img src="http://ogiythg18.bkt.clouddn.com/Spring%20Security%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86.png" alt="image"></p>
-<ul>
-<li>Spring security最核心的就是过滤器链，其实就是一组过滤器，所有服务的请求都会经过这些过滤器，同样返回也会从这些过滤器中过。Spring security提供的所有的功能都是建立在过滤器链上的。</li>
-<li>Spring boot会在服务启动的时候把这些过滤器都配置进去。</li>
-<li>最核心的是用来认证用户身份的那些过滤器（图中绿色块表示），每个过滤器负责处理一种认证方式。这些过滤器检查当前的请求中是否有当前过滤器所需要的信息，如果有则会拿这些信息进行验证登录，如果没有则交给下一个过滤器认证。只要其中任何一个过滤器成功完成了用户登录后，则会在当前请求上做一个标记，表示认证成功。注意，该类型的过滤器是可以在程序中配置是否生效的。</li>
-<li>请求最终会到FilterSecurityInterceptor过滤器（图中橙色块），该过滤器决定了请求最终是否有权限访问。依据的就是代码中的配置，如果没有权限则会根据原因抛出不同的异常。</li>
-<li>在FilterSecurityInterceptor过滤器前面会有一个ExceptionTranslactionFilter（图中蓝色块）,这个过滤器就是用来处理当请求没有通过FilterSecurityInterceptor过滤器时抛出的异常，它会根据抛出来的异常以及程序中的配置来进行相应的处理。比如这里抛出的是未登录的异常，而我们在程序中配置的登录方式是表单登录，则这里就会引导用户去登录。</li>
-</ul>
-<p>Spring security的基本原理就是这样的，很好理解，我们可以在上面提到的这几个Filter里面分别打上断点，发一个请求看一下，每一步是不是按照我们说的走的，这里就不演示了。</p>
-
-          
+    &lt;artifactId&gt;evolutionary-security-cor
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/06/01/Spring%20Security%EF%BC%88%EF%BC%91%EF%BC%89%EF%BC%8D%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1825,66 +1446,18 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
       
         
           
-            <h1 id="确定数据库大小"><a href="#确定数据库大小" class="headerlink" title="确定数据库大小"></a>确定数据库大小</h1><pre><code>SELECT
+          确定数据库大小SELECT
     ROUND(SUM(data_length + index_length) / 1024 / 1024) AS total_mb,
     ROUND(SUM(data_length) / 1024 / 1024) AS data_mb,
-    ROUND(SUM(index_length) / 1024 / 1024) AS index_mb
-FROM
-    INFORMATION_SCHEMA.tables;</code></pre><p>执行mysqldump所得的备份文件的大小与数据库大小相同，但是为了安全起见，保存备份的磁盘空间要有10%到15%的冗余。</p>
-<p>确认mysql实例所使用的存储引擎，及表信息：</p>
-<pre><code>SELECT table_schema,engine,COUNT(*) AS tables from  information_schema.TABLES
-WHERE table_schema NOT IN(&apos;INFORMATION_SCHEMA&apos;,&apos;PERFORMANCE_SCHEMA&apos;)
-GROUP BY table_schema,engine
-ORDER BY 3 DESC;</code></pre><p>组合查询</p>
-<pre><code>SELECT
-    table_schema,
-    engine,
-    ROUND(SUM(data_length + index_length) / 1024 / 1024) AS total_mb,
-    ROUND(SUM(data_length) / 1024 / 1024) AS data_mb,
-    ROUND(SUM(index_length) / 1024 / 1024) AS index_mb,
-    COUNT(*) AS tables
-FROM
-    INFORMATION_SCHEMA.tables
-GROUP BY
-    table_schema,
-    engine
-ORDER BY
-    3 DESC;</code></pre><h1 id="SQL导出备份"><a href="#SQL导出备份" class="headerlink" title="SQL导出备份"></a>SQL导出备份</h1><h2 id="最简单的备份方式："><a href="#最简单的备份方式：" class="headerlink" title="最简单的备份方式："></a>最简单的备份方式：</h2><pre><code>$time mysqldump -uroot -p --all-databases &gt; backup.sql
-$echo $0
-$ls -lh backup.sql</code></pre><p>第一句，对所有的库进行备份；<br>第二句，确认第一个命令执行结束，若是非0结果，说明备份过程发生了问题。如果有错误发生，就会显示在屏幕中；<br>第三句，显示备份文件的大小；</p>
-<h2 id="将备份数据转移到安全位置"><a href="#将备份数据转移到安全位置" class="headerlink" title="将备份数据转移到安全位置"></a>将备份数据转移到安全位置</h2><pre><code>$ time gzip backup.sql
-$ time scp backup.sql.gz another-server:backup-dir</code></pre><h2 id="备份选项"><a href="#备份选项" class="headerlink" title="备份选项"></a>备份选项</h2><p>所选择的锁策略，决定了在执行备份期间应用程序是否可以对数据库进行写操作。</p>
-<pre><code>--lock-tables</code></pre><p>锁表，默认是关闭的，当备份MyISAM引擎时，–lock-tables对于数据一致性是非常必要的。但是一次也只能锁一个模式的表，<br>换言之，在备份过程中操作数据库，还是可能会产生不一致的数据。</p>
-<pre><code>--lock-all-tables</code></pre><p>锁所有的表</p>
-<pre><code>--single-transaction</code></pre><p>为一个事务中的所有表，创建一个版本一致的快照。仅能用在InnoDB或者MVCC的引擎中。使用这一选项时，将自动关闭–lock-tables。</p>
-<pre><code>--routines</code></pre><p>如果数据库中包含存储过程或函数，则–routine是必须的</p>
-<pre><code>--master-data</code></pre><p>时间点恢复</p>
-<pre><code>--all-databases
---databases  指定特定数据库
---tables  指定特定表
---ignore-table  排除表</code></pre><p>指定导出相关的信息</p>
-<pre><code>--skip-quote-names</code></pre><p>去掉导出文件对象名两端的单引号（`）</p>
-<pre><code>--hex-blob</code></pre><p>当数据库包含二进制文件时，–hex-blob将提供最大的兼容性</p>
-<pre><code>--no-data</code></pre><p>不导出数据，只导表结构</p>
-<pre><code>--no-create-info</code></pre><p>记录binlog日志，加了下面的配置恢复的数据会进binlog日志<br>    –set-gtid-purged=off</p>
-<p>不导建表语句，配置–routines 只导出函数和存储过程</p>
-<pre><code>mysqldump -h localhost -uroot -p --no-data --all-databases &gt; backup-schema.sql
-
-mysqldump -h localhost -uroot -p --no-data --no-create-info --routines --all-databases &gt; backup-routines.sql</code></pre><h1 id="文件系统备份"><a href="#文件系统备份" class="headerlink" title="文件系统备份"></a>文件系统备份</h1><p>需要关闭MYSQL实例，对文件系统上的文件进行物理复制。</p>
-<p>MYSQL配置变量定义了各种文件的位置，要仔细检查这些文件的位置，并将其包含在要备份的文件列表中。my.cnf中并不会包含所有的变量，mysql对未定义的变量使用预先设定的默认值。所以最好在myslq实例运行时，获取这些变量的值。</p>
-<ul>
-<li>datadir MYSQL数据目录</li>
-<li>innodb_data_home_dir InnoDB Data数据目录</li>
-<li>innodb_data_file_path 单独的InnoDB数据文件，它可能包含特定的不同目录</li>
-<li>log-bin 二进制文件目录</li>
-<li>log-bin-index 二进制日志索引文件</li>
-<li>relay-log 中继日志文件</li>
-<li>relay-log-index 中继日志索引文件</li>
-<li>mysql的配置文件my.conf</li>
-</ul>
-<h1 id="表抽取"><a href="#表抽取" class="headerlink" title="表抽取"></a>表抽取</h1><pre><code>mysqldump -h localhost -uroot -p --no-create-info --tab=. --fields-terminated-by=, --fields-optionally-enclosed-by=\&quot; book-management tb_books;</code></pre><p>或</p>
-<pre><code>select * from tb_books into outfile &apos;/tmp/books.cvs&apos;  fields terminated by &apos;,&apos; optionally enclosed by &apos;&quot;&apos;;</code></pre><h1 id="文件系统快照"><a href="#文件系统快照" class="headerlink" title="文件系统快照"></a>文件系统快照</h1><h1 id="备份的时间节点"><a href="#备份的时间节点" class="headerlink" title="备份的时间节点"></a>备份的时间节点</h1>
-          
+    ROUND(SU
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/05/29/Mysql%EF%BC%8810%EF%BC%89-Mysql%E5%A4%87%E4%BB%BD/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2045,9 +1618,16 @@ mysqldump -h localhost -uroot -p --no-data --no-create-info --routines --all-dat
       
         
           
-            <h1 id="Spring请求处理流程图："><a href="#Spring请求处理流程图：" class="headerlink" title="Spring请求处理流程图："></a>Spring请求处理流程图：</h1><p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/SpringMvc%E8%AF%B7%E6%B1%82%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B.jpg" alt="Spring请求处理流程"></p>
+          Spring请求处理流程图：
 
           
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/05/25/Spring%20MVC%E8%AF%B7%E6%B1%82%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2208,124 +1788,17 @@ mysqldump -h localhost -uroot -p --no-data --no-create-info --routines --all-dat
       
         
           
-            <h1 id="一、Spring-MVC-Quick-Start"><a href="#一、Spring-MVC-Quick-Start" class="headerlink" title="一、Spring MVC Quick Start"></a>一、Spring MVC Quick Start</h1><h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h3><pre><code>&lt;dependency&gt;
+          一、Spring MVC Quick Start环境搭建&lt;dependency&gt;
     &lt;groupId&gt;javax.servlet&lt;/groupId&gt;
-    &lt;artifactId&gt;javax.servlet-api&lt;/artifactId&gt;
-&lt;/dependency&gt;
-&lt;dependency&gt;
-    &lt;groupId&gt;org.springframework&lt;/groupId&gt;
-    &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;
-&lt;/dependency&gt;</code></pre><h3 id="Spring-MVC最简单的配置"><a href="#Spring-MVC最简单的配置" class="headerlink" title="Spring MVC最简单的配置"></a>Spring MVC最简单的配置</h3><ol>
-<li><p>在web.xml中配置Servlet</p>
-<p> Spring MVC的本质就是一个Servlet</p>
-<pre><code>&lt;!-- spring mvc 配置开始 --&gt;
-&lt;!-- Spring MVC本质上就是一个Servlet --&gt;
-&lt;servlet&gt;
-    &lt;servlet-name&gt;springMVC&lt;/servlet-name&gt;
-    &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
-    &lt;!--  contextConfigLocation参数来指定Spring MVC配置文件的位置，默认为WEB-INF/[Servlet-Name]-servlet.xml文件  --&gt;
-    &lt;!--  &lt;init-param&gt;
-          &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
-          &lt;param-value&gt;&lt;/param-value&gt;
-      &lt;/init-param&gt;--&gt;
-    &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
-&lt;/servlet&gt;
-&lt;servlet-mapping&gt;
-    &lt;servlet-name&gt;springMVC&lt;/servlet-name&gt;
-    &lt;url-pattern&gt;/&lt;/url-pattern&gt;
-&lt;/servlet-mapping&gt;
-&lt;!-- spring mvc 配置结束 --&gt;</code></pre></li>
-<li><p>创建Spring MVC的xml配置文件</p>
- <!--
-         mvc:annotation-driven是 Spring MVC提供的一键式配置方法
-         配置此标签后Spring MVC会帮我们自动做一些注册组件之类的事情
-     -->
-<pre><code>&lt;mvc:annotation-driven/&gt;
-&lt;!--扫描通过注解配置的类--&gt;
-&lt;context:component-scan base-package=&quot;top.richpeople&quot;&gt;
-    &lt;!--如果使用了spring,可以用context:include-filter设置只扫描@Controller别的交给Spring容器去管理--&gt;
-    &lt;!--&lt;context:include-filter type=&quot;annotation&quot; expression=&quot;org.springframework.stereotype.Controller&quot;/&gt;--&gt;
-&lt;/context:component-scan&gt;</code></pre></li>
-<li><p>创建Controller和view</p>
-<pre><code>/**
- * 处理HEAD类型的&quot;/&quot;请求
- * 此方法可以用来检测服务器的状态,因为它不返回body,所以笔GET请求更节省网络资源
- * @return
- */
-@RequestMapping(value = &quot;/&quot;, method = RequestMethod.HEAD)
-public String head() {
-    return &quot;go.jsp&quot;;
-}
-
-/**
- * 处理GET类型的&quot;/index&quot;和&quot;/&quot;请求
- */
-@RequestMapping(value = {&quot;/index&quot;, &quot;/&quot;}, method = RequestMethod.GET)
-public String testMapPathUri(Model model) {
-
-    model.addAttribute(&quot;msg&quot;, &quot;Go Go Go!&quot;);
-    return &quot;go.jsp&quot;;
-}</code></pre><p> 如果没有配置ViewResolver，Spring MVC将默认使用org.springframework.web.servlet.view.InternalResourcViewResolver作为ViewResolver，而且prefix和suffix都为空</p>
-</li>
-</ol>
-<h1 id="二、Spring-MVC-架构分析"><a href="#二、Spring-MVC-架构分析" class="headerlink" title="二、Spring MVC 架构分析"></a>二、Spring MVC 架构分析</h1><p><img src="http://ogiythg18.bkt.clouddn.com/DispatcherServlet.png" alt="DispatcherServlet"></p>
-<p>XXXAware在Spring中表示对XXX可感知，通俗点讲就是：如果在某个类里想用Spring的某个东西，就实现相应的XXXAware接口，Spring看到后就会给你送过来。</p>
-<h3 id="Spring中3个类的具体创建过程"><a href="#Spring中3个类的具体创建过程" class="headerlink" title="Spring中3个类的具体创建过程"></a>Spring中3个类的具体创建过程</h3><p>//TODO  这里要撸源码进行分析</p>
-<ul>
-<li><p>HttpServletBean</p>
-<p>  没有参与实际请求的处理</p>
-</li>
-<li><p>FrameworkServlet</p>
-<p>  将不同的请求合并到了processRequest方法统一处理，processRequest方法中做了三件事：</p>
-<ul>
-<li>调用了doService模板方法具体处理请求</li>
-<li>将当请求的LocaleContext和ServletRequestAttributes在处理请求前设置到了LocaleContextHolder和RequestContextHolder,并在请求处理完后恢复。</li>
-<li>请求完后发布了ServletRequestHandledEvent消息</li>
-</ul>
-</li>
-<li><p>DispatcherServlet</p>
-<p>  doService方法给request设置了一些属性并将请求交给doDispatch方法具体处理</p>
-</li>
-</ul>
-<h1 id="三、Spring-MVC组件分析"><a href="#三、Spring-MVC组件分析" class="headerlink" title="三、Spring MVC组件分析"></a>三、Spring MVC组件分析</h1><p>这里的组件指的是DispatcherServlet中直接初始化的那九个组件，不同的组件内部可能还会用到一些子组件。</p>
-<h3 id="1、-HandlerMapping"><a href="#1、-HandlerMapping" class="headerlink" title="1、 HandlerMapping"></a>1、 HandlerMapping</h3><p>它的作用是根据request找到相应的处理器Handler和Interceptors，该接口只有一个方法：</p>
-<pre><code>HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception;</code></pre><p>HandlerMapping编写出来后要注册到Spring MVC的容器里面才可以使用，注册和那简单，只需要在配置文件里配置一个Bean就可以了（或者使用注解）。</p>
-<p>如果有多个HandlerMapping匹配到了同一个处理器Hander，这时就要设置HandlerMapping的顺序。HandlerMapping的顺序通过实现Order接口设置order属性来定义。</p>
-<p>查找Handler是按顺序遍历所有的HandlerMapping，当找到一个HandlerMapping后立即停止并返回。</p>
-<h3 id="2、HandlerAdapter"><a href="#2、HandlerAdapter" class="headerlink" title="2、HandlerAdapter"></a>2、HandlerAdapter</h3><p>可以理解为使用处理器Handler干活的人</p>
-<p>为什么使用handlerAdapter?</p>
-<pre><code>Spring MVC没有对处理器Handler做任何的限制，处理器可以是任何合理的方式，可以是类、方法或者别的合理的方式，所以我们要用不用的Adapter去使用这些Handler</code></pre><p>我们自定义Adapter只需要实现HandlerAdapter，完成相应的逻辑就可以了，同样可以实现Order接口，默认使用第一个按顺序找到的Adapter。HandlerAdapter同样需要注册到Spring MVC容器中，只需要配置一个Bean就可以了。</p>
-<h3 id="3、HandlerExceptionResolver"><a href="#3、HandlerExceptionResolver" class="headerlink" title="3、HandlerExceptionResolver"></a>3、HandlerExceptionResolver</h3><p>此组件的作用是根据异常设置ModelAndView，之后再交给render方法去渲染。</p>
-<h3 id="4、ViewResolver"><a href="#4、ViewResolver" class="headerlink" title="4、ViewResolver"></a>4、ViewResolver</h3><p>用来将String类型的视图名（有地方也叫逻辑视图，都是同一个东西）和Locale解析为View类型的视图。</p>
-<p>一般情况下我们只需要根据视图名找到视图，然后进行渲染，并不需要对不同的区域使用不同的视图。</p>
-<p>View是用来渲染页面的，通俗点将就是将程序返回的参数填入到模板里，生成html（或者是其它类型）的文件。这里有两个关键的问题：</p>
-<ul>
-<li>使用什么模板</li>
-<li>用什么技术或规则填入参数</li>
-</ul>
-<p>这起是就是ViewResolver要做的工作。</p>
-<pre><code>View resolveViewName(String viewName, Locale locale) throws Exception;</code></pre><ul>
-<li><p>UrlBasedViewResolver系列解析器都是针对单一视图类型进行解析的</p>
-<ul>
-<li>InternalResourceViewResolver 只解析jsp类型的视图</li>
-<li>FreeMarkerViewResolver只针对FreeMarker</li>
-<li>VelocityViewResolver只针对Velocity</li>
-</ul>
-</li>
-<li><p>ResourceBundleViewResolver、XmlViewResolver、BeanNameViewResolver等解析器可以同时解析多种类型的视图。</p>
-</li>
-</ul>
-<p>ViewResolver的使用需要注册到Spring MVC容器里，默认使用的是org.springframework.web.servlet.view.InternalResourceViewResolver。</p>
-<h3 id="5、RequestToViewNameTranslator"><a href="#5、RequestToViewNameTranslator" class="headerlink" title="5、RequestToViewNameTranslator"></a>5、RequestToViewNameTranslator</h3><p>ViewResolver是根据viewName查找View，但是有的Handler处理完后没有这只View也没有设置viewName，这时需要从request中获取viewName，而如何从request中获取viewName就是RequestToViewNameTranslator要做的事情。</p>
-<pre><code>String getViewName(HttpServletRequest request) throws Exception;</code></pre><p>具体的处理逻辑需要我们自己实现，要注意的是RequestToViewNameTranslator在Spring MVC容器中只能配置一个，所有的request到viewName的转换都要在一个Rranslator中实现。</p>
-<h3 id="6、LocaleResolver"><a href="#6、LocaleResolver" class="headerlink" title="6、LocaleResolver"></a>6、LocaleResolver</h3><p>视图的解析需要两个参数，一个是视图名，一个是Locale，视图名是从Handler返回的（或者是使用RequestToViewNameTranslator解析的默认视图名），而Locale是LocaleResolver从request中解析出来的。</p>
-<pre><code>Locale resolveLocale(HttpServletRequest request);
-
-void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale);</code></pre><p>org.springframework.web.servlet.i18n.LocaleChangeInterceptor拦截器为我么那提供了默认修改Locale的便捷方式。</p>
-<h3 id="7、ThemeResolver"><a href="#7、ThemeResolver" class="headerlink" title="7、ThemeResolver"></a>7、ThemeResolver</h3><h3 id="8、MultipartResolver"><a href="#8、MultipartResolver" class="headerlink" title="8、MultipartResolver"></a>8、MultipartResolver</h3><p>MultipartResolver用于处理上传请求，处理方法就是将普通的request包装成HttpServletRequest，后者可以直接调用getFile方法获取到File，如果上传多个文件，还可以调用getFileMap得到fileName-File结构的Map。</p>
-<p>其实如果上传请求不用MutipartResolver封装成HttpServletRequest，直接用原来的request也是可以的，所以Spring MVC中没有为此组件提供默认值。</p>
-<h3 id="9、FlashMapManager"><a href="#9、FlashMapManager" class="headerlink" title="9、FlashMapManager"></a>9、FlashMapManager</h3>
-          
+    &lt;artifactId&gt;javax.servlet-api&lt;/artifactId
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/05/20/Spring%20MVC/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2486,209 +1959,15 @@ void setLocale(HttpServletRequest request, HttpServletResponse response, Locale 
       
         
           
-            <p>在单数据源的情况下，spring Boot的数据源配置非常简单，只要在applicatrion.properties中配置连接参数即可。但是随着业务的发展我们常常会对数据库拆分或者引入其它的数据库，从而需要配置多个数据源。下面我们就基于JdbcTemplate和Spring-data-jap介绍配置多数据源的方式。</p>
-<h2 id="多数据源配置"><a href="#多数据源配置" class="headerlink" title="多数据源配置"></a>多数据源配置</h2><p>创建一个Spring配置类，定义两个DataSource用来读取application.properties中的不同配置。如下例子中，主数据源配置为spring.datasource.primary开头的配置，第二数据源配置为spring.datasource.secondary开头的配置。</p>
-<pre><code>/**
- * 多数据源配置
- */
-@Configuration
-public class DataSourceConfig {
-
-    @Bean(name = &quot;primaryDataSource&quot;)
-    @Primary
-    @ConfigurationProperties(prefix=&quot;spring.datasource.primary&quot;)
-    public DataSource primaryDataSource() {
-        return DataSourceBuilder.create().build();
-    }
-
-    @Bean(name = &quot;secondaryDataSource&quot;)
-    @ConfigurationProperties(prefix=&quot;spring.datasource.secondary&quot;)
-    public DataSource secondaryDataSource() {
-        return DataSourceBuilder.create().build();
-    }
-
-
-}</code></pre><p>对应application.properties中的配置如下：</p>
-<pre><code># 多数据源配置
-spring.datasource.primary.url=jdbc:mysql://localhost:3306/spring-boot-db1?useUnicode=true&amp;characterEncoding=utf8
-spring.datasource.primary.username=root
-spring.datasource.primary.password=root
-spring.datasource.primary.driver-class-name=com.mysql.jdbc.Driver
-
-spring.datasource.secondary.url=jdbc:mysql://localhost:3306/spring-boot-db2?useUnicode=true&amp;characterEncoding=utf8
-spring.datasource.secondary.username=root
-spring.datasource.secondary.password=root
-spring.datasource.secondary.driver-class-name=com.mysql.jdbc.Driver</code></pre><h2 id="JdbcTemplate配置多数据源"><a href="#JdbcTemplate配置多数据源" class="headerlink" title="JdbcTemplate配置多数据源"></a>JdbcTemplate配置多数据源</h2><p>为JdbcTemplate配置多数据源比较简单，只要为其注入不同的Datasource即可，如下：</p>
-<pre><code>/**
- * JdbcTemplate支持多数据源
- */
-@Configuration
-public class JdbcTemplateConfig {
-
-    @Bean(name = &quot;primaryJdbcTemplate&quot;)
-    public JdbcTemplate primaryJdbcTemplate(
-            @Qualifier(&quot;primaryDataSource&quot;) DataSource dataSource) {
-        return new JdbcTemplate(dataSource);
-    }
-
-    @Bean(name = &quot;secondaryJdbcTemplate&quot;)
-    public JdbcTemplate secondaryJdbcTemplate(
-            @Qualifier(&quot;secondaryDataSource&quot;) DataSource dataSource) {
-        return new JdbcTemplate(dataSource);
-    }
-
-}</code></pre><h2 id="测试JdbcTemplate多数据源"><a href="#测试JdbcTemplate多数据源" class="headerlink" title="测试JdbcTemplate多数据源"></a>测试JdbcTemplate多数据源</h2><pre><code>@RunWith(SpringRunner.class)
-@SpringBootTest(classes = SpringBootDemoApplication.class)
-public class MultipleDatasource4JdbcTemplateTest {
-
-    @Autowired
-    @Qualifier(&quot;primaryJdbcTemplate&quot;)
-    protected JdbcTemplate jdbcTemplate1;
-
-    @Autowired
-    @Qualifier(&quot;secondaryJdbcTemplate&quot;)
-    protected JdbcTemplate jdbcTemplate2;
-
-    @Before
-    public void setUp() {
-        jdbcTemplate1.update(&quot;delete from user &quot;);
-        jdbcTemplate2.update(&quot;delete from user &quot;);
-    }
-
-
-    @Test
-    public void test() throws Exception {
-
-        // 往第一个数据源中插入两条数据
-        jdbcTemplate1.update(&quot;insert into user(id,name,age) values(?, ?, ?)&quot;, 1, &quot;aaa&quot;, 20);
-        jdbcTemplate1.update(&quot;insert into user(id,name,age) values(?, ?, ?)&quot;, 2, &quot;bbb&quot;, 30);
-
-        // 往第二个数据源中插入一条数据，若插入的是第一个数据源，则会主键冲突报错
-        jdbcTemplate2.update(&quot;insert into user(id,name,age) values(?, ?, ?)&quot;, 1, &quot;aaa&quot;, 20);
-
-        // 查一下第一个数据源中是否有两条数据，验证插入是否成功
-        Assert.assertEquals(&quot;2&quot;, jdbcTemplate1.queryForObject(&quot;select count(1) from user&quot;, String.class));
-
-        // 查一下第一个数据源中是否有两条数据，验证插入是否成功
-        Assert.assertEquals(&quot;1&quot;, jdbcTemplate2.queryForObject(&quot;select count(1) from user&quot;, String.class));
-
-    }
-
-}</code></pre><h2 id="Spring-data-jpa配置多数据源"><a href="#Spring-data-jpa配置多数据源" class="headerlink" title="Spring-data-jpa配置多数据源"></a>Spring-data-jpa配置多数据源</h2><p>对于数据源的配置可以沿用上例中DataSourceConfig的实现。</p>
-<p>配置Spring-data-jpa多数据源时要注意，需要指定数据源对应的Entity实体和Repository定义位置。用@Primary区分主数据源。</p>
-<p>配置第一数据源：</p>
-<pre><code>@Configuration
-@EnableTransactionManagement
-@EnableJpaRepositories(entityManagerFactoryRef = &quot;entityManagerFactoryPrimary&quot;,
-        transactionManagerRef=&quot;transactionManagerPrimary&quot;,
-        basePackages=&quot;top.evolutionary.springbootdemo.repository.primary&quot;//设置Repository所在位置
-)
-public class SpringDataJpaPrimaryConfig {
-
-    @Autowired
-    @Qualifier(&quot;primaryDataSource&quot;)
-    private DataSource primaryDataSource;
-
-    @Primary
-    @Bean(name = &quot;entityManagerPrimary&quot;)
-    public EntityManager entityManager(EntityManagerFactoryBuilder builder) {
-        return entityManagerFactoryPrimary(builder).getObject().createEntityManager();
-    }
-
-
-    @Primary
-    @Bean(name = &quot;entityManagerFactoryPrimary&quot;)
-    public LocalContainerEntityManagerFactoryBean entityManagerFactoryPrimary (EntityManagerFactoryBuilder builder) {
-        return builder
-                .dataSource(primaryDataSource)
-                .properties(getVendorProperties(primaryDataSource))
-                .packages(&quot;top.evolutionary.springbootdemo.dto.primary&quot;) //设置实体类所在位置
-                .persistenceUnit(&quot;primaryPersistenceUnit&quot;)
-                .build();
-    }
-
-
-    @Autowired
-    private JpaProperties jpaProperties;
-
-    private Map&lt;String, String&gt; getVendorProperties(DataSource dataSource) {
-        return jpaProperties.getHibernateProperties(dataSource);
-    }
-
-    @Primary
-    @Bean(name = &quot;transactionManagerPrimary&quot;)
-    public PlatformTransactionManager transactionManagerPrimary(EntityManagerFactoryBuilder builder) {
-        return new JpaTransactionManager(entityManagerFactoryPrimary(builder).getObject());
-    }
-
-}</code></pre><p>配置第二数据源：</p>
-<p>@Configuration<br>@EnableTransactionManagement<br>@EnableJpaRepositories(entityManagerFactoryRef = “entityManagerFactorySecondary”,<br>        transactionManagerRef=”transactionManagerSecondary”,<br>        basePackages=”top.evolutionary.springbootdemo.repository.secdary”//设置Repository所在位置<br>)<br>public class SpringDataJpaSecdaryConfig {</p>
-<pre><code>@Autowired
-@Qualifier(&quot;secondaryDataSource&quot;)
-private DataSource primaryDataSource;
-
-@Bean(name = &quot;entityManagerSecondary&quot;)
-public EntityManager entityManager(EntityManagerFactoryBuilder builder) {
-    return entityManagerFactoryPrimary(builder).getObject().createEntityManager();
-}
-
-
-@Bean(name = &quot;entityManagerFactorySecondary&quot;)
-public LocalContainerEntityManagerFactoryBean entityManagerFactoryPrimary (EntityManagerFactoryBuilder builder) {
-    return builder
-            .dataSource(primaryDataSource)
-            .properties(getVendorProperties(primaryDataSource))
-            .packages(&quot;top.evolutionary.springbootdemo.dto.secdary&quot;) //设置实体类所在位置
-            .persistenceUnit(&quot;secondaryPersistenceUnit&quot;)
-            .build();
-}
-
-
-@Autowired
-private JpaProperties jpaProperties;
-
-private Map&lt;String, String&gt; getVendorProperties(DataSource dataSource) {
-    return jpaProperties.getHibernateProperties(dataSource);
-}
-
-@Bean(name = &quot;transactionManagerSecondary&quot;)
-public PlatformTransactionManager transactionManagerPrimary(EntityManagerFactoryBuilder builder) {
-    return new JpaTransactionManager(entityManagerFactoryPrimary(builder).getObject());
-}</code></pre><p>}</p>
-<h2 id="测试Spring-data-jpa多数据源"><a href="#测试Spring-data-jpa多数据源" class="headerlink" title="测试Spring-data-jpa多数据源"></a>测试Spring-data-jpa多数据源</h2><pre><code>@RunWith(SpringRunner.class)
-@SpringBootTest(classes = SpringBootDemoApplication.class)
-public class MultipleDatasource4JpaTest {
-
-    @Autowired
-    private StaffRepository staffRepository;
-    @Autowired
-    private CompanyRepository companyRepository;
-
-    @Before
-    public void delete() {
-        staffRepository.deleteAll();
-        companyRepository.deleteAll();
-    }
-
-
-    @Test
-    public void test() throws Exception{
-        staffRepository.save(new Staff(&quot;richey1&quot;,18));
-        staffRepository.save(new Staff(&quot;richey2&quot;,19));
-        staffRepository.save(new Staff(&quot;richey3&quot;,20));
-
-        Assert.assertEquals(3, staffRepository.findAll().size());
-
-        companyRepository.save(new Company(&quot;company1&quot;, &quot;add1&quot;));
-        companyRepository.save(new Company(&quot;company2&quot;, &quot;add2&quot;));
-
-        Assert.assertEquals(2, companyRepository.findAll().size());
-
-
-    }
-
-}</code></pre>
-          
+          在单数据源的情况下，spring Boot的数据源配置非常简单，只要在applicatrion.properties中配置连接参数即可。但是随着业务的发展我们常常会对数据库拆分或者引入其它的数据库，从而需要配置多个数据源。下面我们就基于JdbcTemplate和Spring-data-jap介绍配置
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/05/18/Spring%20Boot(7)-Spring%20Boot%20%E4%B8%A4%E7%A7%8D%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E9%85%8D%E7%BD%AE%EF%BC%9AJdbcTemplate%E3%80%81Spring-data-jpa/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2774,7 +2053,7 @@ public class MultipleDatasource4JpaTest {
             
               <div class="site-state-item site-state-posts">
               
-                <a href="/archives">
+                <a href="/archives/%20%7C%7C%20history">
               
                   <span class="site-state-item-count">132</span>
                   <span class="site-state-item-name">日志</span>

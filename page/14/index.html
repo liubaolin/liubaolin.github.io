@@ -183,9 +183,9 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
+          <a href="/%20" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
             首页
           </a>
@@ -193,9 +193,9 @@
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/tags" rel="section">
+          <a href="/tags/%20" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
             
             标签
           </a>
@@ -203,9 +203,9 @@
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/categories" rel="section">
+          <a href="/categories/%20" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-list"></i> <br />
             
             分类
           </a>
@@ -213,9 +213,9 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/archives" rel="section">
+          <a href="/archives/%20" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-history"></i> <br />
             
             归档
           </a>
@@ -402,19 +402,15 @@
       
         
           
-            <h1 id="Servlet是什么？"><a href="#Servlet是什么？" class="headerlink" title="Servlet是什么？"></a>Servlet是什么？</h1><p>Servlet是sun公司制定的一种用来扩展web服务器功能的组件规范。 1）扩展web服务器功能 早期的web服务器，比如（apache web server、iis）只能够处理静态资源的属性（也就是说，需要事先将html文件写好放在web服务器指定的文件夹下面 ），不能够处理动态资源的请求（也就是说，需要依据用户的请求参数来进行计算，然后生成相应的html内容）。 可以使用cgi程序来扩展web服务器：cgi（common gateway interface）程序一般使用perl，c等语言来写，web服务器会调用cgi程序来进行计算。cgi程序编写复杂，可移植性也不好，现在用的不多了。 Servlet可以用来扩展web服务器功能：简单点来说，Servlet是Java Web的核心程序，Java Web应用程序中的所有请求-响应都是由Servlet来完成的。 2）组件规范 a.组件：符合一定的规范，实现了部分功能的，并且可以部署到容器中运行的软件模块； b.容器：符合一定的规范，提供组件的运行环境，并管理组件的生命周期的程序。 Servlet就是一个组件，主要负责业务逻辑的处理。 Servlet容器（比如Tomcat等），会提供Servlet的运行环境。</p>
-<h1 id="Servlet接口"><a href="#Servlet接口" class="headerlink" title="Servlet接口"></a>Servlet接口</h1><p>Servlet是一种实现了javax.servlet.Servlet接口的类，Servlet接口规定了特定的方法来处理特定的请求。 Servlet是建立在HTTP规范基础之上的，HTTP/1.1规范支持OPTIONS、GET、POST、HEAD、PUT、DELETE以及TRACE等7种Web访问方式。其中，最常用的是GET和POST，当浏览器以xxx的方式访问网络程序时，Servlet会执行如 void doXxx（HttpServletRequest request，HttpServletResponse response）的方法。例如doGet、doPost等。参数HttpServletRequest和HttpServletResponse分别为客户端请求与服务端响应。</p>
-<h1 id="Servlet工作流程"><a href="#Servlet工作流程" class="headerlink" title="Servlet工作流程"></a>Servlet工作流程</h1><p>比如，现在在浏览器中输入地址：<a href="http://localhost:8080/servlet/data" target="_blank" rel="noopener">http://localhost:8080/servlet/data</a></p>
-<p>step1、浏览器会根据ip和port与Servlet容器（如Tomcat，Servlet容器同时也是一个简单的web服务器）之间建立连接；<br>step2、浏览器打包（浏览器提交的请求时遵循http协议的文本，包括请求资源路径、参数及一些消息头），发送请求；<br>step3、Servlet容器（如Tomcat）接收请求拆包解析，将请求封装成HttpServletRequest类型的request对象，所有http请求的头数据都可以通过request的响应方法查到，Servlet容器同时会把输出流封装成一个HttpServletResponse类型的对象response，通过设置response对象就可以控制输出的内容；<br>step4、Servlet容器会根据请求资源路径，找到对应的Servlet的配置，然后将该对象实例化，并立即调用对象的init()方法进行初始化；<br>step5、Servlet容器会把request和response作为参数调用servlet的响应方法，例如doGet(request,response)、doPost(request,response)等。request对象中可以获取请求的所有数据，在servlet中进行相应的业务逻辑处理（如读取数据库、权限检查、业务处理等），最后将结果集写到response里面。<br>step6、Servlet容器从response中取出数据并打包发送给浏览器；<br>step7、浏览器拆包，并生产相应的页面。</p>
-<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/servlet01.png" alt="http"></p>
-<h1 id="编写Servlet"><a href="#编写Servlet" class="headerlink" title="编写Servlet"></a>编写Servlet</h1><p>直接实现Servlet接口来编写Servlet并不方便，要实现的方法太多，HttpServlet类已经实现了Servlet接口的所有方法。编写Servlet时直接继承HttpServlet，并覆盖需要的方法即可。一般只需要覆盖doGet()与doPost()或只覆盖Service方法()。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.richey88.servlet;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.PrintWriter;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.ServletException;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServlet;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;</span><br><span class="line"></span><br><span class="line"><span class="meta">@SuppressWarnings</span>(<span class="string">"serial"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyServlet</span> <span class="keyword">extends</span> <span class="title">HttpServlet</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">service</span><span class="params">(HttpServletRequest req, HttpServletResponse resp)</span></span></span><br><span class="line"><span class="function">            <span class="keyword">throws</span> ServletException, IOException </span>&#123;</span><br><span class="line">        resp.setContentType(<span class="string">"text/html;charset=utf-8"</span>);</span><br><span class="line">        PrintWriter out = resp.getWriter();</span><br><span class="line">        out.print(<span class="string">"MyServlet中进行业务逻辑处理。。。。"</span>);</span><br><span class="line">        out.flush();</span><br><span class="line">        out.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="配置Servlet"><a href="#配置Servlet" class="headerlink" title="配置Servlet"></a>配置Servlet</h1><p>只有Servlet文件是不行的，web容器要知道浏览器要访问的路径对应的的是哪个Servlet，也就是说需要配置Servlet的类文件与访问方式。这个配置在Web应用程序的描述文件web.xml里完成。 web应用程序描述文件WEB.xml</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">web-app</span> <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span> <span class="attr">xmlns</span>=<span class="string">"http://java.sun.com/xml/ns/javaee"</span> <span class="attr">xmlns:web</span>=<span class="string">"http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"</span> <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"</span> <span class="attr">id</span>=<span class="string">"WebApp_ID"</span> <span class="attr">version</span>=<span class="string">"2.5"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">display-name</span>&gt;</span>servlet_01<span class="tag">&lt;/<span class="name">display-name</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">&lt;!-- application范围内的参数 ,在web项目完全启动之前加载参数，常用来加载Spring的配置文件</span></span><br><span class="line"><span class="comment">         获取方式：String context_value = getServletContext().getInitParameter("context_key");</span></span><br><span class="line"><span class="comment">  --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">context-param</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>context_key<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>context_value<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">context-param</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">servlet</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>MyServlet<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span>   <span class="comment">&lt;!-- 可以取任意字符串，但是在web.xml里要唯一  --&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">servlet-class</span>&gt;</span>com.richey88.servlet.MyServlet<span class="tag">&lt;/<span class="name">servlet-class</span>&gt;</span></span><br><span class="line"></span><br><span class="line">      <span class="comment">&lt;!-- 配置一些初始化参数,一个Servlet可以配置多个初始化参数</span></span><br><span class="line"><span class="comment">          init-param 是Servlet范围内的参数，只能在servlet中的init()方法中获得</span></span><br><span class="line"><span class="comment">          获取方式：String value = this.getInitParameter("key");</span></span><br><span class="line"><span class="comment">      --&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">init-param</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>message<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>welcome to myservlet<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></span><br><span class="line">     <span class="comment">&lt;!-- 配置servlet的加载方式，</span></span><br><span class="line"><span class="comment">          它的值必须是一个整数，表示servlet应该被载入的顺序;</span></span><br><span class="line"><span class="comment">          当值为0或者大于0时，表示容器在应用启动时就加载并初始化这个servlet;</span></span><br><span class="line"><span class="comment">          当值小于0或者没有指定时，则表示容器在该servlet被选择时才会去加载;</span></span><br><span class="line"><span class="comment">          正数的值越小，该servlet的优先级越高，应用启动时就越先加载;</span></span><br><span class="line"><span class="comment">          当值相同时，容器就会自己选择顺序来加载。</span></span><br><span class="line"><span class="comment">       --&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">load-on-startup</span>&gt;</span>1<span class="tag">&lt;/<span class="name">load-on-startup</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;/<span class="name">servlet</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">servlet-mapping</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>MyServlet<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>*.do<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span>  <span class="comment">&lt;!-- 匹配一次请求是否会执行这个servlet --&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">servlet-mapping</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">web-app</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>Servlet程序文件：MyServlet.java</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.richey88.servlet;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.PrintWriter;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.ServletException;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServlet;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;</span><br><span class="line"></span><br><span class="line"><span class="meta">@SuppressWarnings</span>(<span class="string">"serial"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyServlet</span> <span class="keyword">extends</span> <span class="title">HttpServlet</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">service</span><span class="params">(HttpServletRequest req, HttpServletResponse resp)</span></span></span><br><span class="line"><span class="function">            <span class="keyword">throws</span> ServletException, IOException </span>&#123;</span><br><span class="line">        resp.setContentType(<span class="string">"text/html;charset=utf-8"</span>);</span><br><span class="line">        PrintWriter out = resp.getWriter();</span><br><span class="line"></span><br><span class="line">        out.println(<span class="string">"应用启动时加载的application范围内的参数：  "</span>+</span><br><span class="line">                            <span class="keyword">this</span>.getServletContext().getInitParameter(<span class="string">"context_key"</span>));</span><br><span class="line">        out.println(<span class="string">"MyServlet 处理业务逻辑。。。"</span>);</span><br><span class="line">        out.flush();</span><br><span class="line">        out.close();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> <span class="keyword">throws</span> ServletException </span>&#123;</span><br><span class="line">        System.out.println(<span class="keyword">this</span>.getInitParameter(<span class="string">"message"</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-          
+          Servlet是什么？Servlet是sun公司制定的一种用来扩展web服务器功能的组件规范。 1）扩展web服务器功能 早期的web服务器，比如（apache web server、iis）只能够处理静态资源的属性（也就是说，需要事先将html文件写好放在web服务器指定的文件夹下面 ），不能够处
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2014/03/04/SERVLET01-Servlet%E6%A6%82%E8%BF%B0%E5%8F%8A%E7%BC%96%E5%86%99/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -575,41 +571,15 @@
       
         
           
-            <h1 id="http协议是什么"><a href="#http协议是什么" class="headerlink" title="http协议是什么"></a>http协议是什么</h1><p>由W3C组织制定的一种应用层协议，用于定义浏览器和WEB服务器之间通信的过程和数据的格式。简单的讲，在浏览器中点击一个连接后，浏览器会向服务器发送一段文本，告诉浏览器要访问的信息。这段文本遵循HTTP协议格式，包含访问方式，所用的HTTP版本、当前的浏览器及当前的页面地址信息等。（下面是用访问<a href="http://www.baidu.com时用httpwatch抓取消息头，关于httpwatch的使用方法网上有很多）" target="_blank" rel="noopener">www.baidu.com时用httpwatch抓取消息头，关于httpwatch的使用方法网上有很多）</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">(Request-Line)GET&#x2F;HTTP&#x2F;1.1</span><br><span class="line">Accept text&#x2F;html,application&#x2F;xhtml+xml,*&#x2F;*</span><br><span class="line">Accept-Encoding gzip, deflate</span><br><span class="line">Accept-Language zh-CN</span><br><span class="line">Connection Keep-Alive</span><br><span class="line">Cookie BD\_UPN&#x3D;1126314351; ispeed\_lsm&#x3D;2; BD\_LAST\_QID&#x3D;12126890578877287783; BD\_HOME&#x3D;0; BAIDUID&#x3D;C323FECD3763243205877E5BE6138F7D:FG&#x3D;1; BIDUPSID&#x3D;9A5864149C1C43304A1236E12F4C5175; PSTM&#x3D;1444447058; BDRCVFR\[kVc2Ho6h-mm\]&#x3D;I67x6TjHwwYf0; H\_PS\_PSSID&#x3D;17521\_1455\_17619\_14429\_17001\_17470\_17073\_15422\_11730\_17051   </span><br><span class="line">Host www.baidu.com User-Agent Mozilla&#x2F;5.0 (Windows NT 6.1; Trident&#x2F;7.0; rv:11.0) like Gecko X-HttpWatch-RID 41695-10075</span><br></pre></td></tr></table></figure>
-<p>服务器知道了网址，便将网页的内容输出给浏览器。输出的内容既可以是html文本，也可以是二进制的数据，如图片、声音、视频等，浏览器会将html文本显示为网页，将二进制的数据还原为图片、声音、视频，予以显示或播放。</p>
-<h1 id="通信的过程（http-1-0和http-1-1的区别）"><a href="#通信的过程（http-1-0和http-1-1的区别）" class="headerlink" title="通信的过程（http/1.0和http/1.1的区别）"></a>通信的过程（http/1.0和http/1.1的区别）</h1><p>http/1.0版本和http/1.1版本的通信过程是由很大的差别的，http/1.1全面兼容了http/1.0,目前最通用的标准是HTTP/1.1。 一个WEB站点每天可能要接收百万级别以上的的用户请求，为了提供系统的效率，http/1.0规定浏览器和服务器之间只能保持短暂的连接，服务器不跟踪每个客户也不记录过去的请求。浏览器每次请求都要和服务器建立一个TCP连接，服务器做出响应后立马断开连接。这样可以利用有限的连接个数为更多的客户端提供服务，提高效率，但是，这也造成了一些性能上的缺陷，例如，一个包含有许多图像的网页文件中并没有包含真正的图像数据内容，而只是指明了这些图像的URL地址，当WEB浏览器访问这个网页文件时，浏览器首先要发出针对该网页文件的请求，当浏览器解析WEB服务器返回的该网页文档中的HTML内容时，发现其中的图像标签后，浏览器将根据标签中的src属性所指定的URL地址再次向服务器发出下载图像数据的请求，如图所示：</p>
-<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/http01.jpg" alt="http"></p>
-<p> 显 然，访问一个包含有许多图像的网页文件的整个过程包含了多次请求和响应，每次请求和响应都需要建立一个单独的连接，每次连接只是传输一个文档和图像，上一次和下一次请求完全分离。即使图像文件都很小，但是客户端和服务器端每次建立和关闭连接却是一个相对比较费时的过程，并且会严重影响客户机和服务器的性 能。当一个网页文件中包含Applet，JavaScript文件，CSS文件等内容时，也会出现类似上述的情况。 为了克服HTTP 1.0的这个缺陷，HTTP 1.1支持持久连接，在一个TCP连接上可以传送多个HTTP请求和响应，减少了建立和关闭连接的消耗和延迟。一个包含有许多图像的网页文件的多个请求和应答可以在一个连接中传输，但每个单独的网页文件的请求和应答仍然需要使用各自的连接。HTTP 1.1还允许客户端不用等待上一次请求结果返回，就可以发出下一次请求，但服务器端必须按照接收到客户端请求的先后顺序依次回送响应结果，以保证客户端能够区分出每次请求的响应内容，这样也显著地减少了整个下载过程所需要的时间。基于HTTP 1.1协议的客户机与服务器的信息交换过程，如图所示：</p>
-<p><img src="http://blog-pic-1254088127.picsh.myqcloud.com/http02.jpg" alt="http"></p>
-<p> 总之，http/1.0一次连接只能发送一次请求，http/1.1可以一次连接发送多次请求，如图：</p>
-<p> <img src="http://blog-pic-1254088127.picsh.myqcloud.com/http03.jpg" alt="http"></p>
-<p> 可见，HTTP/1.1在继承了HTTP/1.0优点的基础上，也克服了HTTP/1.0的性能问题。不仅如此，HTTP/1.1还通过增加更多的请求头和响应头来改进和扩充HTTP/1.0的功能。例如，由于HTTP/1.0不支持Host请求头字段，WEB浏览器无法使用主机头名来明确表示要访问服务器上的哪个WEB站点，这样就无法使用WEB服务器在同一个IP地址和端口号上配置多个虚拟WEB站点。在HTTP/1.1中增加Host请求头字段后，WEB浏览器可以使用主机头名来明确表示要访问服务器上的哪个WEB站点，这才实现了在一台WEB服务器上可以在同一个IP地址和端口号上使用不同的主机名来创建多个虚拟WEB站点。HTTP/1.1的持续连接，也需要增加新的请求头来帮助实现，例如，Connection请求头的值为Keep-Alive时，客户端通知服务器返回本次请求结果后保持连接；Connection请求头的值为close时，客户端通知服务器返回本次请求结果后关闭连接。HTTP/1.1还提供了与身份认证、状态管理和Cache缓存等机制相关的请求头和响应头，同时http/1.1支持断点续传。</p>
-<h1 id="数据的格式"><a href="#数据的格式" class="headerlink" title="数据的格式"></a>数据的格式</h1><h2 id="请求数据包"><a href="#请求数据包" class="headerlink" title="请求数据包"></a>请求数据包</h2><ol>
-<li>请求行（请求方式、请求资源路径、协议类型和版本）<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(Request-Line) GET &#x2F;</span><br><span class="line">v.gif?pid&#x3D;107&amp;url&#x3D;http%3A%2F%2Fzhidao.baidu.com%2F&amp;type&#x3D;0&amp;m&#x3D;11&amp;col&#x3D;502&amp;pn&#x3D;2&amp;t&#x3D;%E7%9F%A5%E9%81%93&amp;ra&#x3D;0.47945168</span><br></pre></td></tr></table></figure></li>
-<li>若干消息头 消息头是一些键值对，通信的双方都可以发送。比如浏览器可以发送”User-Agent”消息头，告诉服务器浏览器的类型和版本， 一般来说，消息头是自动生成的。有些时候需要编程生成一些消息头。</li>
-<li>实体内容 如果发送get请求，实体内容为空。 只有发送post请求时，实体内容才会有数据（即请求参数值，比如name=tom），如果发送的是get请求，请求参数会放在请求资源路径的后面。</li>
-</ol>
-<h2 id="响应数据包"><a href="#响应数据包" class="headerlink" title="响应数据包"></a>响应数据包</h2><ol>
-<li><p>状态行（协议类型和版本、状态码、状态描状态行述）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Accept text&#x2F;html, application&#x2F;xhtml+xml, *&#x2F;*</span><br><span class="line">Accept-Encoding gzip, deflate</span><br><span class="line">Accept-Language zh-CN</span><br><span class="line">Connection Keep-Alive</span><br><span class="line">Cookie BD\_UPN&#x3D;1126314351; ispeed\_lsm&#x3D;2; BD\_LAST\_QID&#x3D;12126890578877287783; BD\_HOME&#x3D;0; BAIDUID&#x3D;C323FECD3763243205877E5BE6138F7D:FG&#x3D;1; BIDUPSID&#x3D;9A5864149C1C43304A1236E12F4C5175; PSTM&#x3D;1444447058; BDRCVFR\[kVc2Ho6h-mm\]&#x3D;I67x6TjHwwYf0; H\_PS\_PSSID&#x3D;17521\_1455\_17619\_14429\_17001\_17470\_17073\_15422\_11730\_17051</span><br><span class="line">Host www.baidu.com   </span><br><span class="line">User-Agent Mozilla&#x2F;5.0 (Windows NT 6.1; Trident&#x2F;7.0; rv:11.0) like Gecko X-HttpWatch-RID 41695-10075 (Status-Line) HTTP&#x2F;1.1 200 OK</span><br></pre></td></tr></table></figure>
-<p>1xx:信息响应类，表示接收到请求并且继续处理<br>2xx:处理成功响应类，表示动作被成功接收、理解和接受<br>3xx:重定向响应类，为了完成指定的动作，必须接受进一步处理<br>4xx:客户端错误，客户请求包含语法错误或者是不能正确执行<br>5xx:服务端错误，服务器不能正确执行一个正确的请求 <strong>常见的状态码：</strong><br>200：正常；<br>404：依据请求地址找不到对应的资源<br>500：系统错误，一般是程序运行出现了异常。</p>
-</li>
-<li><p>若干消息头 服务器也可以向浏览器发送一些消息头，比如”content-type”,告诉浏览器返回的数据类型以及编码格式。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Accept-Ranges bytes Cache-Control max-age&#x3D;0 Content-Length 0 Content-Type image&#x2F;gif Date Mon, 19 Oct 2015 15:14:04 GMT Etag “4280832337” Expires Mon, 19 Oct 2015 15:14:04 GMT Last-Modified Fri, 23 Oct 2009 08:06:04 GMT Pragma no-cache Server BWS&#x2F;1.0</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>实体内容 程序处理的结果，浏览器会取出这些数据，生成相应的页面。</p>
-</li>
-</ol>
-<h1 id="GET与POST请求"><a href="#GET与POST请求" class="headerlink" title="GET与POST请求"></a>GET与POST请求</h1><ol>
-<li>哪些情况浏览器会发送get请求？ a.直接在浏览器地址栏输入某个地址 b.点击链接 c.表单的默认提交方式</li>
-<li>哪些情况浏览器会发送post请求？ 表单设置了method=”post”<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;form action&#x3D;&quot;处理请求的程序&quot; method&#x3D;&quot;get&#x2F;post&quot;&gt;</span><br></pre></td></tr></table></figure></li>
-<li>get方式的特点 a.会将请求参数添加到请求资源路径的后面，而且只能提交少量的数据给web服务器（get方式提交的网址不能超过256个字符） b.get请求会将请求参数显示在浏览器地址栏，不安全（路由器会记录这些地址）</li>
-<li>post方式的特点 a.会将请求参数添加到实体内容中，所以可以提交大量的数据 b.post方式不会将请求参数显示在浏览器地址栏，所以相对安全（但是并没有加密） post请求需要提供要提交的数据类型及长度，数据的类型有两种，一种是普通的文本数据（ASCII数据），类型为”application/x-www-form-urlencoded”，另一种是文件数据（二进制数据），类型为”multipart/form-data”,例如；<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">POST &#x2F;s HTTP&#x2F;1.1 Content-Type:application&#x2F;x-www-form-urlencoded Content-Length:7</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-
-          
+          http协议是什么由W3C组织制定的一种应用层协议，用于定义浏览器和WEB服务器之间通信的过程和数据的格式。简单的讲，在浏览器中点击一个连接后，浏览器会向服务器发送一段文本，告诉浏览器要访问的信息。这段文本遵循HTTP协议格式，包含访问方式，所用的HTTP版本、当前的浏览器及当前的页面地址信息等。（
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2014/03/02/http%E5%8D%8F%E8%AE%AE/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -695,7 +665,7 @@
             
               <div class="site-state-item site-state-posts">
               
-                <a href="/archives">
+                <a href="/archives/%20%7C%7C%20history">
               
                   <span class="site-state-item-count">132</span>
                   <span class="site-state-item-name">日志</span>
