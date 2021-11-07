@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>tcpdump抓包</title>
-    <url>/2021/11/07/tcpdump%E6%8A%93%E5%8C%85/</url>
+    <title>tcpdump-抓包</title>
+    <url>/2021/11/07/tcpdump-%E6%8A%93%E5%8C%85/</url>
     <content><![CDATA[<h2 id="01-简介"><a href="#01-简介" class="headerlink" title="01 简介"></a>01 简介</h2><p><strong>tcpdump</strong> 是一款 Linux 平台的抓包工具。它可以抓取涵盖整个 TCP/IP 协议族的数据包，支持针对网络层、协议、主机、端口的过滤，并提供 and、or、not 等逻辑语句来过滤无用的信息。</p>
 <p>tcpdump 是一个非常复杂的工具，掌握它的方方面面实属不易，也不推荐，能够用它来解决日常工作问题才是关系。</p>
 <h2 id="02-tcpdump-命令选项"><a href="#02-tcpdump-命令选项" class="headerlink" title="02 tcpdump 命令选项"></a>02 tcpdump 命令选项</h2><p>tcpdump 有很多命令选项，想了解所有选项可以 Linux 命令行输入 <code>tcpdump -h</code>，<code>man tcpdump</code> 查看每个选项的意思。</p>
