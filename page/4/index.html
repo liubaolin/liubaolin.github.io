@@ -288,7 +288,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2020/06/07/Mysql%EF%BC%8814%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2020/06/07/Mysql%EF%BC%8815%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AE%9E%E9%AA%8C/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Richey Liu">
@@ -307,7 +307,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/06/07/Mysql%EF%BC%8814%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" itemprop="url">Mysql（14）-Mysql位（bit）数据类型</a></h1>
+                <a class="post-title-link" href="/2020/06/07/Mysql%EF%BC%8815%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AE%9E%E9%AA%8C/" itemprop="url">Mysql（15）-Mysql位（bit）数据类型实验</a></h1>
         
 
         <div class="post-meta">
@@ -360,8 +360,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2020/06/07/Mysql%EF%BC%8814%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2020/06/07/Mysql%EF%BC%8814%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" itemprop="commentCount"></span>
+                <a href="/2020/06/07/Mysql%EF%BC%8815%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AE%9E%E9%AA%8C/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/06/07/Mysql%EF%BC%8815%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AE%9E%E9%AA%8C/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -369,7 +369,7 @@
 
           
           
-             <span id="/2020/06/07/Mysql%EF%BC%8814%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" class="leancloud_visitors" data-flag-title="Mysql（14）-Mysql位（bit）数据类型">
+             <span id="/2020/06/07/Mysql%EF%BC%8815%EF%BC%89-Mysql%E4%BD%8D%EF%BC%88bit%EF%BC%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AE%9E%E9%AA%8C/" class="leancloud_visitors" data-flag-title="Mysql（15）-Mysql位（bit）数据类型实验">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -402,38 +402,60 @@
       
         
           
-            <p>最近在线上碰到了一个诡异的问题，线上有个业务模块突然查询不出数据。问题反馈的时候是上午，前一天晚上进行了上线操作，基本可以判断跟上线有关系。</p>
-<h1 id="问题定位"><a href="#问题定位" class="headerlink" title="问题定位"></a>问题定位</h1><p>先看日志，没有任何报错，接口都能正常返回。并且此处没有降级机制，arthas跟踪到数据库查询确实没有返回。</p>
-<p>拿到具体的生产查询sql，直接在生产数据库查询，没有结果。但是同样的sql放到beta可以查询出结果。</p>
-<p>这里基本可以定位到是sql查询的问题了。</p>
-<p>先分析了下sql，简单的单表查询，where里有四个查询条件，其中一个字段引起了注意，如下：</p>
-<p>select * from table_staff where companyId = ‘demo-companyId’ and isDelete = ‘0’;</p>
-<p>isDelte在业务中是一个boolean类型，对应数据库中用的是位数据类型：bit(1)，首先尝试将查询条件isDelete=’0’改为isDelete=0或者isDelete=false，<br>可以在生产数据库查出结果。</p>
-<p>进一步比对生产和beta环境该表的DDL，发现isDelete字段的数据类型是一致的，但是生产比beta数据库多了一个索引 idx_companId_isDelete(companyId和isDelete的一个联合索引，而且不是唯一索引)，<br>基本确认索引问题导致。</p>
-<p>此时运维确认这个索引是前天晚上上线，为了提高跑批效率手动在生产加上去的，删掉idx_companId_isDelete索引后问题解决。</p>
-<h1 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h1><p>首先肯定是走了索引，导致数据查询不出来</p>
-<p>数据库中isDelete数据类型是bit(1),查询该类型的知识点：</p>
-<blockquote>
-<p>MySQL有少数几种存储类型使用紧凑的位存储数据。所有这些位类型，不管底层存储格式和处理方式如何，从技术上来说都是字符串类型。<br>MySQL把bit类型当作字符串类型，而不是数字类型。当检索BIT(1)的值时，结果是一个包含二进制0或者1值的字符串，而不是ASCII码的“0”或者“1”。<br>–《高性能MySQL》 P123 4.1.5-位数据类型</p>
-</blockquote>
-<p>MySQL把bit类型当作字符串类型，所以上例中当我们加了一个字符串索引，并且查询条件也使用的字符串查询时（isDelete=’0’），命中索引。而当我们把引号去掉或者使用false时（isDelete=0或isDelete=false）索引失效，进行了全表扫描。</p>
-<p>问题在于，正常字符串索引即便是查询中使用了数字，也无非就是索引失效走全表扫描，不会查不出数据，这里明显是bit(1)数据类型的问题。</p>
-<h1 id="场景还原"><a href="#场景还原" class="headerlink" title="场景还原"></a>场景还原</h1><p>在uat库加了跟生产同样的索引，还原了数据查询不出来的场景。</p>
-<p>Explain 看了下命中索引是的执行计划，Extra中看到这样的描述</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Impossible WHERE noticed after reading const tables</span><br></pre></td></tr></table></figure>
+            <h1 id="bit类型字段的查询展示和计算"><a href="#bit类型字段的查询展示和计算" class="headerlink" title="bit类型字段的查询展示和计算"></a>bit类型字段的查询展示和计算</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; CREATE DATABASE richey_test CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;</span><br><span class="line">Query OK, 1 row affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; use richey_test;</span><br><span class="line"></span><br><span class="line">mysql&gt; CREATE TABLE bittest(a bit(8));</span><br><span class="line"></span><br><span class="line">mysql&gt; INSERT INTO bittest VALUES(b&#39;00111001&#39;);</span><br><span class="line"></span><br><span class="line">mysql&gt; select a,a + 0 from bittest;</span><br><span class="line">+------+-------+</span><br><span class="line">| a    | a + 0 |</span><br><span class="line">+------+-------+</span><br><span class="line">| 9    |    57 |</span><br><span class="line">+------+-------+</span><br><span class="line"></span><br><span class="line">mysql&gt; SELECT a+b&#39;1&#39; from bittest;</span><br><span class="line">+--------+</span><br><span class="line">| a+b&#39;1&#39; |</span><br><span class="line">+--------+</span><br><span class="line">|     58 |</span><br><span class="line">+--------+</span><br><span class="line">1 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select a &#x3D; 9 from bittest;</span><br><span class="line">+------+</span><br><span class="line">| a &#x3D;9 |</span><br><span class="line">+------+</span><br><span class="line">|    0 |</span><br><span class="line">+------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select a&#x3D;&#39;9&#39; from bittest;</span><br><span class="line">+-------+</span><br><span class="line">| a&#x3D;&#39;9&#39; |</span><br><span class="line">+-------+</span><br><span class="line">|     0 |</span><br><span class="line">+-------+</span><br><span class="line">1 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; select a &#x3D;57 from bittest;</span><br><span class="line">+-------+</span><br><span class="line">| a &#x3D;57 |</span><br><span class="line">+-------+</span><br><span class="line">|     1 |</span><br><span class="line">+-------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select a&#x3D;&#39;57&#39; from bittest;</span><br><span class="line">+--------+</span><br><span class="line">| a&#x3D;&#39;57&#39; |</span><br><span class="line">+--------+</span><br><span class="line">|      1 |</span><br><span class="line">+--------+</span><br><span class="line">6 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; SELECT a&#x3D;b&#39;00111001&#39; from bittest;</span><br><span class="line">+---------------+</span><br><span class="line">| a&#x3D;b&#39;00111001&#39; |</span><br><span class="line">+---------------+</span><br><span class="line">|             1 |</span><br><span class="line">+---------------+</span><br><span class="line">1 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select min(a) from bittest;</span><br><span class="line">+--------+</span><br><span class="line">| min(a) |</span><br><span class="line">+--------+</span><br><span class="line">| 57     |</span><br><span class="line">+--------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
 
-<p>走了常量表，查询mysql Manual，发现了对这段描述的解释：</p>
-<p>![Mysql-extra-impossible](<a href="http://blog-pic-1254088127.picsh.myqcloud.com/mysql-impossible-const.png）" target="_blank" rel="noopener">http://blog-pic-1254088127.picsh.myqcloud.com/mysql-impossible-const.png）</a></p>
-<p>但是，上例中的查询并不符合这段解释中的要求</p>
-<p>![Mysql索引常量](<a href="http://blog-pic-1254088127.picsh.myqcloud.com/mysql-index-const.png）" target="_blank" rel="noopener">http://blog-pic-1254088127.picsh.myqcloud.com/mysql-index-const.png）</a></p>
-<h1 id="实践和结论"><a href="#实践和结论" class="headerlink" title="实践和结论"></a>实践和结论</h1><p>MySQL官方文档及其它资料中找不到合理的解释，这里给个实践结论。</p>
-<p>对bit类型的字段的查询：</p>
+<blockquote>
+<p>00111001 二进制值是57</p>
+</blockquote>
+<blockquote>
+<p>ASCII码表中二进制00111001（转换成十进制为57）对应的字符是9</p>
+</blockquote>
+<blockquote>
+<p>ASCII 码使用指定的7 位或8 位二进制数组合来表示128 或256 种可能的字符。</p>
+</blockquote>
+<p>结论：</p>
 <ul>
-<li>不使用索引<br>查询bit的参数值是无论是数值还是字符，mysql都会进行类型转化,将字符转换为数值，并比较数值对应的ascii码</li>
-<li>使用索引<br>检索BIT(1)列的值, 索引存的结果是一个字符串且内容是二进制位0或1, 而不是ASCII值”0″或”1″. 这就导致了为什么我们使用ASCII值”0”没有查询出结果。</li>
+<li>当检索位类型的列时（例如BIT(8)），得到的结果是一个字符串，该字符串的值是数据库里存的二进制值对应的ASCII码字符（例：ASCII码00111001对应的字符是9）；</li>
+<li>当BIT类型的值参与计算或比较时，使用的是二进制值对应的十进制数值进行计算或比较；</li>
 </ul>
-<p>简言之：bit类型索引里存的是二进制类型的值（位类型bit），我们查询参数给的是ASCII码值</p>
-<p>结论：<br>1、定义为text和image和bit数据类型的列不应该增加索引<br>2、加完索引一定要explain看一下<br>3、使用unsigned tinyint代替bit(1) 来表示是否<br>   @Column(columnDefinition= “TINYINT”,length = 1)    暂未验证</p>
+<blockquote>
+<p>Comparison operations result in a value of 1 (TRUE), 0 (FALSE), or NULL. These operations work for both numbers and strings. Strings are automatically converted to numbers and numbers to strings as necessary.</p>
+</blockquote>
+<p>简言之，mysql中是将bit类型当字符串使用的，字符串参与计算或者比对的时候会先转换成数值，相应的bit类型参与计算或比较时会先转换成10进制的数值。</p>
+<blockquote>
+<p>InnoDB为每个bit列使用一个足够存储的最小整数类型来存放，所以并不能节省存储空间</p>
+</blockquote>
+<h1 id="根据bit类型字段查询（无索引）"><a href="#根据bit类型字段查询（无索引）" class="headerlink" title="根据bit类型字段查询（无索引）"></a>根据bit类型字段查询（无索引）</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; select * from bittest where a &#x3D; 9;</span><br><span class="line">Empty set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select * from bittest where a &#x3D; 57;</span><br><span class="line">+------+</span><br><span class="line">| a    |</span><br><span class="line">+------+</span><br><span class="line">| 9    |</span><br><span class="line">+------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select * from bittest where a &#x3D; &#39;9&#39;;</span><br><span class="line">Empty set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select * from bittest where a &#x3D; &#39;57&#39;;</span><br><span class="line">+------+</span><br><span class="line">| a    |</span><br><span class="line">+------+</span><br><span class="line">| 9    |</span><br><span class="line">+------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select * from bittest where a&#x3D;b&#39;00111001&#39;;</span><br><span class="line">+------+</span><br><span class="line">| a    |</span><br><span class="line">+------+</span><br><span class="line">| 9    |</span><br><span class="line">+------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<p>结论：没有索引的情况下，bit类型参与比较时都是转换成二进制值对应的数值进行比较，而非二进制值对应的ASCII码所控制的字符串。</p>
+<h1 id="根据bit类型字段查询（有索引）"><a href="#根据bit类型字段查询（有索引）" class="headerlink" title="根据bit类型字段查询（有索引）"></a>根据bit类型字段查询（有索引）</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">mysql&gt; alter table bittest add index idx_bit_a (a);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; INSERT INTO bittest VALUES(b&#39;01111000&#39;);</span><br><span class="line">Query OK, 1 row affected (0.01 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; INSERT INTO bittest VALUES(b&#39;01111001&#39;);</span><br><span class="line">Query OK, 1 row affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; INSERT INTO bittest VALUES(b&#39;01111010&#39;);</span><br><span class="line">Query OK, 1 row affected (0.02 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; INSERT INTO bittest VALUES(b&#39;01111011&#39;);</span><br><span class="line">Query OK, 1 row affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; INSERT INTO bittest VALUES(b&#39;01111100&#39;);</span><br><span class="line">Query OK, 1 row affected (0.01 sec)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; select * from bittest;</span><br><span class="line">+------+</span><br><span class="line">| a    |</span><br><span class="line">+------+</span><br><span class="line">| 9    |</span><br><span class="line">| x    |</span><br><span class="line">| y    |</span><br><span class="line">| z    |</span><br><span class="line">| &#123;    |</span><br><span class="line">| |    |</span><br><span class="line">+------+</span><br><span class="line">6 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; explain select * from bittest where a &#x3D; 9;</span><br><span class="line">+----+-------------+---------+------------+------+---------------+-----------+---------+-------+------+----------+-------------+</span><br><span class="line">| id | select_type | table   | partitions | type | possible_keys | key       | key_len | ref   | rows | filtered | Extra       |</span><br><span class="line">+----+-------------+---------+------------+------+---------------+-----------+---------+-------+------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | bittest | NULL       | ref  | idx_bit_a     | idx_bit_a | 2       | const |    1 |   100.00 | Using index |</span><br><span class="line">+----+-------------+---------+------------+------+---------------+-----------+---------+-------+------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select * from bittest where a &#x3D; 9;</span><br><span class="line">Empty set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; explain select * from bittest where a &#x3D; &#39;9&#39;;</span><br><span class="line">+----+-------------+---------+------------+------+---------------+-----------+---------+-------+------+----------+-------------+</span><br><span class="line">| id | select_type | table   | partitions | type | possible_keys | key       | key_len | ref   | rows | filtered | Extra       |</span><br><span class="line">+----+-------------+---------+------------+------+---------------+-----------+---------+-------+------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | bittest | NULL       | ref  | idx_bit_a     | idx_bit_a | 2       | const |    1 |   100.00 | Using index |</span><br><span class="line">+----+-------------+---------+------------+------+---------------+-----------+---------+-------+------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt;  select * from bittest where a &#x3D; &#39;9&#39;;</span><br><span class="line">+------+</span><br><span class="line">| a    |</span><br><span class="line">+------+</span><br><span class="line">| 9    |</span><br><span class="line">+------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt;  select * from bittest where a &#x3D; &#39;57&#39;;</span><br><span class="line">Empty set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; explain  select * from bittest where a &#x3D; &#39;57&#39;;</span><br><span class="line">+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+--------------------------------+</span><br><span class="line">| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra                          |</span><br><span class="line">+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+--------------------------------+</span><br><span class="line">|  1 | SIMPLE      | NULL  | NULL       | NULL | NULL          | NULL | NULL    | NULL | NULL |     NULL | no matching row in const table |</span><br><span class="line">+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+--------------------------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt;  select * from bittest where a &#x3D; 57;</span><br><span class="line">+------+</span><br><span class="line">| a    |</span><br><span class="line">+------+</span><br><span class="line">| 9    |</span><br><span class="line">+------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; explain  select * from bittest where a &#x3D; 57;</span><br><span class="line">+----+-------------+---------+------------+------+---------------+-----------+---------+-------+------+----------+-------------+</span><br><span class="line">| id | select_type | table   | partitions | type | possible_keys | key       | key_len | ref   | rows | filtered | Extra       |</span><br><span class="line">+----+-------------+---------+------------+------+---------------+-----------+---------+-------+------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | bittest | NULL       | ref  | idx_bit_a     | idx_bit_a | 2       | const |    1 |   100.00 | Using index |</span><br><span class="line">+----+-------------+---------+------------+------+---------------+-----------+---------+-------+------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select * from bittest where a &#x3D; b&#39;00111001&#39;;</span><br><span class="line">+------+</span><br><span class="line">| a    |</span><br><span class="line">+------+</span><br><span class="line">| 9    |</span><br><span class="line">+------+</span><br><span class="line">1 row in set (0.01 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; explain select * from bittest where a &#x3D; b&#39;00111001&#39;;</span><br><span class="line">+----+-------------+---------+------------+------+---------------+-----------+---------+-------+------+----------+-------------+</span><br><span class="line">| id | select_type | table   | partitions | type | possible_keys | key       | key_len | ref   | rows | filtered | Extra       |</span><br><span class="line">+----+-------------+---------+------------+------+---------------+-----------+---------+-------+------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | bittest | NULL       | ref  | idx_bit_a     | idx_bit_a | 2       | const |    1 |   100.00 | Using index |</span><br><span class="line">+----+-------------+---------+------------+------+---------------+-----------+---------+-------+------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p>结论：<br>走bit列索引的情况下，索引值使用ASCII码对应的字符串值，或ASCII码对应的十进制数值进行比对，（这与不走索引的规则是不同的）。</p>
+<h1 id="使用bit-1-标识boolean类型"><a href="#使用bit-1-标识boolean类型" class="headerlink" title="使用bit(1)标识boolean类型"></a>使用bit(1)标识boolean类型</h1><h2 id="无索引的情况"><a href="#无索引的情况" class="headerlink" title="无索引的情况"></a>无索引的情况</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; alter table bittest add column bit_boolean bit(1) ;</span><br><span class="line">Query OK, 0 rows affected (0.08 sec)</span><br><span class="line">Records: 0  Duplicates: 0  Warnings: 0</span><br><span class="line"></span><br><span class="line">mysql&gt; desc bittest;</span><br><span class="line">+-------------+--------+------+-----+---------+-------+</span><br><span class="line">| Field       | Type   | Null | Key | Default | Extra |</span><br><span class="line">+-------------+--------+------+-----+---------+-------+</span><br><span class="line">| a           | bit(8) | YES  | MUL | NULL    |       |</span><br><span class="line">| bit_boolean | bit(1) | YES  |     | NULL    |       |</span><br><span class="line">+-------------+--------+------+-----+---------+-------+</span><br><span class="line">2 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; insert into bittest(bit_boolean) values(b&#39;1&#39;);</span><br><span class="line">Query OK, 1 row affected (0.01 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; insert into bittest(bit_boolean) values(b&#39;0&#39;);</span><br><span class="line">Query OK, 1 row affected (0.00 sec)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; select bin(bit_boolean) from bittest where bit_boolean &#x3D; &#39;1&#39;;</span><br><span class="line">+------------------+</span><br><span class="line">| bin(bit_boolean) |</span><br><span class="line">+------------------+</span><br><span class="line">| 1                |</span><br><span class="line">+------------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select bin(bit_boolean) from bittest where bit_boolean &#x3D; 1;</span><br><span class="line">+------------------+</span><br><span class="line">| bin(bit_boolean) |</span><br><span class="line">+------------------+</span><br><span class="line">| 1                |</span><br><span class="line">+------------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select bin(bit_boolean) from bittest where bit_boolean &#x3D; true;</span><br><span class="line">+------------------+</span><br><span class="line">| bin(bit_boolean) |</span><br><span class="line">+------------------+</span><br><span class="line">| 1                |</span><br><span class="line">+------------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line">mysql&gt; select bin(bit_boolean) from bittest where bit_boolean &#x3D; b&#39;1&#39;;</span><br><span class="line">+------------------+</span><br><span class="line">| bin(bit_boolean) |</span><br><span class="line">+------------------+</span><br><span class="line">| 1                |</span><br><span class="line">+------------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p>没有索引的情况下使用1或者’1’或者true或者b’1’都可以检索出结果</p>
+<h2 id="有索引的情况"><a href="#有索引的情况" class="headerlink" title="有索引的情况"></a>有索引的情况</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; alter table bittest add index idx_bit_bool (bit_boolean);</span><br><span class="line">Query OK, 0 rows affected (0.02 sec)</span><br><span class="line">Records: 0  Duplicates: 0  Warnings: 0</span><br><span class="line"></span><br><span class="line">mysql&gt; select bin(bit_boolean) from bittest where bit_boolean &#x3D; 1;</span><br><span class="line">+------------------+</span><br><span class="line">| bin(bit_boolean) |</span><br><span class="line">+------------------+</span><br><span class="line">| 1                |</span><br><span class="line">+------------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; explain select bin(bit_boolean) from bittest where bit_boolean &#x3D; 1;</span><br><span class="line">+----+-------------+---------+------------+------+---------------+--------------+---------+-------+------+----------+-------------+</span><br><span class="line">| id | select_type | table   | partitions | type | possible_keys | key          | key_len | ref   | rows | filtered | Extra       |</span><br><span class="line">+----+-------------+---------+------------+------+---------------+--------------+---------+-------+------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | bittest | NULL       | ref  | idx_bit_bool  | idx_bit_bool | 2       | const |    1 |   100.00 | Using index |</span><br><span class="line">+----+-------------+---------+------------+------+---------------+--------------+---------+-------+------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; select bin(bit_boolean) from bittest where bit_boolean &#x3D; &#39;1&#39;;</span><br><span class="line">Empty set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; explain select bin(bit_boolean) from bittest where bit_boolean &#x3D; &#39;1&#39;;</span><br><span class="line">+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+--------------------------------+</span><br><span class="line">| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra                          |</span><br><span class="line">+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+--------------------------------+</span><br><span class="line">|  1 | SIMPLE      | NULL  | NULL       | NULL | NULL          | NULL | NULL    | NULL | NULL |     NULL | no matching row in const table |</span><br><span class="line">+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+--------------------------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select bin(bit_boolean) from bittest where bit_boolean &#x3D; true;</span><br><span class="line">+------------------+</span><br><span class="line">| bin(bit_boolean) |</span><br><span class="line">+------------------+</span><br><span class="line">| 1                |</span><br><span class="line">+------------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; explain select bin(bit_boolean) from bittest where bit_boolean &#x3D; true;</span><br><span class="line">+----+-------------+---------+------------+------+---------------+--------------+---------+-------+------+----------+-------------+</span><br><span class="line">| id | select_type | table   | partitions | type | possible_keys | key          | key_len | ref   | rows | filtered | Extra       |</span><br><span class="line">+----+-------------+---------+------------+------+---------------+--------------+---------+-------+------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | bittest | NULL       | ref  | idx_bit_bool  | idx_bit_bool | 2       | const |    1 |   100.00 | Using index |</span><br><span class="line">+----+-------------+---------+------------+------+---------------+--------------+---------+-------+------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt;  select bin(bit_boolean) from bittest where bit_boolean &#x3D; b&#39;1&#39;;</span><br><span class="line">+------------------+</span><br><span class="line">| bin(bit_boolean) |</span><br><span class="line">+------------------+</span><br><span class="line">| 1                |</span><br><span class="line">+------------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; explain select bin(bit_boolean) from bittest where bit_boolean &#x3D; b&#39;1&#39;;</span><br><span class="line">+----+-------------+---------+------------+------+---------------+--------------+---------+-------+------+----------+-------------+</span><br><span class="line">| id | select_type | table   | partitions | type | possible_keys | key          | key_len | ref   | rows | filtered | Extra       |</span><br><span class="line">+----+-------------+---------+------------+------+---------------+--------------+---------+-------+------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | bittest | NULL       | ref  | idx_bit_bool  | idx_bit_bool | 2       | const |    1 |   100.00 | Using index |</span><br><span class="line">+----+-------------+---------+------------+------+---------------+--------------+---------+-------+------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p>有索引的情况下，只能根据=1（二进制对应的十进制数值）或=true(实际也会转换成10进制1)进行索引。</p>
+<h1 id="Mysql本身没有boolean类型"><a href="#Mysql本身没有boolean类型" class="headerlink" title="Mysql本身没有boolean类型"></a>Mysql本身没有boolean类型</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">mysql&gt; create table boolean_test</span><br><span class="line">    -&gt; (</span><br><span class="line">    -&gt;    id int primary key,</span><br><span class="line">    -&gt;    bl boolean</span><br><span class="line">    -&gt; );</span><br><span class="line">Query OK, 0 rows affected (0.02 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; desc boolean_test;</span><br><span class="line">+-------+------------+------+-----+---------+-------+</span><br><span class="line">| Field | Type       | Null | Key | Default | Extra |</span><br><span class="line">+-------+------------+------+-----+---------+-------+</span><br><span class="line">| id    | int(11)    | NO   | PRI | NULL    |       |</span><br><span class="line">| bl    | tinyint(1) | YES  |     | NULL    |       |</span><br><span class="line">+-------+------------+------+-----+---------+-------+</span><br><span class="line">2 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p>我们创建一个boolean类型的列是可以成功的，但是实际上这列的数据格式是tinyint(1)</p>
+<blockquote>
+<p>MySQL BOOLEAN数据类型简介MySQL没有内置的布尔类型。 但是它使用TINYINT(1)。 为了更方便，MySQL提供BOOLEAN或BOOL作为TINYINT(1)的同义词</p>
+</blockquote>
+<blockquote>
+<p>0被认为是false，非零值被认为是true。 要使用布尔文本，可以使用常量TRUE和FALSE来分别计算为1和0。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">mysql&gt; SELECT true, false, TRUE, FALSE, True, False;</span><br><span class="line">+------+-------+------+-------+------+-------+</span><br><span class="line">| TRUE | FALSE | TRUE | FALSE | TRUE | FALSE |</span><br><span class="line">+------+-------+------+-------+------+-------+</span><br><span class="line">|    1 |     0 |    1 |     0 |    1 |     0 |</span><br><span class="line">+------+-------+------+-------+------+-------+</span><br><span class="line">1 row in set (0.01 sec)</span><br></pre></td></tr></table></figure>
+
+<p>使用 = true 或者 = false时，跟使用 = 1 或者 = 0是一样的</p>
+<h2 id="true"><a href="#true" class="headerlink" title="= true"></a>= true</h2><p>true在mysql中就是1，= true同 = 1是一样的</p>
+<h2 id="false"><a href="#false" class="headerlink" title="= false"></a>= false</h2><p>false 在mysql中就是0，=false同 =0是一样的</p>
+<h2 id="is-false"><a href="#is-false" class="headerlink" title="is false"></a>is false</h2><p>检索出 0，等同于 = 0</p>
+<h2 id="is-true"><a href="#is-true" class="headerlink" title="is true"></a>is true</h2><p>检索非0，等同于 != 0</p>
+<p>注意字符串同数值比较时会转换成数值，转换有特殊规则，如‘’123abc’ 在等于号比较时转换成的数值为123</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">mysql&gt; select 0 is false, &#39;0&#39; is false ,&#39;123&#39; is false;</span><br><span class="line">+------------+--------------+----------------+</span><br><span class="line">| 0 is false | &#39;0&#39; is false | &#39;123&#39; is false |</span><br><span class="line">+------------+--------------+----------------+</span><br><span class="line">|          1 |            1 |              0 |</span><br><span class="line">+------------+--------------+----------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; select 1 is true,2 is true ,&#39;1&#39; is true,&#39;123&#39; is true,-1 is true;</span><br><span class="line">+-----------+-----------+-------------+---------------+------------+</span><br><span class="line">| 1 is true | 2 is true | &#39;1&#39; is true | &#39;123&#39; is true | -1 is true |</span><br><span class="line">+-----------+-----------+-------------+---------------+------------+</span><br><span class="line">|         1 |         1 |           1 |             1 |          1 |</span><br><span class="line">+-----------+-----------+-------------+---------------+------------+</span><br><span class="line"></span><br><span class="line">mysql&gt; select 1 !&#x3D; 0,2 !&#x3D;0 ,&#39;1&#39; !&#x3D; 0,&#39;123&#39; !&#x3D; 0,-1 !&#x3D; 0;</span><br><span class="line">+--------+-------+----------+------------+---------+</span><br><span class="line">| 1 !&#x3D; 0 | 2 !&#x3D;0 | &#39;1&#39; !&#x3D; 0 | &#39;123&#39; !&#x3D; 0 | -1 !&#x3D; 0 |</span><br><span class="line">+--------+-------+----------+------------+---------+</span><br><span class="line">|      1 |     1 |        1 |          1 |       1 |</span><br><span class="line">+--------+-------+----------+------------+---------+</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>综上，在mysql中不要使用bit(1)表示boolean类型，实际上不建议在任何场景使用bit类型的字段。查询会造成不必要的困扰和麻烦，令人难以理解。</p>
 
           
         
@@ -1353,6 +1375,175 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/" itemprop="url">安装zookeeper</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-07T00:00:00+08:00">
+                2019-07-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9E%B6%E6%9E%84/" itemprop="url" rel="index">
+                    <span itemprop="name">架构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/" class="leancloud_visitors" data-flag-title="安装zookeeper">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="安装zookeeper"><a href="#安装zookeeper" class="headerlink" title="安装zookeeper"></a>安装zookeeper</h1><h2 id="单机服务"><a href="#单机服务" class="headerlink" title="单机服务"></a>单机服务</h2><p>从apache.org下载zookeeper,这里下载的是zookeeper-3.4.14.tar</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#tar -zxf zookeeper-3.4.14.tar.gz</span><br><span class="line">#mv zookeeper-3.4.14 &#x2F;usr&#x2F;local&#x2F;zookeeper</span><br><span class="line">#cat &gt; &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;conf&#x2F;zoo.cfg &lt;&lt; EOF</span><br><span class="line">&gt; tickTime&#x3D;2000</span><br><span class="line">&gt; dataDir&#x3D;&#x2F;var&#x2F;lib&#x2F;zookeeper</span><br><span class="line">&gt; clientPort&#x3D;2181</span><br><span class="line">&gt; EOF</span><br><span class="line">#&#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh start</span><br><span class="line">ZooKeeper JMX enabled by default</span><br><span class="line">Using config: &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;..&#x2F;conf&#x2F;zoo.cfg</span><br><span class="line">Starting zookeeper ... STARTED</span><br><span class="line">#</span><br></pre></td></tr></table></figure>
+
+<p>现在可以连接到zookeeper端口上，通过发送四字命令srvr来验证zookeeper是否安装正确。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#telnet localhost 2181</span><br><span class="line">Trying ::1...</span><br><span class="line">Connected to localhost.</span><br><span class="line">Escape character is &#39;^]&#39;.</span><br><span class="line">srvr</span><br><span class="line">Zookeeper version: 3.4.14-4c25d480e66aadd371de8bd2fd8da255ac140bcf, built on 03&#x2F;06&#x2F;2019 16:18 GMT</span><br><span class="line">Latency min&#x2F;avg&#x2F;max: 0&#x2F;0&#x2F;0</span><br><span class="line">Received: 1</span><br><span class="line">Sent: 0</span><br><span class="line">Connections: 1</span><br><span class="line">Outstanding: 0</span><br><span class="line">Zxid: 0x0</span><br><span class="line">Mode: standalone</span><br><span class="line">Node count: 4</span><br><span class="line">Connection closed by foreign host.</span><br></pre></td></tr></table></figure>
+
+<h2 id="Zookeeper群组"><a href="#Zookeeper群组" class="headerlink" title="Zookeeper群组"></a>Zookeeper群组</h2><p>Zookeeper集群被称为Zookeeper群组，Zookeeper使用的是一致性协议，所以每个群组里应该包含奇数个节点。因为只有群组里的大多数节点处于可用状态，zookeeper才能处理外部请求。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/07/07/%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEKafka%20Broker/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1545,7 +1736,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/07/05/vim%E5%91%BD%E4%BB%A4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Richey Liu">
@@ -1564,7 +1755,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/" itemprop="url">安装zookeeper</a></h1>
+                <a class="post-title-link" href="/2019/07/05/vim%E5%91%BD%E4%BB%A4/" itemprop="url">vim命令</a></h1>
         
 
         <div class="post-meta">
@@ -1576,8 +1767,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-07T00:00:00+08:00">
-                2019-07-07
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-05T00:00:00+08:00">
+                2019-07-05
               </time>
             
 
@@ -1599,8 +1790,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9E%B6%E6%9E%84/" itemprop="url" rel="index">
-                    <span itemprop="name">架构</span>
+                  <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index">
+                    <span itemprop="name">工具</span>
                   </a>
                 </span>
 
@@ -1617,8 +1808,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/" itemprop="commentCount"></span>
+                <a href="/2019/07/05/vim%E5%91%BD%E4%BB%A4/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/07/05/vim%E5%91%BD%E4%BB%A4/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1626,7 +1817,7 @@
 
           
           
-             <span id="/2019/07/07/%E5%AE%89%E8%A3%85zookeeper/" class="leancloud_visitors" data-flag-title="安装zookeeper">
+             <span id="/2019/07/05/vim%E5%91%BD%E4%BB%A4/" class="leancloud_visitors" data-flag-title="vim命令">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -1659,13 +1850,132 @@
       
         
           
-            <h1 id="安装zookeeper"><a href="#安装zookeeper" class="headerlink" title="安装zookeeper"></a>安装zookeeper</h1><h2 id="单机服务"><a href="#单机服务" class="headerlink" title="单机服务"></a>单机服务</h2><p>从apache.org下载zookeeper,这里下载的是zookeeper-3.4.14.tar</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#tar -zxf zookeeper-3.4.14.tar.gz</span><br><span class="line">#mv zookeeper-3.4.14 &#x2F;usr&#x2F;local&#x2F;zookeeper</span><br><span class="line">#cat &gt; &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;conf&#x2F;zoo.cfg &lt;&lt; EOF</span><br><span class="line">&gt; tickTime&#x3D;2000</span><br><span class="line">&gt; dataDir&#x3D;&#x2F;var&#x2F;lib&#x2F;zookeeper</span><br><span class="line">&gt; clientPort&#x3D;2181</span><br><span class="line">&gt; EOF</span><br><span class="line">#&#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh start</span><br><span class="line">ZooKeeper JMX enabled by default</span><br><span class="line">Using config: &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;..&#x2F;conf&#x2F;zoo.cfg</span><br><span class="line">Starting zookeeper ... STARTED</span><br><span class="line">#</span><br></pre></td></tr></table></figure>
+            <p>vim本身提供了入门级教程，通过命令vimtutor就可以查看。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vimtutor</span><br></pre></td></tr></table></figure>
 
-<p>现在可以连接到zookeeper端口上，通过发送四字命令srvr来验证zookeeper是否安装正确。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#telnet localhost 2181</span><br><span class="line">Trying ::1...</span><br><span class="line">Connected to localhost.</span><br><span class="line">Escape character is &#39;^]&#39;.</span><br><span class="line">srvr</span><br><span class="line">Zookeeper version: 3.4.14-4c25d480e66aadd371de8bd2fd8da255ac140bcf, built on 03&#x2F;06&#x2F;2019 16:18 GMT</span><br><span class="line">Latency min&#x2F;avg&#x2F;max: 0&#x2F;0&#x2F;0</span><br><span class="line">Received: 1</span><br><span class="line">Sent: 0</span><br><span class="line">Connections: 1</span><br><span class="line">Outstanding: 0</span><br><span class="line">Zxid: 0x0</span><br><span class="line">Mode: standalone</span><br><span class="line">Node count: 4</span><br><span class="line">Connection closed by foreign host.</span><br></pre></td></tr></table></figure>
 
-<h2 id="Zookeeper群组"><a href="#Zookeeper群组" class="headerlink" title="Zookeeper群组"></a>Zookeeper群组</h2><p>Zookeeper集群被称为Zookeeper群组，Zookeeper使用的是一致性协议，所以每个群组里应该包含奇数个节点。因为只有群组里的大多数节点处于可用状态，zookeeper才能处理外部请求。</p>
+
+
+<h1 id="命令和对象"><a href="#命令和对象" class="headerlink" title="命令和对象"></a>命令和对象</h1><p>许多文本命令都由一个操作符和一个命令组成，例如删除操作符d，配合动作命令w 组成dw，即删除当前位置至下一个单词起始位置.</p>
+<p>简单的命令列表：</p>
+<ul>
+<li>w 当前位置至下一个单词的开始，不包含第一个字符</li>
+<li>e 当前位置只单词末尾，包含最后一个字符</li>
+<li>$ 当前位置至行末尾</li>
+</ul>
+<h1 id="在动作面前输入数字，可以使命令执行多次"><a href="#在动作面前输入数字，可以使命令执行多次" class="headerlink" title="在动作面前输入数字，可以使命令执行多次"></a>在动作面前输入数字，可以使命令执行多次</h1><ul>
+<li>2w 移动两个单词，至第三个单词的开始处</li>
+<li>3e 光标移动到第三个单词的末尾</li>
+<li>0　光标移动到行首</li>
+</ul>
+<h1 id="删除类"><a href="#删除类" class="headerlink" title="删除类"></a>删除类</h1><ul>
+<li><p>dw 删除光标至当前单词结尾</p>
+</li>
+<li><p>d$ 删除光标至当前行结尾</p>
+</li>
+</ul>
+<h1 id="撤销类"><a href="#撤销类" class="headerlink" title="撤销类"></a>撤销类</h1><ul>
+<li>u 撤销操作</li>
+<li>U 撤销整行操作</li>
+<li>Ctrl + R 撤销反向操作</li>
+</ul>
+<h1 id="查看类"><a href="#查看类" class="headerlink" title="查看类"></a>查看类</h1><ul>
+<li>移动到当前行最后  shift+a</li>
+</ul>
+<ul>
+<li><p>整页翻页 ctrl-f ctrl-b</p>
+<p>  f就是forword b就是backward</p>
+</li>
+<li><p>翻半页 ctrl-d ctlr-u</p>
+<p>  d=down u=up</p>
+</li>
+<li><p>滚一行 ctrl-e ctrl-y</p>
+</li>
+<li><p>zz 让光标所在的行居屏幕中央</p>
+</li>
+<li><p>zt 让光标所杂的行居屏幕最上一行 t=top</p>
+</li>
+<li><p>zb 让光标所杂的行居屏幕最下一行 b=bottom</p>
+</li>
+</ul>
+<h1 id="置入类"><a href="#置入类" class="headerlink" title="置入类"></a>置入类</h1><ul>
+<li>p 输入p将最后一次删除的内容置入光标之后</li>
+</ul>
+<h1 id="更改类"><a href="#更改类" class="headerlink" title="更改类"></a>更改类</h1><ul>
+<li>c [number] motion 同删除命令一样的用法</li>
+<li>ce 要改变文本直到一个单词的末尾，请输入 ce</li>
+<li>cw 要改变文本直到下一个单词的开始，请输入cw </li>
+<li>c$ 改变当前至行尾</li>
+</ul>
+<h1 id="定位及文件状态"><a href="#定位及文件状态" class="headerlink" title="定位及文件状态"></a>定位及文件状态</h1><ul>
+<li>ctrl + g 显示当前编辑文件名，及当前光标位置</li>
+<li>大写G跳到文件最后一行</li>
+<li>gg跳到文件首行</li>
+<li>行号 + 大写G 跳到指定行</li>
+<li>显示行号 :set number</li>
+<li>不显示行号 :set number</li>
+</ul>
+<h1 id="搜索类命令"><a href="#搜索类命令" class="headerlink" title="搜索类命令"></a>搜索类命令</h1><ul>
+<li>输入 / 加上一个字符串可以用以在当前文件中查找该字符串</li>
+<li>下一个n</li>
+<li>上一个N</li>
+<li>如果您想逆向查找字符串，请使用 ? 代替 / 进行</li>
+</ul>
+<h1 id="配对括号的查找"><a href="#配对括号的查找" class="headerlink" title="配对括号的查找"></a>配对括号的查找</h1><ul>
+<li>输入 % 可以查找配对的括号 )、]、}</li>
+</ul>
+<h1 id="替换命令"><a href="#替换命令" class="headerlink" title="替换命令"></a>替换命令</h1><ul>
+<li><p>r 输入r和一个字符替换光标所在位置的字符</p>
+</li>
+<li><p>R 输入R可连续替换多个字符</p>
+</li>
+<li><p>输入 :s/old/new/g 可以替换 old 为 new</p>
+</li>
+<li><p>输入 :s/thee/the &lt;回车&gt; 。请注意该命令只改变光标所在行的第一个匹配串</p>
+</li>
+<li><p>输入 :s/old/new/g 则是替换全行的匹配串，该行中所有的 “old” 都会被改变 </p>
+</li>
+<li><p>输入 :#,#s/old/new/g    #,# 代表的是替换操作的若干行中首尾两行的行号。</p>
+</li>
+<li><p>输入 :%s/old/new/g    替换整个文件中的每个匹配串。</p>
+</li>
+<li><p>输入 :%s/old/new/gc   找到整个文件中的每个匹配串，并且对每个匹配串提示是否进行替换。</p>
+</li>
+</ul>
+<h1 id="vim内执行外部命令"><a href="#vim内执行外部命令" class="headerlink" title="vim内执行外部命令"></a>vim内执行外部命令</h1><ul>
+<li>:!+shell命令即可</li>
+</ul>
+<h1 id="保存文件"><a href="#保存文件" class="headerlink" title="保存文件"></a>保存文件</h1><ul>
+<li>:w FILENAME 将文件以FILENAME为名称保存 </li>
+<li>按v进行可视模式，移动光标选择要保存的内容，再按:w FILENAME 即可把选择的内容保存到名称为FILENAME的文件中</li>
+</ul>
+<h1 id="可视模式"><a href="#可视模式" class="headerlink" title="可视模式"></a>可视模式</h1><ul>
+<li>按v键，进入字符可视模式，移动光标可进行选择</li>
+<li>按V键，进入行可视模式,移动光标可进行选择</li>
+<li>按Ctrl+v键，进入行可视模式,移动光标可进行选择<br>SHIFT+i(I) 输入要插入的内容<br>ESC 按两次，会在每行的选定的区域出现插入的内容</li>
+<li>选择后，可以输入一个操作符对选中的文本进行操作，比如d 删除</li>
+<li>u或U，字母大小写切换</li>
+<li>d删除选中字符，D删除整行</li>
+<li>y复制文本，p粘贴文本</li>
+<li>还可以把 y 当作操作符来使用；例如 yw 可以用来复制一个单词</li>
+</ul>
+<h1 id="提取和合并文件"><a href="#提取和合并文件" class="headerlink" title="提取和合并文件"></a>提取和合并文件</h1><ul>
+<li>:r FILENAME 要向当前文件中插入另外的文件的内容</li>
+</ul>
+<h1 id="打开类命令"><a href="#打开类命令" class="headerlink" title="打开类命令"></a>打开类命令</h1><ul>
+<li>输入 o 将在光标的下方打开新的一行并进入插入模式</li>
+<li>输入 O 将在光标的上方打开新的一行并进入插入模式</li>
+</ul>
+<h1 id="设置类命令的选项"><a href="#设置类命令的选项" class="headerlink" title="设置类命令的选项"></a>设置类命令的选项</h1><ul>
+<li>要查找单词 ignore 可在正常模式下输入 /ignore &lt;回车&gt;, 要重复查找该词，可以重复按 n 键</li>
+<li>然后设置 ic 选项(Ignore Case，忽略大小写)，请输入： :set ic</li>
+<li>要禁用忽略大小写，请输入： :set noic</li>
+<li>设置 hlsearch 和 incsearch 这两个选项，请输入： :set hls is</li>
+<li>要移除匹配项的高亮显示，请输入：  :nohlsearch<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#39;ic&#39; &#39;ignorecase&#39;       查找时忽略字母大小写</span><br><span class="line">&#39;is&#39; &#39;incsearch&#39;        查找短语时显示部分匹配</span><br><span class="line">&#39;hls&#39; &#39;hlsearch&#39;        高亮显示所有的匹配短语</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
 
           
         
@@ -1984,294 +2294,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     }
 
 }</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/07/05/vim%E5%91%BD%E4%BB%A4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/05/vim%E5%91%BD%E4%BB%A4/" itemprop="url">vim命令</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-05T00:00:00+08:00">
-                2019-07-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index">
-                    <span itemprop="name">工具</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/07/05/vim%E5%91%BD%E4%BB%A4/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/07/05/vim%E5%91%BD%E4%BB%A4/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/07/05/vim%E5%91%BD%E4%BB%A4/" class="leancloud_visitors" data-flag-title="vim命令">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>vim本身提供了入门级教程，通过命令vimtutor就可以查看。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vimtutor</span><br></pre></td></tr></table></figure>
-
-
-
-
-<h1 id="命令和对象"><a href="#命令和对象" class="headerlink" title="命令和对象"></a>命令和对象</h1><p>许多文本命令都由一个操作符和一个命令组成，例如删除操作符d，配合动作命令w 组成dw，即删除当前位置至下一个单词起始位置.</p>
-<p>简单的命令列表：</p>
-<ul>
-<li>w 当前位置至下一个单词的开始，不包含第一个字符</li>
-<li>e 当前位置只单词末尾，包含最后一个字符</li>
-<li>$ 当前位置至行末尾</li>
-</ul>
-<h1 id="在动作面前输入数字，可以使命令执行多次"><a href="#在动作面前输入数字，可以使命令执行多次" class="headerlink" title="在动作面前输入数字，可以使命令执行多次"></a>在动作面前输入数字，可以使命令执行多次</h1><ul>
-<li>2w 移动两个单词，至第三个单词的开始处</li>
-<li>3e 光标移动到第三个单词的末尾</li>
-<li>0　光标移动到行首</li>
-</ul>
-<h1 id="删除类"><a href="#删除类" class="headerlink" title="删除类"></a>删除类</h1><ul>
-<li><p>dw 删除光标至当前单词结尾</p>
-</li>
-<li><p>d$ 删除光标至当前行结尾</p>
-</li>
-</ul>
-<h1 id="撤销类"><a href="#撤销类" class="headerlink" title="撤销类"></a>撤销类</h1><ul>
-<li>u 撤销操作</li>
-<li>U 撤销整行操作</li>
-<li>Ctrl + R 撤销反向操作</li>
-</ul>
-<h1 id="查看类"><a href="#查看类" class="headerlink" title="查看类"></a>查看类</h1><ul>
-<li>移动到当前行最后  shift+a</li>
-</ul>
-<ul>
-<li><p>整页翻页 ctrl-f ctrl-b</p>
-<p>  f就是forword b就是backward</p>
-</li>
-<li><p>翻半页 ctrl-d ctlr-u</p>
-<p>  d=down u=up</p>
-</li>
-<li><p>滚一行 ctrl-e ctrl-y</p>
-</li>
-<li><p>zz 让光标所在的行居屏幕中央</p>
-</li>
-<li><p>zt 让光标所杂的行居屏幕最上一行 t=top</p>
-</li>
-<li><p>zb 让光标所杂的行居屏幕最下一行 b=bottom</p>
-</li>
-</ul>
-<h1 id="置入类"><a href="#置入类" class="headerlink" title="置入类"></a>置入类</h1><ul>
-<li>p 输入p将最后一次删除的内容置入光标之后</li>
-</ul>
-<h1 id="更改类"><a href="#更改类" class="headerlink" title="更改类"></a>更改类</h1><ul>
-<li>c [number] motion 同删除命令一样的用法</li>
-<li>ce 要改变文本直到一个单词的末尾，请输入 ce</li>
-<li>cw 要改变文本直到下一个单词的开始，请输入cw </li>
-<li>c$ 改变当前至行尾</li>
-</ul>
-<h1 id="定位及文件状态"><a href="#定位及文件状态" class="headerlink" title="定位及文件状态"></a>定位及文件状态</h1><ul>
-<li>ctrl + g 显示当前编辑文件名，及当前光标位置</li>
-<li>大写G跳到文件最后一行</li>
-<li>gg跳到文件首行</li>
-<li>行号 + 大写G 跳到指定行</li>
-<li>显示行号 :set number</li>
-<li>不显示行号 :set number</li>
-</ul>
-<h1 id="搜索类命令"><a href="#搜索类命令" class="headerlink" title="搜索类命令"></a>搜索类命令</h1><ul>
-<li>输入 / 加上一个字符串可以用以在当前文件中查找该字符串</li>
-<li>下一个n</li>
-<li>上一个N</li>
-<li>如果您想逆向查找字符串，请使用 ? 代替 / 进行</li>
-</ul>
-<h1 id="配对括号的查找"><a href="#配对括号的查找" class="headerlink" title="配对括号的查找"></a>配对括号的查找</h1><ul>
-<li>输入 % 可以查找配对的括号 )、]、}</li>
-</ul>
-<h1 id="替换命令"><a href="#替换命令" class="headerlink" title="替换命令"></a>替换命令</h1><ul>
-<li><p>r 输入r和一个字符替换光标所在位置的字符</p>
-</li>
-<li><p>R 输入R可连续替换多个字符</p>
-</li>
-<li><p>输入 :s/old/new/g 可以替换 old 为 new</p>
-</li>
-<li><p>输入 :s/thee/the &lt;回车&gt; 。请注意该命令只改变光标所在行的第一个匹配串</p>
-</li>
-<li><p>输入 :s/old/new/g 则是替换全行的匹配串，该行中所有的 “old” 都会被改变 </p>
-</li>
-<li><p>输入 :#,#s/old/new/g    #,# 代表的是替换操作的若干行中首尾两行的行号。</p>
-</li>
-<li><p>输入 :%s/old/new/g    替换整个文件中的每个匹配串。</p>
-</li>
-<li><p>输入 :%s/old/new/gc   找到整个文件中的每个匹配串，并且对每个匹配串提示是否进行替换。</p>
-</li>
-</ul>
-<h1 id="vim内执行外部命令"><a href="#vim内执行外部命令" class="headerlink" title="vim内执行外部命令"></a>vim内执行外部命令</h1><ul>
-<li>:!+shell命令即可</li>
-</ul>
-<h1 id="保存文件"><a href="#保存文件" class="headerlink" title="保存文件"></a>保存文件</h1><ul>
-<li>:w FILENAME 将文件以FILENAME为名称保存 </li>
-<li>按v进行可视模式，移动光标选择要保存的内容，再按:w FILENAME 即可把选择的内容保存到名称为FILENAME的文件中</li>
-</ul>
-<h1 id="可视模式"><a href="#可视模式" class="headerlink" title="可视模式"></a>可视模式</h1><ul>
-<li>按v键，进入字符可视模式，移动光标可进行选择</li>
-<li>按V键，进入行可视模式,移动光标可进行选择</li>
-<li>按Ctrl+v键，进入行可视模式,移动光标可进行选择<br>SHIFT+i(I) 输入要插入的内容<br>ESC 按两次，会在每行的选定的区域出现插入的内容</li>
-<li>选择后，可以输入一个操作符对选中的文本进行操作，比如d 删除</li>
-<li>u或U，字母大小写切换</li>
-<li>d删除选中字符，D删除整行</li>
-<li>y复制文本，p粘贴文本</li>
-<li>还可以把 y 当作操作符来使用；例如 yw 可以用来复制一个单词</li>
-</ul>
-<h1 id="提取和合并文件"><a href="#提取和合并文件" class="headerlink" title="提取和合并文件"></a>提取和合并文件</h1><ul>
-<li>:r FILENAME 要向当前文件中插入另外的文件的内容</li>
-</ul>
-<h1 id="打开类命令"><a href="#打开类命令" class="headerlink" title="打开类命令"></a>打开类命令</h1><ul>
-<li>输入 o 将在光标的下方打开新的一行并进入插入模式</li>
-<li>输入 O 将在光标的上方打开新的一行并进入插入模式</li>
-</ul>
-<h1 id="设置类命令的选项"><a href="#设置类命令的选项" class="headerlink" title="设置类命令的选项"></a>设置类命令的选项</h1><ul>
-<li>要查找单词 ignore 可在正常模式下输入 /ignore &lt;回车&gt;, 要重复查找该词，可以重复按 n 键</li>
-<li>然后设置 ic 选项(Ignore Case，忽略大小写)，请输入： :set ic</li>
-<li>要禁用忽略大小写，请输入： :set noic</li>
-<li>设置 hlsearch 和 incsearch 这两个选项，请输入： :set hls is</li>
-<li>要移除匹配项的高亮显示，请输入：  :nohlsearch<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#39;ic&#39; &#39;ignorecase&#39;       查找时忽略字母大小写</span><br><span class="line">&#39;is&#39; &#39;incsearch&#39;        查找短语时显示部分匹配</span><br><span class="line">&#39;hls&#39; &#39;hlsearch&#39;        高亮显示所有的匹配短语</span><br></pre></td></tr></table></figure>
-
-
-</li>
-</ul>
-
           
         
       

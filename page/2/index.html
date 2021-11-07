@@ -288,6 +288,236 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2021/03/21/mongoDB%E7%B3%BB%E5%88%9705-mongoDB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/21/mongoDB%E7%B3%BB%E5%88%9705-mongoDB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/" itemprop="url">mongoDB系列05-mongoDB数据模型设计</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-21T00:00:00+08:00">
+                2021-03-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/DB/" itemprop="url" rel="index">
+                    <span itemprop="name">DB</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2021/03/21/mongoDB%E7%B3%BB%E5%88%9705-mongoDB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2021/03/21/mongoDB%E7%B3%BB%E5%88%9705-mongoDB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2021/03/21/mongoDB%E7%B3%BB%E5%88%9705-mongoDB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/" class="leancloud_visitors" data-flag-title="mongoDB系列05-mongoDB数据模型设计">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="JSON文档模型特点"><a href="#JSON文档模型特点" class="headerlink" title="JSON文档模型特点"></a>JSON文档模型特点</h1><p>在传统关系模型中需要多张表关联的模型，在json文档模型中可以通过一个表（集合）完成</p>
+<p>文档模型设计主要考虑两点：性能和开发易用</p>
+<h1 id="几个概念"><a href="#几个概念" class="headerlink" title="几个概念"></a>几个概念</h1><ul>
+<li>集合：同关系数据库中的表</li>
+<li>字段：同关系数据库中的列</li>
+<li>内嵌数组，引用字段：类似于关系数据库的主外键，关联关系</li>
+</ul>
+<h1 id="1-1关系建模"><a href="#1-1关系建模" class="headerlink" title="1-1关系建模"></a>1-1关系建模</h1><ul>
+<li>一对一关系以内嵌为主,作为子文档形式或者直接在顶级</li>
+<li>如果内嵌后导致文档大小超过16M,则不建议内嵌</li>
+</ul>
+<blockquote>
+<p>mongoDB文档大小不能超过16M</p>
+</blockquote>
+<h1 id="1-N关系建模"><a href="#1-N关系建模" class="headerlink" title="1-N关系建模"></a>1-N关系建模</h1><ul>
+<li>一对多关系同样以内嵌为主</li>
+<li>用数组表示一对多</li>
+<li>同样如果文档大小超过16M或数组长度太大（数万或更多）或数组长度不确定则不使用内嵌</li>
+</ul>
+<h1 id="N-N关系模型"><a href="#N-N关系模型" class="headerlink" title="N-N关系模型"></a>N-N关系模型</h1><ul>
+<li><p>不通过映射表做，同样建议通过内嵌数组表示一对多，通过冗余来实现N-N</p>
+</li>
+<li><p>同样如果文档大小超过16M或数组长度太大（数万或更多）或数组长度不确定则不使用内嵌</p>
+<p>在mongoDB里面有些时候是允许甚至鼓励做冗余的</p>
+<p>在mongoDB建模中，内嵌是一种重要的方式,但是内嵌不是万能的，根据具体情况我也需要建立文档间的引用关系</p>
+</li>
+</ul>
+<h1 id="根据业务需求细化建模"><a href="#根据业务需求细化建模" class="headerlink" title="根据业务需求细化建模"></a>根据业务需求细化建模</h1><p>首先要收集确认需求：</p>
+<ul>
+<li><p>读写比例</p>
+</li>
+<li><p>查询方式，比如查询最近几天，查询参数,以及最频繁的查询方式是什么</p>
+</li>
+<li><p>最频繁的写入方式是什么</p>
+</li>
+<li><p>数据量大小,将低频查询且数据量较大的数据单独集合保存，建立关联关系</p>
+<p>基于这些需求，我们最终决定是使用引用来避免性能瓶颈还是使用冗余来优化访问性能.</p>
+<p>比如内嵌模型通过冗余的方式实现N-N时，加入在数据量大的情况下，我们可能面临大量的修改操作(对冗余的数据进行修改),此时就需要设计为关联的方式,<br>将关联关系独立出一张表来，然后依然通过数组冗余的方式维护关系，只不过此时我们冗余的不是具体的数据，而是冗余表的主键数组</p>
+<p>这种通过冗余+关联的设计，我们可以通过$lookup的方式进行（多表）查询，类似mysql中的join</p>
+</li>
+</ul>
+<p>总结，什么时候应该使用引用的方式查询：</p>
+<ul>
+<li>内嵌文档太大，数MB或则超过16MB</li>
+<li>内嵌文档或者数组元素会频繁修改</li>
+<li>内嵌数组元素会持续增长且没有封顶</li>
+</ul>
+<h1 id="mongoDB引用设计的限制"><a href="#mongoDB引用设计的限制" class="headerlink" title="mongoDB引用设计的限制"></a>mongoDB引用设计的限制</h1><ul>
+<li>引用集合之间无主外键检查</li>
+<li>使用$lookup的方式模仿关联查询</li>
+<li>$lookup只支持left outer join</li>
+<li>$lookup的关联目标(from)不能是分片表</li>
+</ul>
+<h1 id="常用的设计模式"><a href="#常用的设计模式" class="headerlink" title="常用的设计模式"></a>常用的设计模式</h1><h2 id="分桶模式"><a href="#分桶模式" class="headerlink" title="分桶模式"></a>分桶模式</h2><p>批量保存概念，节省索引和公共字段的存储空间。</p>
+<p>通过分桶模式可以大大减少文档数量和索引的占用空间</p>
+<h2 id="列转行"><a href="#列转行" class="headerlink" title="列转行"></a>列转行</h2><p>将多列数据转换成一行数据，将多列的信息放到行内的数组中维护</p>
+<p>这样如果我们本来需要对这些列建分别建索引（可能几十个），现在只需要建一个就够了.此模式解决的是索引过多的问题</p>
+<p>索引太多影响插入效率的问题就解决了</p>
+<p>注意的是只有这些列能抽象成一个对象表示时才可行(否则我们从语义上也无法实现列转行)</p>
+<h2 id="版本管理"><a href="#版本管理" class="headerlink" title="版本管理"></a>版本管理</h2><p>模型灵活了，如何管理文档的不同版本？</p>
+<p>可以增加一个版本字段：”schema_version”</p>
+<p>这样我们可以根据版本进行过滤，同时可以根据版本进行规则设置</p>
+<h2 id="近似计算"><a href="#近似计算" class="headerlink" title="近似计算"></a>近似计算</h2><p>对于请求量大同时准确性要求不高的统计，我们可以采用近似计算的方式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">if random(0,9) &#x3D;&#x3D; 0</span><br><span class="line">  increment by 10</span><br></pre></td></tr></table></figure>
+
+<p>可大量减少写入操作</p>
+<h2 id="预聚合"><a href="#预聚合" class="headerlink" title="预聚合"></a>预聚合</h2><p>增加统计字段，在进行数据修改的同时，修改这些统计字段的值，这样就可以避免聚合查询带来的性能和资源问题。</p>
+<p>这里是利用了mongoDB文档模型的灵活性，增加了聚合字段，而不影响正常业务数据</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2021/03/21/mongoDB%E7%B3%BB%E5%88%9704-mongoDB%E5%A4%8D%E5%88%B6%E9%9B%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -678,236 +908,6 @@
 
 <p>修改后重启或重新ssh连接服务器，使用命令ulimit -a即可看到效果</p>
 <h1 id="查询某个进程占用的句柄"><a href="#查询某个进程占用的句柄" class="headerlink" title="查询某个进程占用的句柄"></a>查询某个进程占用的句柄</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lsof |grep pid</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2021/03/21/mongoDB%E7%B3%BB%E5%88%9705-mongoDB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/03/21/mongoDB%E7%B3%BB%E5%88%9705-mongoDB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/" itemprop="url">mongoDB系列05-mongoDB数据模型设计</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-21T00:00:00+08:00">
-                2021-03-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/DB/" itemprop="url" rel="index">
-                    <span itemprop="name">DB</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2021/03/21/mongoDB%E7%B3%BB%E5%88%9705-mongoDB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2021/03/21/mongoDB%E7%B3%BB%E5%88%9705-mongoDB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2021/03/21/mongoDB%E7%B3%BB%E5%88%9705-mongoDB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1/" class="leancloud_visitors" data-flag-title="mongoDB系列05-mongoDB数据模型设计">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="JSON文档模型特点"><a href="#JSON文档模型特点" class="headerlink" title="JSON文档模型特点"></a>JSON文档模型特点</h1><p>在传统关系模型中需要多张表关联的模型，在json文档模型中可以通过一个表（集合）完成</p>
-<p>文档模型设计主要考虑两点：性能和开发易用</p>
-<h1 id="几个概念"><a href="#几个概念" class="headerlink" title="几个概念"></a>几个概念</h1><ul>
-<li>集合：同关系数据库中的表</li>
-<li>字段：同关系数据库中的列</li>
-<li>内嵌数组，引用字段：类似于关系数据库的主外键，关联关系</li>
-</ul>
-<h1 id="1-1关系建模"><a href="#1-1关系建模" class="headerlink" title="1-1关系建模"></a>1-1关系建模</h1><ul>
-<li>一对一关系以内嵌为主,作为子文档形式或者直接在顶级</li>
-<li>如果内嵌后导致文档大小超过16M,则不建议内嵌</li>
-</ul>
-<blockquote>
-<p>mongoDB文档大小不能超过16M</p>
-</blockquote>
-<h1 id="1-N关系建模"><a href="#1-N关系建模" class="headerlink" title="1-N关系建模"></a>1-N关系建模</h1><ul>
-<li>一对多关系同样以内嵌为主</li>
-<li>用数组表示一对多</li>
-<li>同样如果文档大小超过16M或数组长度太大（数万或更多）或数组长度不确定则不使用内嵌</li>
-</ul>
-<h1 id="N-N关系模型"><a href="#N-N关系模型" class="headerlink" title="N-N关系模型"></a>N-N关系模型</h1><ul>
-<li><p>不通过映射表做，同样建议通过内嵌数组表示一对多，通过冗余来实现N-N</p>
-</li>
-<li><p>同样如果文档大小超过16M或数组长度太大（数万或更多）或数组长度不确定则不使用内嵌</p>
-<p>在mongoDB里面有些时候是允许甚至鼓励做冗余的</p>
-<p>在mongoDB建模中，内嵌是一种重要的方式,但是内嵌不是万能的，根据具体情况我也需要建立文档间的引用关系</p>
-</li>
-</ul>
-<h1 id="根据业务需求细化建模"><a href="#根据业务需求细化建模" class="headerlink" title="根据业务需求细化建模"></a>根据业务需求细化建模</h1><p>首先要收集确认需求：</p>
-<ul>
-<li><p>读写比例</p>
-</li>
-<li><p>查询方式，比如查询最近几天，查询参数,以及最频繁的查询方式是什么</p>
-</li>
-<li><p>最频繁的写入方式是什么</p>
-</li>
-<li><p>数据量大小,将低频查询且数据量较大的数据单独集合保存，建立关联关系</p>
-<p>基于这些需求，我们最终决定是使用引用来避免性能瓶颈还是使用冗余来优化访问性能.</p>
-<p>比如内嵌模型通过冗余的方式实现N-N时，加入在数据量大的情况下，我们可能面临大量的修改操作(对冗余的数据进行修改),此时就需要设计为关联的方式,<br>将关联关系独立出一张表来，然后依然通过数组冗余的方式维护关系，只不过此时我们冗余的不是具体的数据，而是冗余表的主键数组</p>
-<p>这种通过冗余+关联的设计，我们可以通过$lookup的方式进行（多表）查询，类似mysql中的join</p>
-</li>
-</ul>
-<p>总结，什么时候应该使用引用的方式查询：</p>
-<ul>
-<li>内嵌文档太大，数MB或则超过16MB</li>
-<li>内嵌文档或者数组元素会频繁修改</li>
-<li>内嵌数组元素会持续增长且没有封顶</li>
-</ul>
-<h1 id="mongoDB引用设计的限制"><a href="#mongoDB引用设计的限制" class="headerlink" title="mongoDB引用设计的限制"></a>mongoDB引用设计的限制</h1><ul>
-<li>引用集合之间无主外键检查</li>
-<li>使用$lookup的方式模仿关联查询</li>
-<li>$lookup只支持left outer join</li>
-<li>$lookup的关联目标(from)不能是分片表</li>
-</ul>
-<h1 id="常用的设计模式"><a href="#常用的设计模式" class="headerlink" title="常用的设计模式"></a>常用的设计模式</h1><h2 id="分桶模式"><a href="#分桶模式" class="headerlink" title="分桶模式"></a>分桶模式</h2><p>批量保存概念，节省索引和公共字段的存储空间。</p>
-<p>通过分桶模式可以大大减少文档数量和索引的占用空间</p>
-<h2 id="列转行"><a href="#列转行" class="headerlink" title="列转行"></a>列转行</h2><p>将多列数据转换成一行数据，将多列的信息放到行内的数组中维护</p>
-<p>这样如果我们本来需要对这些列建分别建索引（可能几十个），现在只需要建一个就够了.此模式解决的是索引过多的问题</p>
-<p>索引太多影响插入效率的问题就解决了</p>
-<p>注意的是只有这些列能抽象成一个对象表示时才可行(否则我们从语义上也无法实现列转行)</p>
-<h2 id="版本管理"><a href="#版本管理" class="headerlink" title="版本管理"></a>版本管理</h2><p>模型灵活了，如何管理文档的不同版本？</p>
-<p>可以增加一个版本字段：”schema_version”</p>
-<p>这样我们可以根据版本进行过滤，同时可以根据版本进行规则设置</p>
-<h2 id="近似计算"><a href="#近似计算" class="headerlink" title="近似计算"></a>近似计算</h2><p>对于请求量大同时准确性要求不高的统计，我们可以采用近似计算的方式：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">if random(0,9) &#x3D;&#x3D; 0</span><br><span class="line">  increment by 10</span><br></pre></td></tr></table></figure>
-
-<p>可大量减少写入操作</p>
-<h2 id="预聚合"><a href="#预聚合" class="headerlink" title="预聚合"></a>预聚合</h2><p>增加统计字段，在进行数据修改的同时，修改这些统计字段的值，这样就可以避免聚合查询带来的性能和资源问题。</p>
-<p>这里是利用了mongoDB文档模型的灵活性，增加了聚合字段，而不影响正常业务数据</p>
 
           
         
@@ -2160,7 +2160,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2021/02/20/jupyter%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2021/02/20/Kafka%E9%87%8D%E5%B9%B3%E8%A1%A1%EF%BC%88Rebalance%EF%BC%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Richey Liu">
@@ -2179,7 +2179,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2021/02/20/jupyter%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" itemprop="url">jupyter环境搭建</a></h1>
+                <a class="post-title-link" href="/2021/02/20/Kafka%E9%87%8D%E5%B9%B3%E8%A1%A1%EF%BC%88Rebalance%EF%BC%89/" itemprop="url">Kafka重平衡（Rebalance）</a></h1>
         
 
         <div class="post-meta">
@@ -2214,8 +2214,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Phthon/" itemprop="url" rel="index">
-                    <span itemprop="name">Phthon</span>
+                  <a href="/categories/MQ/" itemprop="url" rel="index">
+                    <span itemprop="name">MQ</span>
                   </a>
                 </span>
 
@@ -2232,8 +2232,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2021/02/20/jupyter%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2021/02/20/jupyter%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" itemprop="commentCount"></span>
+                <a href="/2021/02/20/Kafka%E9%87%8D%E5%B9%B3%E8%A1%A1%EF%BC%88Rebalance%EF%BC%89/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2021/02/20/Kafka%E9%87%8D%E5%B9%B3%E8%A1%A1%EF%BC%88Rebalance%EF%BC%89/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -2241,7 +2241,7 @@
 
           
           
-             <span id="/2021/02/20/jupyter%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" class="leancloud_visitors" data-flag-title="jupyter环境搭建">
+             <span id="/2021/02/20/Kafka%E9%87%8D%E5%B9%B3%E8%A1%A1%EF%BC%88Rebalance%EF%BC%89/" class="leancloud_visitors" data-flag-title="Kafka重平衡（Rebalance）">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -2274,12 +2274,43 @@
       
         
           
-            <ol>
-<li>安装anaconda</li>
-<li>pycharm中新建项目配置环境变量为conda</li>
-<li>安装必要的包</li>
+            <h1 id="什么是Rebalance"><a href="#什么是Rebalance" class="headerlink" title="什么是Rebalance"></a>什么是Rebalance</h1><p>首先要搞清楚，为什么要Rebalance：由于消费者组订阅了topic，因topic partition数和消费者组成员个数不同而存在的分配机制。</p>
+<p>Rebalance是让Consumer Group下所有的Consumer重新分配Topic的每个分区的过程。</p>
+<p>Rebalance过程所有的consumer都会参与，在协调者组件（Coordinator）的帮助下，完成主题分区的分配。</p>
+<p>整个Rebalance过程，所有Consumer都不能消费，而且这个过程比较慢。</p>
+<h1 id="什么时候会Rebalance"><a href="#什么时候会Rebalance" class="headerlink" title="什么时候会Rebalance"></a>什么时候会Rebalance</h1><p>有三种情况会触发Rebalance：</p>
+<ol>
+<li><p>有新的Consumer加入Consumer Group</p>
+</li>
+<li><p>Consumer Group订阅的主题数量发生变化</p>
+</li>
+<li><p>Consumer Group订阅的主题的数量发生变化</p>
+</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo pip3 install -i https:&#x2F;&#x2F;pypi.doubanio.com&#x2F;simple pandas jupyter xlrd openpyxl pillow matplotlib seaborn</span><br></pre></td></tr></table></figure>
+<p>Rebalance时Consumer Group内所有的consumer都会参与。</p>
+<h1 id="如何避免Rebalance"><a href="#如何避免Rebalance" class="headerlink" title="如何避免Rebalance"></a>如何避免Rebalance</h1><p>上面说了有三种情况会发生Rebalance，只要这三种情况的任一情况发生，都必然会产生Rebalance。这三种情况有些是计划内的，比如增加一个Consumer，调整分区数，添加或减少<br>某个主题的订阅。</p>
+<p>我们只能尽量避免那些必不要的Rebalance，比如某些情况Consumer被Coordinator错误的认为已停止，从而被提出Consumer Group。</p>
+<ul>
+<li><p>Coordinator什么情况会认为Consumer已停止？</p>
+<p>Consumer会定时往Coordinator发送心跳，证明它还活着。如果Consumer不能及时的发送这个心跳请求，就会被Coordinator认为已经死了，从而将其从Group中移除，然后进行Rebalance。<br>Consumer端的参数session.timeout.ms决定了Consumer存活性的时间间隔，默认10s，即Coordinator如果10s内没有收到Consuner的心跳请求，即认为Consumer死亡。</p>
+<p>Consumer参数heartbeat.interval.ms 控制的是Consumer端发送心跳请求的间隔。这个值越小心跳频次发送的越高，占用带宽越多，但是可以更快的知道是否需要Rebalance，<br>因为Coordinator通知各个Consumer机型Rabalance的方式就是将 REBALANCE_NEEDED 标志封装进心跳请求的响应体中。</p>
+<p>Consumer参数 max.poll.interval.ms 限定了Consumer端两次调用poll方法的最大时间间隔，默认5分钟。即如果在5分钟内无法完成poll方法返回的消息，则Consumer会主动发起离开组的请求，Coorditator也会开始新一轮的Rabalance.也可以修改max.poll.records参数，减少一次poll拉取的消息数，从而减少消费时间。</p>
+<p>Consumer参数说明：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">session.timeout.ms 决定了 Consumer 存活性的时间间隔</span><br><span class="line">heartbeat.interval.ms 控制的是Consumer端发送心跳请求的间隔</span><br><span class="line">max.poll.interval.ms 限定了Consumer端两次调用poll方法的最大时间间隔（即是处理一次poll方法返回消息的最大允许时间）</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Consumer未及时发送心跳导致的Rebalance</p>
+<p>上面我们说了Consumer发送的心跳频次的参数和Coordinator认为Consumer死亡时间的参数。所以为了避免Coordinator错误的判断Consumer死亡的发生，我们要在较短的时间内，较多的发送请求。推荐参数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 在Coordinator认为Consumer死亡之前（6s内），发送三次心跳请求</span><br><span class="line">session.timeout.ms &#x3D; 6s</span><br><span class="line">heartbeat.interval.ms &#x3D; 2s</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Consumer消费时间过长导致的Rebalance</p>
+<p>上面说了max.poll.interval.ms时间内Consumer没有消费完上次poll拉取的消息，则Consumber会主动请求离开组，然后Coordinator进行Rebalance。<br>所以需要了解业务处理时间，合理的设置max.poll.interval.ms</p>
+</li>
+</ul>
+<ul>
+<li><p>频繁Full GC引起的Rebalance</p>
+<p>Full GC导致的长时间停顿，导致业务没有在正常时间内处理完，触发max.poll.interval.ms超时时间，产生Rebalance。</p>
+</li>
+</ul>
 
           
         

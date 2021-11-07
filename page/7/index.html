@@ -747,6 +747,194 @@ public class EvolutionaryAuthenticationFailureHandler extends SimpleUrlAuthentic
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Richey Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Richey's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/" itemprop="url">Mysql（11）-有意思的Mysql问题</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-03T00:00:00+08:00">
+                2019-06-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/DB/" itemprop="url" rel="index">
+                    <span itemprop="name">DB</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/" class="leancloud_visitors" data-flag-title="Mysql（11）-有意思的Mysql问题">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <ol>
+<li>当备库用–single-transaciton做逻辑备份的时候,如果主库的binlog传来一个DDL语句会怎样？</li>
+</ol>
+<p>备份操作是一个过程，DDL从主库传过来时，备份过程可能处于不同的阶段，所以DDL对备份的影响也不同。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Q1:SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;</span><br><span class="line">Q2:START TRANSACTION  WITH CONSISTENT SNAPSHOT；</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br><span class="line">Q3:SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 1 *&#x2F;</span><br><span class="line">Q4:show create table &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 2 *&#x2F;</span><br><span class="line">Q5:SELECT * FROM &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 3 *&#x2F;</span><br><span class="line">Q6:ROLLBACK TO SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 4 *&#x2F;</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br></pre></td></tr></table></figure>
+<p>在备份开始的时候，为了确保 RR（可重复读）隔离级别，再设置一次 RR 隔离级别 (Q1);</p>
+<p>启动事务，这里用 WITH CONSISTENT SNAPSHOT 确保这个语句执行完就可以得到一个一致性视图（Q2)；</p>
+<p>设置一个保存点，这个很重要（Q3）；</p>
+<p>show create 是为了拿到表结构 (Q4)，然后正式导数据 （Q5），回滚到 SAVEPOINT sp，在这里的作用是释放 t1 的 MDL 锁 （Q6）。当然这部分属于“超纲”，上文正文里面都没提到。</p>
+<p>答案如下：</p>
+<ul>
+<li><p>如果在 Q4 语句执行之前到达，现象：没有影响，备份拿到的是 DDL 后的表结构。</p>
+</li>
+<li><p>如果在“时刻 2”到达，则表结构被改过，Q5 执行的时候，报 Table definition has changed, please retry transaction，现象：mysqldump 终止；</p>
+</li>
+<li><p>如果在“时刻 2”和“时刻 3”之间到达，mysqldump 占着 t1 的 MDL 读锁，binlog 被阻塞，现象：主从延迟，直到 Q6 执行完成。</p>
+</li>
+<li><p>从“时刻 4”开始，mysqldump 释放了 MDL 读锁，现象：没有影响，备份拿到的是 DDL 前的表结构。</p>
+</li>
+</ul>
+<p>总结就是在拿到表结构之前到达，没影响；在拿到表结构之后，备份数据之前到，会报错；在备份后到达，主从延迟</p>
+<ol start="2">
+<li>Mysql选错索引的一个案例分析<br>//todo 待分析</li>
+</ol>
+<p>在生产上遇见了一个非常经典的Mysql选错索引的问题，简述如下：有一张日志表，id是自增主键，假设还有一个字段是code，code字段也有索引；</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE IF NOT EXISTS &#96;log_test&#96;(</span><br><span class="line">  &#96;id&#96; INT  AUTO_INCREMENT,</span><br><span class="line">  &#96;key&#96; VARCHAR(100) NOT NULL,</span><br><span class="line">  PRIMARY KEY (&#96;id&#96;),</span><br><span class="line">  index idx_key(&#96;key&#96;)</span><br><span class="line">)ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_unicode_ci;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">delimiter ;;</span><br><span class="line">create procedure idata()</span><br><span class="line">begin</span><br><span class="line">  declare i int;</span><br><span class="line">  set i&#x3D;1;</span><br><span class="line">  while(i&lt;&#x3D;100000)do</span><br><span class="line">    insert into log_test values(i, i);</span><br><span class="line">    set i&#x3D;i+1;</span><br><span class="line">  end while;</span><br><span class="line">end;;</span><br><span class="line">delimiter ;</span><br><span class="line">call idata();</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/03/Spring%20Security%EF%BC%883%EF%BC%89%EF%BC%8D%E4%B8%AA%E6%80%A7%E5%8C%96%E7%94%A8%E6%88%B7%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%EF%BC%88%E4%B8%80%EF%BC%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1014,194 +1202,6 @@ public class BrowerProperties {
 
 evolutionary.security.brower.loginPage = /demo-signIn.html
 evolutionary.security.brower.loginInType=REDIRECT</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://10000hours.top/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Richey Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Richey's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/" itemprop="url">Mysql（11）-有意思的Mysql问题</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-03T00:00:00+08:00">
-                2019-06-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/DB/" itemprop="url" rel="index">
-                    <span itemprop="name">DB</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/06/03/Mysql%EF%BC%8811%EF%BC%89-%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84Mysql%E9%97%AE%E9%A2%98/" class="leancloud_visitors" data-flag-title="Mysql（11）-有意思的Mysql问题">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <ol>
-<li>当备库用–single-transaciton做逻辑备份的时候,如果主库的binlog传来一个DDL语句会怎样？</li>
-</ol>
-<p>备份操作是一个过程，DDL从主库传过来时，备份过程可能处于不同的阶段，所以DDL对备份的影响也不同。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Q1:SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;</span><br><span class="line">Q2:START TRANSACTION  WITH CONSISTENT SNAPSHOT；</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br><span class="line">Q3:SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 1 *&#x2F;</span><br><span class="line">Q4:show create table &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 2 *&#x2F;</span><br><span class="line">Q5:SELECT * FROM &#96;t1&#96;;</span><br><span class="line">&#x2F;* 时刻 3 *&#x2F;</span><br><span class="line">Q6:ROLLBACK TO SAVEPOINT sp;</span><br><span class="line">&#x2F;* 时刻 4 *&#x2F;</span><br><span class="line">&#x2F;* other tables *&#x2F;</span><br></pre></td></tr></table></figure>
-<p>在备份开始的时候，为了确保 RR（可重复读）隔离级别，再设置一次 RR 隔离级别 (Q1);</p>
-<p>启动事务，这里用 WITH CONSISTENT SNAPSHOT 确保这个语句执行完就可以得到一个一致性视图（Q2)；</p>
-<p>设置一个保存点，这个很重要（Q3）；</p>
-<p>show create 是为了拿到表结构 (Q4)，然后正式导数据 （Q5），回滚到 SAVEPOINT sp，在这里的作用是释放 t1 的 MDL 锁 （Q6）。当然这部分属于“超纲”，上文正文里面都没提到。</p>
-<p>答案如下：</p>
-<ul>
-<li><p>如果在 Q4 语句执行之前到达，现象：没有影响，备份拿到的是 DDL 后的表结构。</p>
-</li>
-<li><p>如果在“时刻 2”到达，则表结构被改过，Q5 执行的时候，报 Table definition has changed, please retry transaction，现象：mysqldump 终止；</p>
-</li>
-<li><p>如果在“时刻 2”和“时刻 3”之间到达，mysqldump 占着 t1 的 MDL 读锁，binlog 被阻塞，现象：主从延迟，直到 Q6 执行完成。</p>
-</li>
-<li><p>从“时刻 4”开始，mysqldump 释放了 MDL 读锁，现象：没有影响，备份拿到的是 DDL 前的表结构。</p>
-</li>
-</ul>
-<p>总结就是在拿到表结构之前到达，没影响；在拿到表结构之后，备份数据之前到，会报错；在备份后到达，主从延迟</p>
-<ol start="2">
-<li>Mysql选错索引的一个案例分析<br>//todo 待分析</li>
-</ol>
-<p>在生产上遇见了一个非常经典的Mysql选错索引的问题，简述如下：有一张日志表，id是自增主键，假设还有一个字段是code，code字段也有索引；</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE IF NOT EXISTS &#96;log_test&#96;(</span><br><span class="line">  &#96;id&#96; INT  AUTO_INCREMENT,</span><br><span class="line">  &#96;key&#96; VARCHAR(100) NOT NULL,</span><br><span class="line">  PRIMARY KEY (&#96;id&#96;),</span><br><span class="line">  index idx_key(&#96;key&#96;)</span><br><span class="line">)ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8 COLLATE&#x3D;utf8_unicode_ci;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">delimiter ;;</span><br><span class="line">create procedure idata()</span><br><span class="line">begin</span><br><span class="line">  declare i int;</span><br><span class="line">  set i&#x3D;1;</span><br><span class="line">  while(i&lt;&#x3D;100000)do</span><br><span class="line">    insert into log_test values(i, i);</span><br><span class="line">    set i&#x3D;i+1;</span><br><span class="line">  end while;</span><br><span class="line">end;;</span><br><span class="line">delimiter ;</span><br><span class="line">call idata();</span><br></pre></td></tr></table></figure>
-
           
         
       
